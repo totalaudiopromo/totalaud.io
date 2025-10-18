@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { OSTheme, THEME_CONFIGS } from "@/types/themes"
 import { useUISound } from "@/hooks/useUISound"
-import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@total-audio/core-agent-executor"
-import type { ConversationStep } from "@total-audio/core-agent-executor"
+import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@total-audio/core-agent-executor/personas/broker"
+import type { ConversationStep } from "@total-audio/core-agent-executor/personas/broker"
 
 interface Message {
   id: string
