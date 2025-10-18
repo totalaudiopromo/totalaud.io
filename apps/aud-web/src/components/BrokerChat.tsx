@@ -51,6 +51,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     // Load first question
     setTimeout(() => {
       const firstStep = getNextStep("greeting")
+      console.log('[BrokerChat] First step:', firstStep)
       if (firstStep) {
         setCurrentStep(firstStep)
         setShowOptions(false) // Ensure options are hidden for text input
@@ -62,10 +63,16 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   // Focus input when options are hidden
   useEffect(() => {
+    console.log('[BrokerChat] State:', {
+      currentStep: currentStep?.id,
+      inputType: currentStep?.inputType,
+      showOptions,
+      isTyping
+    })
     if (!showOptions && currentStep?.inputType === 'text') {
       inputRef.current?.focus()
     }
-  }, [showOptions, currentStep])
+  }, [showOptions, currentStep, isTyping])
 
   const addBrokerMessage = (content: string, delay: number = 0) => {
     setTimeout(() => {
@@ -331,12 +338,15 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input - Always show if current step expects text input and not showing options */}
-      {currentStep && currentStep.inputType === 'text' && !showOptions && !isTyping && (
+      {/* Input Field - Show for text questions when not typing */}
+      {currentStep && currentStep.inputType === 'text' && !showOptions && !isTyping ? (
         <form
           onSubmit={handleSubmit}
-          className="border-t p-4"
-          style={{ borderColor: theme.colors.border }}
+          className="border-t p-4 bg-opacity-95"
+          style={{ 
+            borderColor: theme.colors.border,
+            backgroundColor: theme.colors.background
+          }}
         >
           <div className="flex gap-3">
             <input
@@ -374,10 +384,10 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
             </button>
           </div>
           <div className="mt-2 text-xs opacity-40 font-mono">
-            Press Enter to send • Esc to clear
+            Press Enter to send
           </div>
         </form>
-      )}
+      ) : null}
     </div>
   )
 }
