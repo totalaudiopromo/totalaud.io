@@ -54,6 +54,8 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
   const theme = THEME_CONFIGS[selectedMode]
 
   useEffect(() => {
+    console.log('[OSTransition] Mounted with mode:', selectedMode)
+    
     // Play boot sound for selected theme
     if (sound.config.enabled) {
       sound.boot(selectedMode)
@@ -61,12 +63,22 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
 
     // Transition phases
     const timeline = [
-      { delay: 0, action: () => setPhase('fadeout') },
-      { delay: 500, action: () => setPhase('boot') },
-      { delay: 5500, action: () => setPhase('fadein') },
+      { delay: 0, action: () => {
+        console.log('[OSTransition] Phase: fadeout')
+        setPhase('fadeout')
+      }},
+      { delay: 500, action: () => {
+        console.log('[OSTransition] Phase: boot')
+        setPhase('boot')
+      }},
+      { delay: 5500, action: () => {
+        console.log('[OSTransition] Phase: fadein')
+        setPhase('fadein')
+      }},
       { 
         delay: 6500, 
         action: () => {
+          console.log('[OSTransition] Redirecting...')
           if (onComplete) {
             onComplete()
           } else {
@@ -80,8 +92,12 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
       setTimeout(action, delay)
     )
 
-    return () => timers.forEach(clearTimeout)
-  }, [selectedMode, router, onComplete, sound])
+    return () => {
+      console.log('[OSTransition] Cleanup')
+      timers.forEach(clearTimeout)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMode, router, onComplete])
 
   // Animate boot messages line by line
   useEffect(() => {
@@ -127,13 +143,14 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
         fontFamily: theme.fontFamily
       }}
     >
-      {/* Texture Overlay */}
+      {/* Texture Overlay - Optional, fails gracefully */}
       <div
-        className="absolute inset-0 opacity-20 pointer-events-none"
+        className="absolute inset-0 opacity-20 pointer-events-none bg-gradient-to-br from-transparent via-current to-transparent"
         style={{
-          backgroundImage: `url(/textures/${theme.textures.overlay}.png)`,
+          backgroundImage: theme.textures.overlay ? `url(/textures/${theme.textures.overlay}.png)` : undefined,
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          opacity: 0.1
         }}
       />
 
@@ -142,7 +159,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
         <div className="absolute inset-0 scanline-effect opacity-30 pointer-events-none" />
       )}
 
-      {theme.effects?.noise && (
+      {theme.effects?.noise && theme.textures.pattern && (
         <div
           className="absolute inset-0 opacity-10 pointer-events-none"
           style={{

@@ -2,28 +2,37 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import OSCard from "@/components/OSCard"
 import { THEME_CONFIGS, OSTheme } from "@/types/themes"
 import { useUISound } from "@/hooks/useUISound"
+import { Suspense } from "react"
 
-export default function OSSelectorPage() {
+function OSSelectorContent() {
   const [selectedTheme, setSelectedTheme] = useState<OSTheme | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const sound = useUISound()
 
   useEffect(() => {
     // Check if user already has a theme selected
-    const saved = localStorage.getItem("ui_mode")
-    if (saved && saved in THEME_CONFIGS) {
-      // Skip this page if theme already selected
-      router.push("/")
+    // Allow 'force' query param to bypass this check
+    const forceShow = searchParams.get('force') === 'true'
+    
+    if (!forceShow) {
+      const saved = localStorage.getItem("ui_mode")
+      if (saved && saved in THEME_CONFIGS) {
+        // Skip this page if theme already selected
+        router.push("/")
+        return
+      }
     }
+    
     setMounted(true)
-  }, [router])
+  }, [router, searchParams])
 
   const themes = Object.values(THEME_CONFIGS)
 
@@ -258,3 +267,14 @@ export default function OSSelectorPage() {
   )
 }
 
+export default function OSSelectorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    }>
+      <OSSelectorContent />
+    </Suspense>
+  )
+}
