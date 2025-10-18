@@ -2,13 +2,185 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
   --background: #0f172a;
   --foreground: #f8fafc;
+  
+  /* Agent Colors */
+  --agent-scout: #10b981;
+  --agent-coach: #6366f1;
+  --agent-tracker: #f59e0b;
+  --agent-insight: #8b5cf6;
+  
+  /* Console Mode Colors */
+  --console-bg: #020617;
+  --console-text: #10b981;
+  --console-border: #1e293b;
+  
+  /* Creative Mode Colors */
+  --creative-bg: radial-gradient(circle at 30% 30%, #0a0a0a, #000);
+  --creative-accent: #3b82f6;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: radial-gradient(circle at 30% 30%, #0a0a0a, #000);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.01em;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Console Mode Typography */
+body[data-theme="console"] {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+  background: var(--console-bg);
+  letter-spacing: 0.02em;
+}
+
+/* Enhanced Monospace Elements */
+pre, 
+code, 
+kbd,
+.font-mono {
+  font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-variant-ligatures: none;
+  letter-spacing: 0.01em;
+}
+
+/* ASCII Box Drawing Characters */
+.ascii-art {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.2;
+  white-space: pre;
+  user-select: none;
+}
+
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Tabular Numbers for Stats */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glow Effects */
+.glow-scout {
+  box-shadow: 0 0 20px -5px var(--agent-scout);
+}
+
+.glow-coach {
+  box-shadow: 0 0 20px -5px var(--agent-coach);
+}
+
+.glow-tracker {
+  box-shadow: 0 0 20px -5px var(--agent-tracker);
+}
+
+.glow-insight {
+  box-shadow: 0 0 20px -5px var(--agent-insight);
+}
+
+/* Text Glows */
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* Pulse Animation for Active States */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.7;
+    filter: brightness(1.2);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Console Cursor Blink */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scanline Effect (Subtle) */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.scanline-effect::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(16, 185, 129, 0.02) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+/* Focus Styles */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--agent-coach);
+  outline-offset: 2px;
+}
+
+/* Selection Color */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: white;
+}
+
+::-moz-selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: white;
 }
 

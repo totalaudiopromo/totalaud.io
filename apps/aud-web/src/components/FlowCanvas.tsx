@@ -12,12 +12,18 @@ import ReactFlow, {
   Edge,
   Node,
   BackgroundVariant,
-  Panel
+  Panel,
+  NodeTypes
 } from "reactflow"
 import "reactflow/dist/style.css"
 import { motion } from "framer-motion"
 import { useFlowStore } from "@/stores/flowStore"
 import { useFlowRealtime } from "@/hooks/useFlowRealtime"
+import { FlowNode } from "./FlowNode"
+
+const nodeTypes: NodeTypes = {
+  skill: FlowNode
+}
 
 const skillNodes = [
   { 
@@ -83,19 +89,12 @@ export function FlowCanvas() {
 
       const newNode: Node = {
         id: `skill-${Date.now()}`,
-        type: "default",
+        type: "skill",
         position,
         data: {
           label: skill.label,
           skillName: skill.name,
           status: "pending"
-        },
-        style: {
-          background: skill.color,
-          color: "white",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
-          borderRadius: "12px",
-          padding: "10px"
         }
       }
 
@@ -199,6 +198,7 @@ export function FlowCanvas() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onPaneClick={onPaneClick}
+        nodeTypes={nodeTypes}
         fitView
         className="bg-slate-900"
       >
