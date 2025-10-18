@@ -82,6 +82,9 @@ importers:
         specifier: workspace:*
         version: link:../supabase
     devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.22
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
