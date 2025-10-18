@@ -82,7 +82,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
           if (onComplete) {
             onComplete()
           } else {
-            router.push(`/?mode=${selectedMode}`)
+            router.push(`/onboarding/broker?mode=${selectedMode}`)
           }
         }
       }
