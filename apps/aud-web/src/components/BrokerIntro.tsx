@@ -25,6 +25,8 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
   const theme = THEME_CONFIGS[selectedMode]
 
   useEffect(() => {
+    console.log('[BrokerIntro] Mounted, starting 1.5s timer')
+    
     // Play agent spawn sound
     if (sound.config.enabled) {
       sound.agentStart()
@@ -43,14 +45,17 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
 
     // Complete intro after 1.5s
     const timer = setTimeout(() => {
+      console.log('[BrokerIntro] Timer complete, calling onComplete')
       onComplete()
     }, 1500)
 
     return () => {
+      console.log('[BrokerIntro] Cleanup')
       clearInterval(glowInterval)
       clearTimeout(timer)
     }
-  }, [onComplete, sound, selectedMode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onComplete]) // Removed 'sound' and 'selectedMode' to prevent infinite loop
 
   return (
     <motion.div
