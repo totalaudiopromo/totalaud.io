@@ -13,8 +13,14 @@ function BrokerContent() {
   const [showIntro, setShowIntro] = useState(true)
   const [sessionId] = useState(() => `broker-${Date.now()}`)
 
+  useEffect(() => {
+    console.log('[BrokerPage] Mounted with mode:', mode)
+    console.log('[BrokerPage] showIntro:', showIntro)
+  }, [mode, showIntro])
+
   // Validate mode
   if (!(mode in THEME_CONFIGS)) {
+    console.log('[BrokerPage] Invalid mode, redirecting to selector')
     if (typeof window !== 'undefined') {
       window.location.href = '/onboarding/os-selector'
     }
@@ -27,7 +33,10 @@ function BrokerContent() {
         <BrokerIntro
           key="intro"
           selectedMode={mode}
-          onComplete={() => setShowIntro(false)}
+          onComplete={() => {
+            console.log('[BrokerPage] Intro complete, showing chat')
+            setShowIntro(false)
+          }}
         />
       ) : (
         <motion.div
@@ -35,6 +44,7 @@ function BrokerContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
+          onAnimationComplete={() => console.log('[BrokerPage] Chat fade-in complete')}
         >
           <BrokerChat
             selectedMode={mode}
