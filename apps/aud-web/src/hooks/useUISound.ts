@@ -14,6 +14,7 @@ export function useUISound() {
   })
 
   const audioContext = useRef<AudioContext | null>(null)
+  const audioCache = useRef<Map<string, AudioBuffer>>(new Map())
 
   useEffect(() => {
     // Load config from localStorage
@@ -57,11 +58,52 @@ export function useUISound() {
     }
   }
 
+  const loadAudioFile = async (url: string): Promise<AudioBuffer | null> => {
+    if (!audioContext.current) return null
+    
+    // Check cache first
+    if (audioCache.current.has(url)) {
+      return audioCache.current.get(url)!
+    }
+
+    try {
+      const response = await fetch(url)
+      const arrayBuffer = await response.arrayBuffer()
+      const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer)
+      audioCache.current.set(url, audioBuffer)
+      return audioBuffer
+    } catch (error) {
+      console.warn(`Failed to load audio file ${url}:`, error)
+      return null
+    }
+  }
+
+  const playAudioFile = async (url: string) => {
+    if (!config.enabled || !audioContext.current) return
+
+    try {
+      const buffer = await loadAudioFile(url)
+      if (!buffer) return
+
+      const source = audioContext.current.createBufferSource()
+      const gainNode = audioContext.current.createGain()
+
+      source.buffer = buffer
+      source.connect(gainNode)
+      gainNode.connect(audioContext.current.destination)
+
+      gainNode.gain.value = config.volume
+      source.start(0)
+    } catch (error) {
+      console.warn("Failed to play audio file:", error)
+    }
+  }
+
   return {
     config,
     setConfig,
     
-    // UI Sound Effects
+    // UI Sound Effects (Synthetic fallbacks)
     click: () => playTone(800, 0.05, "sine"),
     bleep: () => playTone(1200, 0.08, "square"),
     success: () => {
@@ -86,6 +128,61 @@ export function useUISound() {
     messageReceived: () => playTone(900, 0.08, "sine"),
     messageSent: () => playTone(700, 0.06, "triangle"),
     
+    // Theme-specific boot sounds
+    boot: async (theme: string) => {
+      const soundMap: Record<string, string> = {
+        ascii: "/sounds/ascii/beep-sequence.mp3",
+        xp: "/sounds/xp/xp-startup.mp3",
+        aqua: "/sounds/aqua/mac-chime.mp3",
+        ableton: "/sounds/ableton/sequencer-start.mp3",
+        punk: "/sounds/punk/tape-start.mp3"
+      }
+      
+      const soundFile = soundMap[theme]
+      if (soundFile) {
+        await playAudioFile(soundFile)
+      } else {
+        // Fallback to synthetic beep sequence
+        playTone(400, 0.08, "sine")
+        setTimeout(() => playTone(600, 0.08, "sine"), 80)
+        setTimeout(() => playTone(800, 0.1, "sine"), 160)
+      }
+    },
+    
+    // Theme ambient loops
+    playAmbient: async (theme: string) => {
+      const ambientMap: Record<string, string> = {
+        ascii: "/sounds/ascii/typing-soft.mp3",
+        aqua: "/sounds/aqua/vinyl-hiss.mp3",
+        ableton: "/sounds/ableton/synth-pad.mp3",
+        punk: "/sounds/punk/tape-hiss.mp3"
+      }
+      
+      const soundFile = ambientMap[theme]
+      if (soundFile) {
+        await playAudioFile(soundFile)
+      }
+    },
+    
+    // Theme-specific click sounds
+    themeClick: async (theme: string) => {
+      const clickMap: Record<string, string> = {
+        ascii: "/sounds/ascii/mechanical-key.mp3",
+        xp: "/sounds/xp/xp-click.mp3",
+        aqua: "/sounds/aqua/aqua-pop.mp3",
+        ableton: "/sounds/ableton/clip-trigger.mp3",
+        punk: "/sounds/punk/stamp-press.mp3"
+      }
+      
+      const soundFile = clickMap[theme]
+      if (soundFile) {
+        await playAudioFile(soundFile)
+      } else {
+        // Fallback to synthetic click
+        playTone(800, 0.05, "sine")
+      }
+    },
+    
     // Toggle sound on/off
     toggle: () => {
       const newState = !config.enabled
@@ -106,6 +203,16 @@ export function useUISound() {
     
     setVolume: (volume: number) => {
       setConfig(prev => ({ ...prev, volume: Math.max(0, Math.min(1, volume)) }))
+    },
+    
+    // Preload theme sounds
+    preloadThemeSounds: async (theme: string) => {
+      const sounds = [
+        `/sounds/${theme}/beep-sequence.mp3`,
+        `/sounds/${theme}/click.mp3`
+      ]
+      
+      await Promise.all(sounds.map(url => loadAudioFile(url)))
     }
   }
 }
