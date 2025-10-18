@@ -1,0 +1,32 @@
+name: research-contacts
+version: 1.0.0
+category: research
+description: Search for press contacts, radio stations, or playlist curators based on genre and region
+
+input:
+  query: string
+  type:
+    enum: [playlist, radio, journalist, curator, blogger]
+  genres: string[]
+  regions: string[]
+  max_results: number
+
+output:
+  contacts:
+    - name: string
+      email: string
+      outlet: string
+      role: string
+      relevance_score: number
+      genres: string[]
+      regions: string[]
+      notes: string
+      source_url: string
+
+provider: custom
+config:
+  max_results: 50
+  min_relevance: 0.7
+enabled: true
+is_beta: false
+

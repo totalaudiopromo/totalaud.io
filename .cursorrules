@@ -1,0 +1,58 @@
+# TotalAud.io Cursor Rules
+
+## Project Context
+
+This is a monorepo for TotalAud.io - an AI-powered music marketing platform.
+
+## Architecture
+
+- **Monorepo:** pnpm workspaces + Turborepo
+- **Apps:** aud-web (Next.js), totalaudiopromo (to be migrated)
+- **Packages:** Core business logic, shared UI components
+- **Database:** Supabase (PostgreSQL + Auth)
+- **AI:** OpenAI & Anthropic via abstraction layer
+
+## Code Style
+
+- **TypeScript:** Strict mode enabled
+- **Formatting:** Follow existing patterns
+- **Naming:** camelCase for variables/functions, PascalCase for components/types
+- **Imports:** Use workspace aliases (`@total-audio/core-*`)
+
+## Key Principles
+
+1. **Skills-Based Architecture:** All AI functionality goes through YAML-defined skills
+2. **Shared Core:** Business logic in `packages/core/*`, not in apps
+3. **Type Safety:** Generate types from Supabase schema, validate with Zod
+4. **Cost Tracking:** Log all AI usage (tokens, cost) to database
+
+## Common Commands
+
+```bash
+pnpm dev              # Start development servers
+pnpm db:start         # Start Supabase
+pnpm db:types         # Generate types from schema
+pnpm typecheck        # Check types across monorepo
+```
+
+## When Adding New Features
+
+1. **Skills:** Create YAML in `skills/<category>/`, implement in skills-engine
+2. **API Routes:** Add to `apps/aud-web/src/app/api/`
+3. **Database:** Create migration in `supabase/migrations/`
+4. **Shared Logic:** Add to appropriate `packages/core/*` package
+
+## Brand Voice
+
+- Casual, music industry insider
+- No bullshit, direct communication
+- Millennial/Gen X focused (25-45)
+- Examples: "tools that actually work", "stop wasting time"
+
+## Colors
+
+- Audio Intel: Electric Blue (#3b82f6)
+- Playlist Pulse: Neon Green (#22c55e)
+- Release Radar: Orange (#f59e0b)
+- Base: Black & White with color accents
+
