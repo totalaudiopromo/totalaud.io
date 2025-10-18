@@ -54,9 +54,9 @@ export default function OSSelectorPage() {
     // Play completion sound
     await sound.success()
 
-    // Redirect to next onboarding step
+    // Redirect to transition sequence
     setTimeout(() => {
-      router.push("/")
+      router.push(`/onboarding/transition?mode=${themeId}`)
     }, 500)
   }
 
