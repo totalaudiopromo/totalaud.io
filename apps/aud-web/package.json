@@ -10,15 +10,16 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@total-audio/core-supabase": "workspace:*",
-    "@total-audio/core-skills-engine": "workspace:*",
-    "@total-audio/core-agent-executor": "workspace:*",
-    "@total-audio/ui": "workspace:*",
     "@supabase/supabase-js": "^2.39.0",
+    "@total-audio/core-agent-executor": "workspace:*",
+    "@total-audio/core-skills-engine": "workspace:*",
+    "@total-audio/core-supabase": "workspace:*",
+    "@total-audio/ui": "workspace:*",
+    "framer-motion": "^11.0.0",
     "next": "15.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "framer-motion": "^11.0.0",
+    "reactflow": "^11.11.4",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
@@ -31,4 +32,3 @@
     "typescript": "^5"
   }
 }
-
