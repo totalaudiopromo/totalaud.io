@@ -1,12 +1,13 @@
 import { executeSkill } from "@total-audio/core-skills-engine"
 import { supabase } from "@total-audio/core-supabase"
-import type { AgentStep, AgentWorkflowResult } from "./types"
+import type { AgentStep, AgentWorkflowResult, AgentWorkflowCallbacks, AgentStepUpdate } from "./types"
 
 export async function runAgentWorkflow(
   agentName: string,
   userId: string,
   steps: AgentStep[],
-  initialInput: Record<string, any> = {}
+  initialInput: Record<string, any> = {},
+  callbacks?: AgentWorkflowCallbacks
 ): Promise<AgentWorkflowResult> {
   const sessionId = crypto.randomUUID()
   const start = Date.now()
@@ -30,6 +31,7 @@ export async function runAgentWorkflow(
   try {
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i]
+      const stepStartTime = Date.now()
       
       // Update current step
       await supabase
@@ -50,6 +52,16 @@ export async function runAgentWorkflow(
         started_at: new Date().toISOString()
       })
 
+      // Notify step started
+      if (callbacks?.onStep) {
+        callbacks.onStep({
+          step_number: i + 1,
+          skill: step.skill,
+          description: step.description,
+          status: "running"
+        })
+      }
+
       try {
         // Execute skill
         const result = await executeSkill(
@@ -63,6 +75,8 @@ export async function runAgentWorkflow(
         totalTokens += result.tokens_used
         totalCost += result.cost_usd
 
+        const stepDuration = Date.now() - stepStartTime
+
         // Update step as completed
         await supabase
           .from("agent_session_steps")
@@ -72,6 +86,18 @@ export async function runAgentWorkflow(
             completed_at: new Date().toISOString()
           })
           .eq("id", stepId)
+
+        // Notify step completed
+        if (callbacks?.onStep) {
+          callbacks.onStep({
+            step_number: i + 1,
+            skill: step.skill,
+            description: step.description,
+            status: "completed",
+            output: result.output,
+            duration_ms: stepDuration
+          })
+        }
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error"
@@ -85,6 +111,17 @@ export async function runAgentWorkflow(
             completed_at: new Date().toISOString()
           })
           .eq("id", stepId)
+
+        // Notify step failed
+        if (callbacks?.onStep) {
+          callbacks.onStep({
+            step_number: i + 1,
+            skill: step.skill,
+            description: step.description,
+            status: "failed",
+            error: errorMessage
+          })
+        }
 
         throw error
       }
@@ -105,14 +142,25 @@ export async function runAgentWorkflow(
       })
       .eq("id", sessionId)
 
-    return {
+    const result: AgentWorkflowResult = {
       sessionId,
       outputs,
       duration_ms,
       status: "completed"
     }
 
+    // Notify completion
+    if (callbacks?.onComplete) {
+      callbacks.onComplete(result)
+    }
+
+    return result
+
   } catch (error) {
+    // Notify error
+    if (callbacks?.onError) {
+      callbacks.onError(error as Error)
+    }
     const duration_ms = Date.now() - start
     const errorMessage = error instanceof Error ? error.message : "Unknown error"
 

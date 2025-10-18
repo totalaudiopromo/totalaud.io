@@ -106,6 +106,9 @@ export default function HomePage() {
       </div>
       
       <CommandPalette onSubmit={handleCommand} />
+      
+      {/* Uncomment to enable Agent Chat bubble */}
+      {/* <AgentChat agentName="promo-coach" agentEmoji="🎙️" agentColor="#6366f1" /> */}
     </main>
   )
 }

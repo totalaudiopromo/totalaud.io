@@ -17,6 +17,9 @@ importers:
 
   apps/aud-web:
     dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.39.0
+        version: 2.75.1
       '@total-audio/core-agent-executor':
         specifier: workspace:*
         version: link:../../packages/core/agent-executor
