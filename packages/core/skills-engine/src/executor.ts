@@ -104,8 +104,14 @@ async function executeCustomSkill(
   skillName: string,
   input: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Implement custom skill logic here
-  // This is where you'd call external APIs, databases, etc.
-  throw new Error(`Custom skill not implemented: ${skillName}`)
+  // Import custom skill implementations
+  const { researchContactsCustom } = await import('./custom/researchContacts')
+  
+  switch (skillName) {
+    case "research-contacts":
+      return researchContactsCustom(input as any)
+    default:
+      throw new Error(`Custom skill not implemented: ${skillName}`)
+  }
 }
 

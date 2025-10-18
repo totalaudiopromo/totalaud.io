@@ -1,5 +1,4 @@
 import { executeSkill } from '@total-audio/core-skills-engine'
-import { getUserId } from '@total-audio/core-supabase'
 import { NextRequest } from 'next/server'
 
 export async function POST(
@@ -7,8 +6,14 @@ export async function POST(
   { params }: { params: { name: string } }
 ) {
   try {
-    const userId = await getUserId(request)
     const input = await request.json()
+    
+    // TODO: Replace with real auth once Supabase is configured
+    // For now, use a demo user ID for testing
+    const authHeader = request.headers.get('Authorization')
+    const userId = authHeader === 'Bearer demo-token' 
+      ? 'demo-user-id' 
+      : 'anonymous'
     
     const result = await executeSkill(params.name, input, userId)
     
