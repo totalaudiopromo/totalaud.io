@@ -53,6 +53,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       const firstStep = getNextStep("greeting")
       if (firstStep) {
         setCurrentStep(firstStep)
+        setShowOptions(false) // Ensure options are hidden for text input
         addBrokerMessage(firstStep.message, 2000)
       }
     }, 2500)
@@ -85,10 +86,12 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         }])
         setIsTyping(false)
         
-        // Show options after broker speaks
-        if (currentStep && (currentStep.inputType === 'buttons' || currentStep.inputType === 'select')) {
-          setShowOptions(true)
-        }
+        // Show options after broker speaks (for button/select questions)
+        setTimeout(() => {
+          if (currentStep && (currentStep.inputType === 'buttons' || currentStep.inputType === 'select')) {
+            setShowOptions(true)
+          }
+        }, 100) // Small delay to ensure state is updated
       }, typingDuration)
     }, delay)
   }
@@ -328,8 +331,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      {currentStep && currentStep.inputType === 'text' && !showOptions && (
+      {/* Input - Always show if current step expects text input and not showing options */}
+      {currentStep && currentStep.inputType === 'text' && !showOptions && !isTyping && (
         <form
           onSubmit={handleSubmit}
           className="border-t p-4"
@@ -342,6 +345,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Type your response..."
+              autoFocus
               className="flex-1 px-4 py-3 rounded-lg outline-none transition-all"
               style={{
                 backgroundColor: `${theme.colors.background}`,
