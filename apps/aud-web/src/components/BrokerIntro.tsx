@@ -5,18 +5,11 @@ import { motion } from "framer-motion"
 import { OSTheme, THEME_CONFIGS } from "@/types/themes"
 import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
 import type { ThemeId } from "@total-audio/core-theme-engine"
+import { getBrokerPersonality, getPersonalityLine } from "@total-audio/core-agent-executor"
 
 interface BrokerIntroProps {
   selectedMode: OSTheme
   onComplete: () => void
-}
-
-const THEME_GREETINGS: Record<OSTheme, string> = {
-  ascii: "⟩ agent broker online_",
-  xp: "► Broker.exe initialized",
-  aqua: "• Hey, Broker here.",
-  ableton: "● BROKER: ONLINE",
-  punk: "✦ YO. BROKER. LET'S GO."
 }
 
 export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroProps) {
@@ -24,6 +17,8 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
   const [glowIntensity, setGlowIntensity] = useState(0)
   const theme = THEME_CONFIGS[selectedMode]
   const themeManifest = getTheme(selectedMode as ThemeId)
+  const personality = getBrokerPersonality(selectedMode)
+  const themeGreeting = getPersonalityLine(personality, 'openingLines')
 
   useEffect(() => {
     console.log('[BrokerIntro] Mounted, starting 1.5s timer')
@@ -103,7 +98,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
             className="font-mono text-lg"
             style={{ color: theme.colors.primary }}
           >
-            {THEME_GREETINGS[selectedMode]}
+            {themeGreeting}
           </div>
 
           {/* Agent name */}
@@ -138,7 +133,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
             className="text-sm italic mt-6"
             style={{ color: theme.colors.text }}
           >
-            Right… before we start, who am I talking to?
+            {personality.opener}
           </motion.div>
         </motion.div>
       </div>

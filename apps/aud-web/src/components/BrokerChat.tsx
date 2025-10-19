@@ -7,6 +7,12 @@ import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
 import type { ThemeId } from "@total-audio/core-theme-engine"
 import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@/lib/broker-persona"
 import type { ConversationStep } from "@/lib/broker-persona"
+import {
+  getBrokerPersonality,
+  getPersonalityLine,
+  applyPersonalityTone,
+  getQuirkAnimationClass
+} from "@total-audio/core-agent-executor"
 
 interface Message {
   id: string
@@ -38,6 +44,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const messageIdCounter = useRef(0) // Unique ID generator
   const theme = THEME_CONFIGS[selectedMode]
   const themeManifest = getTheme(selectedMode as ThemeId)
+  const personality = getBrokerPersonality(selectedMode)
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -46,10 +53,16 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   // Start conversation
   useEffect(() => {
-    // Add initial greeting
-    const greeting = brokerConversationFlow[0]
-    addBrokerMessage(greeting.message, 500, false)
-    
+    // Add personality-specific opener
+    const opener = personality.opener
+    addBrokerMessage(opener, 500, false)
+
+    // Add personality-specific opening line
+    setTimeout(() => {
+      const openingLine = getPersonalityLine(personality, 'openingLines')
+      addBrokerMessage(openingLine, 1500, false)
+    }, 1500)
+
     // Load first question
     setTimeout(() => {
       const firstStep = getNextStep("greeting")
@@ -57,9 +70,11 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       if (firstStep) {
         setCurrentStep(firstStep)
         const needsOptions = firstStep.inputType === 'buttons' || firstStep.inputType === 'select'
-        addBrokerMessage(firstStep.message, 2000, needsOptions)
+        // Apply personality tone to message
+        const styledMessage = applyPersonalityTone(firstStep.message, personality)
+        addBrokerMessage(styledMessage, 3500, needsOptions)
       }
-    }, 2500)
+    }, 3500)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -128,8 +143,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     // Save user data
     updateUserData(currentStep.id, value)
 
-    // Add confirmation
-    const confirmation = getRandomLine(brokerPersona.confirmations)
+    // Add personality-specific confirmation
+    const confirmation = getPersonalityLine(personality, 'confirmations')
     addBrokerMessage(confirmation, 500, false)
 
     // Move to next step
@@ -138,7 +153,9 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       if (nextStep) {
         setCurrentStep(nextStep)
         const needsOptions = nextStep.inputType === 'buttons' || nextStep.inputType === 'select'
-        addBrokerMessage(nextStep.message, 1500, needsOptions)
+        // Apply personality tone to next message
+        const styledMessage = applyPersonalityTone(nextStep.message, personality)
+        addBrokerMessage(styledMessage, 1500, needsOptions)
       }
     }, 1500)
   }
@@ -247,41 +264,51 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         <AnimatePresence>
-          {messages.map((message, index) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`flex ${message.from === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-2xl px-4 py-3 rounded-lg ${
-                  message.from === 'broker' ? 'rounded-tl-none' : 'rounded-tr-none'
-                }`}
-                style={{
-                  backgroundColor: message.from === 'broker'
-                    ? `${theme.colors.primary}20`
-                    : `${theme.colors.accent}20`,
-                  borderLeft: message.from === 'broker'
-                    ? `3px solid ${theme.colors.primary}`
-                    : 'none',
-                  borderRight: message.from === 'user'
-                    ? `3px solid ${theme.colors.accent}`
-                    : 'none'
+          {messages.map((message, index) => {
+            // Get animation config based on personality quirk
+            const animationClass = message.from === 'broker' ? getQuirkAnimationClass(personality) : ''
+            const quirk = personality.interactionQuirks
+
+            return (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: message.from === 'broker' && quirk.animationDuration
+                    ? quirk.animationDuration / 1000
+                    : 0.3
                 }}
+                className={`flex ${message.from === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.from === 'broker' && (
-                  <div className="font-mono text-xs opacity-60 mb-1">
-                    {getPrefix()} Broker
+                <div
+                  className={`max-w-2xl px-4 py-3 rounded-lg ${
+                    message.from === 'broker' ? 'rounded-tl-none' : 'rounded-tr-none'
+                  } ${message.from === 'broker' ? animationClass : ''}`}
+                  style={{
+                    backgroundColor: message.from === 'broker'
+                      ? `${theme.colors.primary}20`
+                      : `${theme.colors.accent}20`,
+                    borderLeft: message.from === 'broker'
+                      ? `3px solid ${theme.colors.primary}`
+                      : 'none',
+                    borderRight: message.from === 'user'
+                      ? `3px solid ${theme.colors.accent}`
+                      : 'none'
+                  }}
+                >
+                  {message.from === 'broker' && (
+                    <div className="font-mono text-xs opacity-60 mb-1">
+                      {personality.messagePrefix || getPrefix()} Broker
+                    </div>
+                  )}
+                  <div className="whitespace-pre-wrap">
+                    {message.content}
                   </div>
-                )}
-                <div className="whitespace-pre-wrap">
-                  {message.content}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </AnimatePresence>
 
         {/* Typing indicator */}

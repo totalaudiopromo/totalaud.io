@@ -5,6 +5,92 @@
 /* Import Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Broker Personality Animation Effects */
+
+/* Typewriter effect (ASCII mode) */
+@keyframes typewriter-blink {
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: currentColor; }
+}
+
+.broker-effect-typewriter {
+  border-right: 2px solid currentColor;
+  animation: typewriter-blink 0.8s steps(2) infinite;
+}
+
+/* Fade effect (XP, Aqua modes) */
+@keyframes broker-fade {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.broker-effect-fade {
+  animation: broker-fade 2s ease-in-out infinite;
+}
+
+/* Pulse effect (Ableton mode) */
+@keyframes broker-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.9; }
+}
+
+.broker-effect-pulse {
+  animation: broker-pulse 0.5s ease-in-out infinite;
+}
+
+/* Jitter effect (Punk mode) */
+@keyframes broker-jitter {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+  50% { transform: translate(1px, -1px) rotate(0.5deg); }
+  75% { transform: translate(-1px, -1px) rotate(-0.3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.broker-effect-jitter {
+  animation: broker-jitter 0.2s ease-in-out infinite;
+}
+
+/* Glitch effect (future enhancement) */
+@keyframes broker-glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.broker-effect-glitch {
+  animation: broker-glitch 0.3s ease-in-out infinite;
+}
+
+/* Theme-specific broker modes */
+.broker-ascii-mode {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.broker-xp-mode {
+  filter: brightness(1.05);
+}
+
+.broker-aqua-mode {
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.broker-ableton-mode {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.broker-punk-mode {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 :root {
   --background: #0f172a;
   --foreground: #f8fafc;
