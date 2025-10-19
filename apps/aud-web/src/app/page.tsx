@@ -1,8 +1,25 @@
+"use client"
+
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 import { FlowCanvas } from "../components/FlowCanvas"
 import ConsoleShell from "../components/ConsoleShell"
 import ThemeToggle from "../components/ThemeToggle"
+import { deserializeFlowTemplate } from "@total-audio/core-agent-executor"
+import type { FlowTemplate } from "@total-audio/core-agent-executor"
 
-export default function HomePage() {
+function HomePageContent() {
+  const searchParams = useSearchParams()
+  const flowParam = searchParams.get('flow')
+  const welcomeParam = searchParams.get('welcome')
+
+  // Deserialize flow template if provided
+  let flowTemplate: FlowTemplate | null = null
+  if (flowParam) {
+    flowTemplate = deserializeFlowTemplate(flowParam)
+    console.log('[HomePage] Loaded flow template:', flowTemplate?.name)
+  }
+
   return (
     <main className="min-h-screen text-white">
       <div className="container mx-auto px-4 py-8 space-y-8">
@@ -14,7 +31,19 @@ export default function HomePage() {
           <p className="text-slate-400 max-w-2xl mx-auto">
             Marketing your music should be as creative as making it. Visualise and orchestrate agent workflows in real time.
           </p>
-          
+
+          {/* Welcome Message (if coming from Broker) */}
+          {welcomeParam === 'true' && flowTemplate && (
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl p-4 max-w-2xl mx-auto">
+              <div className="text-blue-400 font-medium mb-1">
+                🎉 Campaign Flow Generated!
+              </div>
+              <div className="text-sm text-slate-300">
+                {flowTemplate.name} - {flowTemplate.description}
+              </div>
+            </div>
+          )}
+
           {/* Quick Stats */}
           <div className="flex items-center justify-center gap-8 text-sm">
             <div className="flex items-center gap-2">
@@ -33,12 +62,12 @@ export default function HomePage() {
         </div>
 
         {/* Flow Canvas wrapped in Console Shell */}
-        <ConsoleShell 
+        <ConsoleShell
           title="AGENT WORKFLOW ORCHESTRATOR"
           accentColor="#6366f1"
         >
           <div className="h-[70vh]">
-            <FlowCanvas />
+            <FlowCanvas initialTemplate={flowTemplate} />
           </div>
         </ConsoleShell>
 
@@ -81,6 +110,18 @@ export default function HomePage() {
       {/* Theme Toggle */}
       <ThemeToggle />
     </main>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center text-white">
+        <div className="animate-pulse">Loading Flow Studio...</div>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   )
 }
 

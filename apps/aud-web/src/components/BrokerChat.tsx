@@ -11,7 +11,10 @@ import {
   getBrokerPersonality,
   getPersonalityLine,
   applyPersonalityTone,
-  getQuirkAnimationClass
+  getQuirkAnimationClass,
+  useBrokerMemoryLocal,
+  getFlowTemplateForGoal,
+  serializeFlowTemplate
 } from "@total-audio/core-agent-executor"
 
 interface Message {
@@ -46,6 +49,9 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const theme = THEME_CONFIGS[selectedMode]
   const themeManifest = getTheme(selectedMode as ThemeId)
   const personality = getBrokerPersonality(selectedMode)
+
+  // Broker memory for saving conversation data
+  const memory = useBrokerMemoryLocal(sessionId || `session-${Date.now()}`)
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -178,38 +184,77 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   const updateUserData = (stepId: string, value: string) => {
     setUserData(prev => {
-      switch (stepId) {
-        case "ask_name":
-          return { ...prev, artistName: value }
-        case "ask_genre":
-          return { ...prev, genre: value }
-        case "ask_goals":
-          return { ...prev, goals: value }
-        case "ask_experience":
-          return { ...prev, experience: value }
-        default:
-          return prev
+      let memoryKey: string | null = null
+
+      const updated = (() => {
+        switch (stepId) {
+          case "ask_name":
+            memoryKey = "artist_name"
+            return { ...prev, artistName: value }
+          case "ask_genre":
+            memoryKey = "genre"
+            return { ...prev, genre: value }
+          case "ask_goals":
+            memoryKey = "goal"
+            return { ...prev, goals: value }
+          case "ask_experience":
+            memoryKey = "experience"
+            return { ...prev, experience: value }
+          default:
+            return prev
+        }
+      })()
+
+      // Save to memory
+      if (memoryKey) {
+        memory.save(memoryKey as any, value)
+        console.log(`[BrokerChat] Saved ${memoryKey} to memory:`, value)
       }
+
+      return updated
     })
   }
 
   const handleCompletion = (choice: string) => {
     addUserMessage(choice)
-    
+
     if (choice.includes("Yes")) {
+      // Get personality-specific confirmation
+      const confirmation = getPersonalityLine(personality, 'confirmations')
       setTimeout(() => {
-        addBrokerMessage("Brilliant. Let's build you something.", 500)
+        addBrokerMessage(`${confirmation} Let's build your first campaign flow.`, 500)
       }, 500)
-      
+
       setTimeout(() => {
-        // TODO: Redirect to Flow Canvas with pre-filled nodes
-        window.location.href = "/?welcome=true"
+        // Play success sound
+        audioEngine.play(themeManifest.sounds.success || themeManifest.sounds.click)
+
+        // Mark onboarding as complete
+        memory.complete()
+
+        // Get all saved data
+        const memoryData = memory.getAll()
+        console.log('[BrokerChat] Onboarding complete. Memory data:', memoryData)
+
+        // Generate flow template based on user's goal
+        const flowTemplate = getFlowTemplateForGoal(memoryData.goal || '')
+
+        if (flowTemplate) {
+          const serialized = serializeFlowTemplate(flowTemplate)
+          console.log('[BrokerChat] Generated flow template:', flowTemplate.name)
+
+          // Redirect to Flow Canvas with prefilled nodes
+          window.location.href = `/?welcome=true&flow=${serialized}`
+        } else {
+          // Fallback: redirect without prefill
+          window.location.href = "/?welcome=true"
+        }
       }, 2500)
     } else {
       setTimeout(() => {
         addBrokerMessage("No problem. I'll be around when you need me.", 500)
       }, 500)
-      
+
       setTimeout(() => {
         window.location.href = "/"
       }, 2500)

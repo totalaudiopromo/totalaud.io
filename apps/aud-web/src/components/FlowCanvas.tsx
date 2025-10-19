@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -20,30 +20,37 @@ import { motion } from "framer-motion"
 import { useFlowStore } from "@/stores/flowStore"
 import { useFlowRealtime } from "@/hooks/useFlowRealtime"
 import { FlowNode } from "./FlowNode"
+import type { FlowTemplate } from "@total-audio/core-agent-executor"
 
 const nodeTypes: NodeTypes = {
-  skill: FlowNode
+  skill: FlowNode,
+  agent: FlowNode,
+  decision: FlowNode
 }
 
 const skillNodes = [
-  { 
-    name: "research-contacts", 
+  {
+    name: "research-contacts",
     label: "🔍 Research Contacts",
     color: "#3b82f6"
   },
-  { 
-    name: "score-contacts", 
+  {
+    name: "score-contacts",
     label: "⭐ Score Contacts",
     color: "#f59e0b"
   },
-  { 
-    name: "generate-pitch", 
+  {
+    name: "generate-pitch",
     label: "✍️ Generate Pitch",
     color: "#8b5cf6"
   }
 ]
 
-export function FlowCanvas() {
+interface FlowCanvasProps {
+  initialTemplate?: FlowTemplate | null
+}
+
+export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const {
     nodes: storeNodes,
     edges: storeEdges,
@@ -55,6 +62,47 @@ export function FlowCanvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
+  const hasInitialized = useRef(false)
+
+  // Initialize from template (only once)
+  useEffect(() => {
+    if (initialTemplate && !hasInitialized.current) {
+      hasInitialized.current = true
+
+      console.log('[FlowCanvas] Initializing from template:', initialTemplate.name)
+
+      // Convert template steps to ReactFlow nodes
+      const templateNodes: Node[] = initialTemplate.steps.map((step) => ({
+        id: step.id,
+        type: step.type,
+        position: step.position || { x: 100, y: 100 },
+        data: {
+          label: step.label,
+          icon: step.icon,
+          skillId: step.skillId,
+          agentId: step.agentId,
+          color: getColorForStepType(step.type),
+        },
+      }))
+
+      // Create edges connecting nodes in sequence
+      const templateEdges: Edge[] = []
+      for (let i = 0; i < templateNodes.length - 1; i++) {
+        templateEdges.push({
+          id: `e${templateNodes[i].id}-${templateNodes[i + 1].id}`,
+          source: templateNodes[i].id,
+          target: templateNodes[i + 1].id,
+          animated: true,
+        })
+      }
+
+      setNodes(templateNodes)
+      setEdges(templateEdges)
+
+      console.log('[FlowCanvas] Generated nodes:', templateNodes.length)
+      console.log('[FlowCanvas] Generated edges:', templateEdges.length)
+    }
+  }, [initialTemplate, setNodes, setEdges])
 
   // Sync with store
   useEffect(() => {
@@ -243,5 +291,21 @@ export function FlowCanvas() {
       </ReactFlow>
     </div>
   )
+}
+
+/**
+ * Get color for step type
+ */
+function getColorForStepType(type: string): string {
+  switch (type) {
+    case 'skill':
+      return '#3b82f6' // Blue
+    case 'agent':
+      return '#10b981' // Green
+    case 'decision':
+      return '#f59e0b' // Orange
+    default:
+      return '#8b5cf6' // Purple
+  }
 }
 
