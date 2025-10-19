@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { OSTheme, THEME_CONFIGS } from "@/types/themes"
-import { useUISound } from "@/hooks/useUISound"
+import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
+import type { ThemeId } from "@total-audio/core-theme-engine"
 
 interface OSTransitionProps {
   selectedMode: OSTheme
@@ -50,16 +51,14 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
   const [visibleLines, setVisibleLines] = useState<number>(0)
   const [progress, setProgress] = useState(0)
   const router = useRouter()
-  const sound = useUISound()
   const theme = THEME_CONFIGS[selectedMode]
+  const themeManifest = getTheme(selectedMode as ThemeId)
 
   useEffect(() => {
     console.log('[OSTransition] Mounted with mode:', selectedMode)
     
-    // Play boot sound for selected theme
-    if (sound.config.enabled) {
-      sound.boot(selectedMode)
-    }
+    // Play boot sound using Theme Engine audio synthesis
+    audioEngine.play(themeManifest.sounds.boot)
 
     // Transition phases
     const timeline = [
