@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { OSTheme, THEME_CONFIGS } from "@/types/themes"
-import { useUISound } from "@/hooks/useUISound"
+import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
+import type { ThemeId } from "@total-audio/core-theme-engine"
 import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@/lib/broker-persona"
 import type { ConversationStep } from "@/lib/broker-persona"
 
@@ -35,8 +36,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messageIdCounter = useRef(0) // Unique ID generator
-  const sound = useUISound()
   const theme = THEME_CONFIGS[selectedMode]
+  const themeManifest = getTheme(selectedMode as ThemeId)
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -78,9 +79,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const addBrokerMessage = (content: string, delay: number = 0, shouldShowOptions: boolean = false) => {
     setTimeout(() => {
       setIsTyping(true)
-      if (sound.config.enabled) {
-        sound.agentStart()
-      }
+      // Play agent speak sound using Theme Engine
+      audioEngine.play(themeManifest.sounds.agentSpeak)
 
       // Typewriter effect timing
       const typingDuration = content.length * 30 // 30ms per character
@@ -114,9 +114,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       timestamp: new Date()
     }])
     
-    if (sound.config.enabled) {
-      sound.click()
-    }
+    // Play click sound using Theme Engine
+    audioEngine.play(themeManifest.sounds.click)
   }
 
   const handleUserInput = (value: string) => {

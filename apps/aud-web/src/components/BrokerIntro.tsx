@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { OSTheme, THEME_CONFIGS } from "@/types/themes"
-import { useUISound } from "@/hooks/useUISound"
+import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
+import type { ThemeId } from "@total-audio/core-theme-engine"
 
 interface BrokerIntroProps {
   selectedMode: OSTheme
@@ -21,16 +22,14 @@ const THEME_GREETINGS: Record<OSTheme, string> = {
 export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroProps) {
   const [visible, setVisible] = useState(false)
   const [glowIntensity, setGlowIntensity] = useState(0)
-  const sound = useUISound()
   const theme = THEME_CONFIGS[selectedMode]
+  const themeManifest = getTheme(selectedMode as ThemeId)
 
   useEffect(() => {
     console.log('[BrokerIntro] Mounted, starting 1.5s timer')
     
-    // Play agent spawn sound
-    if (sound.config.enabled) {
-      sound.agentStart()
-    }
+    // Play agent spawn sound using Theme Engine
+    audioEngine.play(themeManifest.sounds.agentSpeak)
 
     // Fade in
     setTimeout(() => setVisible(true), 100)
