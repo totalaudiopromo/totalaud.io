@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react'
-import type { BrokerMemoryData } from './types'
+import type { BrokerMemoryData, BrokerSessionSnapshot } from './types'
 
 export interface UseBrokerMemoryLocalReturn {
   /** Save a conversation field to localStorage */
@@ -26,11 +26,21 @@ export interface UseBrokerMemoryLocalReturn {
   /** Clear all broker memory */
   clear: () => void
 
+  /** Save a session snapshot (for resuming later) */
+  saveSessionSnapshot: (flowTemplate?: any) => void
+
+  /** Get the last session snapshot */
+  getLastSession: () => BrokerSessionSnapshot | null
+
+  /** Check if user is returning */
+  isReturningUser: () => boolean
+
   /** Local state of saved data */
   data: BrokerMemoryData
 }
 
 const STORAGE_KEY = 'broker_memory'
+const SESSION_KEY = 'broker_last_session'
 
 /**
  * Hook for managing Broker's conversation memory (localStorage version)
@@ -139,6 +149,7 @@ export function useBrokerMemoryLocal(sessionId: string): UseBrokerMemoryLocalRet
   const clear = useCallback(() => {
     try {
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(SESSION_KEY)
       setData({})
       console.log('[BrokerMemoryLocal] Cleared all broker memory')
     } catch (err) {
@@ -146,12 +157,66 @@ export function useBrokerMemoryLocal(sessionId: string): UseBrokerMemoryLocalRet
     }
   }, [])
 
+  /**
+   * Save a session snapshot for resuming later
+   */
+  const saveSessionSnapshot = useCallback(
+    (flowTemplate?: any) => {
+      try {
+        const currentData = getAll()
+
+        const snapshot: BrokerSessionSnapshot = {
+          session_id: sessionId,
+          artist_name: currentData.artist_name,
+          goal: currentData.goal,
+          flow_template: flowTemplate,
+          last_accessed: new Date().toISOString(),
+          onboarding_completed: true,
+        }
+
+        localStorage.setItem(SESSION_KEY, JSON.stringify(snapshot))
+        console.log('[BrokerMemoryLocal] Saved session snapshot:', snapshot)
+      } catch (err) {
+        console.error('[BrokerMemoryLocal] Error saving session snapshot:', err)
+      }
+    },
+    [sessionId, getAll]
+  )
+
+  /**
+   * Get the last session snapshot
+   */
+  const getLastSession = useCallback((): BrokerSessionSnapshot | null => {
+    try {
+      const stored = localStorage.getItem(SESSION_KEY)
+      if (!stored) return null
+
+      const snapshot = JSON.parse(stored)
+      console.log('[BrokerMemoryLocal] Retrieved last session:', snapshot)
+      return snapshot
+    } catch (err) {
+      console.error('[BrokerMemoryLocal] Error getting last session:', err)
+      return null
+    }
+  }, [])
+
+  /**
+   * Check if user is returning
+   */
+  const isReturningUser = useCallback((): boolean => {
+    const lastSession = getLastSession()
+    return !!lastSession && !!lastSession.onboarding_completed
+  }, [getLastSession])
+
   return {
     save,
     recall,
     getAll,
     complete,
     clear,
+    saveSessionSnapshot,
+    getLastSession,
+    isReturningUser,
     data,
   }
 }

@@ -8,3 +8,12 @@ export interface BrokerMemoryData {
   goal?: string
   experience?: string
 }
+
+export interface BrokerSessionSnapshot {
+  session_id: string
+  artist_name?: string
+  goal?: string
+  flow_template?: any // Serialized FlowTemplate
+  last_accessed: string
+  onboarding_completed: boolean
+}

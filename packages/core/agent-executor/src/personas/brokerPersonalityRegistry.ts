@@ -38,6 +38,9 @@ export interface BrokerPersonality {
   /** Opening line when first appearing */
   opener: string
 
+  /** Resume greeting for returning users */
+  resumeGreeting: string
+
   /** Opening lines for conversation flow */
   openingLines: string[]
 
@@ -69,6 +72,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'occasional tech puns'
     ],
     opener: 'agent broker online_ let\'s boot your promo system.',
+    resumeGreeting: 'session resumed. welcome back, {artist_name}_ ready to continue?',
     openingLines: [
       '> agent broker initialized',
       '> establishing connection...',
@@ -108,6 +112,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'uses British colloquialisms'
     ],
     opener: 'Morning! Broker here. Let\'s spin up your studio.',
+    resumeGreeting: 'Welcome back, {artist_name}! Lovely to see you again, mate. Shall we pick up where we left off?',
     openingLines: [
       'Broker.exe initialized :)',
       'Right then, let\'s get started.',
@@ -148,6 +153,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'poetic phrasing'
     ],
     opener: 'Hey — take a breath. Ready to make something beautiful?',
+    resumeGreeting: 'Hey {artist_name}... nice to see you back. Ready to compose something meaningful again?',
     openingLines: [
       'Broker here. Let\'s create something meaningful.',
       'Take your time. We\'ll build this together.',
@@ -188,6 +194,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'time-conscious'
     ],
     opener: 'Sync checked. Let\'s drop your first promo loop.',
+    resumeGreeting: 'Session {artist_name} loaded. Timeline synced. Ready to continue tracking?',
     openingLines: [
       'BROKER: ONLINE. Session ready.',
       'Timeline synced. Let\'s track this properly.',
@@ -228,6 +235,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'anti-establishment edge'
     ],
     opener: 'OI. Broker here. Let\'s rip this thing open and make noise.',
+    resumeGreeting: 'OI, {artist_name}! BACK for more chaos? Let\'s jump back into the mix, legend.',
     openingLines: [
       'BROKER ONLINE. No bullshit, let\'s go.',
       'Right. Skip the corporate chat. What\'s your band?',
@@ -317,6 +325,30 @@ export function getQuirkAnimationClass(personality: BrokerPersonality): string {
   if (!quirk.visualEffect) return ''
 
   return `broker-effect-${quirk.visualEffect}`
+}
+
+/**
+ * Format resume greeting with artist name
+ */
+export function formatResumeGreeting(
+  personality: BrokerPersonality,
+  artistName?: string
+): string {
+  let greeting = personality.resumeGreeting
+
+  // Replace {artist_name} placeholder
+  if (artistName) {
+    greeting = greeting.replace('{artist_name}', artistName)
+  } else {
+    // If no artist name, remove the placeholder and adjust grammar
+    greeting = greeting
+      .replace('{artist_name}', '')
+      .replace('  ', ' ')
+      .replace(', ,', ',')
+      .trim()
+  }
+
+  return greeting
 }
 
 /**
