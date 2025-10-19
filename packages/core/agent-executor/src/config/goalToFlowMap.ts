@@ -29,6 +29,9 @@ export interface FlowStep {
 
   /** Skill ID if type is 'skill' */
   skillId?: string
+
+  /** Input parameters for execution */
+  input?: Record<string, any>
 }
 
 export interface FlowTemplate {

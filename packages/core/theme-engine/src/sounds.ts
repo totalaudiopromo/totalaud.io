@@ -237,9 +237,9 @@ export const sounds = {
     duration: 50,
     envelope: { attack: 0.001, decay: 0.02, sustain: 0, release: 0.01 }
   }),
-  
+
   success: () => audioEngine.playChord([523.25, 659.25, 783.99], 300), // C-E-G major
-  
+
   error: () => audioEngine.play({
     type: 'synth',
     waveform: 'sawtooth',
@@ -247,8 +247,157 @@ export const sounds = {
     duration: 300,
     envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 }
   }),
-  
+
   setEnabled: (enabled: boolean) => audioEngine.setEnabled(enabled),
   setVolume: (volume: number) => audioEngine.setVolume(volume)
+}
+
+/**
+ * Agent-Specific Sound Cues
+ * Each agent has unique audio signatures for start, complete, and error states
+ */
+export const agentSounds = {
+  /**
+   * Broker - The Conductor
+   * Warm, coordinating, professional
+   */
+  broker: {
+    start: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'sine',
+      frequency: 220, // A3 - deep, authoritative
+      duration: 300,
+      envelope: { attack: 0.1, decay: 0.1, sustain: 0.5, release: 0.2 }
+    }),
+    complete: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'sine',
+      frequency: 440, // A4 - resolution
+      duration: 150,
+      envelope: { attack: 0.01, decay: 0.05, sustain: 0.3, release: 0.1 }
+    }),
+    error: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'sawtooth',
+      frequency: 185, // F#3 - dissonant
+      duration: 400,
+      envelope: { attack: 0.02, decay: 0.15, sustain: 0.2, release: 0.15 }
+    })
+  },
+
+  /**
+   * Scout - The Explorer
+   * Bright, optimistic, searching
+   */
+  scout: {
+    start: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'triangle',
+      frequency: 880, // A5 - bright, alert
+      duration: 200,
+      envelope: { attack: 0.01, decay: 0.05, sustain: 0.4, release: 0.1 }
+    }),
+    complete: () => audioEngine.playChord([880, 1046.5], 200), // A5-C6 - discovery
+    error: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'square',
+      frequency: 740, // F#5 - searching failed
+      duration: 300,
+      envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 }
+    })
+  },
+
+  /**
+   * Coach - The Mentor
+   * Supportive, confident, guiding
+   */
+  coach: {
+    start: () => audioEngine.playChord([523.25, 659.25], 300), // C5-E5 - supportive interval
+    complete: () => audioEngine.playChord([523.25, 659.25, 783.99], 400), // C5-E5-G5 - major chord success
+    error: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'sine',
+      frequency: 494, // B4 - encouraging but incomplete
+      duration: 400,
+      envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.2 }
+    })
+  },
+
+  /**
+   * Tracker - The Analyst
+   * Steady, rhythmic, precise
+   */
+  tracker: {
+    start: () => {
+      // Pulse rhythm - 120 BPM
+      const ctx = audioEngine.getContext()
+      const now = ctx.currentTime
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          audioEngine.play({
+            type: 'synth',
+            waveform: 'square',
+            frequency: 330, // E4 - steady pulse
+            duration: 100,
+            envelope: { attack: 0.001, decay: 0.02, sustain: 0.3, release: 0.05 }
+          })
+        }, i * 250) // 240ms between pulses
+      }
+    },
+    complete: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'square',
+      frequency: 440, // A4 - completion beep
+      duration: 200,
+      envelope: { attack: 0.001, decay: 0.05, sustain: 0.4, release: 0.1 }
+    }),
+    error: () => audioEngine.play({
+      type: 'synth',
+      waveform: 'square',
+      frequency: 220, // A3 - low error beep
+      duration: 300,
+      envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 }
+    })
+  },
+
+  /**
+   * Insight - The Visionary
+   * Ethereal, harmonic, thoughtful
+   */
+  insight: {
+    start: () => {
+      // Soft pad - multiple harmonics
+      audioEngine.playChord([261.63, 329.63, 392.00, 523.25], 600) // C4-E4-G4-C5 harmonic series
+    },
+    complete: () => {
+      // Harmonic sweep upward
+      const frequencies = [261.63, 293.66, 329.63, 349.23, 392.00] // C-D-E-F-G ascending
+      frequencies.forEach((freq, i) => {
+        setTimeout(() => {
+          audioEngine.play({
+            type: 'synth',
+            waveform: 'sine',
+            frequency: freq,
+            duration: 100,
+            envelope: { attack: 0.01, decay: 0.05, sustain: 0.3, release: 0.1 }
+          })
+        }, i * 80)
+      })
+    },
+    error: () => audioEngine.playChord([261.63, 277.18], 400) // C4-C#4 - dissonant minor 2nd
+  }
+}
+
+/**
+ * Helper function to play agent sound cues
+ */
+export const playAgentSound = (
+  agentId: 'broker' | 'scout' | 'coach' | 'tracker' | 'insight',
+  action: 'start' | 'complete' | 'error'
+) => {
+  const agent = agentSounds[agentId]
+  if (agent && agent[action]) {
+    agent[action]()
+  }
 }
 

@@ -8,6 +8,7 @@ export * from './hooks/types'
 export * from './hooks/useBrokerMemory'
 export * from './hooks/useBrokerMemoryLocal'
 export * from './hooks/useAgentExecution'
+export * from './hooks/useCommandBridge'
 export * from './config/goalToFlowMap'
 export * from './config/agentRoles'
 

@@ -21,7 +21,8 @@ import { useFlowStore } from "@/stores/flowStore"
 import { useFlowRealtime } from "@/hooks/useFlowRealtime"
 import { FlowNode } from "./FlowNode"
 import type { FlowTemplate, AgentStatus } from "@total-audio/core-agent-executor"
-import { useAgentExecution, getStatusColor } from "@total-audio/core-agent-executor"
+import { useAgentExecution, getStatusColor, getAgent } from "@total-audio/core-agent-executor"
+import { playAgentSound } from "@total-audio/core-theme-engine"
 import { supabase } from "@/lib/supabase"
 
 const nodeTypes: NodeTypes = {
@@ -65,6 +66,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
+  const previousStatuses = useRef<Record<string, string>>({})
 
   // Generate session ID (in production, this would come from user auth)
   const [sessionId] = useState(() => `session-${Date.now()}`)
@@ -172,6 +174,32 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
   // Real-time status updates from agent execution
   useEffect(() => {
+    // Check for status changes and play sounds
+    Object.entries(nodeStatuses).forEach(([nodeId, agentStatus]) => {
+      const previousStatus = previousStatuses.current[nodeId]
+      const currentStatus = agentStatus.status
+
+      // Status changed - play sound cue
+      if (previousStatus !== currentStatus) {
+        const agent = getAgent(agentStatus.agent_name)
+
+        if (agent) {
+          // Play sound based on status transition
+          if (currentStatus === 'running') {
+            playAgentSound(agent.id as any, 'start')
+          } else if (currentStatus === 'complete') {
+            playAgentSound(agent.id as any, 'complete')
+          } else if (currentStatus === 'error') {
+            playAgentSound(agent.id as any, 'error')
+          }
+        }
+
+        // Update previous status
+        previousStatuses.current[nodeId] = currentStatus
+      }
+    })
+
+    // Update node visual state
     setNodes((nds) =>
       nds.map((node) => {
         const agentStatus = nodeStatuses[node.id]
