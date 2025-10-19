@@ -1,73 +1,99 @@
+/**
+ * Theme Context - Wrapper around Theme Engine
+ * Provides backward compatibility with old THEME_CONFIGS format
+ * while using the new @total-audio/core-theme-engine under the hood
+ */
+
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { OSTheme, THEME_CONFIGS, ThemeConfig } from "@/types/themes"
+import { 
+  ThemeProvider as EngineThemeProvider, 
+  useTheme as useEngineTheme 
+} from "@total-audio/core-theme-engine"
+import type { ThemeId, ThemeManifest } from "@total-audio/core-theme-engine"
+import { createContext, useContext, ReactNode } from "react"
+import type { OSTheme, ThemeConfig } from "@/types/themes"
+import { THEME_CONFIGS } from "@/types/themes"
 
-interface ThemeContextValue {
+interface LegacyThemeContextValue {
   theme: OSTheme
   themeConfig: ThemeConfig
   setTheme: (theme: OSTheme) => void
   isLoading: boolean
 }
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
+const LegacyThemeContext = createContext<LegacyThemeContextValue | undefined>(undefined)
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<OSTheme>("ascii")
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    // Load theme from localStorage
-    const saved = localStorage.getItem("ui_mode") as OSTheme
-    if (saved && saved in THEME_CONFIGS) {
-      setThemeState(saved)
-      applyTheme(saved)
+/**
+ * Convert new ThemeManifest to old ThemeConfig format
+ * for backward compatibility
+ */
+function manifestToLegacyConfig(manifest: ThemeManifest): ThemeConfig {
+  return {
+    id: manifest.id as OSTheme,
+    name: manifest.name,
+    displayName: manifest.name.toUpperCase(),
+    description: manifest.description,
+    tagline: manifest.mood,
+    colors: {
+      primary: manifest.palette.accent,
+      secondary: manifest.palette.secondary,
+      accent: manifest.palette.accent,
+      background: manifest.palette.background,
+      text: manifest.palette.foreground,
+      border: manifest.palette.border
+    },
+    fontFamily: manifest.typography.fontFamily,
+    textures: {
+      overlay: manifest.textures.overlay || '',
+      pattern: manifest.textures.pattern || ''
+    },
+    effects: manifest.effects,
+    sounds: {
+      boot: String(manifest.sounds.boot.frequency || 440),
+      click: String(manifest.sounds.click.frequency || 1200),
+      ambient: manifest.sounds.ambient?.noiseType || 'pink'
     }
-    setIsLoading(false)
-  }, [])
-
-  const applyTheme = (newTheme: OSTheme) => {
-    const config = THEME_CONFIGS[newTheme]
-    
-    // Apply to document body
-    document.body.setAttribute("data-os-theme", newTheme)
-    
-    // Apply CSS variables
-    const root = document.documentElement
-    root.style.setProperty("--theme-primary", config.colors.primary)
-    root.style.setProperty("--theme-secondary", config.colors.secondary)
-    root.style.setProperty("--theme-accent", config.colors.accent)
-    root.style.setProperty("--theme-background", config.colors.background)
-    root.style.setProperty("--theme-text", config.colors.text)
-    root.style.setProperty("--theme-border", config.colors.border)
-    root.style.setProperty("--theme-font", config.fontFamily)
   }
+}
 
-  const setTheme = (newTheme: OSTheme) => {
-    setThemeState(newTheme)
-    localStorage.setItem("ui_mode", newTheme)
-    applyTheme(newTheme)
-    
-    // TODO: Sync to Supabase when auth is ready
-    // await updateUserProfile({ ui_mode: newTheme })
+function LegacyThemeWrapper({ children }: { children: ReactNode }) {
+  const engineTheme = useEngineTheme()
+  
+  // Map engine theme to legacy format
+  const legacyValue: LegacyThemeContextValue = {
+    theme: engineTheme.currentTheme as OSTheme,
+    themeConfig: manifestToLegacyConfig(engineTheme.theme),
+    setTheme: (theme: OSTheme) => engineTheme.setTheme(theme as ThemeId),
+    isLoading: !engineTheme.isLoaded
   }
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        themeConfig: THEME_CONFIGS[theme],
-        setTheme,
-        isLoading
-      }}
-    >
+    <LegacyThemeContext.Provider value={legacyValue}>
       {children}
-    </ThemeContext.Provider>
+    </LegacyThemeContext.Provider>
   )
 }
 
+/**
+ * Main ThemeProvider - uses new Theme Engine
+ */
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  return (
+    <EngineThemeProvider>
+      <LegacyThemeWrapper>
+        {children}
+      </LegacyThemeWrapper>
+    </EngineThemeProvider>
+  )
+}
+
+/**
+ * Legacy hook - maintains old API for backward compatibility
+ * New code should use `import { useTheme } from '@total-audio/core-theme-engine'`
+ */
 export function useTheme() {
-  const context = useContext(ThemeContext)
+  const context = useContext(LegacyThemeContext)
   if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider")
   }
