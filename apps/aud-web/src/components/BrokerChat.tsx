@@ -34,6 +34,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const messageIdCounter = useRef(0) // Unique ID generator
   const sound = useUISound()
   const theme = THEME_CONFIGS[selectedMode]
 
@@ -46,7 +47,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   useEffect(() => {
     // Add initial greeting
     const greeting = brokerConversationFlow[0]
-    addBrokerMessage(greeting.message, 500)
+    addBrokerMessage(greeting.message, 500, false)
     
     // Load first question
     setTimeout(() => {
@@ -54,8 +55,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       console.log('[BrokerChat] First step:', firstStep)
       if (firstStep) {
         setCurrentStep(firstStep)
-        setShowOptions(false) // Ensure options are hidden for text input
-        addBrokerMessage(firstStep.message, 2000)
+        const needsOptions = firstStep.inputType === 'buttons' || firstStep.inputType === 'select'
+        addBrokerMessage(firstStep.message, 2000, needsOptions)
       }
     }, 2500)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,7 +75,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     }
   }, [showOptions, currentStep, isTyping])
 
-  const addBrokerMessage = (content: string, delay: number = 0) => {
+  const addBrokerMessage = (content: string, delay: number = 0, shouldShowOptions: boolean = false) => {
     setTimeout(() => {
       setIsTyping(true)
       if (sound.config.enabled) {
@@ -85,27 +86,29 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       const typingDuration = content.length * 30 // 30ms per character
       
       setTimeout(() => {
+        messageIdCounter.current += 1
         setMessages(prev => [...prev, {
-          id: Date.now().toString(),
+          id: `broker-${messageIdCounter.current}`,
           from: "broker",
           content,
           timestamp: new Date()
         }])
         setIsTyping(false)
         
-        // Show options after broker speaks (for button/select questions)
-        setTimeout(() => {
-          if (currentStep && (currentStep.inputType === 'buttons' || currentStep.inputType === 'select')) {
+        // Show options after broker speaks if requested
+        if (shouldShowOptions) {
+          setTimeout(() => {
             setShowOptions(true)
-          }
-        }, 100) // Small delay to ensure state is updated
+          }, 100)
+        }
       }, typingDuration)
     }, delay)
   }
 
   const addUserMessage = (content: string) => {
+    messageIdCounter.current += 1
     setMessages(prev => [...prev, {
-      id: Date.now().toString(),
+      id: `user-${messageIdCounter.current}`,
       from: "user",
       content,
       timestamp: new Date()
@@ -127,17 +130,16 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     updateUserData(currentStep.id, value)
 
     // Add confirmation
-    setTimeout(() => {
-      const confirmation = getRandomLine(brokerPersona.confirmations)
-      addBrokerMessage(confirmation, 500)
-    }, 500)
+    const confirmation = getRandomLine(brokerPersona.confirmations)
+    addBrokerMessage(confirmation, 500, false)
 
     // Move to next step
     setTimeout(() => {
       const nextStep = getNextStep(currentStep.id)
       if (nextStep) {
         setCurrentStep(nextStep)
-        addBrokerMessage(nextStep.message, 1500)
+        const needsOptions = nextStep.inputType === 'buttons' || nextStep.inputType === 'select'
+        addBrokerMessage(nextStep.message, 1500, needsOptions)
       }
     }, 1500)
   }
