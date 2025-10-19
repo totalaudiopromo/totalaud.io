@@ -1,50 +1,45 @@
 # Texture Assets
 
-This directory contains texture overlays for different OS themes.
+This directory contains custom texture overlays for TotalAud.io themes.
 
-## File Naming Convention
+## Required Textures
 
-Textures should be named according to their theme:
-- `ascii-*.png` - ASCII Terminal textures
-- `xp-*.png` - Windows XP textures
-- `aqua-*.png` - Mac OS Aqua textures
-- `ableton-*.png` - Ableton Mode textures
-- `punk-*.png` - Punk Zine textures
+### ASCII Terminal
+- `scanline.png` - CRT scanline overlay (1920x1080, low opacity horizontal lines)
+- `noise-dark.png` - Dark noise pattern (512x512 tileable)
 
-## Texture Types
+### Windows XP Studio
+- `plastic-gloss.png` - Blue plastic gloss texture (2048x2048)
 
-### Overlays (Full-screen effects)
-- `crt-scanlines.png` - CRT monitor scanline effect
-- `plastic-gloss.png` - Glossy plastic surface
-- `brushed-metal.png` - Brushed aluminum texture
-- `paper-noise.png` - Subtle paper grain
-- `xerox-grit.png` - Photocopier grain/halftone
+### Mac OS Retro (Aqua)
+- `brushed-metal.png` - Brushed aluminum texture (2048x2048)
 
-### Patterns (Tiled backgrounds)
-- `terminal-noise.png` - Static/noise for terminal
-- `gui-reflections.png` - GUI element reflections
-- `aqua-reflection.png` - Water/glass reflection
-- `waveform-subtle.png` - Audio waveform pattern
-- `torn-paper.png` - Torn/ripped paper edges
+### Punk Zine
+- `xerox-grit.png` - Photocopy texture with grain (2048x2048)
+- `torn-paper.png` - Torn paper edge overlay (2048x2048)
 
-## Format
+## How to Generate
 
-- **Size**: 1920x1080 recommended for overlays
-- **Format**: PNG with alpha channel
-- **Optimization**: Use TinyPNG or similar to keep file sizes < 500KB
-- **Opacity**: Most textures should be semi-transparent (20-40% opacity)
+All textures should be:
+- **Custom-made** (not copyrighted)
+- **PNG format** with transparency where appropriate
+- **Tileable** for patterns
+- **Optimized** (<500KB each)
+
+You can generate these using:
+- Photoshop / GIMP filters
+- Substance Designer
+- Procedural generation scripts
+- Your own photography (paper, metal, etc.)
 
 ## Fallback
 
-If a texture is missing, the app will:
-1. Try to load from this directory
-2. Fall back to CSS-generated texture
-3. Continue without texture overlay
+If textures are missing, the app will use procedural CSS fallbacks:
+- Scanlines → CSS repeating-linear-gradient
+- Noise → Canvas-generated noise
+- Grid → CSS background patterns
 
-## Adding Custom Textures
+## Legal
 
-To add your own textures:
-1. Save PNG files to this directory
-2. Reference them in theme config: `textures.overlay = 'your-texture.png'`
-3. Textures are loaded dynamically from `/textures/[filename]`
-
+⚠️ **Important**: Only use textures you've created or have proper license for.
+Never use textures extracted from copyrighted software (Windows, macOS, Ableton, etc.)

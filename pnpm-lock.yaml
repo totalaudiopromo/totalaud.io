@@ -29,6 +29,9 @@ importers:
       '@total-audio/core-supabase':
         specifier: workspace:*
         version: link:../../packages/core/supabase
+      '@total-audio/core-theme-engine':
+        specifier: workspace:*
+        version: link:../../packages/core/theme-engine
       '@total-audio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -136,6 +139,22 @@ importers:
       '@types/node':
         specifier: ^20.10.0
         version: 20.19.22
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
+  packages/core/theme-engine:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.22
+      '@types/react':
+        specifier: ^18
+        version: 18.3.26
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
