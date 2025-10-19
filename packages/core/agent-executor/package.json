@@ -5,7 +5,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./personas/broker": "./src/personas/broker.ts"
+    "./personas/broker": "./src/personas/broker.ts",
+    "./server": "./src/orchestrator.ts"
   },
   "dependencies": {
     "@total-audio/core-supabase": "workspace:*",

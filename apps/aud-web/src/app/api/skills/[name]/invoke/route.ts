@@ -3,10 +3,11 @@ import { NextRequest } from 'next/server'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
   try {
     const input = await request.json()
+    const resolvedParams = await params
     
     // TODO: Replace with real auth once Supabase is configured
     // For now, use a demo user ID for testing
@@ -15,7 +16,7 @@ export async function POST(
       ? 'demo-user-id' 
       : 'anonymous'
     
-    const result = await executeSkill(params.name, input, userId)
+    const result = await executeSkill(resolvedParams.name, input, userId)
     
     return Response.json(result)
   } catch (error) {

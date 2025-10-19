@@ -1,11 +1,11 @@
-import { runAgentWorkflow } from "@total-audio/core-agent-executor"
+import { runAgentWorkflow } from "@total-audio/core-agent-executor/server"
 import { NextRequest } from "next/server"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
   const encoder = new TextEncoder()
 
@@ -15,17 +15,18 @@ export async function POST(
         // TODO: Replace with real auth
         const userId = "demo-user-id"
         const { steps, initialInput } = await req.json()
+        const resolvedParams = await params
 
         // Send start event
         controller.enqueue(
           encoder.encode(
-            `event: start\ndata: ${JSON.stringify({ agent: params.name, status: "started" })}\n\n`
+            `event: start\ndata: ${JSON.stringify({ agent: resolvedParams.name, status: "started" })}\n\n`
           )
         )
 
         // Run workflow with callbacks
         const result = await runAgentWorkflow(
-          params.name,
+          resolvedParams.name,
           userId,
           steps,
           initialInput || {},

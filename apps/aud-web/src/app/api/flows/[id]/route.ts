@@ -4,13 +4,14 @@ import { NextRequest } from "next/server"
 // GET /api/flows/[id] - Get a specific flow session
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const { data, error } = await supabase
       .from("agent_sessions")
       .select("*, agent_session_steps(*)")
-      .eq("id", params.id)
+      .eq("id", resolvedParams.id)
       .single()
 
     if (error) throw error
@@ -28,15 +29,16 @@ export async function GET(
 // PATCH /api/flows/[id] - Update flow session
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await req.json()
+    const resolvedParams = await params
 
     const { data, error } = await supabase
       .from("agent_sessions")
       .update(body)
-      .eq("id", params.id)
+      .eq("id", resolvedParams.id)
       .select()
       .single()
 
@@ -55,13 +57,14 @@ export async function PATCH(
 // DELETE /api/flows/[id] - Delete a flow session
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const { error } = await supabase
       .from("agent_sessions")
       .delete()
-      .eq("id", params.id)
+      .eq("id", resolvedParams.id)
 
     if (error) throw error
 
