@@ -20,7 +20,9 @@ import { motion } from "framer-motion"
 import { useFlowStore } from "@/stores/flowStore"
 import { useFlowRealtime } from "@/hooks/useFlowRealtime"
 import { FlowNode } from "./FlowNode"
-import type { FlowTemplate } from "@total-audio/core-agent-executor"
+import type { FlowTemplate, AgentStatus } from "@total-audio/core-agent-executor"
+import { useAgentExecution, getStatusColor } from "@total-audio/core-agent-executor"
+import { supabase } from "@/lib/supabase"
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
@@ -63,6 +65,22 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
+
+  // Generate session ID (in production, this would come from user auth)
+  const [sessionId] = useState(() => `session-${Date.now()}`)
+
+  // Agent execution with real-time updates
+  const {
+    executeNode,
+    nodeStatuses,
+    updatesByNode,
+    isLoading: agentLoading,
+    error: agentError
+  } = useAgentExecution({
+    supabaseClient: supabase,
+    sessionId,
+    enableRealtime: true
+  })
 
   // Initialize from template (only once)
   useEffect(() => {
@@ -152,7 +170,37 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     [selectedSkill, setNodes]
   )
 
-  // Real-time status updates
+  // Real-time status updates from agent execution
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const agentStatus = nodeStatuses[node.id]
+        if (agentStatus) {
+          const statusColor = getStatusColor(agentStatus.status as AgentStatus)
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              status: agentStatus.status,
+              agentName: agentStatus.agent_name,
+              message: agentStatus.message,
+              result: agentStatus.result,
+              startedAt: agentStatus.started_at,
+              completedAt: agentStatus.completed_at
+            },
+            style: {
+              ...node.style,
+              borderColor: statusColor,
+              borderWidth: "3px"
+            }
+          }
+        }
+        return node
+      })
+    )
+  }, [nodeStatuses, setNodes])
+
+  // Real-time status updates (legacy)
   const updateNodeStatus = useCallback(
     (nodeId: string, status: string, output?: any) => {
       setNodes((nds) =>
@@ -186,7 +234,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     [setNodes]
   )
 
-  // Enable real-time updates
+  // Enable real-time updates (legacy)
   useFlowRealtime(updateNodeStatus)
 
   return (
@@ -222,8 +270,23 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         )}
       </motion.div>
 
+      {/* Agent Execution Status */}
+      {agentError && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-4 right-4 z-10 bg-red-500/90 backdrop-blur-xl rounded-xl border border-red-400 px-4 py-2 shadow-2xl"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-white">
+              ⚠️ Agent Error: {agentError.message}
+            </span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Execution Status */}
-      {isExecuting && (
+      {(isExecuting || agentLoading) && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,8 +295,39 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
             <span className="text-sm font-medium text-white">
-              Executing workflow...
+              {agentLoading ? 'Loading agents...' : 'Executing workflow...'}
             </span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Agent Activity Monitor (dev tool) */}
+      {Object.keys(nodeStatuses).length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-20 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl max-w-sm"
+        >
+          <h3 className="text-sm font-bold text-white mb-2">
+            Agent Activity
+          </h3>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {Object.entries(nodeStatuses).map(([nodeId, activity]) => (
+              <div key={nodeId} className="text-xs text-slate-300">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: getStatusColor(activity.status as AgentStatus) }}
+                  />
+                  <span className="font-medium">{activity.agent_name}</span>
+                  <span className="text-slate-500">→</span>
+                  <span className="truncate">{nodeId}</span>
+                </div>
+                {activity.message && (
+                  <div className="ml-4 text-slate-400 truncate">{activity.message}</div>
+                )}
+              </div>
+            ))}
           </div>
         </motion.div>
       )}
