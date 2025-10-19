@@ -42,6 +42,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messageIdCounter = useRef(0) // Unique ID generator
+  const hasInitialized = useRef(false) // Guard against double initialization
   const theme = THEME_CONFIGS[selectedMode]
   const themeManifest = getTheme(selectedMode as ThemeId)
   const personality = getBrokerPersonality(selectedMode)
@@ -53,6 +54,12 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   // Start conversation
   useEffect(() => {
+    // Prevent double initialization (React StrictMode runs effects twice)
+    if (hasInitialized.current) return
+    hasInitialized.current = true
+
+    console.log('[BrokerChat] Initializing conversation with personality:', personality.themeId)
+
     // Add personality-specific opener
     const opener = personality.opener
     addBrokerMessage(opener, 500, false)
