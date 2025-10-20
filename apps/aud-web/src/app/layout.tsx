@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeResolver } from "@/components/themes/ThemeResolver";
 import { GlobalCommandPalette } from "@/components/GlobalCommandPalette";
 
 export const metadata: Metadata = {
@@ -17,8 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ThemeProvider>
-          {children}
-          <GlobalCommandPalette />
+          <ThemeResolver>
+            {children}
+            <GlobalCommandPalette />
+          </ThemeResolver>
         </ThemeProvider>
       </body>
     </html>

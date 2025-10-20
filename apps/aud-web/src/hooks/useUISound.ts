@@ -1,10 +1,58 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import type { OSTheme } from "@/components/themes/types"
 
 interface UISoundConfig {
   enabled: boolean
   volume: number
+}
+
+interface ThemeSoundBank {
+  start: { freq: number; duration: number; type: OscillatorType }
+  complete: { freq: number; duration: number; type: OscillatorType }
+  error: { freq: number; duration: number; type: OscillatorType }
+  click: { freq: number; duration: number; type: OscillatorType }
+  focus: { freq: number; duration: number; type: OscillatorType }
+}
+
+// Per-theme sound banks with unique audio characteristics
+const THEME_SOUND_BANKS: Record<OSTheme, ThemeSoundBank> = {
+  ascii: {
+    start: { freq: 880, duration: 0.1, type: 'square' },
+    complete: { freq: 1760, duration: 0.15, type: 'square' },
+    error: { freq: 220, duration: 0.2, type: 'sawtooth' },
+    click: { freq: 1320, duration: 0.05, type: 'square' },
+    focus: { freq: 660, duration: 0.12, type: 'sine' },
+  },
+  xp: {
+    start: { freq: 800, duration: 0.15, type: 'sine' },
+    complete: { freq: 1200, duration: 0.2, type: 'sine' },
+    error: { freq: 400, duration: 0.25, type: 'sine' },
+    click: { freq: 1000, duration: 0.08, type: 'sine' },
+    focus: { freq: 600, duration: 0.15, type: 'sine' },
+  },
+  aqua: {
+    start: { freq: 900, duration: 0.14, type: 'triangle' },
+    complete: { freq: 1400, duration: 0.18, type: 'triangle' },
+    error: { freq: 350, duration: 0.22, type: 'triangle' },
+    click: { freq: 1100, duration: 0.07, type: 'triangle' },
+    focus: { freq: 700, duration: 0.13, type: 'sine' },
+  },
+  ableton: {
+    start: { freq: 440, duration: 0.12, type: 'sawtooth' },
+    complete: { freq: 880, duration: 0.16, type: 'sawtooth' },
+    error: { freq: 110, duration: 0.24, type: 'sawtooth' },
+    click: { freq: 660, duration: 0.06, type: 'square' },
+    focus: { freq: 330, duration: 0.14, type: 'triangle' },
+  },
+  punk: {
+    start: { freq: 666, duration: 0.13, type: 'sawtooth' },
+    complete: { freq: 1333, duration: 0.17, type: 'sawtooth' },
+    error: { freq: 333, duration: 0.23, type: 'sawtooth' },
+    click: { freq: 999, duration: 0.06, type: 'square' },
+    focus: { freq: 555, duration: 0.11, type: 'sawtooth' },
+  },
 }
 
 export function useUISound() {
@@ -58,6 +106,20 @@ export function useUISound() {
     }
   }
 
+  const playThemeSound = (theme: OSTheme, soundType: keyof ThemeSoundBank) => {
+    if (!config.enabled || !audioContext.current) return
+
+    const soundBank = THEME_SOUND_BANKS[theme]
+    const sound = soundBank[soundType]
+
+    if (!sound) {
+      console.warn(`[useUISound] Sound "${soundType}" not found for theme "${theme}"`)
+      return
+    }
+
+    playTone(sound.freq, sound.duration, sound.type)
+  }
+
   const loadAudioFile = async (url: string): Promise<AudioBuffer | null> => {
     if (!audioContext.current) return null
     
@@ -102,7 +164,15 @@ export function useUISound() {
   return {
     config,
     setConfig,
-    
+
+    // Theme-aware UI sound effects
+    playThemeSound,
+    playStart: (theme: OSTheme) => playThemeSound(theme, 'start'),
+    playComplete: (theme: OSTheme) => playThemeSound(theme, 'complete'),
+    playError: (theme: OSTheme) => playThemeSound(theme, 'error'),
+    playClick: (theme: OSTheme) => playThemeSound(theme, 'click'),
+    playFocus: (theme: OSTheme) => playThemeSound(theme, 'focus'),
+
     // UI Sound Effects (Synthetic fallbacks)
     click: () => playTone(800, 0.05, "sine"),
     bleep: () => playTone(1200, 0.08, "square"),

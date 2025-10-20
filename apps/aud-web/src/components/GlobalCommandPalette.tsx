@@ -7,15 +7,19 @@
 
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CommandPalette, useCommandPalette, Play, BarChart3, Palette, Focus, VolumeX, Volume2, type CommandAction } from './CommandPalette'
 import { useUserPrefs } from '@/hooks/useUserPrefs'
+import { useTheme } from './themes/ThemeResolver'
+import type { OSTheme } from './themes/types'
 
 export function GlobalCommandPalette() {
   const router = useRouter()
   const { isOpen, close } = useCommandPalette()
   const { prefs, updatePrefs } = useUserPrefs()
+  const { currentTheme, setTheme } = useTheme()
+  const [showThemeSelector, setShowThemeSelector] = useState(false)
 
   // Define available commands
   const commands: CommandAction[] = [
@@ -42,15 +46,64 @@ export function GlobalCommandPalette() {
       keywords: ['report', 'results', 'summary'],
     },
     {
-      id: 'toggle-theme',
-      label: 'switch theme',
-      description: 'change your os personality',
+      id: 'theme-ascii',
+      label: 'theme: ascii terminal',
+      description: 'minimalist producer — black and white',
       icon: Palette,
-      action: () => {
-        console.log('[Command] Toggle theme')
-        // TODO: Open theme selector
+      action: async () => {
+        console.log('[Command] Switch to ASCII theme')
+        await setTheme('ascii')
+        close()
       },
-      keywords: ['theme', 'style', 'appearance', 'os'],
+      keywords: ['theme', 'ascii', 'terminal', 'minimal'],
+    },
+    {
+      id: 'theme-xp',
+      label: 'theme: windows xp',
+      description: 'nostalgic optimist — soft gradients',
+      icon: Palette,
+      action: async () => {
+        console.log('[Command] Switch to XP theme')
+        await setTheme('xp')
+        close()
+      },
+      keywords: ['theme', 'xp', 'windows', 'nostalgic'],
+    },
+    {
+      id: 'theme-aqua',
+      label: 'theme: mac aqua',
+      description: 'perfectionist designer — glassy blur',
+      icon: Palette,
+      action: async () => {
+        console.log('[Command] Switch to Aqua theme')
+        await setTheme('aqua')
+        close()
+      },
+      keywords: ['theme', 'aqua', 'mac', 'design'],
+    },
+    {
+      id: 'theme-ableton',
+      label: 'theme: ableton live',
+      description: 'experimental creator — tempo-synced',
+      icon: Palette,
+      action: async () => {
+        console.log('[Command] Switch to Ableton theme')
+        await setTheme('ableton')
+        close()
+      },
+      keywords: ['theme', 'ableton', 'producer', 'music'],
+    },
+    {
+      id: 'theme-punk',
+      label: 'theme: punk zine',
+      description: 'anti-system hustler — glitchy chaos',
+      icon: Palette,
+      action: async () => {
+        console.log('[Command] Switch to Punk theme')
+        await setTheme('punk')
+        close()
+      },
+      keywords: ['theme', 'punk', 'zine', 'chaos'],
     },
     {
       id: 'toggle-focus',
