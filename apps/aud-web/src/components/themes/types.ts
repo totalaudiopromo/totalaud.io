@@ -55,6 +55,27 @@ export interface ThemeSounds {
   focus: string // sound ID for focus mode enter
 }
 
+export interface ThemeLayout {
+  borderStyle: 'solid' | 'dashed' | 'dotted' | 'none'
+  borderRadius: string
+  shadow: string
+  depth: number // z-index layering intensity
+  glow: boolean
+  padding: string
+}
+
+export interface ThemeNarrative {
+  tagline: string // short theme-specific tagline
+  personality: string // creative mindset descriptor
+}
+
+export interface ThemeAmbient {
+  gridMotion: 'none' | 'drift' | 'pulse' | 'jitter'
+  gridSpeed: number // duration in seconds
+  hoverScale: number // scale multiplier on hover
+  hapticsEnabled: boolean
+}
+
 export interface ThemeConfig {
   id: OSTheme
   name: string
@@ -64,6 +85,9 @@ export interface ThemeConfig {
   typography: ThemeTypography
   effects: ThemeEffects
   sounds: ThemeSounds
+  layout: ThemeLayout
+  narrative: ThemeNarrative
+  ambient: ThemeAmbient
 }
 
 export interface ThemeContextValue {

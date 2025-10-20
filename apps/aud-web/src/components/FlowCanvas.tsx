@@ -31,6 +31,7 @@ import { MissionDashboard } from "./MissionDashboard"
 import { MissionPanel } from "./MissionPanel"
 import { OnboardingOverlay } from "./OnboardingOverlay"
 import { AmbientSoundLayer } from "./AmbientSoundLayer"
+import { useTheme } from "./themes/ThemeResolver"
 import { Layers, BarChart3 } from "lucide-react"
 
 const nodeTypes: NodeTypes = {
@@ -83,7 +84,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   // User preferences (view state, onboarding, accessibility)
   const { prefs, loading: prefsLoading, dismissOnboarding, updatePrefs } = useUserPrefs()
   const [currentView, setCurrentView] = useState<'flow' | 'dashboard'>('flow')
-  const [currentTheme, setCurrentTheme] = useState<OSTheme>('ascii')
+
+  // Theme configuration
+  const { themeConfig } = useTheme()
 
   // Flow State: Focus mode (⌘F)
   const flowMode = useFlowMode()
@@ -594,7 +597,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onPaneClick={onPaneClick}
               nodeTypes={nodeTypes}
               fitView
-              className="bg-slate-900"
+              style={{ backgroundColor: themeConfig.colors.bg }}
             >
               <Controls className="bg-slate-800 border-slate-700" />
               <MiniMap
@@ -608,9 +611,14 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               />
               <Background
                 variant={BackgroundVariant.Dots}
-                gap={12}
-                size={1}
-                color="#475569"
+                gap={16}
+                size={themeConfig.id === 'ascii' ? 2 : 1}
+                color={`${themeConfig.colors.border}40`}
+                style={{
+                  animation: themeConfig.ambient.gridMotion !== 'none'
+                    ? `grid-${themeConfig.ambient.gridMotion} ${themeConfig.ambient.gridSpeed}s ease-in-out infinite`
+                    : 'none',
+                }}
               />
 
               {/* Legend Panel */}
@@ -645,7 +653,6 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       {/* Mission Panel (right sidebar) */}
       <MissionPanel
         campaignName="Radio Airplay Campaign"
-        theme={currentTheme}
         agentStatuses={nodeStatuses}
         view={currentView}
         onToggleView={toggleView}

@@ -68,4 +68,25 @@ export const asciiTheme: ThemeConfig = {
     click: 'ascii-click',
     focus: 'ascii-focus',
   },
+
+  layout: {
+    borderStyle: 'solid',
+    borderRadius: '0px',
+    shadow: 'none',
+    depth: 0,
+    glow: false,
+    padding: '16px',
+  },
+
+  narrative: {
+    tagline: 'type. test. repeat.',
+    personality: 'minimalist producer — systematic execution',
+  },
+
+  ambient: {
+    gridMotion: 'none',
+    gridSpeed: 0,
+    hoverScale: 1.0,
+    hapticsEnabled: true,
+  },
 }

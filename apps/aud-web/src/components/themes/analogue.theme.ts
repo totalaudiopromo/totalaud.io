@@ -62,4 +62,25 @@ export const analogueTheme: ThemeConfig = {
     click: 'analogue-click',
     focus: 'analogue-focus',
   },
+
+  layout: {
+    borderStyle: 'solid',
+    borderRadius: '8px',
+    shadow: '0 4px 16px rgba(0,0,0,0.3)',
+    depth: 2,
+    glow: true,
+    padding: '20px',
+  },
+
+  narrative: {
+    tagline: 'touch the signal.',
+    personality: 'hands-on tactile — warm and present',
+  },
+
+  ambient: {
+    gridMotion: 'drift',
+    gridSpeed: 10,
+    hoverScale: 1.02,
+    hapticsEnabled: true,
+  },
 }

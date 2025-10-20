@@ -10,15 +10,18 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import type { OSTheme, ThemeConfig, ThemeContextValue } from './types'
 import { asciiTheme } from './ascii.theme'
+import { xpTheme } from './xp.theme'
+import { aquaTheme } from './aqua.theme'
+import { dawTheme } from './daw.theme'
 import { analogueTheme } from './analogue.theme'
 import { useUserPrefs } from '@/hooks/useUserPrefs'
 
-// Theme registry - will be expanded with more themes
+// Theme registry - all 5 themes fully implemented
 const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {
   ascii: asciiTheme,
-  xp: asciiTheme, // TODO: implement XP theme
-  aqua: asciiTheme, // TODO: implement Aqua theme
-  daw: asciiTheme, // TODO: implement DAW theme
+  xp: xpTheme,
+  aqua: aquaTheme,
+  daw: dawTheme,
   analogue: analogueTheme,
 }
 

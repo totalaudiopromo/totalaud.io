@@ -65,7 +65,39 @@ body::before {
   opacity: var(--grid-opacity);
 }
 
-/* Ambient Grid Animation */
+/* Ambient Grid Animations - Per-Theme Motion */
+
+/* Drift motion: slow, smooth translation */
+@keyframes grid-drift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -2px); }
+  50% { transform: translate(-2px, 3px); }
+  75% { transform: translate(2px, 2px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Pulse motion: rhythmic scale animation */
+@keyframes grid-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Jitter motion: chaotic, tape-grain style */
+@keyframes grid-jitter {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1px, 1px); }
+  20% { transform: translate(1px, -1px); }
+  30% { transform: translate(0, 1px); }
+  40% { transform: translate(1px, 0); }
+  50% { transform: translate(-1px, -1px); }
+  60% { transform: translate(1px, 1px); }
+  70% { transform: translate(0, -1px); }
+  80% { transform: translate(-1px, 0); }
+  90% { transform: translate(1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Legacy parallax motion (kept for compatibility) */
 @keyframes grid-parallax {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(2px, 2px); }

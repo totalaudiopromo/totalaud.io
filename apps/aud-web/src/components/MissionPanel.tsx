@@ -22,7 +22,7 @@ import {
   BarChart3,
 } from 'lucide-react'
 import { getAgent } from '@total-audio/core-agent-executor/client'
-import type { OSTheme } from '@/types/themes'
+import { useTheme } from './themes/ThemeResolver'
 
 interface AgentStatus {
   agent_name: string
@@ -34,7 +34,6 @@ interface AgentStatus {
 
 interface MissionPanelProps {
   campaignName: string
-  theme: OSTheme
   agentStatuses: Record<string, AgentStatus>
   view: 'flow' | 'dashboard'
   onToggleView: () => void
@@ -45,7 +44,6 @@ interface MissionPanelProps {
 
 export function MissionPanel({
   campaignName,
-  theme,
   agentStatuses,
   view,
   onToggleView,
@@ -53,6 +51,7 @@ export function MissionPanel({
   opacity = 1.0,
   className = '',
 }: MissionPanelProps) {
+  const { themeConfig } = useTheme()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [nextAction, setNextAction] = useState<string>('')
 
@@ -83,16 +82,11 @@ export function MissionPanel({
     }
   }, [runningAgents, completedAgents, totalAgents, errorAgents])
 
-  // Theme colors
-  const themeColors = {
-    ascii: { accent: '#00ff00', text: '#00ff00', bg: '#000000' },
-    xp: { accent: '#0078d4', text: '#ffffff', bg: '#001e3c' },
-    aqua: { accent: '#5ac8fa', text: '#ffffff', bg: '#001529' },
-    ableton: { accent: '#ff764d', text: '#ffffff', bg: '#1a1a1a' },
-    punk: { accent: '#ff00ff', text: '#ff00ff', bg: '#000000' },
-  }
-
-  const colors = themeColors[theme] || themeColors.ascii
+  // Extract theme values
+  const colors = themeConfig.colors
+  const layout = themeConfig.layout
+  const motion = themeConfig.motion
+  const tagline = themeConfig.narrative.tagline
 
   // Status colors
   const statusColors = {
@@ -110,12 +104,18 @@ export function MissionPanel({
         width: isCollapsed ? '48px' : '320px',
         opacity,
       }}
-      transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-      className={`relative h-full border-l flex flex-col ${className}`}
+      transition={{
+        duration: reducedMotion ? 0 : motion.duration.medium / 1000,
+        ease: motion.easing === 'linear' ? [0, 0, 1, 1] : undefined,
+      }}
+      className={`relative h-full flex flex-col ${className}`}
       style={{
         backgroundColor: `${colors.bg}dd`,
-        borderColor: `${colors.accent}30`,
-        backdropFilter: 'blur(12px)',
+        borderLeft: `2px ${layout.borderStyle} ${colors.border}`,
+        borderRadius: layout.borderRadius,
+        boxShadow: layout.glow ? `0 0 24px ${colors.accent}40, ${layout.shadow}` : layout.shadow,
+        backdropFilter: `blur(${themeConfig.effects.blur})`,
+        padding: layout.padding,
       }}
     >
       {/* Collapse Toggle */}
@@ -147,16 +147,31 @@ export function MissionPanel({
             {/* Header */}
             <div
               className="p-4 border-b"
-              style={{ borderColor: `${colors.accent}30` }}
+              style={{ borderColor: `${colors.border}` }}
             >
               <h2
-                className="text-sm font-mono font-semibold mb-1 lowercase"
-                style={{ color: colors.accent }}
+                className="text-sm font-mono font-semibold mb-1"
+                style={{
+                  color: colors.accent,
+                  textTransform: themeConfig.typography.textTransform,
+                }}
               >
                 current campaign
               </h2>
-              <p className="text-xs font-mono opacity-60" style={{ color: colors.text }}>
+              <p
+                className="text-xs font-mono opacity-60 mb-2"
+                style={{ color: colors.text }}
+              >
                 {new Date().toLocaleTimeString()}
+              </p>
+              <p
+                className="text-xs font-mono opacity-80 italic"
+                style={{
+                  color: colors.accent,
+                  textTransform: themeConfig.typography.textTransform,
+                }}
+              >
+                {tagline}
               </p>
             </div>
 
