@@ -10,9 +10,9 @@ interface ConsoleShellProps {
   showCursor?: boolean
 }
 
-export default function ConsoleShell({ 
-  children, 
-  title = "TOTALAUD.IO  //  Creative Console",
+export default function ConsoleShell({
+  children,
+  title = "totalaud.io // creative console",
   accentColor = "#10b981",
   showCursor = true
 }: ConsoleShellProps) {

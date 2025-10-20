@@ -15,7 +15,8 @@ import {
   useBrokerMemoryLocal,
   getFlowTemplateForGoal,
   serializeFlowTemplate
-} from "@total-audio/core-agent-executor"
+} from "@total-audio/core-agent-executor/client"
+import { generateUUID } from "@/lib/uuid"
 
 interface Message {
   id: string
@@ -51,7 +52,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const personality = getBrokerPersonality(selectedMode)
 
   // Broker memory for saving conversation data
-  const memory = useBrokerMemoryLocal(sessionId || `session-${Date.now()}`)
+  const [localSessionId] = useState(() => sessionId || generateUUID())
+  const memory = useBrokerMemoryLocal(localSessionId)
 
   // Auto-scroll to bottom
   useEffect(() => {

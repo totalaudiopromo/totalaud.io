@@ -1,123 +1,349 @@
+/**
+ * CommandPalette Component
+ *
+ * Global command launcher with keyboard navigation.
+ * Flow State Design System - Matches moodboard brief.
+ */
+
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import {
+  Search,
+  Play,
+  BarChart3,
+  Link,
+  MessageSquare,
+  Palette,
+  Focus,
+  VolumeX,
+  Volume2,
+  Command,
+} from "lucide-react"
 
-interface CommandPaletteProps {
-  onSubmit: (query: string) => void
+export interface CommandAction {
+  id: string
+  label: string
+  description?: string
+  icon: React.ElementType
+  action: () => void
+  keywords?: string[]
 }
 
-export function CommandPalette({ onSubmit }: CommandPaletteProps) {
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState("")
+interface CommandPaletteProps {
+  isOpen: boolean
+  onClose: () => void
+  commands: CommandAction[]
+  theme?: 'dark' | 'light'
+}
 
-  // Handle ⌘K keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault()
-        setOpen(prev => !prev)
-      }
-      if (e.key === "Escape") {
-        setOpen(false)
-      }
-    }
+/**
+ * Fuzzy search matcher
+ */
+function fuzzyMatch(search: string, text: string): boolean {
+  const searchLower = search.toLowerCase()
+  const textLower = text.toLowerCase()
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
-  const handleSubmit = () => {
-    if (query.trim()) {
-      onSubmit(query)
-      setQuery("")
-      setOpen(false)
+  let searchIndex = 0
+  for (let i = 0; i < textLower.length && searchIndex < searchLower.length; i++) {
+    if (textLower[i] === searchLower[searchIndex]) {
+      searchIndex++
     }
   }
 
-  return (
-    <>
-      {/* Floating trigger button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 font-medium z-40"
-      >
-        <span className="text-lg">⌘K</span>
-        <span>Ask TotalAud.io</span>
-      </button>
+  return searchIndex === searchLower.length
+}
 
-      {/* Command Palette Modal */}
-      <AnimatePresence>
-        {open && (
+/**
+ * CommandPalette Component (Flow State Design)
+ */
+export function CommandPalette({
+  isOpen,
+  onClose,
+  commands,
+  theme = 'dark',
+}: CommandPaletteProps) {
+  const [search, setSearch] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const filteredCommands = useMemo(() => {
+    if (!search.trim()) return commands
+
+    return commands.filter((cmd) => {
+      const searchableText = [
+        cmd.label,
+        cmd.description || '',
+        ...(cmd.keywords || []),
+      ].join(' ')
+
+      return fuzzyMatch(search, searchableText)
+    })
+  }, [search, commands])
+
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [filteredCommands])
+
+  useEffect(() => {
+    if (isOpen) {
+      setSearch('')
+      setSelectedIndex(0)
+    }
+  }, [isOpen])
+
+  const executeCommand = useCallback(() => {
+    const command = filteredCommands[selectedIndex]
+    if (command) {
+      console.log('[CommandPalette] Executing:', command.label)
+      command.action()
+      onClose()
+    }
+  }, [filteredCommands, selectedIndex, onClose])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          setSelectedIndex((prev) =>
+            prev < filteredCommands.length - 1 ? prev + 1 : 0
+          )
+          break
+
+        case 'ArrowUp':
+          e.preventDefault()
+          setSelectedIndex((prev) =>
+            prev > 0 ? prev - 1 : filteredCommands.length - 1
+          )
+          break
+
+        case 'Enter':
+          e.preventDefault()
+          executeCommand()
+          break
+
+        case 'Escape':
+          e.preventDefault()
+          onClose()
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, filteredCommands, executeCommand, onClose])
+
+  const colors = {
+    bg: '#0a0d10',
+    bgSecondary: '#14171b',
+    border: '#2a2d30',
+    accent: '#0ea271',
+    text: '#ffffff',
+    textSecondary: '#a0a4a8',
+  }
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center z-50 pt-[20vh]"
-            onClick={() => setOpen(false)}
+            transition={{ duration: 0.15 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(8px)',
+            }}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed top-[20vh] left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              onClick={e => e.stopPropagation()}
-              className="bg-slate-800 text-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-700 overflow-hidden"
+            <div
+              className="rounded-lg shadow-2xl overflow-hidden"
+              style={{
+                backgroundColor: colors.bg,
+                border: `1px solid ${colors.border}`,
+              }}
             >
-              {/* Input area */}
-              <div className="p-6 border-b border-slate-700">
+              <div
+                className="flex items-center gap-3 p-4 border-b"
+                style={{ borderColor: colors.border }}
+              >
+                <Search className="w-5 h-5" style={{ color: colors.textSecondary }} />
                 <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="search commands..."
                   autoFocus
-                  className="w-full bg-transparent outline-none text-2xl placeholder-slate-500"
-                  placeholder="Ask anything... e.g. 'Find UK indie radio curators'"
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === "Enter") {
-                      handleSubmit()
-                    }
-                  }}
+                  className="flex-1 bg-transparent outline-none font-mono text-sm lowercase"
+                  style={{ color: colors.text }}
                 />
-              </div>
-
-              {/* Suggestions */}
-              <div className="p-6 space-y-3">
-                <p className="text-slate-400 text-sm font-medium mb-3">Try these:</p>
-                {[
-                  "Find UK indie radio curators for synthpop",
-                  "Research playlist curators for electronic music",
-                  "Get contact info for music journalists in London"
-                ].map((suggestion, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setQuery(suggestion)
-                      onSubmit(suggestion)
-                      setOpen(false)
-                    }}
-                    className="w-full text-left px-4 py-3 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-slate-200 transition-colors duration-150"
-                  >
-                    <span className="text-blue-400 mr-2">→</span>
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700 flex items-center justify-between text-sm text-slate-500">
-                <div className="flex items-center gap-4">
-                  <kbd className="px-2 py-1 bg-slate-700 rounded text-xs">↵</kbd>
-                  <span>to submit</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <kbd className="px-2 py-1 bg-slate-700 rounded text-xs">ESC</kbd>
-                  <span>to close</span>
+                <div
+                  className="flex items-center gap-1 px-2 py-1 rounded font-mono text-xs"
+                  style={{
+                    backgroundColor: colors.bgSecondary,
+                    color: colors.textSecondary,
+                  }}
+                >
+                  <Command className="w-3 h-3" />
+                  <span>k</span>
                 </div>
               </div>
-            </motion.div>
+
+              <div className="max-h-[60vh] overflow-y-auto">
+                {filteredCommands.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <p
+                      className="font-mono text-sm lowercase"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      no commands found
+                    </p>
+                  </div>
+                ) : (
+                  filteredCommands.map((command, index) => {
+                    const Icon = command.icon
+                    const isSelected = index === selectedIndex
+
+                    return (
+                      <motion.button
+                        key={command.id}
+                        onClick={() => {
+                          setSelectedIndex(index)
+                          executeCommand()
+                        }}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                        className="w-full flex items-center gap-3 p-4 transition-colors text-left"
+                        style={{
+                          backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
+                          borderLeft: isSelected ? `3px solid ${colors.accent}` : '3px solid transparent',
+                        }}
+                      >
+                        <div
+                          className="flex items-center justify-center w-8 h-8 rounded"
+                          style={{
+                            backgroundColor: isSelected ? `${colors.accent}20` : colors.bgSecondary,
+                            color: isSelected ? colors.accent : colors.textSecondary,
+                          }}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className="font-mono text-sm font-semibold lowercase truncate"
+                            style={{ color: colors.text }}
+                          >
+                            {command.label}
+                          </p>
+                          {command.description && (
+                            <p
+                              className="font-mono text-xs lowercase truncate"
+                              style={{ color: colors.textSecondary }}
+                            >
+                              {command.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {isSelected && (
+                          <div
+                            className="px-2 py-1 rounded font-mono text-xs"
+                            style={{
+                              backgroundColor: `${colors.accent}20`,
+                              color: colors.accent,
+                            }}
+                          >
+                            ↵
+                          </div>
+                        )}
+                      </motion.button>
+                    )
+                  })
+                )}
+              </div>
+
+              <div
+                className="flex items-center justify-between p-3 border-t font-mono text-xs"
+                style={{
+                  backgroundColor: colors.bgSecondary,
+                  borderColor: colors.border,
+                  color: colors.textSecondary,
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  <span className="lowercase">↑↓ navigate</span>
+                  <span className="lowercase">↵ select</span>
+                  <span className="lowercase">esc close</span>
+                </div>
+                <span className="lowercase">
+                  {filteredCommands.length} {filteredCommands.length === 1 ? 'command' : 'commands'}
+                </span>
+              </div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 
+export function useCommandPalette() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const open = useCallback(() => {
+    console.log('[CommandPalette] Opening')
+    setIsOpen(true)
+  }, [])
+
+  const close = useCallback(() => {
+    console.log('[CommandPalette] Closing')
+    setIsOpen(false)
+  }, [])
+
+  const toggle = useCallback(() => {
+    setIsOpen((prev) => !prev)
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        toggle()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [toggle])
+
+  return {
+    isOpen,
+    open,
+    close,
+    toggle,
+  }
+}
+
+export {
+  Play,
+  BarChart3,
+  Link,
+  MessageSquare,
+  Palette,
+  Focus,
+  VolumeX,
+  Volume2,
+}

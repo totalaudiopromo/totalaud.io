@@ -9,9 +9,11 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
 import { getAgent, type AgentRole } from '@total-audio/core-agent-executor'
-import { playAgentSound } from '@total-audio/core-theme-engine'
+import { useCampaignMetrics } from '@/hooks/useCampaignMetrics'
+import { IntegrationManager } from './IntegrationManager'
+import { SmartComposer } from './SmartComposer'
+import { createBrowserClient } from '@/lib/supabase'
 
 interface CampaignMetric {
   id: string
@@ -36,86 +38,45 @@ interface CampaignDashboardProps {
 }
 
 export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: CampaignDashboardProps) {
-  const [metrics, setMetrics] = useState<CampaignMetric[]>([])
+  const [showIntegrations, setShowIntegrations] = useState(false)
+  const [hasIntegrations, setHasIntegrations] = useState(false)
   const [agentSummaries, setAgentSummaries] = useState<Record<string, AgentSummary>>({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
 
-  // Fetch initial metrics
+  const supabase = createBrowserClient()
+
+  // Use the new useCampaignMetrics hook
+  const { metrics, trackerMetrics, loading: isLoading, error: metricsError } = useCampaignMetrics({
+    sessionId,
+    enableRealtime: true,
+    playSoundCues: true,
+  })
+
+  const error = metricsError ? new Error(metricsError) : null
+
+  // Check if user has any integrations connected
   useEffect(() => {
-    const fetchMetrics = async () => {
+    const checkIntegrations = async () => {
       try {
-        setIsLoading(true)
-        setError(null)
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        if (!user) return
 
-        const { data, error: fetchError } = await supabase
-          .from('campaign_results')
-          .select('*')
-          .eq('session_id', sessionId)
-          .order('updated_at', { ascending: false })
+        const { data } = await supabase
+          .from('integration_connections')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1)
 
-        if (fetchError) throw fetchError
-
-        setMetrics((data as CampaignMetric[]) || [])
+        setHasIntegrations((data?.length || 0) > 0)
       } catch (err) {
-        setError(err as Error)
-        console.error('[CampaignDashboard] Failed to fetch metrics:', err)
-      } finally {
-        setIsLoading(false)
+        console.error('[CampaignDashboard] Failed to check integrations:', err)
       }
     }
 
-    if (sessionId) {
-      fetchMetrics()
-    }
-  }, [sessionId])
-
-  // Subscribe to real-time updates
-  useEffect(() => {
-    if (!sessionId) return
-
-    const channel = supabase
-      .channel(`campaign-results-${sessionId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'campaign_results',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (payload: any) => {
-          const newMetric = payload.new as CampaignMetric
-          setMetrics((prev) => [newMetric, ...prev])
-
-          // Play sound cue when new metric arrives
-          const agent = getAgent(newMetric.agent_name)
-          if (agent) {
-            playAgentSound(agent.id as any, 'complete')
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'campaign_results',
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (payload: any) => {
-          const updatedMetric = payload.new as CampaignMetric
-          setMetrics((prev) =>
-            prev.map((m) => (m.id === updatedMetric.id ? updatedMetric : m))
-          )
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [sessionId])
+    checkIntegrations()
+  }, [supabase])
 
   // Compute agent summaries
   useEffect(() => {
@@ -184,6 +145,146 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
           Real-time metrics from your agent workflow
         </p>
       </motion.div>
+
+      {/* Integrations Status Strip */}
+      {!hasIntegrations && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/50 rounded-lg p-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🔗</span>
+              <div>
+                <h3 className="font-mono font-bold text-white">Connect integrations to see live stats</h3>
+                <p className="text-sm text-slate-400 mt-0.5">
+                  Sync Gmail and Google Sheets to automatically track campaign metrics
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowIntegrations(!showIntegrations)}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded font-mono text-white text-sm transition-colors"
+            >
+              {showIntegrations ? 'Hide Integrations' : 'Connect Now'}
+            </button>
+          </div>
+
+          {showIntegrations && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 pt-4 border-t border-indigo-500/30"
+            >
+              <IntegrationManager
+                inline
+                onSyncComplete={() => {
+                  setShowIntegrations(false)
+                  setHasIntegrations(true)
+                }}
+              />
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Tracker Metrics Summary (if integrations connected) */}
+      {hasIntegrations && Object.keys(trackerMetrics).length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/50 rounded-lg p-4"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">📊</span>
+              <h3 className="font-mono font-bold text-white">Live Campaign Metrics</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              {trackerMetrics.emailsSent !== undefined && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-900/30 border border-green-500 rounded text-xs text-green-400">
+                  📧 Gmail
+                </span>
+              )}
+              {trackerMetrics.totalContacts !== undefined && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-900/30 border border-green-500 rounded text-xs text-green-400">
+                  📊 Sheets
+                </span>
+              )}
+              <button
+                onClick={() => setShowIntegrations(!showIntegrations)}
+                className="px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs font-mono text-slate-300 transition-colors"
+              >
+                {showIntegrations ? 'Hide' : 'Manage'}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {trackerMetrics.emailsSent !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {trackerMetrics.emailsSent}
+                </div>
+                <div className="text-xs text-slate-400">Emails Sent</div>
+              </div>
+            )}
+            {trackerMetrics.emailReplies !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {trackerMetrics.emailReplies}
+                </div>
+                <div className="text-xs text-slate-400">Replies</div>
+              </div>
+            )}
+            {trackerMetrics.openRate !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {trackerMetrics.openRate}%
+                </div>
+                <div className="text-xs text-slate-400">Open Rate</div>
+              </div>
+            )}
+            {trackerMetrics.followUpsDue !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-amber-400">
+                  {trackerMetrics.followUpsDue}
+                </div>
+                <div className="text-xs text-slate-400">Follow-Ups Due</div>
+              </div>
+            )}
+            {trackerMetrics.totalContacts !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {trackerMetrics.totalContacts}
+                </div>
+                <div className="text-xs text-slate-400">Total Contacts</div>
+              </div>
+            )}
+            {trackerMetrics.newContacts !== undefined && (
+              <div>
+                <div className="text-2xl font-mono font-bold text-green-400">
+                  +{trackerMetrics.newContacts}
+                </div>
+                <div className="text-xs text-slate-400">New Contacts</div>
+              </div>
+            )}
+          </div>
+
+          {showIntegrations && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 pt-4 border-t border-amber-500/30"
+            >
+              <IntegrationManager inline onSyncComplete={() => setShowIntegrations(false)} />
+            </motion.div>
+          )}
+        </motion.div>
+      )}
 
       {/* Agent Summary Cards */}
       {orderedSummaries.length === 0 ? (
@@ -258,19 +359,37 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
         </div>
       )}
 
+      {/* Smart Composer - Follow-Up Suggestions */}
+      {hasIntegrations && trackerMetrics.emailsSent !== undefined && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-slate-900 border border-blue-500/50 rounded-lg p-6"
+        >
+          <SmartComposer
+            sessionId={sessionId}
+            onDraftSent={() => {
+              // Refresh metrics after sending
+              window.location.reload()
+            }}
+          />
+        </motion.div>
+      )}
+
       {/* Action Buttons */}
       {orderedSummaries.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.7 }}
           className="flex gap-4 pt-4 border-t border-slate-800"
         >
           <button className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors">
             Export Report
           </button>
-          <button className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition-colors">
-            Send Follow-Ups
+          <button className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors">
+            View All Drafts
           </button>
           <button className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition-colors">
             Try Another Flow

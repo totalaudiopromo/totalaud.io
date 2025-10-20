@@ -5,3 +5,5 @@
  */
 
 export * from './oauth-handler'
+export * from './gmail-client'
+export * from './sheets-client'

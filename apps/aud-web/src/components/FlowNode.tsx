@@ -3,7 +3,7 @@
 import { memo } from "react"
 import { Handle, Position, NodeProps } from "reactflow"
 import { motion } from "framer-motion"
-import { getAgent, getStatusEmoji } from "@total-audio/core-agent-executor"
+import { getAgent, getStatusEmoji } from "@total-audio/core-agent-executor/client"
 
 const statusIcons = {
   pending: "⏸",
@@ -153,6 +153,29 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
                   ? `${data.output.contacts.length} contacts found`
                   : "Output ready"}
               </div>
+            </div>
+          )}
+
+          {/* Start Button (for pending nodes) */}
+          {data.onExecute && (status === "pending" || status === "error") && (
+            <div className="mt-2 pt-2 border-t border-slate-800">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  data.onExecute()
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+                className="w-full px-2 py-1 rounded text-xs font-mono font-semibold transition-all hover:scale-105 active:scale-95"
+                style={{
+                  backgroundColor: `${color}20`,
+                  border: `1px solid ${color}`,
+                  color: color,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer',
+                }}
+              >
+                {status === "error" ? "↻ Retry" : "▶ Start"}
+              </button>
             </div>
           )}
         </div>

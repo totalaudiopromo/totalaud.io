@@ -20,10 +20,18 @@ import { motion } from "framer-motion"
 import { useFlowStore } from "@/stores/flowStore"
 import { useFlowRealtime } from "@/hooks/useFlowRealtime"
 import { FlowNode } from "./FlowNode"
-import type { FlowTemplate, AgentStatus } from "@total-audio/core-agent-executor"
-import { useAgentExecution, getStatusColor, getAgent } from "@total-audio/core-agent-executor"
+import type { FlowTemplate, AgentStatus, OSTheme } from "@total-audio/core-agent-executor/client"
+import { useAgentExecution, getStatusColor, getAgent } from "@total-audio/core-agent-executor/client"
 import { playAgentSound } from "@total-audio/core-theme-engine"
 import { supabase } from "@/lib/supabase"
+import { generateUUID } from "@/lib/uuid"
+import { useUserPrefs } from "@/hooks/useUserPrefs"
+import { useFlowMode } from "@/hooks/useFlowMode"
+import { MissionDashboard } from "./MissionDashboard"
+import { MissionPanel } from "./MissionPanel"
+import { OnboardingOverlay } from "./OnboardingOverlay"
+import { AmbientSoundLayer } from "./AmbientSoundLayer"
+import { Layers, BarChart3 } from "lucide-react"
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
@@ -34,17 +42,17 @@ const nodeTypes: NodeTypes = {
 const skillNodes = [
   {
     name: "research-contacts",
-    label: "🔍 Research Contacts",
+    label: "research contacts",
     color: "#3b82f6"
   },
   {
     name: "score-contacts",
-    label: "⭐ Score Contacts",
+    label: "score contacts",
     color: "#f59e0b"
   },
   {
     name: "generate-pitch",
-    label: "✍️ Generate Pitch",
+    label: "generate pitch",
     color: "#8b5cf6"
   }
 ]
@@ -66,10 +74,115 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
-  const previousStatuses = useRef<Record<string, string>>({})
+  const previousStatuses = useRef<Record<string, string> & { _key?: string }>({ _key: '' })
 
   // Generate session ID (in production, this would come from user auth)
-  const [sessionId] = useState(() => `session-${Date.now()}`)
+  const [sessionId] = useState(() => generateUUID())
+  const [sessionCreated, setSessionCreated] = useState(false)
+
+  // User preferences (view state, onboarding, accessibility)
+  const { prefs, loading: prefsLoading, dismissOnboarding, updatePrefs } = useUserPrefs()
+  const [currentView, setCurrentView] = useState<'flow' | 'dashboard'>('flow')
+  const [currentTheme, setCurrentTheme] = useState<OSTheme>('ascii')
+
+  // Flow State: Focus mode (⌘F)
+  const flowMode = useFlowMode()
+
+  // Create session in database on mount (only once)
+  useEffect(() => {
+    let isMounted = true
+
+    const createSession = async () => {
+      if (!isMounted) return
+
+      try {
+        console.log('[FlowCanvas] Checking if session exists:', sessionId)
+
+        // Check if session already exists
+        const { data: existingSession } = await supabase
+          .from('agent_sessions')
+          .select('id')
+          .eq('id', sessionId)
+          .maybeSingle()
+
+        if (existingSession) {
+          console.log('[FlowCanvas] Session already exists, skipping creation')
+          if (isMounted) {
+            setSessionCreated(true)
+          }
+          return
+        }
+
+        console.log('[FlowCanvas] Creating new session in database:', sessionId)
+
+        // Get current user (might be null for demo mode)
+        const { data: { user } } = await supabase.auth.getUser()
+
+        const insertData = {
+          id: sessionId,
+          user_id: user?.id || null,
+          session_name: initialTemplate?.name || 'flow session',
+          flow_template_id: initialTemplate?.id || null,
+          metadata: initialTemplate ? {
+            template_name: initialTemplate.name,
+            template_description: initialTemplate.description
+          } : {}
+        }
+
+        console.log('[FlowCanvas] Attempting to insert session:', insertData)
+
+        const { data, error } = await supabase
+          .from('agent_sessions')
+          .insert(insertData)
+          .select()
+
+        if (error) {
+          // Ignore duplicate key errors (race condition on hot reload)
+          if (error.code === '23505') {
+            console.log('[FlowCanvas] Session already exists (race condition), continuing')
+            if (isMounted) {
+              setSessionCreated(true)
+            }
+            return
+          }
+
+          console.error('[FlowCanvas] Failed to create session:', error.message)
+        } else {
+          console.log('[FlowCanvas] Session created successfully:', data)
+          if (isMounted) {
+            setSessionCreated(true)
+          }
+        }
+      } catch (err) {
+        console.error('[FlowCanvas] Error creating session:', err)
+      }
+    }
+
+    if (!sessionCreated) {
+      createSession()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [sessionId, sessionCreated, initialTemplate])
+
+  // Sync view with prefs once loaded
+  useEffect(() => {
+    if (prefs?.preferred_view) {
+      setCurrentView(prefs.preferred_view)
+    }
+    if (prefs?.preferred_theme) {
+      setCurrentTheme(prefs.preferred_theme as OSTheme)
+    }
+  }, [prefs])
+
+  // Toggle view and persist preference
+  const toggleView = useCallback(async () => {
+    const newView = currentView === 'flow' ? 'dashboard' : 'flow'
+    setCurrentView(newView)
+    await updatePrefs({ preferred_view: newView })
+  }, [currentView, updatePrefs])
 
   // Agent execution with real-time updates
   const {
@@ -155,25 +268,44 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         y: event.clientY - reactFlowBounds.top - 30
       }
 
+      const nodeId = `skill-${Date.now()}`
       const newNode: Node = {
-        id: `skill-${Date.now()}`,
+        id: nodeId,
         type: "skill",
         position,
         data: {
           label: skill.label,
           skillName: skill.name,
-          status: "pending"
+          status: "pending",
+          onExecute: () => {
+            // Execute with a default agent based on skill name
+            const agentName = skill.name.includes('research') ? 'scout' :
+                            skill.name.includes('score') ? 'tracker' :
+                            skill.name.includes('pitch') ? 'coach' : 'broker'
+            executeNode(agentName, nodeId, { skillName: skill.name })
+          }
         }
       }
 
       setNodes((nds) => [...nds, newNode])
       setSelectedSkill(null)
     },
-    [selectedSkill, setNodes]
+    [selectedSkill, setNodes, executeNode]
   )
 
   // Real-time status updates from agent execution
   useEffect(() => {
+    // Create a stable string representation for comparison
+    const statusesKey = JSON.stringify(nodeStatuses)
+    const previousKey = previousStatuses.current._key
+
+    // Only update if statuses actually changed
+    if (statusesKey === previousKey) {
+      return
+    }
+
+    previousStatuses.current._key = statusesKey
+
     // Check for status changes and play sounds
     Object.entries(nodeStatuses).forEach(([nodeId, agentStatus]) => {
       const previousStatus = previousStatuses.current[nodeId]
@@ -201,32 +333,57 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
     // Update node visual state
     setNodes((nds) =>
-      nds.map((node) => {
-        const agentStatus = nodeStatuses[node.id]
-        if (agentStatus) {
-          const statusColor = getStatusColor(agentStatus.status as AgentStatus)
+      nds
+        .filter((node) => node.id && node.id.trim() !== '') // Filter out nodes with empty IDs
+        .map((node) => {
+          const agentStatus = nodeStatuses[node.id]
+          if (agentStatus) {
+            const statusColor = getStatusColor(agentStatus.status as AgentStatus)
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                status: agentStatus.status,
+                agentName: agentStatus.agent_name,
+                message: agentStatus.message,
+                result: agentStatus.result,
+                startedAt: agentStatus.started_at,
+                completedAt: agentStatus.completed_at,
+                onExecute: () => {
+                  // Execute the agent for this node
+                  executeNode(
+                    agentStatus.agent_name,
+                    node.id,
+                    node.data
+                  )
+                }
+              },
+              style: {
+                ...node.style,
+                borderColor: statusColor,
+                borderWidth: "3px"
+              }
+            }
+          }
+          // Add execute callback to nodes without status too
           return {
             ...node,
             data: {
               ...node.data,
-              status: agentStatus.status,
-              agentName: agentStatus.agent_name,
-              message: agentStatus.message,
-              result: agentStatus.result,
-              startedAt: agentStatus.started_at,
-              completedAt: agentStatus.completed_at
-            },
-            style: {
-              ...node.style,
-              borderColor: statusColor,
-              borderWidth: "3px"
+              onExecute: () => {
+                // For nodes without status, try to execute with default agent
+                const agentName = node.data.agentName || node.data.skillName || 'broker'
+                executeNode(
+                  agentName,
+                  node.id,
+                  node.data
+                )
+              }
             }
           }
-        }
-        return node
-      })
+        })
     )
-  }, [nodeStatuses, setNodes])
+  }, [nodeStatuses, setNodes, getStatusColor, executeNode])
 
   // Real-time status updates (legacy)
   const updateNodeStatus = useCallback(
@@ -265,152 +422,236 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   // Enable real-time updates (legacy)
   useFlowRealtime(updateNodeStatus)
 
+  // Show onboarding overlay if needed
+  if (prefs?.show_onboarding_overlay && !prefsLoading) {
+    return (
+      <OnboardingOverlay
+        theme={currentTheme}
+        onDismiss={dismissOnboarding}
+        reducedMotion={prefs.reduced_motion}
+      />
+    )
+  }
+
   return (
-    <div className="relative h-full w-full">
-      {/* Skill Palette */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="absolute top-4 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl"
-      >
-        <h3 className="text-sm font-bold text-white mb-3">
-          Skills Palette
-        </h3>
-        <div className="space-y-2">
-          {skillNodes.map((skill) => (
+    <div className="relative h-full w-full flex">
+      {/* Main Content Area */}
+      <div className="flex-1 relative">
+        {/* View Toggle Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: flowMode.headerOpacity, y: 0 }}
+          className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 shadow-2xl"
+        >
+          <div className="flex items-center">
             <button
-              key={skill.name}
-              onClick={() => setSelectedSkill(skill.name)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedSkill === skill.name
-                  ? "bg-blue-500 text-white ring-2 ring-blue-400"
-                  : "bg-slate-700 text-slate-200 hover:bg-slate-600"
+              onClick={() => {
+                setCurrentView('flow')
+                updatePrefs({ preferred_view: 'flow' })
+              }}
+              className={`px-4 py-2 rounded-l-xl text-sm font-mono font-semibold flex items-center gap-2 transition-all ${
+                currentView === 'flow'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700'
               }`}
             >
-              {skill.label}
+              <Layers className="w-4 h-4" />
+              Flow View
             </button>
-          ))}
-        </div>
-        {selectedSkill && (
-          <p className="mt-3 text-xs text-slate-400">
-            Click on canvas to add
-          </p>
-        )}
-      </motion.div>
-
-      {/* Agent Execution Status */}
-      {agentError && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-4 z-10 bg-red-500/90 backdrop-blur-xl rounded-xl border border-red-400 px-4 py-2 shadow-2xl"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-white">
-              ⚠️ Agent Error: {agentError.message}
-            </span>
+            <button
+              onClick={() => {
+                setCurrentView('dashboard')
+                updatePrefs({ preferred_view: 'dashboard' })
+              }}
+              className={`px-4 py-2 rounded-r-xl text-sm font-mono font-semibold flex items-center gap-2 transition-all ${
+                currentView === 'dashboard'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              Dashboard
+            </button>
           </div>
         </motion.div>
-      )}
 
-      {/* Execution Status */}
-      {(isExecuting || agentLoading) && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-4 z-10 bg-blue-500/90 backdrop-blur-xl rounded-xl border border-blue-400 px-4 py-2 shadow-2xl"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-white">
-              {agentLoading ? 'Loading agents...' : 'Executing workflow...'}
-            </span>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Agent Activity Monitor (dev tool) */}
-      {Object.keys(nodeStatuses).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-20 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl max-w-sm"
-        >
-          <h3 className="text-sm font-bold text-white mb-2">
-            Agent Activity
-          </h3>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
-            {Object.entries(nodeStatuses).map(([nodeId, activity]) => (
-              <div key={nodeId} className="text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: getStatusColor(activity.status as AgentStatus) }}
-                  />
-                  <span className="font-medium">{activity.agent_name}</span>
-                  <span className="text-slate-500">→</span>
-                  <span className="truncate">{nodeId}</span>
-                </div>
-                {activity.message && (
-                  <div className="ml-4 text-slate-400 truncate">{activity.message}</div>
-                )}
+        {/* Conditional View Rendering */}
+        {currentView === 'dashboard' ? (
+          <MissionDashboard
+            sessionId={sessionId}
+            campaignName="Radio Airplay Campaign"
+            theme={currentTheme}
+            agentStatuses={nodeStatuses}
+            metrics={{}}
+            onGenerateMixdown={() => console.log('Generate mixdown')}
+            onRunAgain={() => console.log('Run again')}
+            onShareReport={() => console.log('Share report')}
+            reducedMotion={prefs?.reduced_motion}
+            muteSounds={prefs?.mute_sounds}
+          />
+        ) : (
+          <>
+            {/* Skill Palette */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute top-4 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl"
+            >
+              <h3 className="text-sm font-bold text-white mb-3">
+                Skills Palette
+              </h3>
+              <div className="space-y-2">
+                {skillNodes.map((skill) => (
+                  <button
+                    key={skill.name}
+                    onClick={() => setSelectedSkill(skill.name)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      selectedSkill === skill.name
+                        ? "bg-blue-500 text-white ring-2 ring-blue-400"
+                        : "bg-slate-700 text-slate-200 hover:bg-slate-600"
+                    }`}
+                  >
+                    {skill.label}
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
+              {selectedSkill && (
+                <p className="mt-3 text-xs text-slate-400">
+                  Click on canvas to add
+                </p>
+              )}
+            </motion.div>
 
-      {/* React Flow Canvas */}
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onPaneClick={onPaneClick}
-        nodeTypes={nodeTypes}
-        fitView
-        className="bg-slate-900"
-      >
-        <Controls className="bg-slate-800 border-slate-700" />
-        <MiniMap
-          nodeColor={(node) => {
-            if (node.data.status === "completed") return "#10b981"
-            if (node.data.status === "running") return "#3b82f6"
-            if (node.data.status === "failed") return "#ef4444"
-            return "#6b7280"
-          }}
-          className="bg-slate-800 border-slate-700"
-        />
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={12}
-          size={1}
-          color="#475569"
-        />
-        
-        {/* Legend Panel */}
-        <Panel position="bottom-right" className="bg-slate-800/90 backdrop-blur-xl rounded-lg border border-slate-700 p-3">
-          <div className="flex gap-4 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-gray-500" />
-              <span className="text-slate-300">Pending</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="text-slate-300">Running</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-slate-300">Completed</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <span className="text-slate-300">Failed</span>
-            </div>
-          </div>
-        </Panel>
-      </ReactFlow>
+            {/* Agent Execution Status */}
+            {agentError && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-4 right-4 z-10 bg-red-500/90 backdrop-blur-xl rounded-xl border border-red-400 px-4 py-2 shadow-2xl"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-white">
+                    ⚠️ Agent Error: {agentError.message}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Execution Status */}
+            {(isExecuting || agentLoading) && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-4 right-4 z-10 bg-blue-500/90 backdrop-blur-xl rounded-xl border border-blue-400 px-4 py-2 shadow-2xl"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <span className="text-sm font-medium text-white">
+                    {agentLoading ? 'Loading agents...' : 'Executing workflow...'}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Agent Activity Monitor (dev tool) */}
+            {Object.keys(nodeStatuses).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute bottom-20 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl max-w-sm"
+              >
+                <h3 className="text-sm font-bold text-white mb-2">
+                  Agent Activity
+                </h3>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {Object.entries(nodeStatuses).map(([nodeId, activity]) => (
+                    <div key={nodeId} className="text-xs text-slate-300">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: getStatusColor(activity.status as AgentStatus) }}
+                        />
+                        <span className="font-medium">{activity.agent_name}</span>
+                        <span className="text-slate-500">→</span>
+                        <span className="truncate">{nodeId}</span>
+                      </div>
+                      {activity.message && (
+                        <div className="ml-4 text-slate-400 truncate">{activity.message}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* React Flow Canvas */}
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onPaneClick={onPaneClick}
+              nodeTypes={nodeTypes}
+              fitView
+              className="bg-slate-900"
+            >
+              <Controls className="bg-slate-800 border-slate-700" />
+              <MiniMap
+                nodeColor={(node) => {
+                  if (node.data.status === "completed") return "#10b981"
+                  if (node.data.status === "running") return "#3b82f6"
+                  if (node.data.status === "failed") return "#ef4444"
+                  return "#6b7280"
+                }}
+                className="bg-slate-800 border-slate-700"
+              />
+              <Background
+                variant={BackgroundVariant.Dots}
+                gap={12}
+                size={1}
+                color="#475569"
+              />
+
+              {/* Legend Panel */}
+              <Panel position="bottom-right" className="bg-slate-800/90 backdrop-blur-xl rounded-lg border border-slate-700 p-3">
+                <div className="flex gap-4 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-gray-500" />
+                    <span className="text-slate-300">Pending</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-blue-500" />
+                    <span className="text-slate-300">Running</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <span className="text-slate-300">Completed</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <span className="text-slate-300">Failed</span>
+                  </div>
+                </div>
+              </Panel>
+            </ReactFlow>
+          </>
+        )}
+      </div>
+
+      {/* Ambient Sound Layer */}
+      <AmbientSoundLayer volume={flowMode.ambientVolume} />
+
+      {/* Mission Panel (right sidebar) */}
+      <MissionPanel
+        campaignName="Radio Airplay Campaign"
+        theme={currentTheme}
+        agentStatuses={nodeStatuses}
+        view={currentView}
+        onToggleView={toggleView}
+        reducedMotion={prefs?.reduced_motion}
+        opacity={flowMode.sidebarOpacity}
+      />
     </div>
   )
 }

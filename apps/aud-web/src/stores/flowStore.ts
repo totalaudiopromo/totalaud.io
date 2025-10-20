@@ -20,9 +20,9 @@ const initialNodes: Node[] = [
   {
     id: "start",
     position: { x: 250, y: 100 },
-    data: { 
-      label: "🎬 Start",
-      description: "Workflow entry point"
+    data: {
+      label: "start",
+      description: "workflow entry point"
     },
     type: "input",
     style: {

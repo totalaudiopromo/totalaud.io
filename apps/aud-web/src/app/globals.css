@@ -5,6 +5,76 @@
 /* Import Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Flow State Design System - CSS Variables */
+:root {
+  /* Colours (Moodboard Brief) */
+  --color-deep-navy: #0a0d10;
+  --color-soft-graphite: #14171b;
+  --color-agent-green: #45ff7c;
+  --color-agent-green-muted: #0ea271;
+  --color-electric-indigo: #4a52ff;
+  --color-electric-indigo-muted: #5a5de1;
+  --color-amber-accent: #ffb347;
+  --color-amber-accent-muted: #e58f0a;
+  --color-slate-grey: #a0a4a8;
+  --color-pure-white: #ffffff;
+
+  /* Typography */
+  --font-primary: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing (8px rhythm) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-medium: 200ms;
+  --duration-slow: 300ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Grid texture */
+  --grid-opacity: 0.04;
+}
+
+/* DRS Texture Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  opacity: var(--grid-opacity);
+}
+
+/* Ambient Grid Animation */
+@keyframes grid-parallax {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, 2px); }
+}
+
+.grid-parallax {
+  animation: grid-parallax 10s ease-in-out infinite;
+}
+
 /* Broker Personality Animation Effects */
 
 /* Typewriter effect (ASCII mode) */

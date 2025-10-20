@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { GlobalCommandPalette } from "@/components/GlobalCommandPalette";
 
 export const metadata: Metadata = {
   title: "TotalAud.io",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="antialiased">
         <ThemeProvider>
           {children}
+          <GlobalCommandPalette />
         </ThemeProvider>
       </body>
     </html>

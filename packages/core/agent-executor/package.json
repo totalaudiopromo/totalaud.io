@@ -6,11 +6,15 @@
   "exports": {
     ".": "./src/index.ts",
     "./personas/broker": "./src/personas/broker.ts",
-    "./server": "./src/orchestrator.ts"
+    "./server": "./src/server.ts",
+    "./client": "./src/client-utils.ts"
   },
   "dependencies": {
     "@total-audio/core-supabase": "workspace:*",
-    "@total-audio/core-skills-engine": "workspace:*"
+    "@total-audio/core-skills-engine": "workspace:*",
+    "@total-audio/core-integrations": "workspace:*",
+    "@total-audio/core-ai-provider": "workspace:*",
+    "@supabase/supabase-js": "^2.39.0"
   },
   "peerDependencies": {
     "react": "^18.0.0"

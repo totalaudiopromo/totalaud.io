@@ -173,7 +173,19 @@ export function useAgentExecution({
 
         if (completeError) throw completeError
       } catch (err) {
+        // Enhanced error logging to debug the issue
         console.error('[useAgentExecution] Failed to execute node:', err)
+        console.error('[useAgentExecution] Error type:', typeof err)
+        console.error('[useAgentExecution] Error details:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+        console.error('[useAgentExecution] Parameters:', { agent, nodeId, sessionId, payload })
+
+        // Check if it's a Supabase error with more details
+        if (err && typeof err === 'object' && 'code' in err) {
+          console.error('[useAgentExecution] Supabase error code:', (err as any).code)
+          console.error('[useAgentExecution] Supabase error details:', (err as any).details)
+          console.error('[useAgentExecution] Supabase error hint:', (err as any).hint)
+          console.error('[useAgentExecution] Supabase error message:', (err as any).message)
+        }
 
         // Insert "error" status
         await supabaseClient.from('agent_activity_log').insert({
