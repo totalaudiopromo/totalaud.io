@@ -7,5 +7,6 @@
 export * from './types'
 export * from './ThemeResolver'
 export * from './ascii.theme'
+export * from './analogue.theme'
 export * from './AsciiFlowCanvas'
 export * from './AsciiMissionPanel'

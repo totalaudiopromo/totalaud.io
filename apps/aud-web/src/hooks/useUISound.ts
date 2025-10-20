@@ -39,19 +39,19 @@ const THEME_SOUND_BANKS: Record<OSTheme, ThemeSoundBank> = {
     click: { freq: 1100, duration: 0.07, type: 'triangle' },
     focus: { freq: 700, duration: 0.13, type: 'sine' },
   },
-  ableton: {
+  daw: {
     start: { freq: 440, duration: 0.12, type: 'sawtooth' },
     complete: { freq: 880, duration: 0.16, type: 'sawtooth' },
     error: { freq: 110, duration: 0.24, type: 'sawtooth' },
     click: { freq: 660, duration: 0.06, type: 'square' },
     focus: { freq: 330, duration: 0.14, type: 'triangle' },
   },
-  punk: {
-    start: { freq: 666, duration: 0.13, type: 'sawtooth' },
-    complete: { freq: 1333, duration: 0.17, type: 'sawtooth' },
-    error: { freq: 333, duration: 0.23, type: 'sawtooth' },
-    click: { freq: 999, duration: 0.06, type: 'square' },
-    focus: { freq: 555, duration: 0.11, type: 'sawtooth' },
+  analogue: {
+    start: { freq: 280, duration: 0.4, type: 'sine' },
+    complete: { freq: 120, duration: 0.6, type: 'sine' },
+    error: { freq: 260, duration: 0.5, type: 'sine' },
+    click: { freq: 440, duration: 0.15, type: 'sine' },
+    focus: { freq: 180, duration: 0.4, type: 'sine' },
   },
 }
 

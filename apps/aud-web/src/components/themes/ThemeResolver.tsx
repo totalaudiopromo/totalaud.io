@@ -10,6 +10,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import type { OSTheme, ThemeConfig, ThemeContextValue } from './types'
 import { asciiTheme } from './ascii.theme'
+import { analogueTheme } from './analogue.theme'
 import { useUserPrefs } from '@/hooks/useUserPrefs'
 
 // Theme registry - will be expanded with more themes
@@ -17,8 +18,8 @@ const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {
   ascii: asciiTheme,
   xp: asciiTheme, // TODO: implement XP theme
   aqua: asciiTheme, // TODO: implement Aqua theme
-  ableton: asciiTheme, // TODO: implement Ableton theme
-  punk: asciiTheme, // TODO: implement Punk theme
+  daw: asciiTheme, // TODO: implement DAW theme
+  analogue: analogueTheme,
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)

@@ -82,28 +82,28 @@ export function GlobalCommandPalette() {
       keywords: ['theme', 'aqua', 'mac', 'design'],
     },
     {
-      id: 'theme-ableton',
-      label: 'theme: ableton live',
-      description: 'experimental creator — tempo-synced',
+      id: 'theme-daw',
+      label: 'theme: daw workstation',
+      description: 'experimental creator — tempo-synced precision',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to Ableton theme')
-        await setTheme('ableton')
+        console.log('[Command] Switch to DAW theme')
+        await setTheme('daw')
         close()
       },
-      keywords: ['theme', 'ableton', 'producer', 'music'],
+      keywords: ['theme', 'daw', 'producer', 'music', 'workstation'],
     },
     {
-      id: 'theme-punk',
-      label: 'theme: punk zine',
-      description: 'anti-system hustler — glitchy chaos',
+      id: 'theme-analogue',
+      label: 'theme: analogue studio',
+      description: 'human hands, warm signal — textured and confident',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to Punk theme')
-        await setTheme('punk')
+        console.log('[Command] Switch to Analogue theme')
+        await setTheme('analogue')
         close()
       },
-      keywords: ['theme', 'punk', 'zine', 'chaos'],
+      keywords: ['theme', 'analogue', 'analog', 'studio', 'warm', 'tape'],
     },
     {
       id: 'toggle-focus',

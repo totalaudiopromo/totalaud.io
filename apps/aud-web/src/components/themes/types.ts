@@ -5,7 +5,7 @@
  * Base type definitions for theme variants and abstractions
  */
 
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
 
 export interface ThemeColors {
   bg: string
