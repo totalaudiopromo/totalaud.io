@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm turbo build --filter=aud-web",
+  "outputDirectory": "apps/aud-web/.next",
+  "installCommand": "pnpm install",
+  "framework": null
+}
