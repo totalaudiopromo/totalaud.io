@@ -5,6 +5,12 @@
 /* Import Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Import Onboarding Styles */
+@import '../styles/onboarding.css';
+
+/* Import Agent Spawn Modal Styles */
+@import '../styles/agent-spawn-modal.css';
+
 /* Flow State Design System - CSS Variables */
 :root {
   /* Colours (Moodboard Brief) */

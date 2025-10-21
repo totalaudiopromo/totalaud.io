@@ -1,0 +1,1 @@
+export { AmbientSound } from './AmbientSound';

@@ -1,0 +1,293 @@
+/**
+ * Onboarding Sequence Styles
+ * Terminal visuals + reveal motion
+ * UK English, lowercase, minimal aesthetic
+ */
+
+/* ========================================
+   Phase 1: Operator Terminal
+   ======================================== */
+
+.operator-terminal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0d10;
+  font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+  color: #e0e0e0;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.operator-terminal__window {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(15, 20, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+}
+
+.operator-terminal__content {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.operator-terminal__line {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 0.5rem;
+  color: #c0c0c0;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.operator-terminal__input-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 16px;
+}
+
+.operator-terminal__prompt {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.operator-terminal__input {
+  color: #ffffff;
+}
+
+.operator-terminal__cursor {
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  background: #60a5fa;
+  animation: cursor-blink 800ms infinite;
+  margin-left: 2px;
+}
+
+@keyframes cursor-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.operator-terminal__hint {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+/* ========================================
+   Phase 2: OS Selector
+   ======================================== */
+
+.os-selector {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0d10;
+  font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+  color: #e0e0e0;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.os-selector__window {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(15, 20, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+}
+
+.os-selector__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.os-selector__header {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #c0c0c0;
+  margin-bottom: 1rem;
+}
+
+.os-selector__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.os-selector__option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.os-selector__option--active {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+}
+
+.os-selector__option--selected {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+.os-selector__bracket {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.os-selector__label {
+  flex: 1;
+  color: #ffffff;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.os-selector__hint {
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.os-selector__confirmation {
+  font-size: 16px;
+  color: #22c55e;
+  text-align: center;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 4px;
+}
+
+/* ========================================
+   Phase 3: Transition Sequence
+   ======================================== */
+
+.transition-sequence {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+  overflow: hidden;
+}
+
+.transition-sequence__fade {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  z-index: 10;
+}
+
+.transition-sequence__reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0d10;
+  z-index: 20;
+}
+
+.transition-sequence__logo {
+  margin-bottom: 3rem;
+  color: #60a5fa;
+}
+
+.transition-sequence__waveform {
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+}
+
+.transition-sequence__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.transition-sequence__message {
+  font-size: 18px;
+  color: #c0c0c0;
+  letter-spacing: 0.5px;
+}
+
+.transition-sequence__message--signal {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* ========================================
+   Accessibility: Reduced Motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .operator-terminal__cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .os-selector__option,
+  .transition-sequence__logo,
+  .transition-sequence__waveform {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ========================================
+   Mobile Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+  .operator-terminal__window,
+  .os-selector__window {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .operator-terminal__line,
+  .os-selector__option,
+  .transition-sequence__message {
+    font-size: 14px;
+  }
+
+  .transition-sequence__logo svg {
+    width: 150px;
+    height: 60px;
+  }
+}
