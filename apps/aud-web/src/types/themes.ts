@@ -1,4 +1,4 @@
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
 
 export interface ThemeConfig {
   id: OSTheme
@@ -133,10 +133,10 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     }
   },
   
-  ableton: {
-    id: 'ableton',
-    name: 'Ableton Mode',
-    displayName: 'ABLETON MODE',
+  daw: {
+    id: 'daw',
+    name: 'DAW Workstation',
+    displayName: 'DAW WORKSTATION',
     description: 'Flow like a DAW',
     tagline: 'Arrange. Produce. Promote.',
     colors: {
@@ -162,12 +162,12 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     }
   },
   
-  punk: {
-    id: 'punk',
-    name: 'Punk Zine Mode',
-    displayName: 'PUNK ZINE MODE',
-    description: 'Cut. Paste. Shout.',
-    tagline: 'No rules. All attitude.',
+  analogue: {
+    id: 'analogue',
+    name: 'Analogue Studio',
+    displayName: 'ANALOGUE STUDIO',
+    description: 'Touch the signal.',
+    tagline: 'Warm signal, human hands.',
     colors: {
       primary: '#ff00ff',
       secondary: '#00ffff',

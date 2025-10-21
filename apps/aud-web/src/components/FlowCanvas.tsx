@@ -86,7 +86,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [currentView, setCurrentView] = useState<'flow' | 'dashboard'>('flow')
 
   // Theme configuration
-  const { themeConfig } = useTheme()
+  const { themeConfig, currentTheme } = useTheme()
 
   // Flow State: Focus mode (⌘F)
   const flowMode = useFlowMode()
@@ -174,9 +174,6 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   useEffect(() => {
     if (prefs?.preferred_view) {
       setCurrentView(prefs.preferred_view)
-    }
-    if (prefs?.preferred_theme) {
-      setCurrentTheme(prefs.preferred_theme as OSTheme)
     }
   }, [prefs])
 
