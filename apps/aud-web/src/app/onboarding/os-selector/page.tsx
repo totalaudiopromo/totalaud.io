@@ -18,11 +18,11 @@ function OSSelectorContent() {
   const sound = useUISound()
 
   useEffect(() => {
-    // Check if user already has a theme selected
+    // Check if user already has a theme selected (client-side only)
     // Allow 'force' query param to bypass this check
     const forceShow = searchParams.get('force') === 'true'
     
-    if (!forceShow) {
+    if (!forceShow && typeof window !== "undefined") {
       const saved = localStorage.getItem("ui_mode")
       if (saved && saved in THEME_CONFIGS) {
         // Skip this page if theme already selected
@@ -54,8 +54,10 @@ function OSSelectorContent() {
     // Wait for progress to complete
     await new Promise(resolve => setTimeout(resolve, 1200))
 
-    // Save to localStorage
-    localStorage.setItem("ui_mode", themeId)
+    // Save to localStorage (client-side only)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ui_mode", themeId)
+    }
     
     // TODO: Save to Supabase user_profiles when auth is ready
     // await saveThemeToProfile(themeId)
@@ -253,8 +255,8 @@ function OSSelectorContent() {
                 {selectedTheme === 'ascii' && '⌨️'}
                 {selectedTheme === 'xp' && '💾'}
                 {selectedTheme === 'aqua' && '🍎'}
-                {selectedTheme === 'ableton' && '🎚️'}
-                {selectedTheme === 'punk' && '⚡'}
+                {selectedTheme === 'daw' && '🎚️'}
+                {selectedTheme === 'analogue' && '⚡'}
               </motion.div>
             </motion.div>
           )}

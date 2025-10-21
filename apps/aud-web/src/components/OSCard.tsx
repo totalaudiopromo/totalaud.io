@@ -175,8 +175,8 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         />
       )}
 
-      {/* Punk Sticker Effect */}
-      {theme.id === 'punk' && isHovered && (
+      {/* Analogue Texture Effect */}
+      {theme.id === 'analogue' && isHovered && (
         <motion.div
           initial={{ rotate: -5, x: -10, y: -10 }}
           animate={{ rotate: 5, x: 10, y: 10 }}

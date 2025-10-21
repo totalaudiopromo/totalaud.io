@@ -89,39 +89,39 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
         position: { x: 70, y: 70 },
       },
     ],
-    ableton: [
+    daw: [
       {
-        title: 'Session Loaded',
+        title: 'session loaded',
         message: 'Each block is a performer in your mix. Hit Start to begin playback.',
         position: { x: 50, y: 20 },
       },
       {
-        title: 'Press Start',
+        title: 'press start',
         message: 'Select an agent to trigger the sequence. Agents run in parallel, mixing your campaign data.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
       {
-        title: 'Add to the Chain',
+        title: 'add to the chain',
         message: 'Drag effects from the browser. Patch them in. Create your signal flow.',
         highlight: 'skills-palette',
         position: { x: 70, y: 70 },
       },
     ],
-    punk: [
+    analogue: [
       {
-        title: 'SYSTEM PRIMED',
-        message: 'Keep it simple: press Start and let the noise organise itself.',
+        title: 'system primed',
+        message: 'Keep it simple: press Start and let the signal organise itself.',
         position: { x: 50, y: 20 },
       },
       {
-        title: 'HIT START',
+        title: 'hit start',
         message: 'Select an agent and let it run. Agents handle the grind while you direct.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
       {
-        title: 'BUILD THE RIG',
+        title: 'build the rig',
         message: 'Drag skills onto the canvas. Wire them up. Make your campaign work.',
         highlight: 'skills-palette',
         position: { x: 70, y: 70 },
@@ -166,8 +166,8 @@ export function OnboardingOverlay({ theme, onDismiss, reducedMotion = false }: O
     ascii: { accent: '#00ff00', bg: '#000000', text: '#00ff00' },
     xp: { accent: '#0078d4', bg: '#001e3c', text: '#ffffff' },
     aqua: { accent: '#5ac8fa', bg: '#001529', text: '#ffffff' },
-    ableton: { accent: '#ff764d', bg: '#1a1a1a', text: '#ffffff' },
-    punk: { accent: '#ff00ff', bg: '#000000', text: '#ff00ff' },
+    daw: { accent: '#ff764d', bg: '#1a1a1a', text: '#ffffff' },
+    analogue: { accent: '#d3b98c', bg: '#1a1a18', text: '#d3b98c' },
   }
 
   const colors = themeColors[theme] || themeColors.ascii
@@ -266,7 +266,7 @@ export function OnboardingOverlay({ theme, onDismiss, reducedMotion = false }: O
               className="px-6 py-2 rounded font-mono font-semibold flex items-center gap-2 transition-all hover:scale-105"
               style={{
                 backgroundColor: colors.accent,
-                color: theme === 'ascii' || theme === 'punk' ? '#000000' : '#ffffff',
+                color: theme === 'ascii' ? '#000000' : '#ffffff',
               }}
             >
               {isLastStep ? 'Got it → Begin' : 'Next'}

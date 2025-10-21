@@ -32,17 +32,17 @@ const BOOT_MESSAGES: Record<OSTheme, string[]> = {
     "Initializing Aqua interface...",
     "Welcome to your studio."
   ],
-  ableton: [
+  daw: [
     "INIT: MIDI ROUTES",
     "LOAD: SESSION CLIPS",
     "SYNC: AGENT SEQUENCER",
     "PLAYBACK READY…"
   ],
-  punk: [
-    "Printing your access pass…",
-    "Stapling scene identity…",
-    "Xeroxing the manifesto…",
-    "Ready to riot."
+  analogue: [
+    "Warming up the signal…",
+    "Loading tape emulation…",
+    "Adjusting gain staging…",
+    "Ready to record."
   ]
 }
 
@@ -112,7 +112,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
       } else {
         clearInterval(interval)
       }
-    }, selectedMode === 'punk' || selectedMode === 'ascii' ? 200 : 400)
+    }, selectedMode === 'analogue' || selectedMode === 'ascii' ? 200 : 400)
 
     return () => clearInterval(interval)
   }, [phase, selectedMode])
@@ -315,8 +315,8 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                 </div>
               )}
 
-              {/* Ableton Mode */}
-              {selectedMode === 'ableton' && (
+              {/* DAW Mode */}
+              {selectedMode === 'daw' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-center gap-3 mb-8">
                     <motion.div
@@ -329,7 +329,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                       className="text-xl font-bold tracking-wider"
                       style={{ color: theme.colors.text }}
                     >
-                      ABLETON MODE
+                      DAW WORKSTATION
                     </h2>
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
@@ -340,7 +340,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                   </div>
 
                   <div className="font-mono space-y-2">
-                    {BOOT_MESSAGES.ableton.slice(0, visibleLines).map((line, i) => (
+                    {BOOT_MESSAGES.daw.slice(0, visibleLines).map((line, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: -20 }}
@@ -379,8 +379,8 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                 </div>
               )}
 
-              {/* Punk Zine Mode */}
-              {selectedMode === 'punk' && (
+              {/* Analogue Studio Mode */}
+              {selectedMode === 'analogue' && (
                 <div className="space-y-6">
                   <div className="text-center mb-8">
                     <motion.div
@@ -397,12 +397,12 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                         textShadow: `3px 3px 0 ${theme.colors.secondary}`
                       }}
                     >
-                      PUNK ZINE MODE
+                      ANALOGUE STUDIO
                     </h2>
                   </div>
 
                   <div className="space-y-3 font-mono">
-                    {BOOT_MESSAGES.punk.slice(0, visibleLines).map((line, i) => (
+                    {BOOT_MESSAGES.analogue.slice(0, visibleLines).map((line, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: Math.random() > 0.5 ? -20 : 20 }}

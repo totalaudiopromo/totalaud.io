@@ -268,8 +268,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       ascii: "⟩",
       xp: "►",
       aqua: "•",
-      ableton: "●",
-      punk: "✦"
+      daw: "●",
+      analogue: "✦"
     }
     return prefixes[selectedMode] || "›"
   }
