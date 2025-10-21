@@ -8,7 +8,6 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Play, BarChart3, Palette, Focus, VolumeX, Volume2, Users, List, Trash2 } from 'lucide-react'
 import { CommandPalette, useCommandPalette, type CommandAction } from './CommandPalette'
 import { useUserPrefs } from '@/hooks/useUserPrefs'
@@ -18,7 +17,6 @@ import { AgentSpawnModal } from './AgentSpawnModal'
 import { useAgentSpawner, type AgentRole } from '@/hooks/useAgentSpawner'
 
 export function GlobalCommandPalette() {
-  const router = useRouter()
   const { isOpen, close } = useCommandPalette()
   const { prefs, updatePrefs } = useUserPrefs()
   const { currentTheme, setTheme } = useTheme()

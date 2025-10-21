@@ -53,7 +53,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
     ],
     xp: [
       {
-        title: 'Welcome to TotalAud.io Flow Studio',
+        title: 'welcome to totalaud.io flow studio',
         message: 'Everything is set up and ready. Each module below is an agent. Press Start to get your campaign moving.',
         position: { x: 50, y: 20 },
       },
