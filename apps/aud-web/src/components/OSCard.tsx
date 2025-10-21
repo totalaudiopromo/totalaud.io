@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion"
 import { useState } from "react"
-import { ThemeConfig } from "@/types/themes"
-import { useUISound } from "@/hooks/useUISound"
+import { ThemeConfig } from "@aud-web/types/themes"
+import { useUISound } from "@aud-web/hooks/useUISound"
 
 interface OSCardProps {
   theme: ThemeConfig

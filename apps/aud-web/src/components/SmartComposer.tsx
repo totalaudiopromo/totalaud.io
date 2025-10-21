@@ -14,7 +14,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@aud-web/lib/supabase'
 import { playAgentSound } from '@total-audio/core-theme-engine'
 
 interface Draft {

@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { OSTheme, THEME_CONFIGS } from "@/types/themes"
+import { OSTheme, THEME_CONFIGS } from "@aud-web/types/themes"
 import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
 import type { ThemeId } from "@total-audio/core-theme-engine"
-import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@/lib/broker-persona"
-import type { ConversationStep } from "@/lib/broker-persona"
+import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@aud-web/lib/broker-persona"
+import type { ConversationStep } from "@aud-web/lib/broker-persona"
 import {
   getBrokerPersonality,
   getPersonalityLine,
@@ -16,7 +16,7 @@ import {
   getFlowTemplateForGoal,
   serializeFlowTemplate
 } from "@total-audio/core-agent-executor/client"
-import { generateUUID } from "@/lib/uuid"
+import { generateUUID } from "@aud-web/lib/uuid"
 
 interface Message {
   id: string

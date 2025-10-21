@@ -14,7 +14,7 @@ import { xpTheme } from './xp.theme'
 import { aquaTheme } from './aqua.theme'
 import { dawTheme } from './daw.theme'
 import { analogueTheme } from './analogue.theme'
-import { useUserPrefs } from '@/hooks/useUserPrefs'
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 
 // Theme registry - all 5 themes fully implemented
 const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {

@@ -2,12 +2,12 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useOnboardingPhase } from '@/hooks/useOnboardingPhase';
-import { OperatorTerminal } from '@/components/Onboarding/OperatorTerminal';
-import { OSSelector } from '@/components/Onboarding/OSSelector';
-import { TransitionSequence } from '@/components/Onboarding/TransitionSequence';
-import { FlowStudio } from '@/components/FlowStudio';
-import type { OSTheme } from '@/hooks/useOSSelection';
+import { useOnboardingPhase } from '@aud-web/hooks/useOnboardingPhase';
+import { OperatorTerminal } from '@aud-web/components/Onboarding/OperatorTerminal';
+import { OSSelector } from '@aud-web/components/Onboarding/OSSelector';
+import { TransitionSequence } from '@aud-web/components/Onboarding/TransitionSequence';
+import { FlowStudio } from '@aud-web/components/FlowStudio';
+import type { OSTheme } from '@aud-web/hooks/useOSSelection';
 import { AnimatePresence } from 'framer-motion';
 
 function HomePageContent() {

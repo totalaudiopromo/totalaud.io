@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAmbientAudio } from '@/hooks/useAmbientAudio';
+import { useAmbientAudio } from '@aud-web/hooks/useAmbientAudio';
 
 interface AmbientSoundProps {
   type: 'operator-hum' | 'transition-glide' | 'theme-ambient';

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useOperatorInput } from '@/hooks/useOperatorInput';
-import { AmbientSound } from '@/components/Ambient/AmbientSound';
+import { useOperatorInput } from '@aud-web/hooks/useOperatorInput';
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
 
 interface OperatorTerminalProps {
   onComplete: () => void;

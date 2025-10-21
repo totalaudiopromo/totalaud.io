@@ -8,8 +8,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { getValidAccessToken } from '@/lib/oauth'
+import { createClient } from '@aud-web/lib/supabase/server'
+import { getValidAccessToken } from '@aud-web/lib/oauth'
 import { createGmailClient } from '@total-audio/core-integrations'
 
 export async function POST(request: NextRequest) {

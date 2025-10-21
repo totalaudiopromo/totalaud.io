@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
-import { ThemeResolver } from "@/components/themes/ThemeResolver";
-import { GlobalCommandPalette } from "@/components/GlobalCommandPalette";
+import { ThemeResolver } from "@aud-web/components/themes/ThemeResolver";
+import { GlobalCommandPalette } from "@aud-web/components/GlobalCommandPalette";
 
 export const metadata: Metadata = {
   title: "totalaud.io",

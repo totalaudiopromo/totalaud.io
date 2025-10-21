@@ -12,8 +12,8 @@ import {
 } from "@total-audio/core-theme-engine"
 import type { ThemeId, ThemeManifest } from "@total-audio/core-theme-engine"
 import { createContext, useContext, ReactNode } from "react"
-import type { OSTheme, ThemeConfig } from "@/types/themes"
-import { THEME_CONFIGS } from "@/types/themes"
+import type { OSTheme, ThemeConfig } from "@aud-web/types/themes"
+import { THEME_CONFIGS } from "@aud-web/types/themes"
 
 interface LegacyThemeContextValue {
   theme: OSTheme

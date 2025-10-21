@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useOSSelection, type OSTheme } from '@/hooks/useOSSelection';
-import { useUserPrefs } from '@/hooks/useUserPrefs';
-import { AmbientSound } from '@/components/Ambient/AmbientSound';
+import { useOSSelection, type OSTheme } from '@aud-web/hooks/useOSSelection';
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs';
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
 
 interface OSSelectorProps {
   onConfirm: (theme: OSTheme) => void;

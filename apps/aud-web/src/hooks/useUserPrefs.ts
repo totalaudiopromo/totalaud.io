@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@aud-web/lib/supabase'
 
 export interface UserPreferences {
   id: string

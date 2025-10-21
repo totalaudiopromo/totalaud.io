@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { OSTheme, THEME_CONFIGS } from "@/types/themes"
+import { OSTheme, THEME_CONFIGS } from "@aud-web/types/themes"
 import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
 import type { ThemeId } from "@total-audio/core-theme-engine"
 import { getBrokerPersonality, getPersonalityLine } from "@total-audio/core-agent-executor/client"

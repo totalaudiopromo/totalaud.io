@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@aud-web/lib/supabase/server'
 import { createTrackerAgent } from '@total-audio/core-agent-executor/server'
 
 export async function POST(request: NextRequest) {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import type { OSTheme } from "@/components/themes/types"
+import type { OSTheme } from "@aud-web/components/themes/types"
 
 interface UISoundConfig {
   enabled: boolean

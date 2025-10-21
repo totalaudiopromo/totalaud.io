@@ -13,7 +13,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@aud-web/lib/supabase'
 import { playAgentSound } from '@total-audio/core-theme-engine'
 
 interface IntegrationConnection {

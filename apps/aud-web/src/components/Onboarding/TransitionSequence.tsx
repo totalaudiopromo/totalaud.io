@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AmbientSound } from '@/components/Ambient/AmbientSound';
-import type { OSTheme } from '@/hooks/useOSSelection';
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
+import type { OSTheme } from '@aud-web/hooks/useOSSelection';
 
 interface TransitionSequenceProps {
   theme: OSTheme;
