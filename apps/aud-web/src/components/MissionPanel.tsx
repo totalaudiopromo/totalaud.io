@@ -85,7 +85,7 @@ export function MissionPanel({
   // Extract theme values
   const colors = themeConfig.colors
   const layout = themeConfig.layout
-  const motion = themeConfig.motion
+  const themeMotion = themeConfig.motion
   const tagline = themeConfig.narrative.tagline
 
   // Status colors
@@ -105,8 +105,8 @@ export function MissionPanel({
         opacity,
       }}
       transition={{
-        duration: reducedMotion ? 0 : motion.duration.medium / 1000,
-        ease: motion.easing === 'linear' ? [0, 0, 1, 1] : undefined,
+        duration: reducedMotion ? 0 : themeMotion.duration.medium / 1000,
+        ease: themeMotion.easing === 'linear' ? [0, 0, 1, 1] : undefined,
       }}
       className={`relative h-full flex flex-col ${className}`}
       style={{
