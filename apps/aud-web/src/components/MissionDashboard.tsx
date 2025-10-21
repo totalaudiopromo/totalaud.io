@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { getAgent } from '@total-audio/core-agent-executor/client'
 import { playAgentSound } from '@total-audio/core-theme-engine'
-import type { OSTheme } from '@/types/themes'
+import type { OSTheme } from '@aud-web/types/themes'
 
 interface AgentStatus {
   agent_name: string

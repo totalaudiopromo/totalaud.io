@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowRight, Sparkles } from 'lucide-react'
 import { getBrokerPersonality } from '@total-audio/core-agent-executor/client'
-import type { OSTheme } from '@/types/themes'
+import type { OSTheme } from '@aud-web/types/themes'
 
 interface OnboardingOverlayProps {
   theme: OSTheme

@@ -8,8 +8,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { getGoogleAuthUrl, type IntegrationType } from '@/lib/oauth'
+import { createClient } from '@aud-web/lib/supabase/server'
+import { getGoogleAuthUrl, type IntegrationType } from '@aud-web/lib/oauth'
 
 export async function POST(request: NextRequest) {
   try {

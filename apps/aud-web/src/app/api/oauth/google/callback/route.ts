@@ -8,13 +8,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@aud-web/lib/supabase/server'
 import {
   verifyStateToken,
   exchangeCodeForTokens,
   saveIntegrationTokens,
   type IntegrationType,
-} from '@/lib/oauth'
+} from '@aud-web/lib/oauth'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams

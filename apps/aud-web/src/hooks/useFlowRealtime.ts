@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { createClient } from "@supabase/supabase-js"
-import { useFlowStore } from "@/stores/flowStore"
+import { useFlowStore } from "@aud-web/stores/flowStore"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:54321",

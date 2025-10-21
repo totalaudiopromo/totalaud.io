@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAgentSpawner, type AgentRole, type SpawnParams } from '@/hooks/useAgentSpawner';
-import { useUISound } from '@/hooks/useUISound';
+import { useAgentSpawner, type AgentRole, type SpawnParams } from '@aud-web/hooks/useAgentSpawner';
+import { useUISound } from '@aud-web/hooks/useUISound';
 
 interface AgentSpawnModalProps {
   isOpen: boolean;

@@ -10,11 +10,11 @@
 import { useCallback, useState } from 'react'
 import { Play, BarChart3, Palette, Focus, VolumeX, Volume2, Users, List, Trash2 } from 'lucide-react'
 import { CommandPalette, useCommandPalette, type CommandAction } from './CommandPalette'
-import { useUserPrefs } from '@/hooks/useUserPrefs'
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { useTheme } from './themes/ThemeResolver'
 import { OSTheme } from './themes/types'
 import { AgentSpawnModal } from './AgentSpawnModal'
-import { useAgentSpawner, type AgentRole } from '@/hooks/useAgentSpawner'
+import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
 
 export function GlobalCommandPalette() {
   const { isOpen, close } = useCommandPalette()

@@ -18,8 +18,8 @@ const nextConfig = {
   },
   webpack: (config) => {
     // Fix path alias resolution for Vercel builds
-    // Ensures @/* resolves to src/* in webpack bundling
-    config.resolve.alias['@'] = path.resolve(__dirname, 'src');
+    // Use package-scoped alias instead of generic @/* for better monorepo compatibility
+    config.resolve.alias['@aud-web'] = path.resolve(__dirname, 'src');
     return config;
   },
 }

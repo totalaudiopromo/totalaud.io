@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useUISound } from "@/hooks/useUISound"
+import { useUISound } from "@aud-web/hooks/useUISound"
 
 type ThemeMode = "creative" | "console"
 
