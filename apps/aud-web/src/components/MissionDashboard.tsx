@@ -27,7 +27,7 @@ import type { OSTheme } from '@/types/themes'
 
 interface AgentStatus {
   agent_name: string
-  status: 'idle' | 'queued' | 'running' | 'complete' | 'error'
+  status: 'idle' | 'queued' | 'running' | 'complete' | 'error' | 'cancelled'
   message?: string
   result?: any
   started_at?: string
@@ -142,7 +142,7 @@ export function MissionDashboard({
   const colors = themeColors[theme] || themeColors.ascii
 
   // Agent color mapping
-  const agentColors = {
+  const agentColors: Record<string, string> = {
     broker: '#6366f1',
     scout: '#10b981',
     coach: '#3b82f6',

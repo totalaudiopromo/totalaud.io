@@ -26,7 +26,7 @@ import { useTheme } from './themes/ThemeResolver'
 
 interface AgentStatus {
   agent_name: string
-  status: 'idle' | 'queued' | 'running' | 'complete' | 'error'
+  status: 'idle' | 'queued' | 'running' | 'complete' | 'error' | 'cancelled'
   message?: string
   started_at?: string
   completed_at?: string
@@ -95,6 +95,7 @@ export function MissionPanel({
     running: '#3b82f6',
     complete: '#10b981',
     error: '#ef4444',
+    cancelled: '#9ca3af',
   }
 
   return (

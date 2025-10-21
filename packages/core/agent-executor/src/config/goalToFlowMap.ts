@@ -35,6 +35,9 @@ export interface FlowStep {
 }
 
 export interface FlowTemplate {
+  /** Unique identifier for the template */
+  id?: string
+
   /** Template name */
   name: string
 
