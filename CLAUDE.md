@@ -6,7 +6,7 @@
 **Location**: `/Users/chrisschofield/workspace/active/totalaud.io`
 **Status**: Experimental - Learning & Innovation Sandbox (Phase 4/5 Implementation Complete)
 **Purpose**: Cinematic AI agent workspace for music promotion - "operator → signal journey"
-**Live URL**: https://totalaud.io (Vercel deployment)
+**Live URL**: https://aud-web-production.up.railway.app
 
 **Key Distinction**: This is NOT the customer acquisition project (total-audio-platform). This is an experimental sandbox for innovation and learning.
 
@@ -20,7 +20,7 @@
 - **Animation**: Framer Motion 11.11.17
 - **Flow Canvas**: React Flow 11.11.4
 - **Build**: Turborepo + pnpm workspace
-- **Deployment**: Vercel
+- **Deployment**: Railway (replaced Vercel due to monorepo detection issues)
 - **UI Sound**: Web Audio API
 
 ---
@@ -475,17 +475,26 @@ pnpm lint:fix
 pnpm format
 pnpm format:check
 
-# Vercel deployment (from root)
-vercel                      # Deploy to preview
-vercel --prod               # Deploy to production
-vercel ls                   # List deployments
-vercel inspect <url>        # Inspect deployment
+# Railway deployment (from root)
+railway up                  # Deploy to Railway
+railway status              # Check deployment status
+railway logs                # View deployment logs
+railway domain              # Generate/view public domain
+railway open                # Open project in Railway dashboard
 ```
 
-### Vercel Configuration
-**Root Directory**: `apps/aud-web`
-**Build Command**: `cd ../.. && pnpm install && pnpm turbo build --filter=aud-web`
-**Output Directory**: `apps/aud-web/.next`
+### Railway Configuration
+**Build Command**: `pnpm install --no-frozen-lockfile && cd apps/aud-web && pnpm run build`
+**Start Command**: `cd apps/aud-web && pnpm start`
+**Config File**: `railway.json` (in repository root)
+**Project ID**: `43846fc7-5c12-4285-a5e0-14275f0e4857`
+**Live URL**: https://aud-web-production.up.railway.app
+
+**Why Railway Over Vercel**:
+- Vercel had persistent monorepo detection issues (70+ failed deployments)
+- Railway's Nixpacks builder handles pnpm workspaces correctly
+- First deployment succeeded without configuration tweaking
+- Better support for Next.js 15 + Turborepo + pnpm workspace structure
 
 **Environment Variables** (Production):
 ```bash
@@ -493,7 +502,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://ucncbighzqudaszewjrv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ANTHROPIC_API_KEY=<anthropic-key>
-NEXT_PUBLIC_APP_URL=https://totalaud.io
+NEXT_PUBLIC_APP_URL=https://aud-web-production.up.railway.app
 NODE_ENV=production
 ```
 
@@ -511,41 +520,26 @@ This is an **experimental sandbox** for:
 
 ---
 
-## 🚨 NOTES FOR CLAUDE CODE (Recent Issues)
+## 🚨 NOTES FOR CLAUDE CODE
 
-### Vercel Deployment Troubleshooting
-**Issue**: Module resolution errors during Vercel build despite files existing in Git
-**Files affected**: Onboarding components, hooks
-**Status**: Ongoing investigation
+### Deployment Platform: Railway (October 2025)
+**Decision**: Switched from Vercel to Railway after 70+ failed Vercel deployments
+**Root Cause**: Vercel's Build Output API v3 detection system doesn't properly register Next.js 15 + pnpm workspace + Turborepo builds
+**Railway Status**: ✅ Working perfectly - first deployment succeeded
 
-**Error Pattern**:
-```
-Module not found: Can't resolve '@/components/Onboarding/OperatorTerminal'
-Module not found: Can't resolve '@/hooks/useOnboardingPhase'
-```
+**Vercel Issues Summary** (documented in `VERCEL_DEPLOYMENT_COMPLETE_SUMMARY.md`):
+- Build completed successfully (55s, all routes generated)
+- But Vercel showed `[0ms]` build time in inspect
+- All routes returned 404 NOT_FOUND
+- Issue is with Vercel's infrastructure, not the code
+- Comprehensive documentation provided for Vercel support ticket if needed
 
-**Verified**:
-- ✅ Files exist locally in `apps/aud-web/src/`
-- ✅ Files are tracked in Git (`git ls-files`)
-- ✅ Files are in commits (`git ls-tree -r HEAD`)
-- ✅ TypeScript compiles locally without errors
-- ✅ tsconfig.json paths are correct (`@/*` → `./src/*`)
-
-**Possible Causes**:
-- Turborepo workspace path resolution issue
-- Vercel build cache problem
-- Monorepo build command needs adjustment
-
-**Attempted Fixes**:
-- Removed old conflicting route files
-- Force pushed clean commits
-- Triggered fresh builds
-
-**Next Steps** (if issue persists):
-- Try direct CLI deployment: `vercel --prod` (bypasses GitHub)
-- Clear Vercel build cache
-- Simplify build command (avoid Turborepo filter)
-- Check .gitignore for file exclusions
+**Railway Advantages**:
+- Nixpacks builder understands pnpm workspaces natively
+- No special configuration needed for monorepo structure
+- Handles `workspace:*` dependencies correctly
+- Fast deployment times
+- Easy domain generation via `railway domain` command
 
 ### Theme System Migration (Completed)
 **Changed**: Renamed themes from 'ableton'/'punk' to 'daw'/'analogue'
@@ -560,6 +554,7 @@ Module not found: Can't resolve '@/hooks/useOnboardingPhase'
 ---
 
 **Last Updated**: October 2025
-**Status**: Phase 4/5 Complete - Onboarding + Agent Spawning implemented
-**Recent Work**: Cinematic onboarding system, agent spawning modal, 5-theme system with motion/sound
+**Status**: Phase 4/5 Complete - Onboarding + Agent Spawning implemented + Railway deployment live
+**Recent Work**: Successfully deployed to Railway after resolving Vercel monorepo issues
+**Live URL**: https://aud-web-production.up.railway.app
 **Next**: Phase 6 - Supabase Realtime integration for live agent rendering
