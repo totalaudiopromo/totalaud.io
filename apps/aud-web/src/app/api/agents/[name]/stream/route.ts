@@ -2,6 +2,7 @@ import { runAgentWorkflow } from "@total-audio/core-agent-executor/server"
 import { NextRequest } from "next/server"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic" // Prevent static analysis during build
 
 export async function POST(
   req: NextRequest,
