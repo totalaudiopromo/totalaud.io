@@ -8,7 +8,8 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { Play, BarChart3, Palette, Focus, VolumeX, Volume2, Users, List, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Play, BarChart3, Palette, Focus, VolumeX, Volume2, Users, List, Trash2, Layout, Terminal, Sparkles, Layers, Music, BookOpen } from 'lucide-react'
 import { CommandPalette, useCommandPalette, type CommandAction } from './CommandPalette'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { useTheme } from './themes/ThemeResolver'
@@ -24,6 +25,7 @@ export function GlobalCommandPalette() {
   const [showSpawnModal, setShowSpawnModal] = useState(false)
   const [spawnRole, setSpawnRole] = useState<AgentRole>('scout')
   const { list: listAgents, remove: removeAgent } = useAgentSpawner()
+  const router = useRouter()
 
   // Handle agent spawn confirmation
   const handleAgentSpawned = useCallback((agentName: string) => {
@@ -186,6 +188,62 @@ export function GlobalCommandPalette() {
         close()
       },
       keywords: ['theme', 'analogue', 'analog', 'studio', 'warm', 'tape'],
+    },
+    // Studio Navigation Commands
+    {
+      id: 'studio-ascii',
+      label: 'open ascii studio',
+      description: 'terminal desk — type, test, repeat',
+      icon: Terminal,
+      action: () => {
+        router.push('/studio/ascii')
+        close()
+      },
+      keywords: ['studio', 'ascii', 'terminal', 'command', 'minimal'],
+    },
+    {
+      id: 'studio-xp',
+      label: 'open xp studio',
+      description: 'guided assistant — click, bounce, smile',
+      icon: Sparkles,
+      action: () => {
+        router.push('/studio/xp')
+        close()
+      },
+      keywords: ['studio', 'xp', 'wizard', 'guided', 'friendly'],
+    },
+    {
+      id: 'studio-aqua',
+      label: 'open aqua studio',
+      description: 'visual map — craft with clarity',
+      icon: Layers,
+      action: () => {
+        router.push('/studio/aqua')
+        close()
+      },
+      keywords: ['studio', 'aqua', 'canvas', 'visual', 'map', 'design'],
+    },
+    {
+      id: 'studio-daw',
+      label: 'open daw studio',
+      description: 'timeline — sync, sequence, create',
+      icon: Music,
+      action: () => {
+        router.push('/studio/daw')
+        close()
+      },
+      keywords: ['studio', 'daw', 'timeline', 'sequencer', 'tempo'],
+    },
+    {
+      id: 'studio-analogue',
+      label: 'open analogue studio',
+      description: 'journal — touch the signal',
+      icon: BookOpen,
+      action: () => {
+        router.push('/studio/analogue')
+        close()
+      },
+      keywords: ['studio', 'analogue', 'analog', 'journal', 'writing', 'reflection'],
     },
     {
       id: 'toggle-focus',
