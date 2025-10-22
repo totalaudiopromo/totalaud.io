@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "echo \"Skipping install in favor of custom build step\"",
   "buildCommand": "pnpm install --no-frozen-lockfile && cd apps/aud-web && pnpm run build",
-  "outputDirectory": "apps/aud-web/.next",
+  "outputDirectory": "apps/aud-web",
   "devCommand": "cd apps/aud-web && pnpm run dev"
 }
