@@ -1,4 +1,8 @@
 {
-  "buildCommand": "pnpm turbo build --filter=aud-web",
-  "installCommand": "pnpm install"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd apps/aud-web && pnpm run build",
+  "devCommand": "cd apps/aud-web && pnpm run dev",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/aud-web/.next",
+  "framework": null
 }
