@@ -56,7 +56,8 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const beatTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   // Initialize tracks from workflow nodes
   const [tracks, setTracks] = useState<Track[]>([
@@ -88,24 +89,31 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
     },
   ]);
 
-  // Beat timer
+  // Smooth animation timer
   useEffect(() => {
     if (isPlaying) {
-      beatTimerRef.current = setInterval(() => {
-        setCurrentBeat((prev) => prev + 1);
-      }, BEAT_DURATION);
+      startTimeRef.current = Date.now() - currentBeat * BEAT_DURATION;
+
+      const animate = () => {
+        const elapsed = Date.now() - startTimeRef.current;
+        const newBeat = elapsed / BEAT_DURATION;
+        setCurrentBeat(newBeat);
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+
+      animationFrameRef.current = requestAnimationFrame(animate);
     } else {
-      if (beatTimerRef.current) {
-        clearInterval(beatTimerRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     }
 
     return () => {
-      if (beatTimerRef.current) {
-        clearInterval(beatTimerRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isPlaying]);
+  }, [isPlaying, currentBeat]);
 
   const handlePlayPause = (actions: WorkflowActions) => {
     if (isPlaying) {
@@ -223,7 +231,7 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                     className="absolute top-0 bottom-0 w-0.5 bg-purple-500 z-10"
                     style={{ left: `${(currentBeat / 20) * 100}%` }}
                     animate={{ left: `${(currentBeat / 20) * 100}%` }}
-                    transition={{ duration: 0 }}
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.016 }}
                   >
                     <div className="w-3 h-3 bg-purple-500 rounded-full absolute -top-1 -left-1" />
                   </motion.div>
