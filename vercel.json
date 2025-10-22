@@ -1,5 +1,0 @@
-{
-  "buildCommand": "pnpm turbo build --filter=aud-web",
-  "installCommand": "pnpm install",
-  "framework": null
-}
