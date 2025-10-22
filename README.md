@@ -2,6 +2,8 @@
 
 AI-powered music marketing platform combining professional tools with experimental creative interface.
 
+**🚀 Live Demo**: https://aud-web-production.up.railway.app
+
 ## 🎵 What is TotalAud.io?
 
 **Total Audio Promo** → Professional toolkit for PRs, labels, and artists  
@@ -140,9 +142,24 @@ pnpm db:migrate         # Run migrations
 pnpm db:reset           # Reset database
 pnpm db:types           # Generate TypeScript types
 
+# Deployment (Railway)
+railway up              # Deploy to Railway
+railway status          # Check deployment status
+railway logs            # View deployment logs
+railway domain          # Generate/view public domain
+railway open            # Open project in Railway dashboard
+
 # Cleanup
 pnpm clean              # Clean all build artifacts
 ```
+
+## 🌐 Deployment
+
+**Platform**: Railway
+**Live URL**: https://aud-web-production.up.railway.app
+**Config**: See `railway.json` in repository root
+
+Railway was chosen over Vercel due to better support for Next.js 15 + pnpm workspace + Turborepo monorepo structures.
 
 ## 🗺️ Roadmap
 
