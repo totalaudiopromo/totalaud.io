@@ -24,6 +24,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
 import { AmbientSound } from '../Ambient/AmbientSound';
+import { ParallaxBackground } from '../ParallaxBackground';
 import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, Layers, Sparkles, Grid3x3 } from 'lucide-react';
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
@@ -39,7 +40,10 @@ export function AquaStudio({ initialTemplate }: AquaStudioProps) {
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
       {(state: WorkflowState, actions: WorkflowActions) => (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 relative">
+          {/* Parallax Background */}
+          <ParallaxBackground baseColor="#60a5fa" accentColor="#3b82f6" />
+
           {/* Ambient sound */}
           <AmbientSound type="theme-ambient" theme="aqua" autoPlay />
 
