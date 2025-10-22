@@ -3,6 +3,5 @@
   "buildCommand": "cd apps/aud-web && pnpm run build",
   "devCommand": "cd apps/aud-web && pnpm run dev",
   "installCommand": "pnpm install",
-  "outputDirectory": "apps/aud-web/.next",
-  "framework": null
+  "outputDirectory": "apps/aud-web"
 }
