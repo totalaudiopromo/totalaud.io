@@ -17,9 +17,9 @@ import {
 } from '@aud-web/components/Studios';
 
 interface StudioPageProps {
-  params: {
+  params: Promise<{
     theme: string;
-  };
+  }>;
 }
 
 const VALID_THEMES = ['ascii', 'xp', 'aqua', 'daw', 'analogue'];
@@ -30,8 +30,8 @@ export function generateStaticParams() {
   }));
 }
 
-export default function StudioPage({ params }: StudioPageProps) {
-  const { theme } = params;
+export default async function StudioPage({ params }: StudioPageProps) {
+  const { theme } = await params;
 
   // Validate theme
   if (!VALID_THEMES.includes(theme)) {
