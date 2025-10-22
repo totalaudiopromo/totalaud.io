@@ -18,8 +18,7 @@ import { useState, useRef, useEffect } from 'react';
 import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls } from 'reactflow';
 import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
 import { AmbientSound } from '../Ambient/AmbientSound';
-import { ConsoleShell } from '../ConsoleShell';
-import { Play, Square, RotateCcw, Plus } from 'lucide-react';
+import { CRTEffect } from '../CRTEffect';
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
 
 interface ASCIIStudioProps {
@@ -90,7 +89,10 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
       {(state: WorkflowState, actions: WorkflowActions) => (
-        <div className="min-h-screen bg-black text-green-400 font-mono">
+        <div className="min-h-screen bg-black text-green-400 font-mono relative">
+          {/* CRT Effect Overlay */}
+          <CRTEffect scanlineOpacity={0.08} glowIntensity={0.25} />
+
           {/* Ambient sound */}
           <AmbientSound type="theme-ambient" theme="ascii" autoPlay />
 
@@ -169,39 +171,8 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
                       spellCheck={false}
                     />
                   </div>
-
-                  {/* Quick Actions */}
-                  <div className="flex items-center gap-2 text-xs">
-                    <button
-                      onClick={() => handleCommand('run', actions)}
-                      disabled={state.isExecuting}
-                      className="px-3 py-1 border border-green-900 hover:border-green-700 hover:bg-green-950/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <Play className="w-3 h-3 inline mr-1" />
-                      run
-                    </button>
-                    <button
-                      onClick={() => handleCommand('stop', actions)}
-                      disabled={!state.isExecuting}
-                      className="px-3 py-1 border border-green-900 hover:border-green-700 hover:bg-green-950/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <Square className="w-3 h-3 inline mr-1" />
-                      stop
-                    </button>
-                    <button
-                      onClick={() => handleCommand('reset', actions)}
-                      className="px-3 py-1 border border-green-900 hover:border-green-700 hover:bg-green-950/30 transition-colors"
-                    >
-                      <RotateCcw className="w-3 h-3 inline mr-1" />
-                      reset
-                    </button>
-                    <button
-                      onClick={() => handleCommand('add skill', actions)}
-                      className="px-3 py-1 border border-green-900 hover:border-green-700 hover:bg-green-950/30 transition-colors"
-                    >
-                      <Plus className="w-3 h-3 inline mr-1" />
-                      add
-                    </button>
+                  <div className="text-xs text-green-900 mt-2">
+                    commands: run | stop | reset | add [type] | help
                   </div>
                 </div>
               </div>

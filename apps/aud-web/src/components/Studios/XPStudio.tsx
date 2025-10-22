@@ -17,6 +17,7 @@
 import { useState } from 'react';
 import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
 import { AmbientSound } from '../Ambient/AmbientSound';
+import { Confetti } from '../Confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Settings } from 'lucide-react';
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
@@ -117,9 +118,11 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                 {currentStep === 'welcome' && (
                   <motion.div
                     key="welcome"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -40, rotateX: 15, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
                     className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
                   >
                     <div className="text-center space-y-6">
@@ -155,9 +158,11 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                 {currentStep === 'configure' && (
                   <motion.div
                     key="configure"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -40, rotateX: 15, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
                     className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
                   >
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -209,9 +214,11 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                 {currentStep === 'review' && (
                   <motion.div
                     key="review"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -40, rotateX: 15, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
                     className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
                   >
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">Review your campaign</h2>
@@ -240,9 +247,11 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                 {currentStep === 'execute' && (
                   <motion.div
                     key="execute"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -40, rotateX: 15, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
                     className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100"
                   >
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -286,13 +295,15 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
 
                 {/* Complete Step */}
                 {currentStep === 'complete' && (
-                  <motion.div
-                    key="complete"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white rounded-2xl shadow-lg p-8 border border-green-100"
-                  >
-                    <div className="text-center space-y-6">
+                  <>
+                    <Confetti active={true} count={60} duration={4000} />
+                    <motion.div
+                      key="complete"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-white rounded-2xl shadow-lg p-8 border border-green-100"
+                    >
+                      <div className="text-center space-y-6">
                       <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-green-400 to-blue-400 flex items-center justify-center">
                         <CheckCircle2 className="w-10 h-10 text-white" />
                       </div>
@@ -309,6 +320,7 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                       </button>
                     </div>
                   </motion.div>
+                  </>
                 )}
               </AnimatePresence>
 
