@@ -35,12 +35,14 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
     ascii: [
       {
         title: 'SYSTEM ONLINE',
-        message: 'Agents initialised. Each block represents an intelligent agent. Press Start to begin orchestration.',
+        message:
+          'Agents initialised. Each block represents an intelligent agent. Press Start to begin orchestration.',
         position: { x: 50, y: 20 },
       },
       {
         title: 'EXECUTE NODE',
-        message: 'Select any agent to commence execution. Agents will coordinate autonomously in sequence.',
+        message:
+          'Select any agent to commence execution. Agents will coordinate autonomously in sequence.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
@@ -54,18 +56,21 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
     xp: [
       {
         title: 'welcome to totalaud.io flow studio',
-        message: 'Everything is set up and ready. Each module below is an agent. Press Start to get your campaign moving.',
+        message:
+          'Everything is set up and ready. Each module below is an agent. Press Start to get your campaign moving.',
         position: { x: 50, y: 20 },
       },
       {
         title: 'Starting Your Campaign',
-        message: 'Select any agent to begin. They will work together automatically, handling research and outreach.',
+        message:
+          'Select any agent to begin. They will work together automatically, handling research and outreach.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
       {
         title: 'Adding Modules',
-        message: 'Drag skills from the right panel to add more steps. Connect them to build your workflow.',
+        message:
+          'Drag skills from the right panel to add more steps. Connect them to build your workflow.',
         highlight: 'skills-palette',
         position: { x: 70, y: 70 },
       },
@@ -73,18 +78,21 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
     aqua: [
       {
         title: 'Welcome to Your Campaign Workspace',
-        message: 'Your workspace is ready. Each agent below contributes to your campaign. When you are ready, press Start.',
+        message:
+          'Your workspace is ready. Each agent below contributes to your campaign. When you are ready, press Start.',
         position: { x: 50, y: 20 },
       },
       {
         title: 'Press Start',
-        message: 'Select any agent to begin. They will coordinate seamlessly, handling research, outreach, and tracking.',
+        message:
+          'Select any agent to begin. They will coordinate seamlessly, handling research, outreach, and tracking.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
       {
         title: 'Build Your Flow',
-        message: 'Drag skills from the palette. Connect modules. Create your perfect campaign flow.',
+        message:
+          'Drag skills from the palette. Connect modules. Create your perfect campaign flow.',
         highlight: 'skills-palette',
         position: { x: 70, y: 70 },
       },
@@ -97,7 +105,8 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
       },
       {
         title: 'press start',
-        message: 'Select an agent to trigger the sequence. Agents run in parallel, mixing your campaign data.',
+        message:
+          'Select an agent to trigger the sequence. Agents run in parallel, mixing your campaign data.',
         highlight: 'start-node',
         position: { x: 30, y: 45 },
       },
@@ -132,7 +141,11 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
   return stepsByTheme[theme] || stepsByTheme.ascii
 }
 
-export function OnboardingOverlay({ theme, onDismiss, reducedMotion = false }: OnboardingOverlayProps) {
+export function OnboardingOverlay({
+  theme,
+  onDismiss,
+  reducedMotion = false,
+}: OnboardingOverlayProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const steps = getOnboardingSteps(theme)
   const step = steps[currentStep]
@@ -203,14 +216,8 @@ export function OnboardingOverlay({ theme, onDismiss, reducedMotion = false }: O
             style={{ borderColor: `${colors.accent}40` }}
           >
             <div className="flex items-center gap-3">
-              <Sparkles
-                className="w-5 h-5"
-                style={{ color: colors.accent }}
-              />
-              <h2
-                className="text-lg font-mono font-semibold"
-                style={{ color: colors.text }}
-              >
+              <Sparkles className="w-5 h-5" style={{ color: colors.accent }} />
+              <h2 className="text-lg font-mono font-semibold" style={{ color: colors.text }}>
                 {step.title}
               </h2>
             </div>
@@ -225,10 +232,7 @@ export function OnboardingOverlay({ theme, onDismiss, reducedMotion = false }: O
 
           {/* Content */}
           <div className="px-6 py-8">
-            <p
-              className="text-base font-mono leading-relaxed"
-              style={{ color: colors.text }}
-            >
+            <p className="text-base font-mono leading-relaxed" style={{ color: colors.text }}>
               {step.message}
             </p>
 

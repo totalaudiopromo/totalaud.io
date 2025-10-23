@@ -67,7 +67,7 @@ export function useBrokerMemory(
 
       try {
         // Get Supabase client (client-side or passed in)
-        const supabase = supabaseClient || await getSupabaseClient()
+        const supabase = supabaseClient || (await getSupabaseClient())
 
         // Get current user
         const {
@@ -79,19 +79,17 @@ export function useBrokerMemory(
         }
 
         // Upsert the field
-        const { error: upsertError } = await supabase
-          .from('user_profiles')
-          .upsert(
-            {
-              id: user.id,
-              [key]: value,
-              broker_session_id: sessionId,
-              updated_at: new Date().toISOString(),
-            },
-            {
-              onConflict: 'id',
-            }
-          )
+        const { error: upsertError } = await supabase.from('user_profiles').upsert(
+          {
+            id: user.id,
+            [key]: value,
+            broker_session_id: sessionId,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'id',
+          }
+        )
 
         if (upsertError) throw upsertError
 
@@ -119,7 +117,7 @@ export function useBrokerMemory(
       setError(null)
 
       try {
-        const supabase = supabaseClient || await getSupabaseClient()
+        const supabase = supabaseClient || (await getSupabaseClient())
 
         const {
           data: { user },
@@ -160,7 +158,7 @@ export function useBrokerMemory(
     setError(null)
 
     try {
-      const supabase = supabaseClient || await getSupabaseClient()
+      const supabase = supabaseClient || (await getSupabaseClient())
 
       const {
         data: { user },
@@ -204,7 +202,7 @@ export function useBrokerMemory(
     setError(null)
 
     try {
-      const supabase = supabaseClient || await getSupabaseClient()
+      const supabase = supabaseClient || (await getSupabaseClient())
 
       const {
         data: { user },
@@ -242,7 +240,7 @@ export function useBrokerMemory(
     setError(null)
 
     try {
-      const supabase = supabaseClient || await getSupabaseClient()
+      const supabase = supabaseClient || (await getSupabaseClient())
 
       const {
         data: { user },

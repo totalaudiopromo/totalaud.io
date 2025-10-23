@@ -8,10 +8,10 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useCallback, useEffect, useState, useRef, ReactNode } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState, useRef, ReactNode } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ReactFlow, {
   addEdge,
   useNodesState,
@@ -20,58 +20,62 @@ import ReactFlow, {
   Edge,
   Node,
   NodeTypes,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
-import { useFlowStore } from '@aud-web/stores/flowStore';
-import { useFlowRealtime } from '@aud-web/hooks/useFlowRealtime';
-import { FlowNode } from './FlowNode';
-import type { FlowTemplate, AgentStatus } from '@total-audio/core-agent-executor/client';
-import { useAgentExecution, getStatusColor, getAgent } from '@total-audio/core-agent-executor/client';
-import { playAgentSound } from '@total-audio/core-theme-engine';
-import { supabase } from '@aud-web/lib/supabase';
-import { generateUUID } from '@aud-web/lib/uuid';
-import { useUserPrefs } from '@aud-web/hooks/useUserPrefs';
-import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client';
-import { useTheme } from './themes/ThemeResolver';
+} from 'reactflow'
+import 'reactflow/dist/style.css'
+import { useFlowStore } from '@aud-web/stores/flowStore'
+import { useFlowRealtime } from '@aud-web/hooks/useFlowRealtime'
+import { FlowNode } from './FlowNode'
+import type { FlowTemplate, AgentStatus } from '@total-audio/core-agent-executor/client'
+import {
+  useAgentExecution,
+  getStatusColor,
+  getAgent,
+} from '@total-audio/core-agent-executor/client'
+import { playAgentSound } from '@total-audio/core-theme-engine'
+import { supabase } from '@aud-web/lib/supabase'
+import { generateUUID } from '@aud-web/lib/uuid'
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
+import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client'
+import { useTheme } from './themes/ThemeResolver'
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
   agent: FlowNode,
   decision: FlowNode,
-};
+}
 
 export interface WorkflowState {
-  nodes: Node[];
-  edges: Edge[];
-  isExecuting: boolean;
-  executionLogs: string[];
-  agentStatuses: Record<string, AgentStatus>;
-  sessionId: string;
+  nodes: Node[]
+  edges: Edge[]
+  isExecuting: boolean
+  executionLogs: string[]
+  agentStatuses: Record<string, AgentStatus>
+  sessionId: string
 }
 
 export interface BaseWorkflowProps {
   /** Initial flow template to load */
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 
   /** Render function for the workflow UI */
-  children: (state: WorkflowState, actions: WorkflowActions) => ReactNode;
+  children: (state: WorkflowState, actions: WorkflowActions) => ReactNode
 
   /** Optional callback when execution completes */
-  onExecutionComplete?: () => void;
+  onExecutionComplete?: () => void
 
   /** Optional callback when flow changes */
-  onFlowChange?: (nodes: Node[], edges: Edge[]) => void;
+  onFlowChange?: (nodes: Node[], edges: Edge[]) => void
 }
 
 export interface WorkflowActions {
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
-  onConnect: (connection: Connection) => void;
-  executeFlow: () => void;
-  stopExecution: () => void;
-  resetFlow: () => void;
-  addNode: (type: string, position: { x: number; y: number }) => void;
-  deleteNode: (nodeId: string) => void;
+  onNodesChange: (changes: any) => void
+  onEdgesChange: (changes: any) => void
+  onConnect: (connection: Connection) => void
+  executeFlow: () => void
+  stopExecution: () => void
+  resetFlow: () => void
+  addNode: (type: string, position: { x: number; y: number }) => void
+  deleteNode: (nodeId: string) => void
 }
 
 export function BaseWorkflow({
@@ -80,9 +84,9 @@ export function BaseWorkflow({
   onExecutionComplete,
   onFlowChange,
 }: BaseWorkflowProps) {
-  const { currentTheme } = useTheme();
-  const searchParams = useSearchParams();
-  const flowParam = searchParams.get('flow');
+  const { currentTheme } = useTheme()
+  const searchParams = useSearchParams()
+  const flowParam = searchParams.get('flow')
 
   // Store state
   const {
@@ -91,36 +95,36 @@ export function BaseWorkflow({
     setNodes: setStoreNodes,
     setEdges: setStoreEdges,
     isExecuting,
-  } = useFlowStore();
+  } = useFlowStore()
 
   // Node/Edge state
-  const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges);
-  const hasInitialized = useRef(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
+  const hasInitialized = useRef(false)
 
   // Execution state
-  const [executionLogs, setExecutionLogs] = useState<string[]>([]);
-  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({});
-  const sessionId = useRef(generateUUID());
+  const [executionLogs, setExecutionLogs] = useState<string[]>([])
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+  const sessionId = useRef(generateUUID())
 
   // Previous statuses for sound effects
-  const previousStatuses = useRef<Record<string, string>>({});
+  const previousStatuses = useRef<Record<string, string>>({})
 
   // Initialize from template
   useEffect(() => {
-    if (hasInitialized.current) return;
+    if (hasInitialized.current) return
 
-    let template = initialTemplate;
+    let template = initialTemplate
 
     // Try to load from URL parameter if no template provided
     if (!template && flowParam) {
-      template = deserializeFlowTemplate(flowParam);
+      template = deserializeFlowTemplate(flowParam)
     }
 
     if (template) {
       // Convert template to nodes and edges
-      const templateNodes: Node[] = [];
-      const templateEdges: Edge[] = [];
+      const templateNodes: Node[] = []
+      const templateEdges: Edge[] = []
 
       // Add template nodes
       template.nodes?.forEach((node, index) => {
@@ -133,8 +137,8 @@ export function BaseWorkflow({
             color: '#6366f1',
             status: 'idle',
           },
-        });
-      });
+        })
+      })
 
       // Add template edges
       template.edges?.forEach((edge, index) => {
@@ -143,77 +147,77 @@ export function BaseWorkflow({
           source: edge.source,
           target: edge.target,
           animated: true,
-        });
-      });
+        })
+      })
 
-      setNodes(templateNodes);
-      setEdges(templateEdges);
-      setStoreNodes(templateNodes);
-      setStoreEdges(templateEdges);
+      setNodes(templateNodes)
+      setEdges(templateEdges)
+      setStoreNodes(templateNodes)
+      setStoreEdges(templateEdges)
 
-      hasInitialized.current = true;
+      hasInitialized.current = true
     }
-  }, [initialTemplate, flowParam, setNodes, setEdges, setStoreNodes, setStoreEdges]);
+  }, [initialTemplate, flowParam, setNodes, setEdges, setStoreNodes, setStoreEdges])
 
   // Sync nodes/edges to store
   useEffect(() => {
     if (nodes.length > 0 || edges.length > 0) {
-      setStoreNodes(nodes);
-      setStoreEdges(edges);
-      onFlowChange?.(nodes, edges);
+      setStoreNodes(nodes)
+      setStoreEdges(edges)
+      onFlowChange?.(nodes, edges)
     }
-  }, [nodes, edges, setStoreNodes, setStoreEdges, onFlowChange]);
+  }, [nodes, edges, setStoreNodes, setStoreEdges, onFlowChange])
 
   // Handle node connections
   const onConnect = useCallback(
     (connection: Connection) => {
-      const newEdge = addEdge(connection, edges);
-      setEdges(newEdge as Edge[]);
+      const newEdge = addEdge(connection, edges)
+      setEdges(newEdge as Edge[])
     },
     [edges, setEdges]
-  );
+  )
 
   // Execute flow
   const executeFlow = useCallback(() => {
-    console.log('[BaseWorkflow] Executing flow with nodes:', nodes.length);
-    setExecutionLogs((prev) => [...prev, `[${new Date().toISOString()}] Flow execution started`]);
+    console.log('[BaseWorkflow] Executing flow with nodes:', nodes.length)
+    setExecutionLogs((prev) => [...prev, `[${new Date().toISOString()}] Flow execution started`])
 
     // TODO: Implement actual flow execution with agent-executor
     // For now, just update node statuses
     const updatedNodes = nodes.map((node) => ({
       ...node,
       data: { ...node.data, status: 'running' },
-    }));
+    }))
 
-    setNodes(updatedNodes);
+    setNodes(updatedNodes)
 
     // Play execution sound
-    playAgentSound(currentTheme, 'activate');
-  }, [nodes, setNodes, currentTheme]);
+    playAgentSound(currentTheme, 'activate')
+  }, [nodes, setNodes, currentTheme])
 
   // Stop execution
   const stopExecution = useCallback(() => {
-    console.log('[BaseWorkflow] Stopping execution');
-    setExecutionLogs((prev) => [...prev, `[${new Date().toISOString()}] Flow execution stopped`]);
+    console.log('[BaseWorkflow] Stopping execution')
+    setExecutionLogs((prev) => [...prev, `[${new Date().toISOString()}] Flow execution stopped`])
 
     const updatedNodes = nodes.map((node) => ({
       ...node,
       data: { ...node.data, status: 'idle' },
-    }));
+    }))
 
-    setNodes(updatedNodes);
-    onExecutionComplete?.();
-  }, [nodes, setNodes, onExecutionComplete]);
+    setNodes(updatedNodes)
+    onExecutionComplete?.()
+  }, [nodes, setNodes, onExecutionComplete])
 
   // Reset flow
   const resetFlow = useCallback(() => {
-    setNodes([]);
-    setEdges([]);
-    setExecutionLogs([]);
-    setAgentStatuses({});
-    setStoreNodes([]);
-    setStoreEdges([]);
-  }, [setNodes, setEdges, setStoreNodes, setStoreEdges]);
+    setNodes([])
+    setEdges([])
+    setExecutionLogs([])
+    setAgentStatuses({})
+    setStoreNodes([])
+    setStoreEdges([])
+  }, [setNodes, setEdges, setStoreNodes, setStoreEdges])
 
   // Add node
   const addNode = useCallback(
@@ -227,23 +231,23 @@ export function BaseWorkflow({
           color: '#6366f1',
           status: 'idle',
         },
-      };
+      }
 
-      setNodes((nds) => [...nds, newNode]);
-      playAgentSound(currentTheme, 'spawn');
+      setNodes((nds) => [...nds, newNode])
+      playAgentSound(currentTheme, 'spawn')
     },
     [setNodes, currentTheme]
-  );
+  )
 
   // Delete node
   const deleteNode = useCallback(
     (nodeId: string) => {
-      setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-      setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
-      playAgentSound(currentTheme, 'dismiss');
+      setNodes((nds) => nds.filter((n) => n.id !== nodeId))
+      setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId))
+      playAgentSound(currentTheme, 'dismiss')
     },
     [setNodes, setEdges, currentTheme]
-  );
+  )
 
   // Workflow state
   const state: WorkflowState = {
@@ -253,7 +257,7 @@ export function BaseWorkflow({
     executionLogs,
     agentStatuses,
     sessionId: sessionId.current,
-  };
+  }
 
   // Workflow actions
   const actions: WorkflowActions = {
@@ -265,7 +269,7 @@ export function BaseWorkflow({
     resetFlow,
     addNode,
     deleteNode,
-  };
+  }
 
-  return <>{children(state, actions)}</>;
+  return <>{children(state, actions)}</>
 }

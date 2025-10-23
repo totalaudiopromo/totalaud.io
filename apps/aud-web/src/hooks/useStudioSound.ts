@@ -7,29 +7,29 @@
  * Phase 6: Enhancements - Sound & Feedback Layer
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react'
 
 export interface StudioSoundConfig {
   /** Ambient loop audio file */
-  ambientLoop: string | null;
+  ambientLoop: string | null
 
   /** UI sound effects */
   uiSounds: {
-    spawn: string | null;
-    execute: string | null;
-    complete: string | null;
-    error: string | null;
-    interact: string | null;
-  };
+    spawn: string | null
+    execute: string | null
+    complete: string | null
+    error: string | null
+    interact: string | null
+  }
 
   /** Master volume (-40 to 0 dB, recommended -30) */
-  volume: number;
+  volume: number
 
   /** Ambient loop volume multiplier (0-1) */
-  ambientVolume: number;
+  ambientVolume: number
 
   /** UI sounds volume multiplier (0-1) */
-  uiVolume: number;
+  uiVolume: number
 }
 
 const SOUND_CONFIGS: Record<string, StudioSoundConfig> = {
@@ -102,130 +102,130 @@ const SOUND_CONFIGS: Record<string, StudioSoundConfig> = {
     ambientVolume: 0.3,
     uiVolume: 0.4,
   },
-};
+}
 
 /**
  * Hook for managing Studio audio
  */
 export function useStudioSound(theme: string) {
-  const config = SOUND_CONFIGS[theme] || SOUND_CONFIGS.ascii;
-  const ambientRef = useRef<HTMLAudioElement | null>(null);
-  const contextRef = useRef<AudioContext | null>(null);
+  const config = SOUND_CONFIGS[theme] || SOUND_CONFIGS.ascii
+  const ambientRef = useRef<HTMLAudioElement | null>(null)
+  const contextRef = useRef<AudioContext | null>(null)
 
   // Initialize audio context
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return
 
     if (!contextRef.current) {
-      contextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      contextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
     }
 
     return () => {
       if (contextRef.current?.state === 'running') {
-        contextRef.current.suspend();
+        contextRef.current.suspend()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Play ambient loop
   const playAmbient = useCallback(() => {
-    if (!config.ambientLoop || typeof window === 'undefined') return;
+    if (!config.ambientLoop || typeof window === 'undefined') return
 
     if (!ambientRef.current) {
-      ambientRef.current = new Audio(config.ambientLoop);
-      ambientRef.current.loop = true;
-      ambientRef.current.volume = config.ambientVolume;
+      ambientRef.current = new Audio(config.ambientLoop)
+      ambientRef.current.loop = true
+      ambientRef.current.volume = config.ambientVolume
     }
 
     ambientRef.current.play().catch((err) => {
-      console.log('[StudioSound] Ambient playback blocked:', err);
-    });
-  }, [config.ambientLoop, config.ambientVolume]);
+      console.log('[StudioSound] Ambient playback blocked:', err)
+    })
+  }, [config.ambientLoop, config.ambientVolume])
 
   // Stop ambient loop
   const stopAmbient = useCallback(() => {
     if (ambientRef.current) {
-      ambientRef.current.pause();
-      ambientRef.current.currentTime = 0;
+      ambientRef.current.pause()
+      ambientRef.current.currentTime = 0
     }
-  }, []);
+  }, [])
 
   // Crossfade to new ambient (when switching Studios)
   const crossfadeAmbient = useCallback(
     (newTheme: string, duration = 1500) => {
-      const newConfig = SOUND_CONFIGS[newTheme];
+      const newConfig = SOUND_CONFIGS[newTheme]
       if (!newConfig?.ambientLoop) {
-        stopAmbient();
-        return;
+        stopAmbient()
+        return
       }
 
       // Fade out current
       if (ambientRef.current) {
         const fadeOutInterval = setInterval(() => {
           if (ambientRef.current && ambientRef.current.volume > 0.01) {
-            ambientRef.current.volume -= 0.05;
+            ambientRef.current.volume -= 0.05
           } else {
-            clearInterval(fadeOutInterval);
-            stopAmbient();
+            clearInterval(fadeOutInterval)
+            stopAmbient()
 
             // Fade in new
-            ambientRef.current = new Audio(newConfig.ambientLoop!);
-            ambientRef.current.loop = true;
-            ambientRef.current.volume = 0;
-            ambientRef.current.play();
+            ambientRef.current = new Audio(newConfig.ambientLoop!)
+            ambientRef.current.loop = true
+            ambientRef.current.volume = 0
+            ambientRef.current.play()
 
             const fadeInInterval = setInterval(() => {
               if (ambientRef.current && ambientRef.current.volume < newConfig.ambientVolume) {
-                ambientRef.current.volume += 0.05;
+                ambientRef.current.volume += 0.05
               } else {
-                clearInterval(fadeInInterval);
+                clearInterval(fadeInInterval)
               }
-            }, duration / 20);
+            }, duration / 20)
           }
-        }, duration / 20);
+        }, duration / 20)
       }
     },
     [stopAmbient]
-  );
+  )
 
   // Play UI sound effect
   const playSound = useCallback(
     (type: keyof StudioSoundConfig['uiSounds']) => {
-      const soundFile = config.uiSounds[type];
-      if (!soundFile || typeof window === 'undefined') return;
+      const soundFile = config.uiSounds[type]
+      if (!soundFile || typeof window === 'undefined') return
 
-      const audio = new Audio(soundFile);
-      audio.volume = config.uiVolume;
+      const audio = new Audio(soundFile)
+      audio.volume = config.uiVolume
       audio.play().catch((err) => {
-        console.log(`[StudioSound] ${type} sound blocked:`, err);
-      });
+        console.log(`[StudioSound] ${type} sound blocked:`, err)
+      })
     },
     [config.uiSounds, config.uiVolume]
-  );
+  )
 
   // Generate procedural sound (for prototyping without audio files)
   const playProceduralSound = useCallback(
     (frequency: number, duration: number, type: OscillatorType = 'sine') => {
-      if (!contextRef.current || typeof window === 'undefined') return;
+      if (!contextRef.current || typeof window === 'undefined') return
 
-      const ctx = contextRef.current;
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
+      const ctx = contextRef.current
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
 
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
+      oscillator.connect(gainNode)
+      gainNode.connect(ctx.destination)
 
-      oscillator.type = type;
-      oscillator.frequency.value = frequency;
+      oscillator.type = type
+      oscillator.frequency.value = frequency
 
-      gainNode.gain.setValueAtTime(config.uiVolume * 0.3, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+      gainNode.gain.setValueAtTime(config.uiVolume * 0.3, ctx.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration)
 
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + duration);
+      oscillator.start(ctx.currentTime)
+      oscillator.stop(ctx.currentTime + duration)
     },
     [config.uiVolume]
-  );
+  )
 
   return {
     config,
@@ -234,7 +234,7 @@ export function useStudioSound(theme: string) {
     crossfadeAmbient,
     playSound,
     playProceduralSound,
-  };
+  }
 }
 
 /**
@@ -266,4 +266,4 @@ export const STUDIO_SOUND_PROFILES = {
     execute: { frequency: 330, duration: 0.5, type: 'sine' as OscillatorType },
     complete: { frequency: 392, duration: 0.6, type: 'sine' as OscillatorType },
   },
-};
+}

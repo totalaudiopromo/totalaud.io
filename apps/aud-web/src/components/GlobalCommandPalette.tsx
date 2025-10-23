@@ -9,7 +9,23 @@
 
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, BarChart3, Palette, Focus, VolumeX, Volume2, Users, List, Trash2, Layout, Terminal, Sparkles, Layers, Music, BookOpen } from 'lucide-react'
+import {
+  Play,
+  BarChart3,
+  Palette,
+  Focus,
+  VolumeX,
+  Volume2,
+  Users,
+  List,
+  Trash2,
+  Layout,
+  Terminal,
+  Sparkles,
+  Layers,
+  Music,
+  BookOpen,
+} from 'lucide-react'
 import { CommandPalette, useCommandPalette, type CommandAction } from './CommandPalette'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { useTheme } from './themes/ThemeResolver'
@@ -271,12 +287,7 @@ export function GlobalCommandPalette() {
 
   return (
     <>
-      <CommandPalette
-        isOpen={isOpen}
-        onClose={close}
-        commands={commands}
-        theme="dark"
-      />
+      <CommandPalette isOpen={isOpen} onClose={close} commands={commands} theme="dark" />
       <AgentSpawnModal
         isOpen={showSpawnModal}
         onClose={() => setShowSpawnModal(false)}

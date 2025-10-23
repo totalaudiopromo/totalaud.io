@@ -9,7 +9,12 @@
  * Design Principle: "Every number should represent something the user actually achieved."
  */
 
-import { GmailClient, SheetsClient, type GmailMetrics, type SheetsMetrics } from '@total-audio/core-integrations'
+import {
+  GmailClient,
+  SheetsClient,
+  type GmailMetrics,
+  type SheetsMetrics,
+} from '@total-audio/core-integrations'
 
 // Type for Supabase client (simplified)
 interface SupabaseClient {
@@ -89,7 +94,8 @@ export class TrackerAgent {
         return {
           success: true,
           metrics,
-          message: 'No integrations connected. Connect Gmail or Google Sheets to track campaign metrics.',
+          message:
+            'No integrations connected. Connect Gmail or Google Sheets to track campaign metrics.',
           errors: ['no_integrations_connected'],
         }
       }
@@ -334,13 +340,15 @@ export class TrackerAgent {
   /**
    * Get campaign results for display
    */
-  async getCampaignResults(): Promise<Array<{
-    metric_key: string
-    metric_value: number
-    metric_label: string
-    metric_unit?: string
-    updated_at: string
-  }>> {
+  async getCampaignResults(): Promise<
+    Array<{
+      metric_key: string
+      metric_value: number
+      metric_label: string
+      metric_unit?: string
+      updated_at: string
+    }>
+  > {
     const { data, error } = await this.supabase
       .from('campaign_results')
       .select('metric_key, metric_value, metric_label, metric_unit, updated_at')

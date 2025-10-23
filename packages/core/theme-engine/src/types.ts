@@ -25,16 +25,16 @@ export interface ThemeTypography {
 }
 
 export interface ThemeTexture {
-  overlay?: string      // Path to overlay texture PNG
-  pattern?: string      // Path to repeating pattern
-  opacity: number       // 0-1 opacity for textures
+  overlay?: string // Path to overlay texture PNG
+  pattern?: string // Path to repeating pattern
+  opacity: number // 0-1 opacity for textures
 }
 
 export interface ThemeMotion {
   intro: 'fade' | 'glitch' | 'bounce' | 'pulse' | 'jitter'
   transition: 'smooth' | 'snap' | 'elastic'
-  duration: number      // Default animation duration in ms
-  easing: string        // CSS easing function
+  duration: number // Default animation duration in ms
+  easing: string // CSS easing function
 }
 
 export interface ThemeSounds {
@@ -92,4 +92,3 @@ export interface ThemeContextValue {
   cycleTheme: () => void
   isLoaded: boolean
 }
-

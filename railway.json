@@ -3,12 +3,7 @@
   "build": {
     "builder": "NIXPACKS",
     "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=aud-web",
-    "watchPatterns": [
-      "apps/aud-web/**",
-      "packages/**",
-      "pnpm-lock.yaml",
-      "package.json"
-    ]
+    "watchPatterns": ["apps/aud-web/**", "packages/**", "pnpm-lock.yaml", "package.json"]
   },
   "deploy": {
     "startCommand": "cd apps/aud-web && pnpm start",

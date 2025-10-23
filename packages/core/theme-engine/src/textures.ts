@@ -78,7 +78,7 @@ function generateNoiseDataUrl(size: number = 256): string {
   canvas.width = size
   canvas.height = size
   const ctx = canvas.getContext('2d')
-  
+
   if (!ctx) return ''
 
   const imageData = ctx.createImageData(size, size)
@@ -86,10 +86,10 @@ function generateNoiseDataUrl(size: number = 256): string {
 
   for (let i = 0; i < data.length; i += 4) {
     const noise = Math.random() * 255
-    data[i] = noise     // R
+    data[i] = noise // R
     data[i + 1] = noise // G
     data[i + 2] = noise // B
-    data[i + 3] = 30    // A (low opacity)
+    data[i + 3] = 30 // A (low opacity)
   }
 
   ctx.putImageData(imageData, 0, 0)
@@ -101,8 +101,8 @@ function generateNoiseDataUrl(size: number = 256): string {
  */
 export async function preloadTextures(texturePaths: (string | undefined)[]): Promise<void> {
   const validPaths = texturePaths.filter(Boolean) as string[]
-  
-  const promises = validPaths.map(path => {
+
+  const promises = validPaths.map((path) => {
     return new Promise<void>((resolve) => {
       const img = new Image()
       img.onload = () => {
@@ -145,4 +145,3 @@ export function generateGridTexture(
     )
   `.trim()
 }
-

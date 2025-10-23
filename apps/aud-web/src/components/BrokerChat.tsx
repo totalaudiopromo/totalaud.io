@@ -1,12 +1,17 @@
-"use client"
+'use client'
 
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { OSTheme, THEME_CONFIGS } from "@aud-web/types/themes"
-import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
-import type { ThemeId } from "@total-audio/core-theme-engine"
-import { brokerConversationFlow, getNextStep, brokerPersona, getRandomLine } from "@aud-web/lib/broker-persona"
-import type { ConversationStep } from "@aud-web/lib/broker-persona"
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { OSTheme, THEME_CONFIGS } from '@aud-web/types/themes'
+import { audioEngine, getTheme } from '@total-audio/core-theme-engine'
+import type { ThemeId } from '@total-audio/core-theme-engine'
+import {
+  brokerConversationFlow,
+  getNextStep,
+  brokerPersona,
+  getRandomLine,
+} from '@aud-web/lib/broker-persona'
+import type { ConversationStep } from '@aud-web/lib/broker-persona'
 import {
   getBrokerPersonality,
   getPersonalityLine,
@@ -14,13 +19,13 @@ import {
   getQuirkAnimationClass,
   useBrokerMemoryLocal,
   getFlowTemplateForGoal,
-  serializeFlowTemplate
-} from "@total-audio/core-agent-executor/client"
-import { generateUUID } from "@aud-web/lib/uuid"
+  serializeFlowTemplate,
+} from '@total-audio/core-agent-executor/client'
+import { generateUUID } from '@aud-web/lib/uuid'
 
 interface Message {
   id: string
-  from: "broker" | "user"
+  from: 'broker' | 'user'
   content: string
   timestamp: Date
 }
@@ -33,16 +38,16 @@ interface BrokerChatProps {
 export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [currentStep, setCurrentStep] = useState<ConversationStep | null>(null)
-  const [userInput, setUserInput] = useState("")
+  const [userInput, setUserInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
   const [userData, setUserData] = useState({
-    artistName: "",
-    genre: "",
-    goals: "",
-    experience: ""
+    artistName: '',
+    genre: '',
+    goals: '',
+    experience: '',
   })
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messageIdCounter = useRef(0) // Unique ID generator
@@ -57,7 +62,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   // Start conversation
@@ -80,7 +85,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
     // Load first question
     setTimeout(() => {
-      const firstStep = getNextStep("greeting")
+      const firstStep = getNextStep('greeting')
       console.log('[BrokerChat] First step:', firstStep)
       if (firstStep) {
         setCurrentStep(firstStep)
@@ -90,7 +95,6 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         addBrokerMessage(styledMessage, 3500, needsOptions)
       }
     }, 3500)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Focus input when options are hidden
@@ -99,14 +103,18 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       currentStep: currentStep?.id,
       inputType: currentStep?.inputType,
       showOptions,
-      isTyping
+      isTyping,
     })
     if (!showOptions && currentStep?.inputType === 'text') {
       inputRef.current?.focus()
     }
   }, [showOptions, currentStep, isTyping])
 
-  const addBrokerMessage = (content: string, delay: number = 0, shouldShowOptions: boolean = false) => {
+  const addBrokerMessage = (
+    content: string,
+    delay: number = 0,
+    shouldShowOptions: boolean = false
+  ) => {
     setTimeout(() => {
       setIsTyping(true)
       // Play agent speak sound using Theme Engine
@@ -114,17 +122,20 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
       // Typewriter effect timing
       const typingDuration = content.length * 30 // 30ms per character
-      
+
       setTimeout(() => {
         messageIdCounter.current += 1
-        setMessages(prev => [...prev, {
-          id: `broker-${messageIdCounter.current}`,
-          from: "broker",
-          content,
-          timestamp: new Date()
-        }])
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `broker-${messageIdCounter.current}`,
+            from: 'broker',
+            content,
+            timestamp: new Date(),
+          },
+        ])
         setIsTyping(false)
-        
+
         // Show options after broker speaks if requested
         if (shouldShowOptions) {
           setTimeout(() => {
@@ -137,13 +148,16 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   const addUserMessage = (content: string) => {
     messageIdCounter.current += 1
-    setMessages(prev => [...prev, {
-      id: `user-${messageIdCounter.current}`,
-      from: "user",
-      content,
-      timestamp: new Date()
-    }])
-    
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `user-${messageIdCounter.current}`,
+        from: 'user',
+        content,
+        timestamp: new Date(),
+      },
+    ])
+
     // Play click sound using Theme Engine
     audioEngine.play(themeManifest.sounds.click)
   }
@@ -152,7 +166,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     if (!value.trim() || !currentStep) return
 
     addUserMessage(value)
-    setUserInput("")
+    setUserInput('')
     setShowOptions(false)
 
     // Save user data
@@ -185,22 +199,22 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   }
 
   const updateUserData = (stepId: string, value: string) => {
-    setUserData(prev => {
+    setUserData((prev) => {
       let memoryKey: string | null = null
 
       const updated = (() => {
         switch (stepId) {
-          case "ask_name":
-            memoryKey = "artist_name"
+          case 'ask_name':
+            memoryKey = 'artist_name'
             return { ...prev, artistName: value }
-          case "ask_genre":
-            memoryKey = "genre"
+          case 'ask_genre':
+            memoryKey = 'genre'
             return { ...prev, genre: value }
-          case "ask_goals":
-            memoryKey = "goal"
+          case 'ask_goals':
+            memoryKey = 'goal'
             return { ...prev, goals: value }
-          case "ask_experience":
-            memoryKey = "experience"
+          case 'ask_experience':
+            memoryKey = 'experience'
             return { ...prev, experience: value }
           default:
             return prev
@@ -220,7 +234,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const handleCompletion = (choice: string) => {
     addUserMessage(choice)
 
-    if (choice.includes("Yes")) {
+    if (choice.includes('Yes')) {
       // Get personality-specific confirmation
       const confirmation = getPersonalityLine(personality, 'confirmations')
       setTimeout(() => {
@@ -249,7 +263,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
           window.location.href = `/?welcome=true&flow=${serialized}`
         } else {
           // Fallback: redirect without prefill
-          window.location.href = "/?welcome=true"
+          window.location.href = '/?welcome=true'
         }
       }, 2500)
     } else {
@@ -258,20 +272,20 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       }, 500)
 
       setTimeout(() => {
-        window.location.href = "/"
+        window.location.href = '/'
       }, 2500)
     }
   }
 
   const getPrefix = () => {
     const prefixes: Record<OSTheme, string> = {
-      ascii: "⟩",
-      xp: "►",
-      aqua: "•",
-      daw: "●",
-      analogue: "✦"
+      ascii: '⟩',
+      xp: '►',
+      aqua: '•',
+      daw: '●',
+      analogue: '✦',
     }
-    return prefixes[selectedMode] || "›"
+    return prefixes[selectedMode] || '›'
   }
 
   return (
@@ -280,7 +294,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       style={{
         backgroundColor: theme.colors.background,
         fontFamily: theme.fontFamily,
-        color: theme.colors.text
+        color: theme.colors.text,
       }}
     >
       {/* Scanline effect for ASCII mode */}
@@ -293,7 +307,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         className="border-b p-4 flex items-center gap-3"
         style={{
           borderColor: theme.colors.border,
-          backgroundColor: `${theme.colors.background}ee`
+          backgroundColor: `${theme.colors.background}ee`,
         }}
       >
         <span className="text-2xl">🎙️</span>
@@ -303,7 +317,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
           </div>
           <div className="text-xs opacity-60">Your Audio Liaison</div>
         </div>
-        
+
         <div className="ml-auto flex items-center gap-2">
           <motion.div
             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -320,7 +334,8 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         <AnimatePresence>
           {messages.map((message, index) => {
             // Get animation config based on personality quirk
-            const animationClass = message.from === 'broker' ? getQuirkAnimationClass(personality) : ''
+            const animationClass =
+              message.from === 'broker' ? getQuirkAnimationClass(personality) : ''
             const quirk = personality.interactionQuirks
 
             return (
@@ -329,9 +344,10 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  duration: message.from === 'broker' && quirk.animationDuration
-                    ? quirk.animationDuration / 1000
-                    : 0.3
+                  duration:
+                    message.from === 'broker' && quirk.animationDuration
+                      ? quirk.animationDuration / 1000
+                      : 0.3,
                 }}
                 className={`flex ${message.from === 'user' ? 'justify-end' : 'justify-start'}`}
               >
@@ -340,15 +356,14 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
                     message.from === 'broker' ? 'rounded-tl-none' : 'rounded-tr-none'
                   } ${message.from === 'broker' ? animationClass : ''}`}
                   style={{
-                    backgroundColor: message.from === 'broker'
-                      ? `${theme.colors.primary}20`
-                      : `${theme.colors.accent}20`,
-                    borderLeft: message.from === 'broker'
-                      ? `3px solid ${theme.colors.primary}`
-                      : 'none',
-                    borderRight: message.from === 'user'
-                      ? `3px solid ${theme.colors.accent}`
-                      : 'none'
+                    backgroundColor:
+                      message.from === 'broker'
+                        ? `${theme.colors.primary}20`
+                        : `${theme.colors.accent}20`,
+                    borderLeft:
+                      message.from === 'broker' ? `3px solid ${theme.colors.primary}` : 'none',
+                    borderRight:
+                      message.from === 'user' ? `3px solid ${theme.colors.accent}` : 'none',
                   }}
                 >
                   {message.from === 'broker' && (
@@ -356,9 +371,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
                       {personality.messagePrefix || getPrefix()} Broker
                     </div>
                   )}
-                  <div className="whitespace-pre-wrap">
-                    {message.content}
-                  </div>
+                  <div className="whitespace-pre-wrap">{message.content}</div>
                 </div>
               </motion.div>
             )
@@ -408,7 +421,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
                   borderWidth: '2px',
                   borderStyle: 'solid',
                   borderColor: theme.colors.primary,
-                  color: theme.colors.text
+                  color: theme.colors.text,
                 }}
               >
                 {option}
@@ -425,9 +438,9 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
         <form
           onSubmit={handleSubmit}
           className="border-t p-4 bg-opacity-95"
-          style={{ 
+          style={{
             borderColor: theme.colors.border,
-            backgroundColor: theme.colors.background
+            backgroundColor: theme.colors.background,
           }}
         >
           <div className="flex gap-3">
@@ -444,7 +457,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
                 borderWidth: '2px',
                 borderStyle: 'solid',
                 borderColor: theme.colors.border,
-                color: theme.colors.text
+                color: theme.colors.text,
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = theme.colors.primary
@@ -459,18 +472,15 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
               className="px-6 py-3 rounded-lg font-bold transition-all disabled:opacity-30"
               style={{
                 backgroundColor: theme.colors.primary,
-                color: theme.colors.background
+                color: theme.colors.background,
               }}
             >
               Send
             </button>
           </div>
-          <div className="mt-2 text-xs opacity-40 font-mono">
-            Press Enter to send
-          </div>
+          <div className="mt-2 text-xs opacity-40 font-mono">Press Enter to send</div>
         </form>
       ) : null}
     </div>
   )
 }
-

@@ -12,60 +12,60 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls } from 'reactflow';
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
-import { AmbientSound } from '../Ambient/AmbientSound';
-import { CRTEffect } from '../CRTEffect';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
+import { useState, useRef, useEffect } from 'react'
+import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls } from 'reactflow'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
+import { AmbientSound } from '../Ambient/AmbientSound'
+import { CRTEffect } from '../CRTEffect'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 interface ASCIIStudioProps {
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 }
 
 export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
-  const [command, setCommand] = useState('');
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [command, setCommand] = useState('')
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Focus input on mount
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    inputRef.current?.focus()
+  }, [])
 
   const handleCommand = (cmd: string, actions: WorkflowActions) => {
-    if (!cmd.trim()) return;
+    if (!cmd.trim()) return
 
-    setCommandHistory((prev) => [...prev, `> ${cmd}`]);
+    setCommandHistory((prev) => [...prev, `> ${cmd}`])
 
     // Parse commands
-    const [action, ...args] = cmd.trim().toLowerCase().split(' ');
+    const [action, ...args] = cmd.trim().toLowerCase().split(' ')
 
     switch (action) {
       case 'run':
       case 'execute':
-        setCommandHistory((prev) => [...prev, 'signal> executing workflow...']);
-        actions.executeFlow();
-        break;
+        setCommandHistory((prev) => [...prev, 'signal> executing workflow...'])
+        actions.executeFlow()
+        break
 
       case 'stop':
-        setCommandHistory((prev) => [...prev, 'signal> stopping execution...']);
-        actions.stopExecution();
-        break;
+        setCommandHistory((prev) => [...prev, 'signal> stopping execution...'])
+        actions.stopExecution()
+        break
 
       case 'reset':
       case 'clear':
-        setCommandHistory([]);
-        actions.resetFlow();
-        break;
+        setCommandHistory([])
+        actions.resetFlow()
+        break
 
       case 'add':
-        const nodeType = args[0] || 'skill';
-        actions.addNode(nodeType, { x: Math.random() * 400, y: Math.random() * 300 });
-        setCommandHistory((prev) => [...prev, `signal> added ${nodeType} node`]);
-        break;
+        const nodeType = args[0] || 'skill'
+        actions.addNode(nodeType, { x: Math.random() * 400, y: Math.random() * 300 })
+        setCommandHistory((prev) => [...prev, `signal> added ${nodeType} node`])
+        break
 
       case 'help':
         setCommandHistory((prev) => [
@@ -76,15 +76,15 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
           '  reset/clear - Clear workflow and logs',
           '  add [type] - Add new node',
           '  help - Show this help',
-        ]);
-        break;
+        ])
+        break
 
       default:
-        setCommandHistory((prev) => [...prev, `signal> unknown command: ${action}`]);
+        setCommandHistory((prev) => [...prev, `signal> unknown command: ${action}`])
     }
 
-    setCommand('');
-  };
+    setCommand('')
+  }
 
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
@@ -130,12 +130,7 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
                   fitView
                   className="bg-black"
                 >
-                  <Background
-                    variant={BackgroundVariant.Dots}
-                    gap={16}
-                    size={1}
-                    color="#0a3d0a"
-                  />
+                  <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#0a3d0a" />
                   <MiniMap
                     nodeColor="#10b981"
                     maskColor="rgba(0, 0, 0, 0.8)"
@@ -163,7 +158,7 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
                       onChange={(e) => setCommand(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleCommand(command, actions);
+                          handleCommand(command, actions)
                         }
                       }}
                       placeholder="type command (try 'help')..."
@@ -225,5 +220,5 @@ export function ASCIIStudio({ initialTemplate }: ASCIIStudioProps) {
         </div>
       )}
     </BaseWorkflow>
-  );
+  )
 }

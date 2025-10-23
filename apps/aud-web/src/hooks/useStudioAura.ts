@@ -7,26 +7,26 @@
  * Phase 6: Enhancements - Studio Aura System
  */
 
-import { useMemo } from 'react';
+import { useMemo } from 'react'
 
 export interface StudioAura {
   /** Base color for the aura (CSS color string) */
-  baseColor: string;
+  baseColor: string
 
   /** Activity multiplier (0-1) affects glow intensity */
-  activityMultiplier: number;
+  activityMultiplier: number
 
   /** Glow intensity percentage (0-100) */
-  glowIntensity: number;
+  glowIntensity: number
 
   /** Secondary color for gradients */
-  secondaryColor: string;
+  secondaryColor: string
 
   /** Glow blur radius in pixels */
-  blurRadius: number;
+  blurRadius: number
 
   /** CSS gradient string for background */
-  backgroundGradient: string;
+  backgroundGradient: string
 }
 
 const AURA_CONFIGS = {
@@ -65,7 +65,7 @@ const AURA_CONFIGS = {
     activeIntensity: 40,
     blurRadius: 140,
   },
-};
+}
 
 /**
  * Get Studio Aura configuration based on theme and activity level
@@ -74,21 +74,21 @@ const AURA_CONFIGS = {
  * @param activityLevel - User activity level (0-100)
  */
 export function useStudioAura(theme: string, activityLevel: number): StudioAura {
-  const config = AURA_CONFIGS[theme as keyof typeof AURA_CONFIGS] || AURA_CONFIGS.ascii;
+  const config = AURA_CONFIGS[theme as keyof typeof AURA_CONFIGS] || AURA_CONFIGS.ascii
 
   const aura = useMemo(() => {
     // Normalize activity level to 0-1
-    const normalizedActivity = Math.min(100, Math.max(0, activityLevel)) / 100;
+    const normalizedActivity = Math.min(100, Math.max(0, activityLevel)) / 100
 
     // Calculate intensity based on activity
     const glowIntensity =
-      config.idleIntensity + (config.activeIntensity - config.idleIntensity) * normalizedActivity;
+      config.idleIntensity + (config.activeIntensity - config.idleIntensity) * normalizedActivity
 
     // Activity multiplier for other effects
-    const activityMultiplier = normalizedActivity;
+    const activityMultiplier = normalizedActivity
 
     // Generate gradient based on activity
-    const backgroundGradient = `radial-gradient(circle at 50% 50%, ${config.baseColor} 0%, ${config.secondaryColor} ${100 - glowIntensity}%, transparent 100%)`;
+    const backgroundGradient = `radial-gradient(circle at 50% 50%, ${config.baseColor} 0%, ${config.secondaryColor} ${100 - glowIntensity}%, transparent 100%)`
 
     return {
       baseColor: config.baseColor,
@@ -97,10 +97,10 @@ export function useStudioAura(theme: string, activityLevel: number): StudioAura 
       glowIntensity,
       blurRadius: config.blurRadius,
       backgroundGradient,
-    };
-  }, [theme, activityLevel, config]);
+    }
+  }, [theme, activityLevel, config])
 
-  return aura;
+  return aura
 }
 
 /**
@@ -113,7 +113,7 @@ export function getErrorAura(): Partial<StudioAura> {
     glowIntensity: 50,
     backgroundGradient:
       'radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 50%, transparent 100%)',
-  };
+  }
 }
 
 /**
@@ -126,5 +126,5 @@ export function getSuccessAura(): Partial<StudioAura> {
     glowIntensity: 70,
     backgroundGradient:
       'radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.08) 30%, transparent 100%)',
-  };
+  }
 }

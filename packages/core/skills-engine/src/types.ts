@@ -11,7 +11,7 @@ export const SkillSchema = z.object({
   model: z.string().optional(),
   config: z.record(z.any()).optional(),
   enabled: z.boolean().default(true),
-  is_beta: z.boolean().default(false)
+  is_beta: z.boolean().default(false),
 })
 
 export type Skill = z.infer<typeof SkillSchema>
@@ -28,4 +28,3 @@ export interface SkillExecutionResult {
   cost_usd: number
   duration_ms: number
 }
-

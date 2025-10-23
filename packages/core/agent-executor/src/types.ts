@@ -35,4 +35,3 @@ export interface AgentConfig {
   avatar_emoji?: string
   color?: string
 }
-

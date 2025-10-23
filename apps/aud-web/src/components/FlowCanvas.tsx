@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useCallback, useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState, useRef } from 'react'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -13,49 +13,53 @@ import ReactFlow, {
   Node,
   BackgroundVariant,
   Panel,
-  NodeTypes
-} from "reactflow"
-import "reactflow/dist/style.css"
-import { motion } from "framer-motion"
-import { useFlowStore } from "@aud-web/stores/flowStore"
-import { useFlowRealtime } from "@aud-web/hooks/useFlowRealtime"
-import { FlowNode } from "./FlowNode"
-import type { FlowTemplate, AgentStatus, OSTheme } from "@total-audio/core-agent-executor/client"
-import { useAgentExecution, getStatusColor, getAgent } from "@total-audio/core-agent-executor/client"
-import { playAgentSound } from "@total-audio/core-theme-engine"
-import { supabase } from "@aud-web/lib/supabase"
-import { generateUUID } from "@aud-web/lib/uuid"
-import { useUserPrefs } from "@aud-web/hooks/useUserPrefs"
-import { useFlowMode } from "@aud-web/hooks/useFlowMode"
-import { MissionDashboard } from "./MissionDashboard"
-import { MissionPanel } from "./MissionPanel"
-import { OnboardingOverlay } from "./OnboardingOverlay"
-import { AmbientSoundLayer } from "./AmbientSoundLayer"
-import { useTheme } from "./themes/ThemeResolver"
-import { Layers, BarChart3 } from "lucide-react"
+  NodeTypes,
+} from 'reactflow'
+import 'reactflow/dist/style.css'
+import { motion } from 'framer-motion'
+import { useFlowStore } from '@aud-web/stores/flowStore'
+import { useFlowRealtime } from '@aud-web/hooks/useFlowRealtime'
+import { FlowNode } from './FlowNode'
+import type { FlowTemplate, AgentStatus, OSTheme } from '@total-audio/core-agent-executor/client'
+import {
+  useAgentExecution,
+  getStatusColor,
+  getAgent,
+} from '@total-audio/core-agent-executor/client'
+import { playAgentSound } from '@total-audio/core-theme-engine'
+import { supabase } from '@aud-web/lib/supabase'
+import { generateUUID } from '@aud-web/lib/uuid'
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
+import { useFlowMode } from '@aud-web/hooks/useFlowMode'
+import { MissionDashboard } from './MissionDashboard'
+import { MissionPanel } from './MissionPanel'
+import { OnboardingOverlay } from './OnboardingOverlay'
+import { AmbientSoundLayer } from './AmbientSoundLayer'
+import { useTheme } from './themes/ThemeResolver'
+import { Layers, BarChart3 } from 'lucide-react'
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
   agent: FlowNode,
-  decision: FlowNode
+  decision: FlowNode,
 }
 
 const skillNodes = [
   {
-    name: "research-contacts",
-    label: "research contacts",
-    color: "#3b82f6"
+    name: 'research-contacts',
+    label: 'research contacts',
+    color: '#3b82f6',
   },
   {
-    name: "score-contacts",
-    label: "score contacts",
-    color: "#f59e0b"
+    name: 'score-contacts',
+    label: 'score contacts',
+    color: '#f59e0b',
   },
   {
-    name: "generate-pitch",
-    label: "generate pitch",
-    color: "#8b5cf6"
-  }
+    name: 'generate-pitch',
+    label: 'generate pitch',
+    color: '#8b5cf6',
+  },
 ]
 
 interface FlowCanvasProps {
@@ -68,7 +72,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     edges: storeEdges,
     setNodes: setStoreNodes,
     setEdges: setStoreEdges,
-    isExecuting
+    isExecuting,
   } = useFlowStore()
 
   const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes)
@@ -119,25 +123,26 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         console.log('[FlowCanvas] Creating new session in database:', sessionId)
 
         // Get current user (might be null for demo mode)
-        const { data: { user } } = await supabase.auth.getUser()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
 
         const insertData = {
           id: sessionId,
           user_id: user?.id || null,
           session_name: initialTemplate?.name || 'flow session',
           flow_template_id: initialTemplate?.id || null,
-          metadata: initialTemplate ? {
-            template_name: initialTemplate.name,
-            template_description: initialTemplate.description
-          } : {}
+          metadata: initialTemplate
+            ? {
+                template_name: initialTemplate.name,
+                template_description: initialTemplate.description,
+              }
+            : {},
         }
 
         console.log('[FlowCanvas] Attempting to insert session:', insertData)
 
-        const { data, error } = await supabase
-          .from('agent_sessions')
-          .insert(insertData)
-          .select()
+        const { data, error } = await supabase.from('agent_sessions').insert(insertData).select()
 
         if (error) {
           // Ignore duplicate key errors (race condition on hot reload)
@@ -190,11 +195,11 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     nodeStatuses,
     updatesByNode,
     isLoading: agentLoading,
-    error: agentError
+    error: agentError,
   } = useAgentExecution({
     supabaseClient: supabase,
     sessionId,
-    enableRealtime: true
+    enableRealtime: true,
   })
 
   // Initialize from template (only once)
@@ -265,26 +270,30 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       const reactFlowBounds = event.currentTarget.getBoundingClientRect()
       const position = {
         x: event.clientX - reactFlowBounds.left - 100,
-        y: event.clientY - reactFlowBounds.top - 30
+        y: event.clientY - reactFlowBounds.top - 30,
       }
 
       const nodeId = `skill-${Date.now()}`
       const newNode: Node = {
         id: nodeId,
-        type: "skill",
+        type: 'skill',
         position,
         data: {
           label: skill.label,
           skillName: skill.name,
-          status: "pending",
+          status: 'pending',
           onExecute: () => {
             // Execute with a default agent based on skill name
-            const agentName = skill.name.includes('research') ? 'scout' :
-                            skill.name.includes('score') ? 'tracker' :
-                            skill.name.includes('pitch') ? 'coach' : 'broker'
+            const agentName = skill.name.includes('research')
+              ? 'scout'
+              : skill.name.includes('score')
+                ? 'tracker'
+                : skill.name.includes('pitch')
+                  ? 'coach'
+                  : 'broker'
             executeNode(agentName, nodeId, { skillName: skill.name })
-          }
-        }
+          },
+        },
       }
 
       setNodes((nds) => [...nds, newNode])
@@ -351,18 +360,14 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                 completedAt: agentStatus.completed_at,
                 onExecute: () => {
                   // Execute the agent for this node
-                  executeNode(
-                    agentStatus.agent_name,
-                    node.id,
-                    node.data
-                  )
-                }
+                  executeNode(agentStatus.agent_name, node.id, node.data)
+                },
               },
               style: {
                 ...node.style,
                 borderColor: statusColor,
-                borderWidth: "3px"
-              }
+                borderWidth: '3px',
+              },
             }
           }
           // Add execute callback to nodes without status too
@@ -373,13 +378,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onExecute: () => {
                 // For nodes without status, try to execute with default agent
                 const agentName = node.data.agentName || node.data.skillName || 'broker'
-                executeNode(
-                  agentName,
-                  node.id,
-                  node.data
-                )
-              }
-            }
+                executeNode(agentName, node.id, node.data)
+              },
+            },
           }
         })
     )
@@ -392,10 +393,10 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         nds.map((node) => {
           if (node.id === nodeId) {
             const statusColors = {
-              pending: "#6b7280",
-              running: "#3b82f6",
-              completed: "#10b981",
-              failed: "#ef4444"
+              pending: '#6b7280',
+              running: '#3b82f6',
+              completed: '#10b981',
+              failed: '#ef4444',
             }
 
             return {
@@ -403,13 +404,13 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               data: {
                 ...node.data,
                 status,
-                output
+                output,
               },
               style: {
                 ...node.style,
-                borderColor: statusColors[status as keyof typeof statusColors] || "#6b7280",
-                borderWidth: "3px"
-              }
+                borderColor: statusColors[status as keyof typeof statusColors] || '#6b7280',
+                borderWidth: '3px',
+              },
             }
           }
           return node
@@ -497,9 +498,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               animate={{ opacity: 1, x: 0 }}
               className="absolute top-4 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl"
             >
-              <h3 className="text-sm font-bold text-white mb-3">
-                Skills Palette
-              </h3>
+              <h3 className="text-sm font-bold text-white mb-3">Skills Palette</h3>
               <div className="space-y-2">
                 {skillNodes.map((skill) => (
                   <button
@@ -507,8 +506,8 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                     onClick={() => setSelectedSkill(skill.name)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                       selectedSkill === skill.name
-                        ? "bg-blue-500 text-white ring-2 ring-blue-400"
-                        : "bg-slate-700 text-slate-200 hover:bg-slate-600"
+                        ? 'bg-blue-500 text-white ring-2 ring-blue-400'
+                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
                     }`}
                   >
                     {skill.label}
@@ -516,9 +515,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                 ))}
               </div>
               {selectedSkill && (
-                <p className="mt-3 text-xs text-slate-400">
-                  Click on canvas to add
-                </p>
+                <p className="mt-3 text-xs text-slate-400">Click on canvas to add</p>
               )}
             </motion.div>
 
@@ -560,16 +557,16 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute bottom-20 left-4 z-10 bg-slate-800/90 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-2xl max-w-sm"
               >
-                <h3 className="text-sm font-bold text-white mb-2">
-                  Agent Activity
-                </h3>
+                <h3 className="text-sm font-bold text-white mb-2">Agent Activity</h3>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {Object.entries(nodeStatuses).map(([nodeId, activity]) => (
                     <div key={nodeId} className="text-xs text-slate-300">
                       <div className="flex items-center gap-2">
                         <div
                           className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: getStatusColor(activity.status as AgentStatus) }}
+                          style={{
+                            backgroundColor: getStatusColor(activity.status as AgentStatus),
+                          }}
                         />
                         <span className="font-medium">{activity.agent_name}</span>
                         <span className="text-slate-500">→</span>
@@ -599,10 +596,10 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               <Controls className="bg-slate-800 border-slate-700" />
               <MiniMap
                 nodeColor={(node) => {
-                  if (node.data.status === "completed") return "#10b981"
-                  if (node.data.status === "running") return "#3b82f6"
-                  if (node.data.status === "failed") return "#ef4444"
-                  return "#6b7280"
+                  if (node.data.status === 'completed') return '#10b981'
+                  if (node.data.status === 'running') return '#3b82f6'
+                  if (node.data.status === 'failed') return '#ef4444'
+                  return '#6b7280'
                 }}
                 className="bg-slate-800 border-slate-700"
               />
@@ -612,14 +609,18 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                 size={themeConfig.id === 'ascii' ? 2 : 1}
                 color={`${themeConfig.colors.border}40`}
                 style={{
-                  animation: themeConfig.ambient.gridMotion !== 'none'
-                    ? `grid-${themeConfig.ambient.gridMotion} ${themeConfig.ambient.gridSpeed}s ease-in-out infinite`
-                    : 'none',
+                  animation:
+                    themeConfig.ambient.gridMotion !== 'none'
+                      ? `grid-${themeConfig.ambient.gridMotion} ${themeConfig.ambient.gridSpeed}s ease-in-out infinite`
+                      : 'none',
                 }}
               />
 
               {/* Legend Panel */}
-              <Panel position="bottom-right" className="bg-slate-800/90 backdrop-blur-xl rounded-lg border border-slate-700 p-3">
+              <Panel
+                position="bottom-right"
+                className="bg-slate-800/90 backdrop-blur-xl rounded-lg border border-slate-700 p-3"
+              >
                 <div className="flex gap-4 text-xs">
                   <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded-full bg-gray-500" />
@@ -675,4 +676,3 @@ function getColorForStepType(type: string): string {
       return '#8b5cf6' // Purple
   }
 }
-

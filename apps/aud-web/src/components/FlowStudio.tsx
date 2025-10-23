@@ -1,39 +1,39 @@
-'use client';
+'use client'
 
-import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { FlowCanvas } from './FlowCanvas';
-import ConsoleShell from './ConsoleShell';
-import ThemeToggle from './ThemeToggle';
-import { AmbientSound } from './Ambient/AmbientSound';
-import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
+import { useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { FlowCanvas } from './FlowCanvas'
+import ConsoleShell from './ConsoleShell'
+import ThemeToggle from './ThemeToggle'
+import { AmbientSound } from './Ambient/AmbientSound'
+import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 /**
  * Phase 4: Flow Studio - Main application environment.
  * Wraps existing FlowCanvas + agent status in theme-aware layout.
  */
 export function FlowStudio() {
-  const searchParams = useSearchParams();
-  const [theme, setTheme] = useState<string>('ascii');
-  const flowParam = searchParams.get('flow');
-  const welcomeParam = searchParams.get('welcome');
+  const searchParams = useSearchParams()
+  const [theme, setTheme] = useState<string>('ascii')
+  const flowParam = searchParams.get('flow')
+  const welcomeParam = searchParams.get('welcome')
 
   // Get theme from localStorage (set during onboarding)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('selected_theme');
+      const savedTheme = localStorage.getItem('selected_theme')
       if (savedTheme) {
-        setTheme(savedTheme);
+        setTheme(savedTheme)
       }
     }
-  }, []);
+  }, [])
 
   // Deserialize flow template if provided
-  let flowTemplate: FlowTemplate | null = null;
+  let flowTemplate: FlowTemplate | null = null
   if (flowParam) {
-    flowTemplate = deserializeFlowTemplate(flowParam);
-    console.log('[FlowStudio] Loaded flow template:', flowTemplate?.name);
+    flowTemplate = deserializeFlowTemplate(flowParam)
+    console.log('[FlowStudio] Loaded flow template:', flowTemplate?.name)
   }
 
   return (
@@ -127,5 +127,5 @@ export function FlowStudio() {
       {/* Theme Toggle */}
       <ThemeToggle />
     </main>
-  );
+  )
 }

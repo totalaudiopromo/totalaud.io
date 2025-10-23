@@ -35,11 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
-  return (
-    <ThemeContext.Provider value={themeManager}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={themeManager}>{children}</ThemeContext.Provider>
 }
 
 export function useTheme() {
@@ -49,4 +45,3 @@ export function useTheme() {
   }
   return context
 }
-

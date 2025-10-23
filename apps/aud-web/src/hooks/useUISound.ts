@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useRef, useState } from "react"
-import type { OSTheme } from "@aud-web/components/themes/types"
+import { useEffect, useRef, useState } from 'react'
+import type { OSTheme } from '@aud-web/components/themes/types'
 
 interface UISoundConfig {
   enabled: boolean
@@ -58,7 +58,7 @@ const THEME_SOUND_BANKS: Record<OSTheme, ThemeSoundBank> = {
 export function useUISound() {
   const [config, setConfig] = useState<UISoundConfig>({
     enabled: false, // Disabled by default, user can enable
-    volume: 0.3
+    volume: 0.3,
   })
 
   const audioContext = useRef<AudioContext | null>(null)
@@ -66,23 +66,23 @@ export function useUISound() {
 
   useEffect(() => {
     // Load config from localStorage
-    const saved = localStorage.getItem("ui-sound-config")
+    const saved = localStorage.getItem('ui-sound-config')
     if (saved) {
       setConfig(JSON.parse(saved))
     }
 
     // Initialize Web Audio API (more reliable than Audio elements)
-    if (typeof window !== "undefined" && "AudioContext" in window) {
+    if (typeof window !== 'undefined' && 'AudioContext' in window) {
       audioContext.current = new AudioContext()
     }
   }, [])
 
   useEffect(() => {
     // Save config to localStorage
-    localStorage.setItem("ui-sound-config", JSON.stringify(config))
+    localStorage.setItem('ui-sound-config', JSON.stringify(config))
   }, [config])
 
-  const playTone = (frequency: number, duration: number, type: OscillatorType = "sine") => {
+  const playTone = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
     if (!config.enabled || !audioContext.current) return
 
     try {
@@ -102,7 +102,7 @@ export function useUISound() {
       oscillator.start(ctx.currentTime)
       oscillator.stop(ctx.currentTime + duration)
     } catch (error) {
-      console.warn("Failed to play UI sound:", error)
+      console.warn('Failed to play UI sound:', error)
     }
   }
 
@@ -122,7 +122,7 @@ export function useUISound() {
 
   const loadAudioFile = async (url: string): Promise<AudioBuffer | null> => {
     if (!audioContext.current) return null
-    
+
     // Check cache first
     if (audioCache.current.has(url)) {
       return audioCache.current.get(url)!
@@ -157,7 +157,7 @@ export function useUISound() {
       gainNode.gain.value = config.volume
       source.start(0)
     } catch (error) {
-      console.warn("Failed to play audio file:", error)
+      console.warn('Failed to play audio file:', error)
     }
   }
 
@@ -174,89 +174,89 @@ export function useUISound() {
     playFocus: (theme: OSTheme) => playThemeSound(theme, 'focus'),
 
     // UI Sound Effects (Synthetic fallbacks)
-    click: () => playTone(800, 0.05, "sine"),
-    bleep: () => playTone(1200, 0.08, "square"),
+    click: () => playTone(800, 0.05, 'sine'),
+    bleep: () => playTone(1200, 0.08, 'square'),
     success: () => {
-      playTone(600, 0.06, "sine")
-      setTimeout(() => playTone(900, 0.08, "sine"), 60)
+      playTone(600, 0.06, 'sine')
+      setTimeout(() => playTone(900, 0.08, 'sine'), 60)
     },
-    error: () => playTone(200, 0.15, "sawtooth"),
-    notify: () => playTone(1000, 0.1, "triangle"),
-    
+    error: () => playTone(200, 0.15, 'sawtooth'),
+    notify: () => playTone(1000, 0.1, 'triangle'),
+
     // Agent-specific sounds
     agentStart: () => {
-      playTone(400, 0.08, "sine")
-      setTimeout(() => playTone(600, 0.08, "sine"), 80)
-      setTimeout(() => playTone(800, 0.1, "sine"), 160)
+      playTone(400, 0.08, 'sine')
+      setTimeout(() => playTone(600, 0.08, 'sine'), 80)
+      setTimeout(() => playTone(800, 0.1, 'sine'), 160)
     },
     agentComplete: () => {
-      playTone(800, 0.06, "sine")
-      setTimeout(() => playTone(1000, 0.08, "sine"), 60)
+      playTone(800, 0.06, 'sine')
+      setTimeout(() => playTone(1000, 0.08, 'sine'), 60)
     },
-    
+
     // Message sounds
-    messageReceived: () => playTone(900, 0.08, "sine"),
-    messageSent: () => playTone(700, 0.06, "triangle"),
-    
+    messageReceived: () => playTone(900, 0.08, 'sine'),
+    messageSent: () => playTone(700, 0.06, 'triangle'),
+
     // Theme-specific boot sounds
     boot: async (theme: string) => {
       const soundMap: Record<string, string> = {
-        ascii: "/sounds/ascii/beep-sequence.mp3",
-        xp: "/sounds/xp/xp-startup.mp3",
-        aqua: "/sounds/aqua/mac-chime.mp3",
-        ableton: "/sounds/ableton/sequencer-start.mp3",
-        punk: "/sounds/punk/tape-start.mp3"
+        ascii: '/sounds/ascii/beep-sequence.mp3',
+        xp: '/sounds/xp/xp-startup.mp3',
+        aqua: '/sounds/aqua/mac-chime.mp3',
+        ableton: '/sounds/ableton/sequencer-start.mp3',
+        punk: '/sounds/punk/tape-start.mp3',
       }
-      
+
       const soundFile = soundMap[theme]
       if (soundFile) {
         await playAudioFile(soundFile)
       } else {
         // Fallback to synthetic beep sequence
-        playTone(400, 0.08, "sine")
-        setTimeout(() => playTone(600, 0.08, "sine"), 80)
-        setTimeout(() => playTone(800, 0.1, "sine"), 160)
+        playTone(400, 0.08, 'sine')
+        setTimeout(() => playTone(600, 0.08, 'sine'), 80)
+        setTimeout(() => playTone(800, 0.1, 'sine'), 160)
       }
     },
-    
+
     // Theme ambient loops
     playAmbient: async (theme: string) => {
       const ambientMap: Record<string, string> = {
-        ascii: "/sounds/ascii/typing-soft.mp3",
-        aqua: "/sounds/aqua/vinyl-hiss.mp3",
-        ableton: "/sounds/ableton/synth-pad.mp3",
-        punk: "/sounds/punk/tape-hiss.mp3"
+        ascii: '/sounds/ascii/typing-soft.mp3',
+        aqua: '/sounds/aqua/vinyl-hiss.mp3',
+        ableton: '/sounds/ableton/synth-pad.mp3',
+        punk: '/sounds/punk/tape-hiss.mp3',
       }
-      
+
       const soundFile = ambientMap[theme]
       if (soundFile) {
         await playAudioFile(soundFile)
       }
     },
-    
+
     // Theme-specific click sounds
     themeClick: async (theme: string) => {
       const clickMap: Record<string, string> = {
-        ascii: "/sounds/ascii/mechanical-key.mp3",
-        xp: "/sounds/xp/xp-click.mp3",
-        aqua: "/sounds/aqua/aqua-pop.mp3",
-        ableton: "/sounds/ableton/clip-trigger.mp3",
-        punk: "/sounds/punk/stamp-press.mp3"
+        ascii: '/sounds/ascii/mechanical-key.mp3',
+        xp: '/sounds/xp/xp-click.mp3',
+        aqua: '/sounds/aqua/aqua-pop.mp3',
+        ableton: '/sounds/ableton/clip-trigger.mp3',
+        punk: '/sounds/punk/stamp-press.mp3',
       }
-      
+
       const soundFile = clickMap[theme]
       if (soundFile) {
         await playAudioFile(soundFile)
       } else {
         // Fallback to synthetic click
-        playTone(800, 0.05, "sine")
+        playTone(800, 0.05, 'sine')
       }
     },
-    
+
     // Toggle sound on/off
     toggle: () => {
       const newState = !config.enabled
-      setConfig(prev => ({ ...prev, enabled: newState }))
+      setConfig((prev) => ({ ...prev, enabled: newState }))
       // Play a confirmation sound when enabling
       if (newState && audioContext.current) {
         const ctx = audioContext.current
@@ -270,20 +270,16 @@ export function useUISound() {
         osc.stop(ctx.currentTime + 0.05)
       }
     },
-    
+
     setVolume: (volume: number) => {
-      setConfig(prev => ({ ...prev, volume: Math.max(0, Math.min(1, volume)) }))
+      setConfig((prev) => ({ ...prev, volume: Math.max(0, Math.min(1, volume)) }))
     },
-    
+
     // Preload theme sounds
     preloadThemeSounds: async (theme: string) => {
-      const sounds = [
-        `/sounds/${theme}/beep-sequence.mp3`,
-        `/sounds/${theme}/click.mp3`
-      ]
-      
-      await Promise.all(sounds.map(url => loadAudioFile(url)))
-    }
+      const sounds = [`/sounds/${theme}/beep-sequence.mp3`, `/sounds/${theme}/click.mp3`]
+
+      await Promise.all(sounds.map((url) => loadAudioFile(url)))
+    },
   }
 }
-

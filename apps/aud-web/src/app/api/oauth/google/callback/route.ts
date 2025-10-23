@@ -95,6 +95,8 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    return NextResponse.redirect(`${appUrl}/dashboard?error=oauth_failed&message=${encodeURIComponent(message)}`)
+    return NextResponse.redirect(
+      `${appUrl}/dashboard?error=oauth_failed&message=${encodeURIComponent(message)}`
+    )
   }
 }

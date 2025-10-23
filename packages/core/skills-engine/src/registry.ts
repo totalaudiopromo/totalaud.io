@@ -8,21 +8,20 @@ export class SkillRegistry {
 
   async initialize() {
     if (this.initialized) return
-    
+
     // Load from YAML files
     this.skills = await loadAllSkills()
-    
+
     // Sync to database
     await this.syncToDatabase()
-    
+
     this.initialized = true
   }
 
   private async syncToDatabase() {
     for (const [name, skill] of this.skills) {
-      const { error } = await supabase
-        .from('skills')
-        .upsert({
+      const { error } = await supabase.from('skills').upsert(
+        {
           name: skill.name,
           version: skill.version,
           category: skill.category,
@@ -33,11 +32,13 @@ export class SkillRegistry {
           model: skill.model,
           config: skill.config || {},
           enabled: skill.enabled,
-          is_beta: skill.is_beta
-        }, {
-          onConflict: 'name'
-        })
-      
+          is_beta: skill.is_beta,
+        },
+        {
+          onConflict: 'name',
+        }
+      )
+
       if (error) {
         console.error(`Failed to sync skill ${name}:`, error)
       }
@@ -53,9 +54,8 @@ export class SkillRegistry {
   }
 
   getByCategory(category: string): Skill[] {
-    return this.getAll().filter(s => s.category === category)
+    return this.getAll().filter((s) => s.category === category)
   }
 }
 
 export const skillRegistry = new SkillRegistry()
-

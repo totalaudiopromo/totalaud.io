@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
-import type { OSTheme } from '@aud-web/hooks/useOSSelection';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound'
+import type { OSTheme } from '@aud-web/hooks/useOSSelection'
 
 interface TransitionSequenceProps {
-  theme: OSTheme;
-  onComplete: () => void;
+  theme: OSTheme
+  onComplete: () => void
 }
 
 /**
@@ -15,30 +15,30 @@ interface TransitionSequenceProps {
  * Fade to black → logo morph → ambient drone → reveal Flow Studio.
  */
 export function TransitionSequence({ theme, onComplete }: TransitionSequenceProps) {
-  const [phase, setPhase] = useState<'fade-out' | 'reveal' | 'complete'>('fade-out');
+  const [phase, setPhase] = useState<'fade-out' | 'reveal' | 'complete'>('fade-out')
 
   useEffect(() => {
     // Phase 1: Fade to black (500ms)
     const fadeTimer = setTimeout(() => {
-      setPhase('reveal');
-    }, 500);
+      setPhase('reveal')
+    }, 500)
 
     // Phase 2: Logo reveal + messages (3000ms)
     const revealTimer = setTimeout(() => {
-      setPhase('complete');
-    }, 3500);
+      setPhase('complete')
+    }, 3500)
 
     // Phase 3: Transition to Flow Studio (4000ms total)
     const completeTimer = setTimeout(() => {
-      onComplete();
-    }, 4000);
+      onComplete()
+    }, 4000)
 
     return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(revealTimer);
-      clearTimeout(completeTimer);
-    };
-  }, [onComplete]);
+      clearTimeout(fadeTimer)
+      clearTimeout(revealTimer)
+      clearTimeout(completeTimer)
+    }
+  }, [onComplete])
 
   return (
     <div className="transition-sequence">
@@ -132,5 +132,5 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }

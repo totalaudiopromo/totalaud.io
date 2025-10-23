@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useOSSelection, type OSTheme } from '@aud-web/hooks/useOSSelection';
-import { useUserPrefs } from '@aud-web/hooks/useUserPrefs';
-import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
+import { useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useOSSelection, type OSTheme } from '@aud-web/hooks/useOSSelection'
+import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound'
 
 interface OSSelectorProps {
-  onConfirm: (theme: OSTheme) => void;
+  onConfirm: (theme: OSTheme) => void
 }
 
 /**
@@ -15,26 +15,26 @@ interface OSSelectorProps {
  * User selects their creative environment.
  */
 export function OSSelector({ onConfirm }: OSSelectorProps) {
-  const { updatePrefs } = useUserPrefs();
+  const { updatePrefs } = useUserPrefs()
   const { options, activeIndex, selectedTheme, isConfirmed, handleKeyPress } = useOSSelection(
     async (theme) => {
       // Persist theme selection to user preferences
-      await updatePrefs({ preferred_theme: theme });
-      onConfirm(theme);
+      await updatePrefs({ preferred_theme: theme })
+      onConfirm(theme)
     }
-  );
+  )
 
   // Attach keyboard listener
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      handleKeyPress(e);
-    };
+      handleKeyPress(e)
+    }
 
-    window.addEventListener('keydown', handler);
+    window.addEventListener('keydown', handler)
     return () => {
-      window.removeEventListener('keydown', handler);
-    };
-  }, [handleKeyPress]);
+      window.removeEventListener('keydown', handler)
+    }
+  }, [handleKeyPress])
 
   return (
     <div className="os-selector">
@@ -60,8 +60,8 @@ export function OSSelector({ onConfirm }: OSSelectorProps) {
           <div className="os-selector__options">
             <AnimatePresence mode="sync">
               {options.map((option, index) => {
-                const isActive = index === activeIndex;
-                const isSelected = selectedTheme === option.id;
+                const isActive = index === activeIndex
+                const isSelected = selectedTheme === option.id
 
                 return (
                   <motion.div
@@ -82,7 +82,7 @@ export function OSSelector({ onConfirm }: OSSelectorProps) {
                     <span className="os-selector__label">{option.label}</span>
                     <span className="os-selector__bracket">]</span>
                   </motion.div>
-                );
+                )
               })}
             </AnimatePresence>
           </div>
@@ -111,5 +111,5 @@ export function OSSelector({ onConfirm }: OSSelectorProps) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

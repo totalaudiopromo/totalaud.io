@@ -2,7 +2,7 @@ import OpenAI from 'openai'
 import type { AIMessage, AICompletionOptions, AICompletionResult } from './types'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function completeWithOpenAI(
@@ -10,12 +10,12 @@ export async function completeWithOpenAI(
   options: AICompletionOptions = {}
 ): Promise<AICompletionResult> {
   const model = options.model || 'gpt-4o'
-  
+
   const completion = await openai.chat.completions.create({
     model,
     messages: messages as any,
     temperature: options.temperature ?? 0.7,
-    max_tokens: options.max_tokens ?? 2000
+    max_tokens: options.max_tokens ?? 2000,
   })
 
   const usage = completion.usage!
@@ -30,7 +30,6 @@ export async function completeWithOpenAI(
     content,
     tokens_used: usage.total_tokens,
     cost_usd,
-    model
+    model,
   }
 }
-
