@@ -141,17 +141,15 @@ export function useAgentExecution({
     async (agent: string, nodeId: string, payload?: any) => {
       try {
         // Insert "running" status
-        const { error: insertError } = await supabaseClient
-          .from('agent_activity_log')
-          .insert({
-            agent_name: agent,
-            session_id: sessionId,
-            node_id: nodeId,
-            status: 'running',
-            message: `Agent ${agent} executing ${nodeId}`,
-            metadata: payload || {},
-            started_at: new Date().toISOString(),
-          })
+        const { error: insertError } = await supabaseClient.from('agent_activity_log').insert({
+          agent_name: agent,
+          session_id: sessionId,
+          node_id: nodeId,
+          status: 'running',
+          message: `Agent ${agent} executing ${nodeId}`,
+          metadata: payload || {},
+          started_at: new Date().toISOString(),
+        })
 
         if (insertError) throw insertError
 
@@ -159,24 +157,25 @@ export function useAgentExecution({
         await new Promise((resolve) => setTimeout(resolve, 1500))
 
         // Insert "complete" status
-        const { error: completeError } = await supabaseClient
-          .from('agent_activity_log')
-          .insert({
-            agent_name: agent,
-            session_id: sessionId,
-            node_id: nodeId,
-            status: 'complete',
-            message: `Agent ${agent} completed ${nodeId}`,
-            result: { success: true, timestamp: new Date().toISOString() },
-            completed_at: new Date().toISOString(),
-          })
+        const { error: completeError } = await supabaseClient.from('agent_activity_log').insert({
+          agent_name: agent,
+          session_id: sessionId,
+          node_id: nodeId,
+          status: 'complete',
+          message: `Agent ${agent} completed ${nodeId}`,
+          result: { success: true, timestamp: new Date().toISOString() },
+          completed_at: new Date().toISOString(),
+        })
 
         if (completeError) throw completeError
       } catch (err) {
         // Enhanced error logging to debug the issue
         console.error('[useAgentExecution] Failed to execute node:', err)
         console.error('[useAgentExecution] Error type:', typeof err)
-        console.error('[useAgentExecution] Error details:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+        console.error(
+          '[useAgentExecution] Error details:',
+          JSON.stringify(err, Object.getOwnPropertyNames(err))
+        )
         console.error('[useAgentExecution] Parameters:', { agent, nodeId, sessionId, payload })
 
         // Check if it's a Supabase error with more details
@@ -208,16 +207,14 @@ export function useAgentExecution({
   const cancelNode = useCallback(
     async (nodeId: string) => {
       try {
-        const { error: cancelError } = await supabaseClient
-          .from('agent_activity_log')
-          .insert({
-            session_id: sessionId,
-            node_id: nodeId,
-            agent_name: 'system',
-            status: 'cancelled',
-            message: `Node ${nodeId} cancelled by user`,
-            completed_at: new Date().toISOString(),
-          })
+        const { error: cancelError } = await supabaseClient.from('agent_activity_log').insert({
+          session_id: sessionId,
+          node_id: nodeId,
+          agent_name: 'system',
+          status: 'cancelled',
+          message: `Node ${nodeId} cancelled by user`,
+          completed_at: new Date().toISOString(),
+        })
 
         if (cancelError) throw cancelError
       } catch (err) {
@@ -258,10 +255,7 @@ export function useAgentExecution({
   const nodeStatuses: Record<string, AgentActivity> = {}
   for (const activity of updates) {
     const existing = nodeStatuses[activity.node_id]
-    if (
-      !existing ||
-      new Date(activity.created_at) > new Date(existing.created_at)
-    ) {
+    if (!existing || new Date(activity.created_at) > new Date(existing.created_at)) {
       nodeStatuses[activity.node_id] = activity
     }
   }

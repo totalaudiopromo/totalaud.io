@@ -22,4 +22,3 @@ export async function complete(
       throw new Error(`Unknown AI provider: ${provider}`)
   }
 }
-

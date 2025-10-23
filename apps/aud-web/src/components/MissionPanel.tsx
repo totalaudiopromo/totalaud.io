@@ -130,11 +130,7 @@ export function MissionPanel({
         }}
         aria-label={isCollapsed ? 'Expand panel' : 'Collapse panel'}
       >
-        {isCollapsed ? (
-          <ChevronLeft className="w-4 h-4" />
-        ) : (
-          <ChevronRight className="w-4 h-4" />
-        )}
+        {isCollapsed ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
       </button>
 
       <AnimatePresence mode="wait">
@@ -146,10 +142,7 @@ export function MissionPanel({
             className="flex flex-col h-full"
           >
             {/* Header */}
-            <div
-              className="p-4 border-b"
-              style={{ borderColor: `${colors.border}` }}
-            >
+            <div className="p-4 border-b" style={{ borderColor: `${colors.border}` }}>
               <h2
                 className="text-sm font-mono font-semibold mb-1"
                 style={{
@@ -159,10 +152,7 @@ export function MissionPanel({
               >
                 current campaign
               </h2>
-              <p
-                className="text-xs font-mono opacity-60 mb-2"
-                style={{ color: colors.text }}
-              >
+              <p className="text-xs font-mono opacity-60 mb-2" style={{ color: colors.text }}>
                 {new Date().toLocaleTimeString()}
               </p>
               <p
@@ -182,7 +172,10 @@ export function MissionPanel({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-4 h-4" style={{ color: colors.accent }} />
-                  <h3 className="text-xs font-mono font-semibold lowercase" style={{ color: colors.text }}>
+                  <h3
+                    className="text-xs font-mono font-semibold lowercase"
+                    style={{ color: colors.text }}
+                  >
                     campaign
                   </h3>
                 </div>
@@ -195,7 +188,10 @@ export function MissionPanel({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Activity className="w-4 h-4" style={{ color: colors.accent }} />
-                  <h3 className="text-xs font-mono font-semibold lowercase" style={{ color: colors.text }}>
+                  <h3
+                    className="text-xs font-mono font-semibold lowercase"
+                    style={{ color: colors.text }}
+                  >
                     agents
                   </h3>
                 </div>
@@ -210,10 +206,7 @@ export function MissionPanel({
                       if (!agent) return null
 
                       return (
-                        <div
-                          key={agentStatus.nodeId}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={agentStatus.nodeId} className="flex items-center gap-2">
                           <div
                             className="w-2 h-2 rounded-full"
                             style={{
@@ -222,11 +215,17 @@ export function MissionPanel({
                             }}
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-mono font-semibold truncate lowercase" style={{ color: colors.text }}>
+                            <p
+                              className="text-xs font-mono font-semibold truncate lowercase"
+                              style={{ color: colors.text }}
+                            >
                               {agent.name.toLowerCase()}
                             </p>
                             {agentStatus.message && (
-                              <p className="text-xs font-mono opacity-60 truncate" style={{ color: colors.text }}>
+                              <p
+                                className="text-xs font-mono opacity-60 truncate"
+                                style={{ color: colors.text }}
+                              >
                                 {agentStatus.message}
                               </p>
                             )}
@@ -243,7 +242,10 @@ export function MissionPanel({
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="w-4 h-4" style={{ color: colors.accent }} />
-                    <h3 className="text-xs font-mono font-semibold lowercase" style={{ color: colors.text }}>
+                    <h3
+                      className="text-xs font-mono font-semibold lowercase"
+                      style={{ color: colors.text }}
+                    >
                       progress
                     </h3>
                   </div>
@@ -252,7 +254,10 @@ export function MissionPanel({
                       <span className="text-xs font-mono" style={{ color: colors.text }}>
                         {completedAgents} of {totalAgents} agents
                       </span>
-                      <span className="text-xs font-mono font-semibold" style={{ color: colors.accent }}>
+                      <span
+                        className="text-xs font-mono font-semibold"
+                        style={{ color: colors.accent }}
+                      >
                         {Math.round(progress)}%
                       </span>
                     </div>
@@ -279,11 +284,17 @@ export function MissionPanel({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Lightbulb className="w-4 h-4" style={{ color: colors.accent }} />
-                  <h3 className="text-xs font-mono font-semibold lowercase" style={{ color: colors.text }}>
+                  <h3
+                    className="text-xs font-mono font-semibold lowercase"
+                    style={{ color: colors.text }}
+                  >
                     next action
                   </h3>
                 </div>
-                <p className="text-xs font-mono ml-6 leading-relaxed" style={{ color: colors.text }}>
+                <p
+                  className="text-xs font-mono ml-6 leading-relaxed"
+                  style={{ color: colors.text }}
+                >
                   {nextAction}
                 </p>
               </div>
@@ -316,10 +327,7 @@ export function MissionPanel({
             </div>
 
             {/* Footer - View Toggle */}
-            <div
-              className="p-4 border-t"
-              style={{ borderColor: `${colors.accent}30` }}
-            >
+            <div className="p-4 border-t" style={{ borderColor: `${colors.accent}30` }}>
               <button
                 onClick={onToggleView}
                 className="w-full px-4 py-2 rounded font-mono text-sm font-semibold lowercase flex items-center justify-center gap-2 transition-all hover:scale-105"

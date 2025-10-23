@@ -7,30 +7,30 @@
  * Phase 6: Enhancements - Motion Language System
  */
 
-import { useMemo } from 'react';
+import { useMemo } from 'react'
 
-export type TransitionSpeed = 'instant' | 'fast' | 'medium' | 'slow' | 'drift';
+export type TransitionSpeed = 'instant' | 'fast' | 'medium' | 'slow' | 'drift'
 
 export interface StudioMotion {
   /** Animation duration in milliseconds */
-  duration: number;
+  duration: number
 
   /** CSS easing function */
-  easing: string;
+  easing: string
 
   /** Overshoot amount for spring animations (0-1) */
-  overshoot: number;
+  overshoot: number
 
   /** Semantic speed label */
-  transitionSpeed: TransitionSpeed;
+  transitionSpeed: TransitionSpeed
 
   /** Framer Motion spring config (optional) */
   spring?: {
-    type: 'spring';
-    stiffness: number;
-    damping: number;
-    mass: number;
-  };
+    type: 'spring'
+    stiffness: number
+    damping: number
+    mass: number
+  }
 }
 
 const MOTION_CONFIGS: Record<string, StudioMotion> = {
@@ -74,39 +74,39 @@ const MOTION_CONFIGS: Record<string, StudioMotion> = {
     overshoot: 0,
     transitionSpeed: 'drift',
   },
-};
+}
 
 /**
  * Get the motion configuration for a specific Studio theme
  */
 export function useStudioMotion(theme: string): StudioMotion {
   const motion = useMemo(() => {
-    return MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-  }, [theme]);
+    return MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii
+  }, [theme])
 
-  return motion;
+  return motion
 }
 
 /**
  * Get Framer Motion transition config for a theme
  */
 export function getFramerTransition(theme: string) {
-  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
+  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii
 
   if (config.spring) {
-    return config.spring;
+    return config.spring
   }
 
   return {
     duration: config.duration / 1000, // Convert to seconds
     ease: config.easing,
-  };
+  }
 }
 
 /**
  * Get CSS transition string for a theme
  */
 export function getCSSTransition(theme: string, property = 'all'): string {
-  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-  return `${property} ${config.duration}ms ${config.easing}`;
+  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii
+  return `${property} ${config.duration}ms ${config.easing}`
 }

@@ -7,19 +7,19 @@
  * Phase 6: Enhancements - Dynamic Signal System
  */
 
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
 
 export interface SignalPresenceProps {
-  studio: string;
-  activityLevel: number;
-  className?: string;
+  studio: string
+  activityLevel: number
+  className?: string
 }
 
 export function SignalPresence({ studio, activityLevel, className = '' }: SignalPresenceProps) {
   // Normalize activity to 0-1
-  const activity = Math.min(100, Math.max(0, activityLevel)) / 100;
+  const activity = Math.min(100, Math.max(0, activityLevel)) / 100
 
   switch (studio) {
     case 'ascii':
@@ -38,7 +38,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         >
           &gt;_
         </motion.div>
-      );
+      )
 
     case 'xp':
       // Floating orb that bounces
@@ -75,7 +75,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
             </motion.div>
           )}
         </motion.div>
-      );
+      )
 
     case 'aqua':
       // Shimmering particle
@@ -104,12 +104,12 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
           />
           <div className="absolute inset-0 w-3 h-3 rounded-full bg-gradient-to-br from-blue-300 to-cyan-200" />
         </motion.div>
-      );
+      )
 
     case 'daw':
       // Pulse synced to BPM
-      const bpm = 120;
-      const beatDuration = 60 / bpm;
+      const bpm = 120
+      const beatDuration = 60 / bpm
 
       return (
         <motion.div
@@ -138,7 +138,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
             />
           </div>
         </motion.div>
-      );
+      )
 
     case 'analogue':
       // Soft brushstroke signature
@@ -159,9 +159,9 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         >
           ~signal
         </motion.div>
-      );
+      )
 
     default:
-      return null;
+      return null
   }
 }

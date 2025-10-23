@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import { OSTheme, THEME_CONFIGS } from "@aud-web/types/themes"
-import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
-import type { ThemeId } from "@total-audio/core-theme-engine"
-import { getBrokerPersonality, getPersonalityLine } from "@total-audio/core-agent-executor/client"
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { OSTheme, THEME_CONFIGS } from '@aud-web/types/themes'
+import { audioEngine, getTheme } from '@total-audio/core-theme-engine'
+import type { ThemeId } from '@total-audio/core-theme-engine'
+import { getBrokerPersonality, getPersonalityLine } from '@total-audio/core-agent-executor/client'
 
 interface BrokerIntroProps {
   selectedMode: OSTheme
@@ -22,7 +22,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
 
   useEffect(() => {
     console.log('[BrokerIntro] Mounted, starting 1.5s timer')
-    
+
     // Play agent spawn sound using Theme Engine
     audioEngine.play(themeManifest.sounds.agentSpeak)
 
@@ -31,7 +31,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
 
     // Pulse glow
     const glowInterval = setInterval(() => {
-      setGlowIntensity(prev => {
+      setGlowIntensity((prev) => {
         if (prev >= 50) return 0
         return prev + 10
       })
@@ -48,7 +48,6 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
       clearInterval(glowInterval)
       clearTimeout(timer)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onComplete]) // Removed 'sound' and 'selectedMode' to prevent infinite loop
 
   return (
@@ -58,7 +57,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
         backgroundColor: theme.colors.background,
-        fontFamily: theme.fontFamily
+        fontFamily: theme.fontFamily,
       }}
     >
       {/* Ambient glow */}
@@ -66,7 +65,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `radial-gradient(circle at center, ${theme.colors.primary}${glowIntensity.toString(16).padStart(2, '0')}, transparent 60%)`,
-          transition: 'background 0.1s ease-out'
+          transition: 'background 0.1s ease-out',
         }}
       />
 
@@ -94,18 +93,12 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
           className="space-y-3"
         >
           {/* Theme-specific greeting */}
-          <div
-            className="font-mono text-lg"
-            style={{ color: theme.colors.primary }}
-          >
+          <div className="font-mono text-lg" style={{ color: theme.colors.primary }}>
             {themeGreeting}
           </div>
 
           {/* Agent name */}
-          <div
-            className="text-3xl font-bold"
-            style={{ color: theme.colors.text }}
-          >
+          <div className="text-3xl font-bold" style={{ color: theme.colors.text }}>
             Agent Broker
           </div>
 
@@ -117,10 +110,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: theme.colors.accent }}
             />
-            <span
-              className="text-sm font-mono"
-              style={{ color: theme.colors.text, opacity: 0.7 }}
-            >
+            <span className="text-sm font-mono" style={{ color: theme.colors.text, opacity: 0.7 }}>
               [OK]
             </span>
           </div>
@@ -140,4 +130,3 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
     </motion.div>
   )
 }
-

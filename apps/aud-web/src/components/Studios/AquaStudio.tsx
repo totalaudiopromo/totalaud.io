@@ -12,30 +12,24 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import ReactFlow, {
-  Background,
-  BackgroundVariant,
-  MiniMap,
-  Controls,
-  Panel,
-} from 'reactflow';
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
-import { AmbientSound } from '../Ambient/AmbientSound';
-import { ParallaxBackground } from '../ParallaxBackground';
-import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Layers, Sparkles, Grid3x3 } from 'lucide-react';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
+import { useState } from 'react'
+import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls, Panel } from 'reactflow'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
+import { AmbientSound } from '../Ambient/AmbientSound'
+import { ParallaxBackground } from '../ParallaxBackground'
+import { motion } from 'framer-motion'
+import { Play, Pause, RotateCcw, Layers, Sparkles, Grid3x3 } from 'lucide-react'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 interface AquaStudioProps {
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 }
 
 export function AquaStudio({ initialTemplate }: AquaStudioProps) {
-  const [showMinimap, setShowMinimap] = useState(true);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showMinimap, setShowMinimap] = useState(true)
+  const [showGrid, setShowGrid] = useState(true)
 
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
@@ -222,10 +216,7 @@ export function AquaStudio({ initialTemplate }: AquaStudioProps) {
                     </div>
                     <div className="space-y-2">
                       {state.nodes.slice(0, 4).map((node, i) => (
-                        <div
-                          key={node.id}
-                          className="flex items-center justify-between text-sm"
-                        >
+                        <div key={node.id} className="flex items-center justify-between text-sm">
                           <span className="text-slate-700 truncate">{node.data.label}</span>
                           <div
                             className={`w-2 h-2 rounded-full ${
@@ -254,8 +245,8 @@ export function AquaStudio({ initialTemplate }: AquaStudioProps) {
                       <div className="space-y-2">
                         <h3 className="font-semibold text-slate-800">Welcome to Aqua Studio</h3>
                         <p className="text-sm text-slate-600 leading-relaxed">
-                          Start by dragging nodes onto the canvas or use the command palette (⌘K)
-                          to create your workflow visually.
+                          Start by dragging nodes onto the canvas or use the command palette (⌘K) to
+                          create your workflow visually.
                         </p>
                       </div>
                     </div>
@@ -295,5 +286,5 @@ export function AquaStudio({ initialTemplate }: AquaStudioProps) {
         </div>
       )}
     </BaseWorkflow>
-  );
+  )
 }

@@ -53,7 +53,9 @@ export function useUserPrefs(userId?: string): UseUserPrefsReturn {
       setError(null)
 
       // Get authenticated user if no userId provided
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       const uid = userId || user?.id
 
       // If no user, use localStorage fallback for demo mode

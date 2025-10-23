@@ -6,10 +6,7 @@
  */
 
 // Re-export client-safe types and functions
-export type {
-  FlowTemplate,
-  FlowStep,
-} from './config/goalToFlowMap'
+export type { FlowTemplate, FlowStep } from './config/goalToFlowMap'
 
 export {
   deserializeFlowTemplate,
@@ -104,12 +101,15 @@ export function getAgent(agentId: string): AgentMetadata | null {
 
 // Broker personality helpers
 // Re-export directly from personas module (client-safe)
-export type { BrokerPersonality, BrokerPersonalityQuirk } from './personas/brokerPersonalityRegistry'
+export type {
+  BrokerPersonality,
+  BrokerPersonalityQuirk,
+} from './personas/brokerPersonalityRegistry'
 export {
   getBrokerPersonality,
   getPersonalityLine,
   applyPersonalityTone,
-  getQuirkAnimationClass
+  getQuirkAnimationClass,
 } from './personas/brokerPersonalityRegistry'
 export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
 

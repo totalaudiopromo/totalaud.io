@@ -21,10 +21,7 @@ export type IntegrationType = 'gmail' | 'google_sheets' | 'airtable' | 'mailchim
  */
 function generatePKCE() {
   const codeVerifier = nanoid(64)
-  const codeChallenge = crypto
-    .createHash('sha256')
-    .update(codeVerifier)
-    .digest('base64url')
+  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
 
   return { codeVerifier, codeChallenge }
 }
@@ -134,12 +131,7 @@ export class OAuthHandler {
    * Generate OAuth authorization URL
    */
   generateAuthUrl(params: InitiateOAuthParams): string {
-    const config = this.getConfig(
-      params.integrationType,
-      params.clientId,
-      '',
-      params.redirectUri
-    )
+    const config = this.getConfig(params.integrationType, params.clientId, '', params.redirectUri)
 
     const urlParams: Record<string, string> = {
       client_id: config.clientId,

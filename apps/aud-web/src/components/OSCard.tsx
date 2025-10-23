@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { motion } from "framer-motion"
-import { useState } from "react"
-import { ThemeConfig } from "@aud-web/types/themes"
-import { useUISound } from "@aud-web/hooks/useUISound"
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { ThemeConfig } from '@aud-web/types/themes'
+import { useUISound } from '@aud-web/hooks/useUISound'
 
 interface OSCardProps {
   theme: ThemeConfig
@@ -41,8 +41,8 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
       style={{
         backgroundColor: theme.colors.background,
         borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-        borderWidth: isSelected ? "3px" : "2px",
-        borderStyle: "solid"
+        borderWidth: isSelected ? '3px' : '2px',
+        borderStyle: 'solid',
       }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -52,7 +52,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         className="absolute inset-0 opacity-30 bg-cover bg-center"
         style={{
           backgroundImage: `url(${textureUrl})`,
-          mixBlendMode: theme.id === 'xp' || theme.id === 'aqua' ? 'overlay' : 'multiply'
+          mixBlendMode: theme.id === 'xp' || theme.id === 'aqua' ? 'overlay' : 'multiply',
         }}
       />
 
@@ -63,7 +63,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
           style={{
             backgroundImage: `url(/textures/${theme.textures.pattern}.png)`,
             backgroundSize: '256px 256px',
-            backgroundRepeat: 'repeat'
+            backgroundRepeat: 'repeat',
           }}
         />
       )}
@@ -72,13 +72,13 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
       {theme.effects?.scanlines && (
         <div className="absolute inset-0 pointer-events-none scanline-effect opacity-20" />
       )}
-      
+
       {theme.effects?.halftone && (
         <div
           className="absolute inset-0 pointer-events-none opacity-30"
           style={{
             backgroundImage: 'radial-gradient(circle, transparent 30%, rgba(255,0,255,0.1) 30%)',
-            backgroundSize: '4px 4px'
+            backgroundSize: '4px 4px',
           }}
         />
       )}
@@ -88,13 +88,13 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         className="relative z-10 h-full flex flex-col items-center justify-center p-6 text-center"
         style={{
           fontFamily: theme.fontFamily,
-          color: theme.colors.text
+          color: theme.colors.text,
         }}
       >
         {/* ASCII Header for terminal theme */}
         {theme.id === 'ascii' && (
           <pre className="text-[10px] leading-tight mb-4 opacity-60 ascii-art">
-{`┌────────────────────────────┐
+            {`┌────────────────────────────┐
 │ ${theme.displayName.padEnd(26)} │
 └────────────────────────────┘`}
           </pre>
@@ -105,9 +105,8 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
           className="text-2xl font-bold mb-3"
           style={{
             color: theme.colors.primary,
-            textShadow: isHovered && theme.effects?.glow
-              ? `0 0 20px ${theme.colors.primary}`
-              : 'none'
+            textShadow:
+              isHovered && theme.effects?.glow ? `0 0 20px ${theme.colors.primary}` : 'none',
           }}
           animate={isHovered ? { scale: [1, 1.05, 1] } : {}}
           transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
@@ -116,10 +115,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         </motion.h3>
 
         {/* Description */}
-        <p
-          className="text-sm mb-4 opacity-80"
-          style={{ color: theme.colors.text }}
-        >
+        <p className="text-sm mb-4 opacity-80" style={{ color: theme.colors.text }}>
           {theme.description}
         </p>
 
@@ -129,7 +125,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
           style={{
             backgroundColor: `${theme.colors.primary}20`,
             color: theme.colors.primary,
-            border: `1px solid ${theme.colors.primary}40`
+            border: `1px solid ${theme.colors.primary}40`,
           }}
         >
           {theme.tagline}
@@ -143,7 +139,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
             className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"
             style={{
               backgroundColor: theme.colors.primary,
-              color: theme.colors.background
+              color: theme.colors.background,
             }}
           >
             ✓
@@ -158,7 +154,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
             className="absolute inset-0 pointer-events-none"
             style={{
               background: `radial-gradient(circle at center, ${theme.colors.primary}20, transparent 70%)`,
-              mixBlendMode: 'screen'
+              mixBlendMode: 'screen',
             }}
           />
         )}
@@ -167,9 +163,9 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
       {/* Loading Bar Easter Egg (XP theme) */}
       {theme.id === 'xp' && isHovered && (
         <motion.div
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 2, ease: "linear" }}
+          initial={{ width: '0%' }}
+          animate={{ width: '100%' }}
+          transition={{ duration: 2, ease: 'linear' }}
           className="absolute bottom-0 left-0 h-1"
           style={{ backgroundColor: theme.colors.accent }}
         />
@@ -180,7 +176,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         <motion.div
           initial={{ rotate: -5, x: -10, y: -10 }}
           animate={{ rotate: 5, x: 10, y: 10 }}
-          transition={{ duration: 0.3, repeat: Infinity, repeatType: "reverse" }}
+          transition={{ duration: 0.3, repeat: Infinity, repeatType: 'reverse' }}
           className="absolute top-2 left-2 text-4xl opacity-80"
         >
           ⚡
@@ -189,4 +185,3 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
     </motion.button>
   )
 }
-

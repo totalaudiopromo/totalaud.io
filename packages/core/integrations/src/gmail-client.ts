@@ -351,7 +351,10 @@ export class GmailClient {
 /**
  * Helper function to create Gmail client from connection
  */
-export function createGmailClient(accessToken: string, options?: Partial<GmailClientOptions>): GmailClient {
+export function createGmailClient(
+  accessToken: string,
+  options?: Partial<GmailClientOptions>
+): GmailClient {
   return new GmailClient({
     accessToken,
     campaignTag: options?.campaignTag,

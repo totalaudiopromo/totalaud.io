@@ -1,1 +1,1 @@
-export { AmbientSound } from './AmbientSound';
+export { AmbientSound } from './AmbientSound'

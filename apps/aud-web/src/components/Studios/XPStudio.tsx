@@ -12,41 +12,41 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
-import { AmbientSound } from '../Ambient/AmbientSound';
-import { Confetti } from '../Confetti';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Settings } from 'lucide-react';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
-import ReactFlow, { Background, BackgroundVariant } from 'reactflow';
+import { useState } from 'react'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
+import { AmbientSound } from '../Ambient/AmbientSound'
+import { Confetti } from '../Confetti'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Settings } from 'lucide-react'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
+import ReactFlow, { Background, BackgroundVariant } from 'reactflow'
 
 interface XPStudioProps {
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 }
 
-type WizardStep = 'welcome' | 'configure' | 'review' | 'execute' | 'complete';
+type WizardStep = 'welcome' | 'configure' | 'review' | 'execute' | 'complete'
 
 export function XPStudio({ initialTemplate }: XPStudioProps) {
-  const [currentStep, setCurrentStep] = useState<WizardStep>('welcome');
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [campaignName, setCampaignName] = useState('');
-  const [campaignGoal, setCampaignGoal] = useState('');
+  const [currentStep, setCurrentStep] = useState<WizardStep>('welcome')
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [campaignName, setCampaignName] = useState('')
+  const [campaignGoal, setCampaignGoal] = useState('')
 
-  const steps: WizardStep[] = ['welcome', 'configure', 'review', 'execute', 'complete'];
-  const currentStepIndex = steps.indexOf(currentStep);
+  const steps: WizardStep[] = ['welcome', 'configure', 'review', 'execute', 'complete']
+  const currentStepIndex = steps.indexOf(currentStep)
 
   const nextStep = () => {
-    const nextIndex = Math.min(currentStepIndex + 1, steps.length - 1);
-    setCurrentStep(steps[nextIndex]);
-  };
+    const nextIndex = Math.min(currentStepIndex + 1, steps.length - 1)
+    setCurrentStep(steps[nextIndex])
+  }
 
   const prevStep = () => {
-    const prevIndex = Math.max(currentStepIndex - 1, 0);
-    setCurrentStep(steps[prevIndex]);
-  };
+    const prevIndex = Math.max(currentStepIndex - 1, 0)
+    setCurrentStep(steps[prevIndex])
+  }
 
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
@@ -90,11 +90,7 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                           : 'bg-gray-200 text-gray-400'
                       }`}
                     >
-                      {index < currentStepIndex ? (
-                        <CheckCircle2 className="w-5 h-5" />
-                      ) : (
-                        index + 1
-                      )}
+                      {index < currentStepIndex ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
                     </div>
                     {index < steps.length - 1 && (
                       <div
@@ -225,15 +221,11 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                     <div className="space-y-4">
                       <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
                         <div className="text-sm text-gray-500 mb-1">Campaign Name</div>
-                        <div className="font-medium text-gray-800">
-                          {campaignName || 'Not set'}
-                        </div>
+                        <div className="font-medium text-gray-800">{campaignName || 'Not set'}</div>
                       </div>
                       <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
                         <div className="text-sm text-gray-500 mb-1">Goal</div>
-                        <div className="font-medium text-gray-800">
-                          {campaignGoal || 'Not set'}
-                        </div>
+                        <div className="font-medium text-gray-800">{campaignGoal || 'Not set'}</div>
                       </div>
                       <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
                         <div className="text-sm text-gray-500 mb-1">Agents Configured</div>
@@ -281,8 +273,8 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                         </p>
                         <button
                           onClick={() => {
-                            actions.executeFlow();
-                            setTimeout(() => nextStep(), 2000);
+                            actions.executeFlow()
+                            setTimeout(() => nextStep(), 2000)
                           }}
                           className="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl"
                         >
@@ -304,22 +296,22 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
                       className="bg-white rounded-2xl shadow-lg p-8 border border-green-100"
                     >
                       <div className="text-center space-y-6">
-                      <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-green-400 to-blue-400 flex items-center justify-center">
-                        <CheckCircle2 className="w-10 h-10 text-white" />
+                        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-green-400 to-blue-400 flex items-center justify-center">
+                          <CheckCircle2 className="w-10 h-10 text-white" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-gray-800">All Done!</h2>
+                        <p className="text-gray-600 max-w-xl mx-auto">
+                          Your campaign is now running. We'll notify you as agents complete their
+                          tasks and discover opportunities.
+                        </p>
+                        <button
+                          onClick={() => setCurrentStep('welcome')}
+                          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        >
+                          Start Another Campaign
+                        </button>
                       </div>
-                      <h2 className="text-3xl font-bold text-gray-800">All Done!</h2>
-                      <p className="text-gray-600 max-w-xl mx-auto">
-                        Your campaign is now running. We'll notify you as agents complete their
-                        tasks and discover opportunities.
-                      </p>
-                      <button
-                        onClick={() => setCurrentStep('welcome')}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                      >
-                        Start Another Campaign
-                      </button>
-                    </div>
-                  </motion.div>
+                    </motion.div>
                   </>
                 )}
               </AnimatePresence>
@@ -380,5 +372,5 @@ export function XPStudio({ initialTemplate }: XPStudioProps) {
         </div>
       )}
     </BaseWorkflow>
-  );
+  )
 }

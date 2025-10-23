@@ -165,7 +165,11 @@ export class CoachAgent {
       return 'No campaign metrics available yet.'
     }
 
-    const metrics = data as Array<{ metric_key: string; metric_value: number; metric_label: string }>
+    const metrics = data as Array<{
+      metric_key: string
+      metric_value: number
+      metric_label: string
+    }>
 
     const emailsSent = metrics.find((m) => m.metric_key === 'emails_sent')?.metric_value || 0
     const replies = metrics.find((m) => m.metric_key === 'email_replies')?.metric_value || 0
@@ -291,7 +295,9 @@ Write ONLY the email body. No subject line. No signature.`
     const parts: string[] = []
 
     if (drafts.length > 0) {
-      parts.push(`🎯 Generated ${drafts.length} personalized follow-up${drafts.length === 1 ? '' : 's'}`)
+      parts.push(
+        `🎯 Generated ${drafts.length} personalized follow-up${drafts.length === 1 ? '' : 's'}`
+      )
       parts.push(`Theme: ${this.theme}`)
     }
 
@@ -309,15 +315,17 @@ Write ONLY the email body. No subject line. No signature.`
   /**
    * Get all drafts for current session
    */
-  async getDrafts(): Promise<Array<{
-    id: string
-    contact_email: string
-    contact_name?: string
-    subject: string
-    body: string
-    status: string
-    created_at: string
-  }>> {
+  async getDrafts(): Promise<
+    Array<{
+      id: string
+      contact_email: string
+      contact_name?: string
+      subject: string
+      body: string
+      status: string
+      created_at: string
+    }>
+  > {
     const { data, error } = await this.supabase
       .from('coach_drafts')
       .select('id, contact_email, contact_name, subject, body, status, created_at')
