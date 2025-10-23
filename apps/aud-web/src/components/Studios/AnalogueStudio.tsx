@@ -17,6 +17,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
 import { AmbientSound } from '../Ambient/AmbientSound';
+import { WarmParallaxLighting } from '../WarmParallaxLighting';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PenTool, Eye, EyeOff, Book, Lightbulb, Send } from 'lucide-react';
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
@@ -87,7 +88,10 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
       {(state: WorkflowState, actions: WorkflowActions) => (
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-amber-50">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-amber-50 relative">
+          {/* Warm Parallax Lighting */}
+          <WarmParallaxLighting intensity={0.3} speed={0.8} />
+
           {/* Ambient sound */}
           <AmbientSound type="theme-ambient" theme="analogue" autoPlay />
 

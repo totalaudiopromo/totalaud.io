@@ -59,6 +59,26 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
   const startTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Spacebar: Play/Pause
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        setIsPlaying((prev) => !prev);
+      }
+      // R: Reset to beginning
+      if (e.code === 'KeyR' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setCurrentBeat(0);
+        setIsPlaying(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
   // Initialize tracks from workflow nodes
   const [tracks, setTracks] = useState<Track[]>([
     {
@@ -195,6 +215,11 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                     <div className="h-4 w-px bg-zinc-700" />
                     <div className="font-mono">
                       {Math.floor(currentBeat / 4)}:{(currentBeat % 4) + 1}
+                    </div>
+                    <div className="h-4 w-px bg-zinc-700" />
+                    <div className="text-xs text-zinc-500">
+                      <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-xs">Space</kbd> play •{' '}
+                      <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded text-xs">R</kbd> reset
                     </div>
                   </div>
                   <button
