@@ -2,27 +2,25 @@
  * useStudioMotion Hook
  *
  * Provides motion signature configurations for each Studio.
- * Each Studio has distinct animation timing, easing, and behavior.
+ * Now uses centralized motion library (/lib/motion.ts) for consistency.
  *
- * Phase 6: Enhancements - Motion Language System
+ * Phase 6.5: Motion Choreographer - Named Curves & Unified System
  */
 
 import { useMemo } from 'react';
+import { studioMotion, getTransition, type Transition } from '@aud-web/lib/motion';
 
 export type TransitionSpeed = 'instant' | 'fast' | 'medium' | 'slow' | 'drift';
 
 export interface StudioMotion {
-  /** Animation duration in milliseconds */
+  /** Animation name */
+  name: string;
+
+  /** Animation duration in seconds (Framer Motion format) */
   duration: number;
 
   /** CSS easing function */
   easing: string;
-
-  /** Overshoot amount for spring animations (0-1) */
-  overshoot: number;
-
-  /** Semantic speed label */
-  transitionSpeed: TransitionSpeed;
 
   /** Framer Motion spring config (optional) */
   spring?: {
@@ -31,47 +29,34 @@ export interface StudioMotion {
     damping: number;
     mass: number;
   };
+
+  /** Human-readable description */
+  description: string;
+
+  /** Semantic speed label for backwards compatibility */
+  transitionSpeed: TransitionSpeed;
 }
 
+// Map Studio motion configs to hook interface
 const MOTION_CONFIGS: Record<string, StudioMotion> = {
   ascii: {
-    duration: 240,
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Sharp snap
-    overshoot: 0,
+    ...studioMotion.ascii,
     transitionSpeed: 'instant',
   },
-
   xp: {
-    duration: 400,
-    easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // Bounce
-    overshoot: 0.55,
+    ...studioMotion.xp,
     transitionSpeed: 'fast',
-    spring: {
-      type: 'spring',
-      stiffness: 260,
-      damping: 20,
-      mass: 1,
-    },
   },
-
   aqua: {
-    duration: 600,
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Smooth ease
-    overshoot: 0,
+    ...studioMotion.aqua,
     transitionSpeed: 'slow',
   },
-
   daw: {
-    duration: 500,
-    easing: 'cubic-bezier(0.42, 0, 0.58, 1)', // Linear-ish with slight ease
-    overshoot: 0,
+    ...studioMotion.daw,
     transitionSpeed: 'medium',
   },
-
   analogue: {
-    duration: 800,
-    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Gentle drift
-    overshoot: 0,
+    ...studioMotion.analogue,
     transitionSpeed: 'drift',
   },
 };
@@ -89,18 +74,19 @@ export function useStudioMotion(theme: string): StudioMotion {
 
 /**
  * Get Framer Motion transition config for a theme
+ * Uses named curves from motion library
  */
-export function getFramerTransition(theme: string) {
-  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-
-  if (config.spring) {
-    return config.spring;
-  }
-
-  return {
-    duration: config.duration / 1000, // Convert to seconds
-    ease: config.easing,
+export function getFramerTransition(theme: string): Transition {
+  const curves: Record<string, keyof typeof import('@aud-web/lib/motion').transitions> = {
+    ascii: 'snap',
+    xp: 'bounce',
+    aqua: 'dissolve',
+    daw: 'pulse',
+    analogue: 'drift',
   };
+
+  const curveName = curves[theme] || 'snap';
+  return getTransition(curveName);
 }
 
 /**
@@ -108,5 +94,5 @@ export function getFramerTransition(theme: string) {
  */
 export function getCSSTransition(theme: string, property = 'all'): string {
   const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-  return `${property} ${config.duration}ms ${config.easing}`;
+  return `${property} ${config.duration}s ${config.easing}`;
 }
