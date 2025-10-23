@@ -98,6 +98,12 @@ export interface Insight {
   created_at: string
 }
 
+export interface UIPreferences {
+  soundEnabled: boolean
+  ambientVolume: number // 0-1
+  uiSoundVolume: number // 0-1
+}
+
 // ========================================
 // Store Interface
 // ========================================
@@ -118,6 +124,7 @@ interface WorkspaceState {
   currentLens: StudioLens
   isLoading: boolean
   error: string | null
+  uiPreferences: UIPreferences
 
   // Release Actions
   addRelease: (release: Omit<Release, 'id' | 'created_at' | 'updated_at'>) => string
@@ -185,6 +192,11 @@ const initialState = {
   currentLens: 'xp' as StudioLens, // Default to XP (most user-friendly)
   isLoading: false,
   error: null,
+  uiPreferences: {
+    soundEnabled: true, // Default to enabled
+    ambientVolume: 0.3,
+    uiSoundVolume: 0.5,
+  } as UIPreferences,
 }
 
 // ========================================
@@ -435,6 +447,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         activeTab: state.activeTab,
         activeCampaignId: state.activeCampaignId,
         activeReleaseId: state.activeReleaseId,
+        uiPreferences: state.uiPreferences,
       }),
     }
   )

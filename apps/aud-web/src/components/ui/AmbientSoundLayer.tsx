@@ -14,6 +14,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useSoundEnabled } from './SoundToggle'
 
 interface AmbientSoundLayerProps {
   /** Volume level 0.0 to 1.0 (controlled by useFlowMode) */
@@ -21,9 +22,13 @@ interface AmbientSoundLayerProps {
 }
 
 export function AmbientSoundLayer({ volume }: AmbientSoundLayerProps) {
+  const soundEnabled = useSoundEnabled()
   const audioContextRef = useRef<AudioContext | null>(null)
   const oscillatorsRef = useRef<OscillatorNode[]>([])
   const gainNodeRef = useRef<GainNode | null>(null)
+
+  // Effective volume: 0 if sound disabled, otherwise use prop volume
+  const effectiveVolume = soundEnabled ? volume : 0
 
   useEffect(() => {
     // Initialize Web Audio API context
@@ -50,8 +55,8 @@ export function AmbientSoundLayer({ volume }: AmbientSoundLayerProps) {
       196.0, // G3
     ]
 
-    // Start oscillators if volume > 0 and not already running
-    if (volume > 0 && oscillatorsRef.current.length === 0) {
+    // Start oscillators if effectiveVolume > 0 and not already running
+    if (effectiveVolume > 0 && oscillatorsRef.current.length === 0) {
       console.log('[AmbientSound] Starting ambient drone')
 
       frequencies.forEach((freq) => {
@@ -69,13 +74,13 @@ export function AmbientSoundLayer({ volume }: AmbientSoundLayerProps) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
       gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime)
-      gainNode.gain.linearRampToValueAtTime(volume, currentTime + 0.3)
+      gainNode.gain.linearRampToValueAtTime(effectiveVolume, currentTime + 0.3)
     }
 
     // Cleanup function
     return () => {
-      // Only stop oscillators if volume is 0
-      if (volume === 0 && oscillatorsRef.current.length > 0) {
+      // Only stop oscillators if effectiveVolume is 0
+      if (effectiveVolume === 0 && oscillatorsRef.current.length > 0) {
         console.log('[AmbientSound] Stopping ambient drone')
 
         // Fade out before stopping
@@ -99,7 +104,7 @@ export function AmbientSoundLayer({ volume }: AmbientSoundLayerProps) {
         }, 350)
       }
     }
-  }, [volume])
+  }, [effectiveVolume])
 
   // Cleanup on unmount
   useEffect(() => {
