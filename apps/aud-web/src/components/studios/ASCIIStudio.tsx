@@ -16,9 +16,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls } from 'reactflow'
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
-import { AmbientSound } from '../Ambient/AmbientSound'
-import { CRTEffect } from '../CRTEffect'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../layouts/BaseWorkflow'
+import { AmbientSound } from '../ui/ambient/AmbientSound'
+import { CRTEffect } from '../ui/effects/CRTEffect'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 interface ASCIIStudioProps {

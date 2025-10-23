@@ -24,7 +24,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css'
 import { useFlowStore } from '@aud-web/stores/flowStore'
 import { useFlowRealtime } from '@aud-web/hooks/useFlowRealtime'
-import { FlowNode } from './FlowNode'
+import { FlowNode } from '../features/flow/FlowNode'
 import type { FlowTemplate, AgentStatus } from '@total-audio/core-agent-executor/client'
 import {
   useAgentExecution,
@@ -36,7 +36,7 @@ import { supabase } from '@aud-web/lib/supabase'
 import { generateUUID } from '@aud-web/lib/uuid'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client'
-import { useTheme } from './themes/ThemeResolver'
+import { useTheme } from '../themes/ThemeResolver'
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,

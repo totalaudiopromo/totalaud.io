@@ -15,8 +15,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
-import { AmbientSound } from '../Ambient/AmbientSound'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../layouts/BaseWorkflow'
+import { AmbientSound } from '../ui/ambient/AmbientSound'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, Pause, SkipBack, SkipForward, Plus, Settings, Clock, Activity } from 'lucide-react'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'

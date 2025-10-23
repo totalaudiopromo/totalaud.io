@@ -11,8 +11,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAgent, type AgentRole } from '@total-audio/core-agent-executor'
 import { useCampaignMetrics } from '@aud-web/hooks/useCampaignMetrics'
-import { IntegrationManager } from './IntegrationManager'
-import { SmartComposer } from './SmartComposer'
+import { IntegrationManager, SmartComposer } from '../ui'
 import { createBrowserClient } from '@aud-web/lib/supabase'
 
 interface CampaignMetric {

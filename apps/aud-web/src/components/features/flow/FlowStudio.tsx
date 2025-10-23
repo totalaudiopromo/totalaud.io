@@ -3,9 +3,9 @@
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { FlowCanvas } from './FlowCanvas'
-import ConsoleShell from './ConsoleShell'
-import ThemeToggle from './ThemeToggle'
-import { AmbientSound } from './Ambient/AmbientSound'
+import ConsoleShell from '../../ui/ConsoleShell'
+import ThemeToggle from '../../ui/ThemeToggle'
+import { AmbientSound } from '../../ui/ambient/AmbientSound'
 import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 

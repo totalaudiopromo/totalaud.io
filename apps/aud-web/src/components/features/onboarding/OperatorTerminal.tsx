@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOperatorInput } from '@aud-web/hooks/useOperatorInput'
-import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound'
+import { AmbientSound } from '@aud-web/components/ui/ambient'
 
 interface OperatorTerminalProps {
   onComplete: () => void
