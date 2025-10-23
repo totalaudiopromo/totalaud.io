@@ -1,0 +1,21 @@
+# Commit Message Template
+#
+# Format: <type>(<scope>): <subject>
+#
+# Types: feat, fix, docs, style, refactor, test, chore
+#
+# RULES:
+# - Use UK spelling (optimise, colour, behaviour, etc.)
+# - No emojis
+# - Keep titles clear and concise
+# - Use lowercase for subject line
+# - No period at end of subject
+# - Body should explain what and why, not how
+#
+# Example:
+# feat(api): add user authentication
+#
+# Implemented JWT-based authentication for API routes.
+# Users can now register and login with email/password.
+#
+# Co-Authored-By: Claude <noreply@anthropic.com>
