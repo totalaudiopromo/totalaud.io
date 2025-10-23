@@ -14,7 +14,7 @@ import {
   AquaStudio,
   DAWStudio,
   AnalogueStudio,
-} from '@aud-web/components/Studios'
+} from '@aud-web/components/studios'
 
 interface StudioPageProps {
   params: Promise<{

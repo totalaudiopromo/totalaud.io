@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
-import { GlobalCommandPalette } from '@aud-web/components/GlobalCommandPalette'
+import { GlobalCommandPalette } from '@aud-web/components/ui'
 
 const inter = Inter({
   subsets: ['latin'],

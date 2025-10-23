@@ -15,9 +15,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
-import { AmbientSound } from '../Ambient/AmbientSound'
-import { WarmParallaxLighting } from '../WarmParallaxLighting'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../layouts/BaseWorkflow'
+import { AmbientSound } from '../ui/ambient/AmbientSound'
+import { WarmParallaxLighting } from '../ui/effects/WarmParallaxLighting'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PenTool, Eye, EyeOff, Book, Lightbulb, Send } from 'lucide-react'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'

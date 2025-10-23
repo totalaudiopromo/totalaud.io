@@ -9,7 +9,14 @@
       }
     ],
     "paths": {
-      "@aud-web/*": ["./src/*"]
+      "@aud-web/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/features/*": ["./src/components/features/*"],
+      "@/layouts/*": ["./src/components/layouts/*"],
+      "@/studios/*": ["./src/components/studios/*"],
+      "@/ui/*": ["./src/components/ui/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/lib/*": ["./src/lib/*"]
     },
     "isolatedModules": true
   },

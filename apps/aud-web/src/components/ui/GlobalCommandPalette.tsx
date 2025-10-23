@@ -28,9 +28,9 @@ import {
 } from 'lucide-react'
 import { CommandPalette, useCommandPalette, type CommandAction } from './CommandPalette'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
-import { useTheme } from './themes/ThemeResolver'
-import { OSTheme } from './themes/types'
-import { AgentSpawnModal } from './AgentSpawnModal'
+import { useTheme } from '../themes/ThemeResolver'
+import { OSTheme } from '../themes/types'
+import { AgentSpawnModal } from '../features/agents/AgentSpawnModal'
 import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
 import { logger } from '@total-audio/core-logger'
 

@@ -22,7 +22,7 @@ import {
   BarChart3,
 } from 'lucide-react'
 import { getAgent } from '@total-audio/core-agent-executor/client'
-import { useTheme } from './themes/ThemeResolver'
+import { useTheme } from '../themes/ThemeResolver'
 
 interface AgentStatus {
   agent_name: string

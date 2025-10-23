@@ -15,13 +15,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutDashboard, Play, BarChart3, Lightbulb } from 'lucide-react'
 
 // Tab components (to be implemented in Stage 2)
-import { PlanTab } from './Workspace/PlanTab'
-import { DoTab } from './Workspace/DoTab'
-import { TrackTab } from './Workspace/TrackTab'
-import { LearnTab } from './Workspace/LearnTab'
+import { PlanTab } from '../features/workspace/PlanTab'
+import { DoTab } from '../features/workspace/DoTab'
+import { TrackTab } from '../features/workspace/TrackTab'
+import { LearnTab } from '../features/workspace/LearnTab'
 
 export function SharedWorkspace() {
-  const {active Tab, switchTab, currentLens } = useWorkspaceStore()
+  const { activeTab, switchTab, currentLens } = useWorkspaceStore()
 
   const tabs = [
     {

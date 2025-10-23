@@ -15,9 +15,9 @@
 'use client'
 
 import { useState } from 'react'
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
-import { AmbientSound } from '../Ambient/AmbientSound'
-import { Confetti } from '../Confetti'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../layouts/BaseWorkflow'
+import { AmbientSound } from '../ui/ambient/AmbientSound'
+import { Confetti } from '../ui/effects/Confetti'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Settings } from 'lucide-react'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'

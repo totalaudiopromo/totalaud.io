@@ -16,9 +16,9 @@
 
 import { useState } from 'react'
 import ReactFlow, { Background, BackgroundVariant, MiniMap, Controls, Panel } from 'reactflow'
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
-import { AmbientSound } from '../Ambient/AmbientSound'
-import { ParallaxBackground } from '../ParallaxBackground'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../layouts/BaseWorkflow'
+import { AmbientSound } from '../ui/ambient/AmbientSound'
+import { ParallaxBackground } from '../ui/effects/ParallaxBackground'
 import { motion } from 'framer-motion'
 import { Play, Pause, RotateCcw, Layers, Sparkles, Grid3x3 } from 'lucide-react'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
