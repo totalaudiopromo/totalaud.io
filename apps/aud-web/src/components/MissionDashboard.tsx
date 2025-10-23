@@ -315,16 +315,17 @@ export function MissionDashboard({
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{agent.emoji}</span>
-                      <h3 className="text-lg font-mono font-semibold" style={{ color: colors.text }}>
+                      <h3
+                        className="text-lg font-mono font-semibold"
+                        style={{ color: colors.text }}
+                      >
                         {agent.name}
                       </h3>
                     </div>
                     {isComplete && (
                       <CheckCircle2 className="w-5 h-5" style={{ color: '#10b981' }} />
                     )}
-                    {isError && (
-                      <AlertCircle className="w-5 h-5" style={{ color: '#ef4444' }} />
-                    )}
+                    {isError && <AlertCircle className="w-5 h-5" style={{ color: '#ef4444' }} />}
                     {isRunning && (
                       <Loader2 className="w-5 h-5 animate-spin" style={{ color: agentColor }} />
                     )}
@@ -424,7 +425,10 @@ export function MissionDashboard({
               style={{ color: nextActionMessage.color }}
             />
             <div className="flex-1">
-              <h3 className="text-sm font-mono font-semibold mb-1 uppercase" style={{ color: colors.text }}>
+              <h3
+                className="text-sm font-mono font-semibold mb-1 uppercase"
+                style={{ color: colors.text }}
+              >
                 Next Action
               </h3>
               <p className="text-sm font-mono leading-relaxed" style={{ color: colors.text }}>

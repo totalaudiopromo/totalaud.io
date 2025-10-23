@@ -4,16 +4,16 @@
  * while using the new @total-audio/core-theme-engine under the hood
  */
 
-"use client"
+'use client'
 
-import { 
-  ThemeProvider as EngineThemeProvider, 
-  useTheme as useEngineTheme 
-} from "@total-audio/core-theme-engine"
-import type { ThemeId, ThemeManifest } from "@total-audio/core-theme-engine"
-import { createContext, useContext, ReactNode } from "react"
-import type { OSTheme, ThemeConfig } from "@aud-web/types/themes"
-import { THEME_CONFIGS } from "@aud-web/types/themes"
+import {
+  ThemeProvider as EngineThemeProvider,
+  useTheme as useEngineTheme,
+} from '@total-audio/core-theme-engine'
+import type { ThemeId, ThemeManifest } from '@total-audio/core-theme-engine'
+import { createContext, useContext, ReactNode } from 'react'
+import type { OSTheme, ThemeConfig } from '@aud-web/types/themes'
+import { THEME_CONFIGS } from '@aud-web/types/themes'
 
 interface LegacyThemeContextValue {
   theme: OSTheme
@@ -41,38 +41,34 @@ function manifestToLegacyConfig(manifest: ThemeManifest): ThemeConfig {
       accent: manifest.palette.accent,
       background: manifest.palette.background,
       text: manifest.palette.foreground,
-      border: manifest.palette.border
+      border: manifest.palette.border,
     },
     fontFamily: manifest.typography.fontFamily,
     textures: {
       overlay: manifest.textures.overlay || '',
-      pattern: manifest.textures.pattern || ''
+      pattern: manifest.textures.pattern || '',
     },
     effects: manifest.effects,
     sounds: {
       boot: String(manifest.sounds.boot.frequency || 440),
       click: String(manifest.sounds.click.frequency || 1200),
-      ambient: manifest.sounds.ambient?.noiseType || 'pink'
-    }
+      ambient: manifest.sounds.ambient?.noiseType || 'pink',
+    },
   }
 }
 
 function LegacyThemeWrapper({ children }: { children: ReactNode }) {
   const engineTheme = useEngineTheme()
-  
+
   // Map engine theme to legacy format
   const legacyValue: LegacyThemeContextValue = {
     theme: engineTheme.currentTheme as OSTheme,
     themeConfig: manifestToLegacyConfig(engineTheme.theme),
     setTheme: (theme: OSTheme) => engineTheme.setTheme(theme as ThemeId),
-    isLoading: !engineTheme.isLoaded
+    isLoading: !engineTheme.isLoaded,
   }
 
-  return (
-    <LegacyThemeContext.Provider value={legacyValue}>
-      {children}
-    </LegacyThemeContext.Provider>
-  )
+  return <LegacyThemeContext.Provider value={legacyValue}>{children}</LegacyThemeContext.Provider>
 }
 
 /**
@@ -81,9 +77,7 @@ function LegacyThemeWrapper({ children }: { children: ReactNode }) {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <EngineThemeProvider>
-      <LegacyThemeWrapper>
-        {children}
-      </LegacyThemeWrapper>
+      <LegacyThemeWrapper>{children}</LegacyThemeWrapper>
     </EngineThemeProvider>
   )
 }
@@ -95,8 +89,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function useTheme() {
   const context = useContext(LegacyThemeContext)
   if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider")
+    throw new Error('useTheme must be used within a ThemeProvider')
   }
   return context
 }
-

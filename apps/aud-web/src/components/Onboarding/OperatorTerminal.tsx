@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useOperatorInput } from '@aud-web/hooks/useOperatorInput';
-import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound';
+import { useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useOperatorInput } from '@aud-web/hooks/useOperatorInput'
+import { AmbientSound } from '@aud-web/components/Ambient/AmbientSound'
 
 interface OperatorTerminalProps {
-  onComplete: () => void;
+  onComplete: () => void
 }
 
 /**
@@ -14,27 +14,27 @@ interface OperatorTerminalProps {
  * User types freely, presses Enter to continue.
  */
 export function OperatorTerminal({ onComplete }: OperatorTerminalProps) {
-  const { lines, userInput, isComplete, handleKeyPress } = useOperatorInput(onComplete);
-  const terminalRef = useRef<HTMLDivElement>(null);
+  const { lines, userInput, isComplete, handleKeyPress } = useOperatorInput(onComplete)
+  const terminalRef = useRef<HTMLDivElement>(null)
 
   // Attach keyboard listener
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      handleKeyPress(e);
-    };
+      handleKeyPress(e)
+    }
 
-    window.addEventListener('keydown', handler);
+    window.addEventListener('keydown', handler)
     return () => {
-      window.removeEventListener('keydown', handler);
-    };
-  }, [handleKeyPress]);
+      window.removeEventListener('keydown', handler)
+    }
+  }, [handleKeyPress])
 
   // Auto-scroll to bottom when new lines appear
   useEffect(() => {
     if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
-  }, [lines, userInput]);
+  }, [lines, userInput])
 
   return (
     <div className="operator-terminal">
@@ -83,5 +83,5 @@ export function OperatorTerminal({ onComplete }: OperatorTerminalProps) {
         </motion.span>
       </div>
     </div>
-  );
+  )
 }

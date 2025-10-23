@@ -54,9 +54,7 @@ export function AsciiMissionPanel({
 
       {/* Campaign Name */}
       <div className="mb-4">
-        <div style={{ color: themeConfig.colors.textSecondary }}>
-          &gt; CAMPAIGN:
-        </div>
+        <div style={{ color: themeConfig.colors.textSecondary }}>&gt; CAMPAIGN:</div>
         <div className="pl-4" style={{ color: themeConfig.colors.text }}>
           {campaignName.toUpperCase()}
         </div>
@@ -64,9 +62,7 @@ export function AsciiMissionPanel({
 
       {/* Progress */}
       <div className="mb-4">
-        <div style={{ color: themeConfig.colors.textSecondary }}>
-          &gt; PROGRESS:
-        </div>
+        <div style={{ color: themeConfig.colors.textSecondary }}>&gt; PROGRESS:</div>
         <div className="pl-4" style={{ color: themeConfig.colors.text }}>
           {completedCount}/{agentCount} AGENTS [{progress}%]
         </div>
@@ -81,21 +77,25 @@ export function AsciiMissionPanel({
 
       {/* Status */}
       <div className="mb-4">
-        <div style={{ color: themeConfig.colors.textSecondary }}>
-          &gt; STATUS:
-        </div>
+        <div style={{ color: themeConfig.colors.textSecondary }}>&gt; STATUS:</div>
         <div className="pl-4" style={{ color: themeConfig.colors.text }}>
           {completedCount === agentCount && agentCount > 0
             ? '[COMPLETE] READY FOR MIXDOWN'
             : agentCount === 0
-            ? '[IDLE] AWAITING COMMANDS'
-            : '[RUNNING] PROCESSING AGENTS'}
+              ? '[IDLE] AWAITING COMMANDS'
+              : '[RUNNING] PROCESSING AGENTS'}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-4 left-4 right-4 pt-4 border-t" style={{ borderColor: themeConfig.colors.border }}>
-        <div className="flex items-center justify-between text-xs" style={{ color: themeConfig.colors.textSecondary }}>
+      <div
+        className="absolute bottom-4 left-4 right-4 pt-4 border-t"
+        style={{ borderColor: themeConfig.colors.border }}
+      >
+        <div
+          className="flex items-center justify-between text-xs"
+          style={{ color: themeConfig.colors.textSecondary }}
+        >
           <span>⌘K COMMAND</span>
           <span>⌘F FOCUS</span>
         </div>

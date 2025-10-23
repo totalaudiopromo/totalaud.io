@@ -49,7 +49,7 @@ export const agentRoles: Record<string, AgentRole> = {
     voice: 'witty, supportive, coordinating',
     expertise: 'Workflow orchestration and team coordination',
     soundCue: 'transition',
-    description: 'Your audio liaison - coordinates all agents and guides the campaign flow'
+    description: 'Your audio liaison - coordinates all agents and guides the campaign flow',
   },
 
   scout: {
@@ -61,7 +61,7 @@ export const agentRoles: Record<string, AgentRole> = {
     voice: 'optimistic, adventurous, resourceful',
     expertise: 'Contact research and opportunity discovery',
     soundCue: 'ping',
-    description: 'Discovers radio stations, journalists, curators, and venues for your campaign'
+    description: 'Discovers radio stations, journalists, curators, and venues for your campaign',
   },
 
   coach: {
@@ -73,7 +73,7 @@ export const agentRoles: Record<string, AgentRole> = {
     voice: 'supportive, confident, articulate',
     expertise: 'Pitch writing and creative communication',
     soundCue: 'chime',
-    description: 'Crafts compelling pitches and helps you tell your story effectively'
+    description: 'Crafts compelling pitches and helps you tell your story effectively',
   },
 
   tracker: {
@@ -85,7 +85,7 @@ export const agentRoles: Record<string, AgentRole> = {
     voice: 'analytical, calm, precise',
     expertise: 'Campaign monitoring and performance analysis',
     soundCue: 'pulse',
-    description: 'Monitors your campaign progress and analyzes response patterns'
+    description: 'Monitors your campaign progress and analyzes response patterns',
   },
 
   insight: {
@@ -97,8 +97,8 @@ export const agentRoles: Record<string, AgentRole> = {
     voice: 'wise, poetic, strategic',
     expertise: 'Strategic insights and trend analysis',
     soundCue: 'pad',
-    description: 'Analyzes patterns and provides strategic recommendations for your campaign'
-  }
+    description: 'Analyzes patterns and provides strategic recommendations for your campaign',
+  },
 }
 
 /**

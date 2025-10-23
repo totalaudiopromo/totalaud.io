@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAgentSpawner, type AgentRole, type SpawnParams } from '@aud-web/hooks/useAgentSpawner';
-import { useUISound } from '@aud-web/hooks/useUISound';
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useAgentSpawner, type AgentRole, type SpawnParams } from '@aud-web/hooks/useAgentSpawner'
+import { useUISound } from '@aud-web/hooks/useUISound'
 
 interface AgentSpawnModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSpawn?: (name: string) => void;
-  initialRole?: AgentRole;
+  isOpen: boolean
+  onClose: () => void
+  onSpawn?: (name: string) => void
+  initialRole?: AgentRole
 }
 
 const AGENT_ROLES: { id: AgentRole; label: string; description: string }[] = [
@@ -18,7 +18,7 @@ const AGENT_ROLES: { id: AgentRole; label: string; description: string }[] = [
   { id: 'tracker', label: 'tracker', description: 'monitors campaign progress' },
   { id: 'insight', label: 'insight', description: 'analyses results and trends' },
   { id: 'custom', label: 'custom', description: 'build your own agent' },
-];
+]
 
 const AGENT_COLOURS = [
   '#10b981', // green
@@ -27,55 +27,50 @@ const AGENT_COLOURS = [
   '#8b5cf6', // purple
   '#ec4899', // pink
   '#06b6d4', // cyan
-];
+]
 
 /**
  * Modal for spawning new agents with name, role, and personality configuration.
  * Full keyboard navigation (Tab, Enter, Escape).
  */
-export function AgentSpawnModal({
-  isOpen,
-  onClose,
-  onSpawn,
-  initialRole,
-}: AgentSpawnModalProps) {
-  const { spawn, isSpawning, error } = useAgentSpawner();
-  const sound = useUISound();
+export function AgentSpawnModal({ isOpen, onClose, onSpawn, initialRole }: AgentSpawnModalProps) {
+  const { spawn, isSpawning, error } = useAgentSpawner()
+  const sound = useUISound()
 
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<AgentRole>(initialRole || 'scout');
-  const [personality, setPersonality] = useState('');
-  const [colour, setColour] = useState(AGENT_COLOURS[0]);
+  const [name, setName] = useState('')
+  const [role, setRole] = useState<AgentRole>(initialRole || 'scout')
+  const [personality, setPersonality] = useState('')
+  const [colour, setColour] = useState(AGENT_COLOURS[0])
 
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setName('');
-      setRole(initialRole || 'scout');
-      setPersonality('');
-      setColour(AGENT_COLOURS[0]);
+      setName('')
+      setRole(initialRole || 'scout')
+      setPersonality('')
+      setColour(AGENT_COLOURS[0])
     }
-  }, [isOpen, initialRole]);
+  }, [isOpen, initialRole])
 
   // Handle Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isSpawning) {
-        onClose();
+        onClose()
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isSpawning, onClose]);
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isOpen, isSpawning, onClose])
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
-      e.preventDefault();
+      e.preventDefault()
 
       if (!name.trim()) {
-        sound.error();
-        return;
+        sound.error()
+        return
       }
 
       const params: SpawnParams = {
@@ -83,20 +78,20 @@ export function AgentSpawnModal({
         role,
         personality: personality.trim() || undefined,
         colour,
-      };
+      }
 
-      const manifest = await spawn(params);
+      const manifest = await spawn(params)
 
       if (manifest) {
-        sound.success();
-        onSpawn?.(manifest.name);
-        onClose();
+        sound.success()
+        onSpawn?.(manifest.name)
+        onClose()
       }
     },
     [name, role, personality, colour, spawn, sound, onSpawn, onClose]
-  );
+  )
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <AnimatePresence>
@@ -110,9 +105,7 @@ export function AgentSpawnModal({
         >
           <div className="agent-spawn-modal__header">
             <h2 className="agent-spawn-modal__title">signal&gt; spawn agent</h2>
-            <p className="agent-spawn-modal__subtitle">
-              configure new agent for your workspace
-            </p>
+            <p className="agent-spawn-modal__subtitle">configure new agent for your workspace</p>
           </div>
 
           <form onSubmit={handleSubmit} className="agent-spawn-modal__form">
@@ -172,9 +165,7 @@ export function AgentSpawnModal({
                 maxLength={200}
                 rows={3}
               />
-              <span className="agent-spawn-modal__hint">
-                {personality.length}/200 characters
-              </span>
+              <span className="agent-spawn-modal__hint">{personality.length}/200 characters</span>
             </div>
 
             {/* Colour Selection */}
@@ -188,8 +179,8 @@ export function AgentSpawnModal({
                     className={`agent-spawn-modal__colour ${colour === c ? 'agent-spawn-modal__colour--active' : ''}`}
                     style={{ backgroundColor: c }}
                     onClick={() => {
-                      setColour(c);
-                      sound.click();
+                      setColour(c)
+                      sound.click()
                     }}
                     disabled={isSpawning}
                     aria-label={`Select colour ${c}`}
@@ -231,5 +222,5 @@ export function AgentSpawnModal({
         </motion.div>
       </div>
     </AnimatePresence>
-  );
+  )
 }

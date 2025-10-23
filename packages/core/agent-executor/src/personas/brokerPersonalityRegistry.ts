@@ -69,36 +69,30 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'types with cursor blink',
       'uses lowercase',
       'terminal-style punctuation',
-      'occasional tech puns'
+      'occasional tech puns',
     ],
-    opener: 'agent broker online_ let\'s boot your promo system.',
+    opener: "agent broker online_ let's boot your promo system.",
     resumeGreeting: 'session resumed. welcome back, {artist_name}_ ready to continue?',
     openingLines: [
       '> agent broker initialized',
       '> establishing connection...',
       '> ready to proc your campaign data',
-      '> system nominal. awaiting input.'
+      '> system nominal. awaiting input.',
     ],
-    confirmations: [
-      'ack.',
-      'received.',
-      'logged.',
-      'ok exec.',
-      'data captured.'
-    ],
+    confirmations: ['ack.', 'received.', 'logged.', 'ok exec.', 'data captured.'],
     transitions: [
       'next_proc...',
       'moving to next_sequence...',
       'final_input required...',
-      'almost done_parsing...'
+      'almost done_parsing...',
     ],
     interactionQuirks: {
       visualEffect: 'typewriter',
       animationDuration: 50,
       cssClass: 'broker-ascii-mode',
-      soundEvent: 'agentSpeak'
+      soundEvent: 'agentSpeak',
     },
-    messagePrefix: '>'
+    messagePrefix: '>',
   },
 
   xp: {
@@ -109,37 +103,38 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'adds :) occasionally',
       'soft progress beeps',
       'friendly but professional',
-      'uses British colloquialisms'
+      'uses British colloquialisms',
     ],
-    opener: 'Morning! Broker here. Let\'s spin up your studio.',
-    resumeGreeting: 'Welcome back, {artist_name}! Lovely to see you again, mate. Shall we pick up where we left off?',
+    opener: "Morning! Broker here. Let's spin up your studio.",
+    resumeGreeting:
+      'Welcome back, {artist_name}! Lovely to see you again, mate. Shall we pick up where we left off?',
     openingLines: [
       'Broker.exe initialized :)',
-      'Right then, let\'s get started.',
+      "Right then, let's get started.",
       'Lovely — ready when you are, mate.',
-      'Welcome aboard! Let\'s do this properly.'
+      "Welcome aboard! Let's do this properly.",
     ],
     confirmations: [
       'Brilliant :)',
       'Cheers for that.',
       'Lovely, got it.',
       'Perfect mate.',
-      'Sorted!'
+      'Sorted!',
     ],
     transitions: [
       'Right, moving on...',
-      'One more thing, then we\'re done...',
+      "One more thing, then we're done...",
       'Nearly there, mate...',
       'Last question, promise...',
-      'Almost sorted...'
+      'Almost sorted...',
     ],
     interactionQuirks: {
       visualEffect: 'fade',
       animationDuration: 300,
       cssClass: 'broker-xp-mode',
-      soundEvent: 'agentSpeak'
+      soundEvent: 'agentSpeak',
     },
-    messagePrefix: '►'
+    messagePrefix: '►',
   },
 
   aqua: {
@@ -150,37 +145,38 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'breath-like fade between lines',
       'zen minimalism',
       'encourages mindfulness',
-      'poetic phrasing'
+      'poetic phrasing',
     ],
     opener: 'Hey — take a breath. Ready to make something beautiful?',
-    resumeGreeting: 'Hey {artist_name}... nice to see you back. Ready to compose something meaningful again?',
+    resumeGreeting:
+      'Hey {artist_name}... nice to see you back. Ready to compose something meaningful again?',
     openingLines: [
-      'Broker here. Let\'s create something meaningful.',
-      'Take your time. We\'ll build this together.',
-      'No rush. Let\'s compose your campaign with care.',
-      'Welcome. Ready to flow into this?'
+      "Broker here. Let's create something meaningful.",
+      "Take your time. We'll build this together.",
+      "No rush. Let's compose your campaign with care.",
+      'Welcome. Ready to flow into this?',
     ],
     confirmations: [
       'Noted. Smooth.',
       'Beautiful.',
       'Perfect flow.',
       'Got it. Breathe.',
-      'Exactly.'
+      'Exactly.',
     ],
     transitions: [
-      'Let\'s move gently to the next part...',
+      "Let's move gently to the next part...",
       'One more piece to compose...',
       'Almost there — stay with me...',
       'Final element...',
-      'Last step, then we breathe...'
+      'Last step, then we breathe...',
     ],
     interactionQuirks: {
       visualEffect: 'fade',
       animationDuration: 600,
       cssClass: 'broker-aqua-mode',
-      soundEvent: 'agentSpeak'
+      soundEvent: 'agentSpeak',
     },
-    messagePrefix: '•'
+    messagePrefix: '•',
   },
 
   ableton: {
@@ -191,37 +187,31 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'syncs replies to tempo pulse',
       'rhythmic language patterns',
       'production terminology',
-      'time-conscious'
+      'time-conscious',
     ],
-    opener: 'Sync checked. Let\'s drop your first promo loop.',
+    opener: "Sync checked. Let's drop your first promo loop.",
     resumeGreeting: 'Session {artist_name} loaded. Timeline synced. Ready to continue tracking?',
     openingLines: [
       'BROKER: ONLINE. Session ready.',
-      'Timeline synced. Let\'s track this properly.',
+      "Timeline synced. Let's track this properly.",
       'Ready to record. Hit me with the details.',
-      'Session armed. Input when ready.'
+      'Session armed. Input when ready.',
     ],
-    confirmations: [
-      'Tracked.',
-      'Clip recorded.',
-      'Synced.',
-      'Looping that.',
-      'Session saved.'
-    ],
+    confirmations: ['Tracked.', 'Clip recorded.', 'Synced.', 'Looping that.', 'Session saved.'],
     transitions: [
       'Next track...',
       'Moving to clip 2...',
       'Final session input...',
       'Last loop...',
-      'Bouncing soon...'
+      'Bouncing soon...',
     ],
     interactionQuirks: {
       visualEffect: 'pulse',
       animationDuration: 500,
       cssClass: 'broker-ableton-mode',
-      soundEvent: 'agentSpeak'
+      soundEvent: 'agentSpeak',
     },
-    messagePrefix: '●'
+    messagePrefix: '●',
   },
 
   punk: {
@@ -232,38 +222,38 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
       'random caps for emphasis',
       'off-beat timing',
       'irreverent humor',
-      'anti-establishment edge'
+      'anti-establishment edge',
     ],
-    opener: 'OI. Broker here. Let\'s rip this thing open and make noise.',
-    resumeGreeting: 'OI, {artist_name}! BACK for more chaos? Let\'s jump back into the mix, legend.',
+    opener: "OI. Broker here. Let's rip this thing open and make noise.",
+    resumeGreeting: "OI, {artist_name}! BACK for more chaos? Let's jump back into the mix, legend.",
     openingLines: [
-      'BROKER ONLINE. No bullshit, let\'s go.',
-      'Right. Skip the corporate chat. What\'s your band?',
+      "BROKER ONLINE. No bullshit, let's go.",
+      "Right. Skip the corporate chat. What's your band?",
       'Oi oi. Ready to cause some trouble?',
-      'Forget the manual. Let\'s just DO this.'
+      "Forget the manual. Let's just DO this.",
     ],
     confirmations: [
       'Got it. PROPER.',
       'Yep. Noted.',
       'Alright alright.',
       'SICK. Moving on.',
-      'Cool. Next.'
+      'Cool. Next.',
     ],
     transitions: [
       'One more thing then we RIOT...',
-      'Last question then we\'re OFF...',
+      "Last question then we're OFF...",
       'Nearly done with the boring bit...',
       'Final thing, promise...',
-      'Almost there, then chaos...'
+      'Almost there, then chaos...',
     ],
     interactionQuirks: {
       visualEffect: 'jitter',
       animationDuration: 200,
       cssClass: 'broker-punk-mode',
-      soundEvent: 'agentSpeak'
+      soundEvent: 'agentSpeak',
     },
-    messagePrefix: '✦'
-  }
+    messagePrefix: '✦',
+  },
 }
 
 /**
@@ -288,10 +278,7 @@ export function getPersonalityLine(
  * Apply personality tone to generic message
  * (Future enhancement: LLM-based tone transformation)
  */
-export function applyPersonalityTone(
-  message: string,
-  personality: BrokerPersonality
-): string {
+export function applyPersonalityTone(message: string, personality: BrokerPersonality): string {
   // For now, just add prefix and adjust based on theme
   let modified = message
 
@@ -303,7 +290,7 @@ export function applyPersonalityTone(
   // Punk: random caps on emphasis words
   if (personality.themeId === 'punk') {
     const emphasisWords = ['yes', 'no', 'great', 'perfect', 'sick', 'proper', 'right']
-    emphasisWords.forEach(word => {
+    emphasisWords.forEach((word) => {
       const regex = new RegExp(`\\b${word}\\b`, 'gi')
       modified = modified.replace(regex, word.toUpperCase())
     })
@@ -330,10 +317,7 @@ export function getQuirkAnimationClass(personality: BrokerPersonality): string {
 /**
  * Format resume greeting with artist name
  */
-export function formatResumeGreeting(
-  personality: BrokerPersonality,
-  artistName?: string
-): string {
+export function formatResumeGreeting(personality: BrokerPersonality, artistName?: string): string {
   let greeting = personality.resumeGreeting
 
   // Replace {artist_name} placeholder
@@ -341,11 +325,7 @@ export function formatResumeGreeting(
     greeting = greeting.replace('{artist_name}', artistName)
   } else {
     // If no artist name, remove the placeholder and adjust grammar
-    greeting = greeting
-      .replace('{artist_name}', '')
-      .replace('  ', ' ')
-      .replace(', ,', ',')
-      .trim()
+    greeting = greeting.replace('{artist_name}', '').replace('  ', ' ').replace(', ,', ',').trim()
   }
 
   return greeting
@@ -358,26 +338,26 @@ export const personalitySoundMap = {
   ascii: {
     agentSpeak: 'click',
     boot: 'boot',
-    click: 'click'
+    click: 'click',
   },
   xp: {
     agentSpeak: 'click',
     boot: 'boot',
-    click: 'click'
+    click: 'click',
   },
   aqua: {
     agentSpeak: 'click',
     boot: 'boot',
-    click: 'click'
+    click: 'click',
   },
   ableton: {
     agentSpeak: 'click',
     boot: 'boot',
-    click: 'click'
+    click: 'click',
   },
   punk: {
     agentSpeak: 'ambient',
     boot: 'boot',
-    click: 'click'
-  }
+    click: 'click',
+  },
 } as const

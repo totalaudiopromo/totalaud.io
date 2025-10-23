@@ -12,72 +12,63 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
-import { AmbientSound } from '../Ambient/AmbientSound';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Plus,
-  Settings,
-  Clock,
-  Activity,
-} from 'lucide-react';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
+import { useState, useEffect, useRef } from 'react'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
+import { AmbientSound } from '../Ambient/AmbientSound'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Play, Pause, SkipBack, SkipForward, Plus, Settings, Clock, Activity } from 'lucide-react'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 interface DAWStudioProps {
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 }
 
 interface Track {
-  id: string;
-  name: string;
-  color: string;
-  clips: Clip[];
+  id: string
+  name: string
+  color: string
+  clips: Clip[]
 }
 
 interface Clip {
-  id: string;
-  start: number;
-  duration: number;
-  label: string;
-  status: 'idle' | 'running' | 'complete';
+  id: string
+  start: number
+  duration: number
+  label: string
+  status: 'idle' | 'running' | 'complete'
 }
 
-const BPM = 120;
-const BEAT_DURATION = (60 / BPM) * 1000; // ms per beat
+const BPM = 120
+const BEAT_DURATION = (60 / BPM) * 1000 // ms per beat
 
 export function DAWStudio({ initialTemplate }: DAWStudioProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentBeat, setCurrentBeat] = useState(0);
-  const [showSettings, setShowSettings] = useState(false);
-  const startTimeRef = useRef<number>(0);
-  const animationFrameRef = useRef<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentBeat, setCurrentBeat] = useState(0)
+  const [showSettings, setShowSettings] = useState(false)
+  const startTimeRef = useRef<number>(0)
+  const animationFrameRef = useRef<number | null>(null)
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Spacebar: Play/Pause
       if (e.code === 'Space' && e.target === document.body) {
-        e.preventDefault();
-        setIsPlaying((prev) => !prev);
+        e.preventDefault()
+        setIsPlaying((prev) => !prev)
       }
       // R: Reset to beginning
       if (e.code === 'KeyR' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault();
-        setCurrentBeat(0);
-        setIsPlaying(false);
+        e.preventDefault()
+        setCurrentBeat(0)
+        setIsPlaying(false)
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [])
 
   // Initialize tracks from workflow nodes
   const [tracks, setTracks] = useState<Track[]>([
@@ -103,53 +94,51 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
       id: 'tracker',
       name: 'Tracker Track',
       color: '#f59e0b',
-      clips: [
-        { id: 'c5', start: 16, duration: 4, label: 'monitor campaign', status: 'idle' },
-      ],
+      clips: [{ id: 'c5', start: 16, duration: 4, label: 'monitor campaign', status: 'idle' }],
     },
-  ]);
+  ])
 
   // Smooth animation timer
   useEffect(() => {
     if (isPlaying) {
-      startTimeRef.current = Date.now() - currentBeat * BEAT_DURATION;
+      startTimeRef.current = Date.now() - currentBeat * BEAT_DURATION
 
       const animate = () => {
-        const elapsed = Date.now() - startTimeRef.current;
-        const newBeat = elapsed / BEAT_DURATION;
-        setCurrentBeat(newBeat);
-        animationFrameRef.current = requestAnimationFrame(animate);
-      };
+        const elapsed = Date.now() - startTimeRef.current
+        const newBeat = elapsed / BEAT_DURATION
+        setCurrentBeat(newBeat)
+        animationFrameRef.current = requestAnimationFrame(animate)
+      }
 
-      animationFrameRef.current = requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate)
     } else {
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+        cancelAnimationFrame(animationFrameRef.current)
       }
     }
 
     return () => {
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+        cancelAnimationFrame(animationFrameRef.current)
       }
-    };
-  }, [isPlaying, currentBeat]);
+    }
+  }, [isPlaying, currentBeat])
 
   const handlePlayPause = (actions: WorkflowActions) => {
     if (isPlaying) {
-      setIsPlaying(false);
-      actions.stopExecution();
+      setIsPlaying(false)
+      actions.stopExecution()
     } else {
-      setIsPlaying(true);
-      actions.executeFlow();
+      setIsPlaying(true)
+      actions.executeFlow()
     }
-  };
+  }
 
   const handleStop = (actions: WorkflowActions) => {
-    setIsPlaying(false);
-    setCurrentBeat(0);
-    actions.stopExecution();
-  };
+    setIsPlaying(false)
+    setCurrentBeat(0)
+    actions.stopExecution()
+  }
 
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
@@ -190,11 +179,7 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                         : 'bg-purple-600 hover:bg-purple-700'
                     }`}
                   >
-                    {isPlaying ? (
-                      <Pause className="w-5 h-5" />
-                    ) : (
-                      <Play className="w-5 h-5" />
-                    )}
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                   </button>
                   <button
                     onClick={() => setCurrentBeat((prev) => prev + 8)}
@@ -291,15 +276,13 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                     {/* Clips */}
                     {track.clips.map((clip) => {
                       const isActive =
-                        currentBeat >= clip.start && currentBeat < clip.start + clip.duration;
+                        currentBeat >= clip.start && currentBeat < clip.start + clip.duration
 
                       return (
                         <motion.div
                           key={clip.id}
                           className={`absolute top-2 bottom-2 rounded-lg border-2 px-3 py-2 cursor-move transition-all ${
-                            isActive
-                              ? 'shadow-lg scale-105 z-10'
-                              : 'opacity-80 hover:opacity-100'
+                            isActive ? 'shadow-lg scale-105 z-10' : 'opacity-80 hover:opacity-100'
                           }`}
                           style={{
                             left: `${(clip.start / 20) * 100}%`,
@@ -309,7 +292,10 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                           }}
                           whileHover={{ scale: 1.02 }}
                         >
-                          <div className="text-xs font-medium truncate" style={{ color: track.color }}>
+                          <div
+                            className="text-xs font-medium truncate"
+                            style={{ color: track.color }}
+                          >
                             {clip.label}
                           </div>
                           <div className="text-[10px] text-zinc-500 font-mono mt-0.5">
@@ -318,9 +304,7 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
 
                           {/* Progress Bar */}
                           {isActive && isPlaying && (
-                            <motion.div
-                              className="absolute bottom-1 left-1 right-1 h-0.5 bg-white/50 rounded-full overflow-hidden"
-                            >
+                            <motion.div className="absolute bottom-1 left-1 right-1 h-0.5 bg-white/50 rounded-full overflow-hidden">
                               <motion.div
                                 className="h-full bg-white"
                                 initial={{ width: '0%' }}
@@ -332,7 +316,7 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                             </motion.div>
                           )}
                         </motion.div>
-                      );
+                      )
                     })}
                   </div>
                 </div>
@@ -346,8 +330,8 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
                     name: `Track ${tracks.length + 1}`,
                     color: '#6366f1',
                     clips: [],
-                  };
-                  setTracks([...tracks, newTrack]);
+                  }
+                  setTracks([...tracks, newTrack])
                 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-700 border-dashed hover:border-purple-500 hover:bg-zinc-800/50 transition-all text-sm text-zinc-500 hover:text-purple-400"
               >
@@ -416,5 +400,5 @@ export function DAWStudio({ initialTemplate }: DAWStudioProps) {
         </div>
       )}
     </BaseWorkflow>
-  );
+  )
 }

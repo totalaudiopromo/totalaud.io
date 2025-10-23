@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useEffect } from "react"
-import { createClient } from "@supabase/supabase-js"
-import { useFlowStore } from "@aud-web/stores/flowStore"
+import { useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { useFlowStore } from '@aud-web/stores/flowStore'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:54321",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "demo-key"
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key'
 )
 
 export function useFlowRealtime(
@@ -21,17 +21,17 @@ export function useFlowRealtime(
     const channel = supabase
       .channel(`flow_session_${sessionId}`)
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "agent_session_steps",
-          filter: `session_id=eq.${sessionId}`
+          event: '*',
+          schema: 'public',
+          table: 'agent_session_steps',
+          filter: `session_id=eq.${sessionId}`,
         },
         (payload: any) => {
-          console.log("Flow step update:", payload)
+          console.log('Flow step update:', payload)
 
-          if (payload.eventType === "INSERT" || payload.eventType === "UPDATE") {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             const { step_number, status, skill_name, output } = payload.new
 
             // Update node status based on step number
@@ -60,7 +60,7 @@ export function useFlowSessionSync(flowId?: string) {
       .then((data) => {
         if (data.flow) {
           setSessionId(data.flow.id)
-          
+
           // Convert steps to nodes/edges if needed
           if (data.flow.agent_session_steps) {
             // TODO: Convert database steps to React Flow nodes
@@ -68,8 +68,7 @@ export function useFlowSessionSync(flowId?: string) {
         }
       })
       .catch((error) => {
-        console.error("Failed to load flow:", error)
+        console.error('Failed to load flow:', error)
       })
   }, [flowId, setNodes, setEdges, setSessionId])
 }
-

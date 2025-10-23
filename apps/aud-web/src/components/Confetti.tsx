@@ -4,30 +4,30 @@
  * Celebration confetti animation for XP Studio completion
  */
 
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ConfettiProps {
-  active?: boolean;
-  duration?: number;
-  count?: number;
+  active?: boolean
+  duration?: number
+  count?: number
 }
 
 interface ConfettiPiece {
-  id: number;
-  x: number;
-  color: string;
-  delay: number;
-  rotation: number;
-  size: number;
+  id: number
+  x: number
+  color: string
+  delay: number
+  rotation: number
+  size: number
 }
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
 
 export function Confetti({ active = true, duration = 3000, count = 50 }: ConfettiProps) {
-  const [pieces, setPieces] = useState<ConfettiPiece[]>([]);
+  const [pieces, setPieces] = useState<ConfettiPiece[]>([])
 
   useEffect(() => {
     if (active) {
@@ -38,16 +38,16 @@ export function Confetti({ active = true, duration = 3000, count = 50 }: Confett
         delay: Math.random() * 0.5,
         rotation: Math.random() * 360,
         size: 8 + Math.random() * 8,
-      }));
-      setPieces(newPieces);
+      }))
+      setPieces(newPieces)
 
       const timer = setTimeout(() => {
-        setPieces([]);
-      }, duration);
+        setPieces([])
+      }, duration)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [active, count, duration]);
+  }, [active, count, duration])
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -83,5 +83,5 @@ export function Confetti({ active = true, duration = 3000, count = 50 }: Confett
         ))}
       </AnimatePresence>
     </div>
-  );
+  )
 }

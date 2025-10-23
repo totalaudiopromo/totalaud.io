@@ -293,14 +293,7 @@ export function useCommandBridge({
       // Intent: Unknown
       return { action: 'unknown' }
     },
-    [
-      memory,
-      runFlow,
-      cancelFlow,
-      clearLogs,
-      retryFailedNodes,
-      onCommandRecognized,
-    ]
+    [memory, runFlow, cancelFlow, clearLogs, retryFailedNodes, onCommandRecognized]
   )
 
   return {

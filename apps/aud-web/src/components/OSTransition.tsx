@@ -1,11 +1,14 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { OSTheme, THEME_CONFIGS } from "@aud-web/types/themes"
-import { audioEngine, getTheme } from "@total-audio/core-theme-engine"
-import type { ThemeId } from "@total-audio/core-theme-engine"
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { OSTheme, THEME_CONFIGS } from '@aud-web/types/themes'
+import { audioEngine, getTheme } from '@total-audio/core-theme-engine'
+import type { ThemeId } from '@total-audio/core-theme-engine'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('OSTransition')
 
 interface OSTransitionProps {
   selectedMode: OSTheme
@@ -14,36 +17,31 @@ interface OSTransitionProps {
 
 const BOOT_MESSAGES: Record<OSTheme, string[]> = {
   ascii: [
-    "INITIALIZING AGENT INTERFACE…",
-    "LOADING SKILLS_ENGINE.DLL",
-    "SYNCHRONIZING RESEARCH CONTACTS…",
-    "CONNECTING TO SUPABASE::OK",
-    "SYSTEM READY_"
+    'INITIALIZING AGENT INTERFACE…',
+    'LOADING SKILLS_ENGINE.DLL',
+    'SYNCHRONIZING RESEARCH CONTACTS…',
+    'CONNECTING TO SUPABASE::OK',
+    'SYSTEM READY_',
   ],
   xp: [
-    "Loading VST plugins...",
-    "Rendering GUI assets...",
-    "Initializing creative workspace...",
-    "Ready."
+    'Loading VST plugins...',
+    'Rendering GUI assets...',
+    'Initializing creative workspace...',
+    'Ready.',
   ],
   aqua: [
-    "Mounting volumes...",
-    "Connecting iChat Agent...",
-    "Initializing Aqua interface...",
-    "Welcome to your studio."
+    'Mounting volumes...',
+    'Connecting iChat Agent...',
+    'Initializing Aqua interface...',
+    'Welcome to your studio.',
   ],
-  daw: [
-    "INIT: MIDI ROUTES",
-    "LOAD: SESSION CLIPS",
-    "SYNC: AGENT SEQUENCER",
-    "PLAYBACK READY…"
-  ],
+  daw: ['INIT: MIDI ROUTES', 'LOAD: SESSION CLIPS', 'SYNC: AGENT SEQUENCER', 'PLAYBACK READY…'],
   analogue: [
-    "Warming up the signal…",
-    "Loading tape emulation…",
-    "Adjusting gain staging…",
-    "Ready to record."
-  ]
+    'Warming up the signal…',
+    'Loading tape emulation…',
+    'Adjusting gain staging…',
+    'Ready to record.',
+  ],
 }
 
 export default function OSTransition({ selectedMode, onComplete }: OSTransitionProps) {
@@ -55,47 +53,53 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
   const themeManifest = getTheme(selectedMode as ThemeId)
 
   useEffect(() => {
-    console.log('[OSTransition] Mounted with mode:', selectedMode)
-    
+    log.info('OS transition mounted', { mode: selectedMode })
+
     // Play boot sound using Theme Engine audio synthesis
     audioEngine.play(themeManifest.sounds.boot)
 
     // Transition phases
     const timeline = [
-      { delay: 0, action: () => {
-        console.log('[OSTransition] Phase: fadeout')
-        setPhase('fadeout')
-      }},
-      { delay: 500, action: () => {
-        console.log('[OSTransition] Phase: boot')
-        setPhase('boot')
-      }},
-      { delay: 5500, action: () => {
-        console.log('[OSTransition] Phase: fadein')
-        setPhase('fadein')
-      }},
-      { 
-        delay: 6500, 
+      {
+        delay: 0,
         action: () => {
-          console.log('[OSTransition] Redirecting...')
+          log.debug('Phase: fadeout')
+          setPhase('fadeout')
+        },
+      },
+      {
+        delay: 500,
+        action: () => {
+          log.debug('Phase: boot')
+          setPhase('boot')
+        },
+      },
+      {
+        delay: 5500,
+        action: () => {
+          log.debug('Phase: fadein')
+          setPhase('fadein')
+        },
+      },
+      {
+        delay: 6500,
+        action: () => {
+          log.info('Redirecting to broker onboarding', { mode: selectedMode })
           if (onComplete) {
             onComplete()
           } else {
             router.push(`/onboarding/broker?mode=${selectedMode}`)
           }
-        }
-      }
+        },
+      },
     ]
 
-    const timers = timeline.map(({ delay, action }) =>
-      setTimeout(action, delay)
-    )
+    const timers = timeline.map(({ delay, action }) => setTimeout(action, delay))
 
     return () => {
-      console.log('[OSTransition] Cleanup')
+      log.debug('Component cleanup')
       timers.forEach(clearTimeout)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMode, router, onComplete])
 
   // Animate boot messages line by line
@@ -105,14 +109,17 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
     const messages = BOOT_MESSAGES[selectedMode]
     let currentLine = 0
 
-    const interval = setInterval(() => {
-      if (currentLine < messages.length) {
-        setVisibleLines(prev => prev + 1)
-        currentLine++
-      } else {
-        clearInterval(interval)
-      }
-    }, selectedMode === 'analogue' || selectedMode === 'ascii' ? 200 : 400)
+    const interval = setInterval(
+      () => {
+        if (currentLine < messages.length) {
+          setVisibleLines((prev) => prev + 1)
+          currentLine++
+        } else {
+          clearInterval(interval)
+        }
+      },
+      selectedMode === 'analogue' || selectedMode === 'ascii' ? 200 : 400
+    )
 
     return () => clearInterval(interval)
   }, [phase, selectedMode])
@@ -122,7 +129,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
     if (phase !== 'boot' || selectedMode !== 'xp') return
 
     const interval = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
           return 100
@@ -139,17 +146,19 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
       className="fixed inset-0 z-50 overflow-hidden"
       style={{
         backgroundColor: theme.colors.background,
-        fontFamily: theme.fontFamily
+        fontFamily: theme.fontFamily,
       }}
     >
       {/* Texture Overlay - Optional, fails gracefully */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none bg-gradient-to-br from-transparent via-current to-transparent"
         style={{
-          backgroundImage: theme.textures.overlay ? `url(/textures/${theme.textures.overlay}.png)` : undefined,
+          backgroundImage: theme.textures.overlay
+            ? `url(/textures/${theme.textures.overlay}.png)`
+            : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.1
+          opacity: 0.1,
         }}
       />
 
@@ -165,7 +174,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
             backgroundImage: `url(/textures/${theme.textures.pattern}.png)`,
             backgroundSize: '256px 256px',
             backgroundRepeat: 'repeat',
-            animation: 'noise 0.2s steps(10) infinite'
+            animation: 'noise 0.2s steps(10) infinite',
           }}
         />
       )}
@@ -196,7 +205,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
               {selectedMode === 'ascii' && (
                 <div className="space-y-3">
                   <pre className="text-xs text-green-400 leading-tight mb-6 opacity-60">
-{`┌────────────────────────────────────┐
+                    {`┌────────────────────────────────────┐
 │  TOTALAUD.IO BOOT SEQUENCE v1.0.0  │
 └────────────────────────────────────┘`}
                   </pre>
@@ -259,12 +268,12 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                       style={{ borderColor: theme.colors.primary }}
                     >
                       <motion.div
-                        initial={{ width: "0%" }}
+                        initial={{ width: '0%' }}
                         animate={{ width: `${progress}%` }}
                         className="h-full flex items-center justify-center text-xs font-bold"
                         style={{
                           backgroundColor: theme.colors.primary,
-                          color: theme.colors.background
+                          color: theme.colors.background,
                         }}
                       >
                         {progress > 10 && `${progress}%`}
@@ -281,7 +290,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                     <motion.div
                       animate={{
                         y: [0, -10, 0],
-                        rotate: [0, 5, -5, 0]
+                        rotate: [0, 5, -5, 0],
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                       className="text-6xl mb-4"
@@ -292,7 +301,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                       className="text-2xl font-bold"
                       style={{
                         color: theme.colors.primary,
-                        textShadow: `0 2px 10px ${theme.colors.primary}40`
+                        textShadow: `0 2px 10px ${theme.colors.primary}40`,
                       }}
                     >
                       Mac OS Retro
@@ -363,13 +372,13 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                       <motion.div
                         key={i}
                         animate={{
-                          height: [`${20 + Math.random() * 30}%`, `${40 + Math.random() * 60}%`]
+                          height: [`${20 + Math.random() * 30}%`, `${40 + Math.random() * 60}%`],
                         }}
                         transition={{
                           duration: 0.5,
                           repeat: Infinity,
                           delay: i * 0.05,
-                          repeatType: "reverse"
+                          repeatType: 'reverse',
                         }}
                         className="w-1 rounded-full"
                         style={{ backgroundColor: theme.colors.accent }}
@@ -394,7 +403,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                       className="text-3xl font-bold uppercase"
                       style={{
                         color: theme.colors.primary,
-                        textShadow: `3px 3px 0 ${theme.colors.secondary}`
+                        textShadow: `3px 3px 0 ${theme.colors.secondary}`,
                       }}
                     >
                       ANALOGUE STUDIO
@@ -431,7 +440,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                         key={i}
                         animate={{
                           rotate: [0, Math.random() * 10 - 5, 0],
-                          scale: [1, 1.1, 1]
+                          scale: [1, 1.1, 1],
                         }}
                         transition={{ duration: 0.5, delay: i * 0.2, repeat: Infinity }}
                         className="text-4xl"
@@ -481,4 +490,3 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
     </div>
   )
 }
-

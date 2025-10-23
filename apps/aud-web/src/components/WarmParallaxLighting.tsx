@@ -5,32 +5,29 @@
  * Creates a cozy, reflective atmosphere with amber/orange tones
  */
 
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface WarmParallaxLightingProps {
-  intensity?: number;
-  speed?: number;
+  intensity?: number
+  speed?: number
 }
 
-export function WarmParallaxLighting({
-  intensity = 0.25,
-  speed = 0.8,
-}: WarmParallaxLightingProps) {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+export function WarmParallaxLighting({ intensity = 0.25, speed = 0.8 }: WarmParallaxLightingProps) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-      const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
-      setMousePosition({ x, y });
-    };
+      const x = (e.clientX / window.innerWidth - 0.5) * 2 // -1 to 1
+      const y = (e.clientY / window.innerHeight - 0.5) * 2 // -1 to 1
+      setMousePosition({ x, y })
+    }
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -99,5 +96,5 @@ export function WarmParallaxLighting({
         }}
       />
     </div>
-  );
+  )
 }

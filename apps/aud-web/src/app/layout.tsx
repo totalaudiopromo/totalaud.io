@@ -1,22 +1,35 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import "./globals.css";
-import { ThemeResolver } from "@aud-web/components/themes/ThemeResolver";
-import { GlobalCommandPalette } from "@aud-web/components/GlobalCommandPalette";
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
+import { Inter, JetBrains_Mono } from 'next/font/google'
+import './globals.css'
+import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
+import { GlobalCommandPalette } from '@aud-web/components/GlobalCommandPalette'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "totalaud.io",
-  description: "Marketing your music should be as creative as making it.",
-};
+  title: 'totalaud.io',
+  description: 'Marketing your music should be as creative as making it.',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <ThemeResolver>
           {children}
           <Suspense fallback={null}>
@@ -25,6 +38,5 @@ export default function RootLayout({
         </ThemeResolver>
       </body>
     </html>
-  );
+  )
 }
-

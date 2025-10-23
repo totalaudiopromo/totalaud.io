@@ -9,4 +9,3 @@ export * from './useThemeManager'
 export { audioEngine, sounds, agentSounds, playAgentSound } from './sounds'
 export * from './textures'
 export { ThemeProvider, useTheme } from './ThemeProvider'
-

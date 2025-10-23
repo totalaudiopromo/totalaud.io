@@ -4,15 +4,15 @@
  * Multi-layer parallax scrolling background for Aqua Studio
  */
 
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface ParallaxBackgroundProps {
-  layers?: number;
-  baseColor?: string;
-  accentColor?: string;
+  layers?: number
+  baseColor?: string
+  accentColor?: string
 }
 
 export function ParallaxBackground({
@@ -20,18 +20,18 @@ export function ParallaxBackground({
   baseColor = '#60a5fa',
   accentColor = '#3b82f6',
 }: ParallaxBackgroundProps) {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-      const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
-      setMousePosition({ x, y });
-    };
+      const x = (e.clientX / window.innerWidth - 0.5) * 2 // -1 to 1
+      const y = (e.clientY / window.innerHeight - 0.5) * 2 // -1 to 1
+      setMousePosition({ x, y })
+    }
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -88,5 +88,5 @@ export function ParallaxBackground({
         />
       </motion.div>
     </div>
-  );
+  )
 }

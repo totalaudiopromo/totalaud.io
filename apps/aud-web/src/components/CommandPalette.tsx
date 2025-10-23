@@ -5,10 +5,10 @@
  * Flow State Design System - Matches moodboard brief.
  */
 
-"use client"
+'use client'
 
-import { useState, useEffect, useCallback, useMemo } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
   Play,
@@ -20,7 +20,7 @@ import {
   VolumeX,
   Volume2,
   Command,
-} from "lucide-react"
+} from 'lucide-react'
 
 export interface CommandAction {
   id: string
@@ -58,12 +58,7 @@ function fuzzyMatch(search: string, text: string): boolean {
 /**
  * CommandPalette Component (Flow State Design)
  */
-export function CommandPalette({
-  isOpen,
-  onClose,
-  commands,
-  theme = 'dark',
-}: CommandPaletteProps) {
+export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: CommandPaletteProps) {
   const [search, setSearch] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -71,11 +66,7 @@ export function CommandPalette({
     if (!search.trim()) return commands
 
     return commands.filter((cmd) => {
-      const searchableText = [
-        cmd.label,
-        cmd.description || '',
-        ...(cmd.keywords || []),
-      ].join(' ')
+      const searchableText = [cmd.label, cmd.description || '', ...(cmd.keywords || [])].join(' ')
 
       return fuzzyMatch(search, searchableText)
     })
@@ -108,16 +99,12 @@ export function CommandPalette({
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault()
-          setSelectedIndex((prev) =>
-            prev < filteredCommands.length - 1 ? prev + 1 : 0
-          )
+          setSelectedIndex((prev) => (prev < filteredCommands.length - 1 ? prev + 1 : 0))
           break
 
         case 'ArrowUp':
           e.preventDefault()
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredCommands.length - 1
-          )
+          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredCommands.length - 1))
           break
 
         case 'Enter':
@@ -228,7 +215,9 @@ export function CommandPalette({
                         className="w-full flex items-center gap-3 p-4 transition-colors text-left"
                         style={{
                           backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
-                          borderLeft: isSelected ? `3px solid ${colors.accent}` : '3px solid transparent',
+                          borderLeft: isSelected
+                            ? `3px solid ${colors.accent}`
+                            : '3px solid transparent',
                         }}
                       >
                         <div
@@ -337,13 +326,4 @@ export function useCommandPalette() {
   }
 }
 
-export {
-  Play,
-  BarChart3,
-  Link,
-  MessageSquare,
-  Palette,
-  Focus,
-  VolumeX,
-  Volume2,
-}
+export { Play, BarChart3, Link, MessageSquare, Palette, Focus, VolumeX, Volume2 }

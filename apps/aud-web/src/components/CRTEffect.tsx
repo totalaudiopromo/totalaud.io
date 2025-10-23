@@ -7,15 +7,15 @@
  * Phase 6: Enhancements
  */
 
-'use client';
+'use client'
 
 export interface CRTEffectProps {
   /** Scanline opacity (0-1) */
-  scanlineOpacity?: number;
+  scanlineOpacity?: number
   /** Screen glow intensity (0-1) */
-  glowIntensity?: number;
+  glowIntensity?: number
   /** Enable screen curvature */
-  enableCurvature?: boolean;
+  enableCurvature?: boolean
 }
 
 export function CRTEffect({
@@ -69,5 +69,5 @@ export function CRTEffect({
         `}</style>
       )}
     </>
-  );
+  )
 }

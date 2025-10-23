@@ -12,31 +12,31 @@
  * Phase 6: OS Studio Refactor
  */
 
-'use client';
+'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow';
-import { AmbientSound } from '../Ambient/AmbientSound';
-import { WarmParallaxLighting } from '../WarmParallaxLighting';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PenTool, Eye, EyeOff, Book, Lightbulb, Send } from 'lucide-react';
-import type { FlowTemplate } from '@total-audio/core-agent-executor/client';
-import ReactFlow, { Background, BackgroundVariant } from 'reactflow';
+import { useState, useRef, useEffect } from 'react'
+import { BaseWorkflow, type WorkflowState, type WorkflowActions } from '../BaseWorkflow'
+import { AmbientSound } from '../Ambient/AmbientSound'
+import { WarmParallaxLighting } from '../WarmParallaxLighting'
+import { motion, AnimatePresence } from 'framer-motion'
+import { PenTool, Eye, EyeOff, Book, Lightbulb, Send } from 'lucide-react'
+import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
+import ReactFlow, { Background, BackgroundVariant } from 'reactflow'
 
 interface AnalogueStudioProps {
-  initialTemplate?: FlowTemplate | null;
+  initialTemplate?: FlowTemplate | null
 }
 
 interface JournalEntry {
-  id: string;
-  timestamp: Date;
-  text: string;
-  author: 'user' | 'agent';
+  id: string
+  timestamp: Date
+  text: string
+  author: 'user' | 'agent'
 }
 
 export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
-  const [showInsightView, setShowInsightView] = useState(false);
-  const [journalText, setJournalText] = useState('');
+  const [showInsightView, setShowInsightView] = useState(false)
+  const [journalText, setJournalText] = useState('')
   const [entries, setEntries] = useState<JournalEntry[]>([
     {
       id: '1',
@@ -44,34 +44,34 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
       text: 'Welcome to your creative journal. This is a space for reflection, planning, and conversation with your AI agents.',
       author: 'agent',
     },
-  ]);
-  const journalRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  ])
+  const journalRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Auto-scroll to bottom when new entries added
   useEffect(() => {
     if (journalRef.current) {
-      journalRef.current.scrollTop = journalRef.current.scrollHeight;
+      journalRef.current.scrollTop = journalRef.current.scrollHeight
     }
-  }, [entries]);
+  }, [entries])
 
   // Auto-focus textarea
   useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
+    textareaRef.current?.focus()
+  }, [])
 
   const handleSubmit = (actions: WorkflowActions) => {
-    if (!journalText.trim()) return;
+    if (!journalText.trim()) return
 
     const newEntry: JournalEntry = {
       id: Date.now().toString(),
       timestamp: new Date(),
       text: journalText,
       author: 'user',
-    };
+    }
 
-    setEntries((prev) => [...prev, newEntry]);
-    setJournalText('');
+    setEntries((prev) => [...prev, newEntry])
+    setJournalText('')
 
     // Simulate agent response
     setTimeout(() => {
@@ -80,10 +80,10 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
         timestamp: new Date(),
         text: `I understand you're thinking about: "${journalText.slice(0, 50)}${journalText.length > 50 ? '...' : ''}". Let me help you develop this idea further.`,
         author: 'agent',
-      };
-      setEntries((prev) => [...prev, agentResponse]);
-    }, 1500);
-  };
+      }
+      setEntries((prev) => [...prev, agentResponse])
+    }, 1500)
+  }
 
   return (
     <BaseWorkflow initialTemplate={initialTemplate}>
@@ -190,7 +190,7 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
                     onChange={(e) => setJournalText(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.metaKey) {
-                        handleSubmit(actions);
+                        handleSubmit(actions)
                       }
                     }}
                     placeholder="Write your thoughts, ideas, or questions here..."
@@ -203,9 +203,7 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
                   />
                   <div className="flex items-center justify-between mt-2">
                     <div className="text-xs text-amber-500/60">⌘ + Enter to submit</div>
-                    <div className="text-xs text-amber-500/60">
-                      {journalText.length} characters
-                    </div>
+                    <div className="text-xs text-amber-500/60">{journalText.length} characters</div>
                   </div>
                 </div>
                 <button
@@ -287,5 +285,5 @@ export function AnalogueStudio({ initialTemplate }: AnalogueStudioProps) {
         </div>
       )}
     </BaseWorkflow>
-  );
+  )
 }

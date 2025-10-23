@@ -13,21 +13,21 @@ export async function loadSkill(skillPath: string): Promise<Skill> {
 
 export async function loadAllSkills(): Promise<Map<string, Skill>> {
   const skills = new Map<string, Skill>()
-  
+
   try {
     const categories = await fs.readdir(SKILLS_DIR)
-    
+
     for (const category of categories) {
       const categoryPath = path.join(SKILLS_DIR, category)
       const stat = await fs.stat(categoryPath)
-      
+
       if (!stat.isDirectory()) continue
-      
+
       const files = await fs.readdir(categoryPath)
-      
+
       for (const file of files) {
         if (!file.endsWith('.yml') && !file.endsWith('.yaml')) continue
-        
+
         const skillPath = path.join(categoryPath, file)
         const skill = await loadSkill(skillPath)
         skills.set(skill.name, skill)
@@ -36,7 +36,6 @@ export async function loadAllSkills(): Promise<Map<string, Skill>> {
   } catch (error) {
     console.error('Error loading skills:', error)
   }
-  
+
   return skills
 }
-

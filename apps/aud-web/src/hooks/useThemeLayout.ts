@@ -7,51 +7,51 @@
  * Phase 6: OS Studio Refactor
  */
 
-import { useMemo } from 'react';
+import { useMemo } from 'react'
 
-export type LayoutMode = 'terminal' | 'steps' | 'canvas' | 'timeline' | 'journal';
-export type NodeVisibility = 'always' | 'hidden' | 'toggle' | 'segments';
+export type LayoutMode = 'terminal' | 'steps' | 'canvas' | 'timeline' | 'journal'
+export type NodeVisibility = 'always' | 'hidden' | 'toggle' | 'segments'
 
 export interface ThemeLayoutConfig {
   /** The primary layout mode for this OS */
-  layout: LayoutMode;
+  layout: LayoutMode
 
   /** How nodes are displayed in this environment */
-  nodeVisibility: NodeVisibility;
+  nodeVisibility: NodeVisibility
 
   /** Default state when entering this Studio */
-  defaultState: 'active-input' | 'wizard' | 'overview' | 'tracks' | 'reflective';
+  defaultState: 'active-input' | 'wizard' | 'overview' | 'tracks' | 'reflective'
 
   /** Creative metaphor for this environment */
-  metaphor: string;
+  metaphor: string
 
   /** Primary interaction pattern */
-  primaryInteraction: 'typing' | 'clicking' | 'dragging' | 'sequencing' | 'writing';
+  primaryInteraction: 'typing' | 'clicking' | 'dragging' | 'sequencing' | 'writing'
 
   /** Whether to show advanced tools by default */
-  showAdvancedTools: boolean;
+  showAdvancedTools: boolean
 
   /** Ambient sound configuration */
   ambientSound: {
-    enabled: boolean;
-    intensity: 'subtle' | 'medium' | 'immersive';
-  };
+    enabled: boolean
+    intensity: 'subtle' | 'medium' | 'immersive'
+  }
 
   /** Motion and animation preferences */
   motion: {
-    transitionSpeed: 'fast' | 'medium' | 'slow';
-    enableParallax: boolean;
-    enableHoverEffects: boolean;
-  };
+    transitionSpeed: 'fast' | 'medium' | 'slow'
+    enableParallax: boolean
+    enableHoverEffects: boolean
+  }
 
   /** Studio-specific UI elements */
   ui: {
-    showConsoleShell: boolean;
-    showMissionPanel: boolean;
-    showFlowCanvas: boolean;
-    showTimeline: boolean;
-    showJournal: boolean;
-  };
+    showConsoleShell: boolean
+    showMissionPanel: boolean
+    showFlowCanvas: boolean
+    showTimeline: boolean
+    showJournal: boolean
+  }
 }
 
 const LAYOUT_CONFIGS: Record<string, ThemeLayoutConfig> = {
@@ -179,33 +179,30 @@ const LAYOUT_CONFIGS: Record<string, ThemeLayoutConfig> = {
       showJournal: true,
     },
   },
-};
+}
 
 /**
  * Get the layout configuration for a specific OS theme
  */
 export function useThemeLayout(theme: string): ThemeLayoutConfig {
   const config = useMemo(() => {
-    return LAYOUT_CONFIGS[theme] || LAYOUT_CONFIGS.ascii;
-  }, [theme]);
+    return LAYOUT_CONFIGS[theme] || LAYOUT_CONFIGS.ascii
+  }, [theme])
 
-  return config;
+  return config
 }
 
 /**
  * Get all available layout modes
  */
 export function getAvailableLayouts(): string[] {
-  return Object.keys(LAYOUT_CONFIGS);
+  return Object.keys(LAYOUT_CONFIGS)
 }
 
 /**
  * Check if a theme supports a specific feature
  */
-export function supportsFeature(
-  theme: string,
-  feature: keyof ThemeLayoutConfig['ui']
-): boolean {
-  const config = LAYOUT_CONFIGS[theme] || LAYOUT_CONFIGS.ascii;
-  return config.ui[feature];
+export function supportsFeature(theme: string, feature: keyof ThemeLayoutConfig['ui']): boolean {
+  const config = LAYOUT_CONFIGS[theme] || LAYOUT_CONFIGS.ascii
+  return config.ui[feature]
 }

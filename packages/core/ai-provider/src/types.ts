@@ -18,4 +18,3 @@ export interface AICompletionResult {
   cost_usd: number
   model: string
 }
-

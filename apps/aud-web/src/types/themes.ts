@@ -6,7 +6,7 @@ export interface ThemeConfig {
   displayName: string
   description: string
   tagline: string
-  
+
   // Visual
   colors: {
     primary: string
@@ -16,23 +16,23 @@ export interface ThemeConfig {
     text: string
     border: string
   }
-  
+
   // Typography
   fontFamily: string
-  
+
   // Effects
   textures: {
     overlay: string
     pattern?: string
   }
-  
+
   // Audio
   sounds: {
     boot: string
     ambient?: string
     click: string
   }
-  
+
   // Special features
   effects?: {
     scanlines?: boolean
@@ -56,24 +56,24 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
       accent: '#00ff00',
       background: '#0a0a0a',
       text: '#00ff00',
-      border: '#00ff00'
+      border: '#00ff00',
     },
     fontFamily: '"JetBrains Mono", "Courier New", monospace',
     textures: {
       overlay: 'crt-scanlines',
-      pattern: 'terminal-noise'
+      pattern: 'terminal-noise',
     },
     sounds: {
       boot: 'beep-sequence',
       ambient: 'typing-soft',
-      click: 'mechanical-key'
+      click: 'mechanical-key',
     },
     effects: {
       scanlines: true,
-      noise: true
-    }
+      noise: true,
+    },
   },
-  
+
   xp: {
     id: 'xp',
     name: 'Windows XP Studio',
@@ -86,23 +86,23 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
       accent: '#ffd700',
       background: '#ece9d8',
       text: '#000000',
-      border: '#0078d7'
+      border: '#0078d7',
     },
     fontFamily: '"Segoe UI", Tahoma, sans-serif',
     textures: {
       overlay: 'plastic-gloss',
-      pattern: 'gui-reflections'
+      pattern: 'gui-reflections',
     },
     sounds: {
       boot: 'xp-startup',
-      click: 'xp-click'
+      click: 'xp-click',
     },
     effects: {
       reflections: true,
-      glow: true
-    }
+      glow: true,
+    },
   },
-  
+
   aqua: {
     id: 'aqua',
     name: 'Mac OS Retro',
@@ -115,24 +115,24 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
       accent: '#ffffff',
       background: '#e8e8e8',
       text: '#333333',
-      border: '#999999'
+      border: '#999999',
     },
     fontFamily: '"Lucida Grande", system-ui, sans-serif',
     textures: {
       overlay: 'brushed-metal',
-      pattern: 'aqua-reflection'
+      pattern: 'aqua-reflection',
     },
     sounds: {
       boot: 'mac-chime',
       ambient: 'vinyl-hiss',
-      click: 'aqua-pop'
+      click: 'aqua-pop',
     },
     effects: {
       reflections: true,
-      glow: true
-    }
+      glow: true,
+    },
   },
-  
+
   daw: {
     id: 'daw',
     name: 'DAW Workstation',
@@ -145,23 +145,23 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
       accent: '#ff764d',
       background: '#1a1a1a',
       text: '#cccccc',
-      border: '#333333'
+      border: '#333333',
     },
     fontFamily: '"Inter", -apple-system, sans-serif',
     textures: {
       overlay: 'paper-noise',
-      pattern: 'waveform-subtle'
+      pattern: 'waveform-subtle',
     },
     sounds: {
       boot: 'sequencer-start',
       ambient: 'synth-pad',
-      click: 'clip-trigger'
+      click: 'clip-trigger',
     },
     effects: {
-      noise: true
-    }
+      noise: true,
+    },
   },
-  
+
   analogue: {
     id: 'analogue',
     name: 'Analogue Studio',
@@ -174,22 +174,21 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
       accent: '#ff00ff',
       background: '#0a0a0a',
       text: '#f5f5f5',
-      border: '#ff00ff'
+      border: '#ff00ff',
     },
     fontFamily: '"JetBrains Mono", "Arial Narrow", monospace',
     textures: {
       overlay: 'xerox-grit',
-      pattern: 'torn-paper'
+      pattern: 'torn-paper',
     },
     sounds: {
       boot: 'tape-start',
       ambient: 'tape-hiss',
-      click: 'stamp-press'
+      click: 'stamp-press',
     },
     effects: {
       halftone: true,
-      noise: true
-    }
-  }
+      noise: true,
+    },
+  },
 }
-

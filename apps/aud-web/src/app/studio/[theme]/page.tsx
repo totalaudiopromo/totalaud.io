@@ -7,55 +7,55 @@
  * Phase 6: OS Studio Refactor
  */
 
-import { notFound } from 'next/navigation';
+import { notFound } from 'next/navigation'
 import {
   ASCIIStudio,
   XPStudio,
   AquaStudio,
   DAWStudio,
   AnalogueStudio,
-} from '@aud-web/components/Studios';
+} from '@aud-web/components/Studios'
 
 interface StudioPageProps {
   params: Promise<{
-    theme: string;
-  }>;
+    theme: string
+  }>
 }
 
-const VALID_THEMES = ['ascii', 'xp', 'aqua', 'daw', 'analogue'];
+const VALID_THEMES = ['ascii', 'xp', 'aqua', 'daw', 'analogue']
 
 export function generateStaticParams() {
   return VALID_THEMES.map((theme) => ({
     theme,
-  }));
+  }))
 }
 
 export default async function StudioPage({ params }: StudioPageProps) {
-  const { theme } = await params;
+  const { theme } = await params
 
   // Validate theme
   if (!VALID_THEMES.includes(theme)) {
-    notFound();
+    notFound()
   }
 
   // Render appropriate Studio
   switch (theme) {
     case 'ascii':
-      return <ASCIIStudio />;
+      return <ASCIIStudio />
     case 'xp':
-      return <XPStudio />;
+      return <XPStudio />
     case 'aqua':
-      return <AquaStudio />;
+      return <AquaStudio />
     case 'daw':
-      return <DAWStudio />;
+      return <DAWStudio />
     case 'analogue':
-      return <AnalogueStudio />;
+      return <AnalogueStudio />
     default:
-      notFound();
+      notFound()
   }
 }
 
 export const metadata = {
   title: 'Studio | TotalAud.io',
   description: 'Your creative AI workspace',
-};
+}

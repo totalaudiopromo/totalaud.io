@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { createClient } from "@supabase/supabase-js"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface AgentMessage {
   id: string
@@ -20,13 +20,13 @@ interface MultiAgentPanelProps {
 export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
   const [messages, setMessages] = useState<AgentMessage[]>([])
   const [agents] = useState([
-    { name: "Scout", emoji: "🧭", color: "#10b981" },
-    { name: "Coach", emoji: "🎙️", color: "#6366f1" },
-    { name: "Tracker", emoji: "📊", color: "#f59e0b" },
-    { name: "Insight", emoji: "💡", color: "#8b5cf6" }
+    { name: 'Scout', emoji: '🧭', color: '#10b981' },
+    { name: 'Coach', emoji: '🎙️', color: '#6366f1' },
+    { name: 'Tracker', emoji: '📊', color: '#f59e0b' },
+    { name: 'Insight', emoji: '💡', color: '#8b5cf6' },
   ])
-  const [content, setContent] = useState("")
-  const [selectedAgent, setSelectedAgent] = useState("Scout")
+  const [content, setContent] = useState('')
+  const [selectedAgent, setSelectedAgent] = useState('Scout')
 
   useEffect(() => {
     const supabase = createClient(
@@ -37,11 +37,11 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
     // Fetch existing messages
     const fetchMessages = async () => {
       const { data } = await supabase
-        .from("agent_messages")
-        .select("*")
-        .eq("session_id", sessionId)
-        .order("created_at", { ascending: true })
-      
+        .from('agent_messages')
+        .select('*')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true })
+
       if (data) setMessages(data)
     }
 
@@ -51,12 +51,12 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
     const channel = supabase
       .channel(`agent_messages_${sessionId}`)
       .on(
-        "postgres_changes",
-        { 
-          event: "INSERT", 
-          schema: "public", 
-          table: "agent_messages",
-          filter: `session_id=eq.${sessionId}`
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'agent_messages',
+          filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
           setMessages((prev) => [...prev, payload.new as AgentMessage])
@@ -73,31 +73,31 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
     if (!content.trim()) return
 
     try {
-      await fetch("/api/agents/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch('/api/agents/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from_agent: "user",
+          from_agent: 'user',
           to_agent: toAgent.toLowerCase(),
           content,
           session_id: sessionId,
-          message_type: "request"
-        })
+          message_type: 'request',
+        }),
       })
-      setContent("")
+      setContent('')
     } catch (error) {
-      console.error("Failed to send message:", error)
+      console.error('Failed to send message:', error)
     }
   }
 
   function getAgentColor(agentName: string) {
-    const agent = agents.find(a => agentName.toLowerCase().includes(a.name.toLowerCase()))
-    return agent?.color || "#6366f1"
+    const agent = agents.find((a) => agentName.toLowerCase().includes(a.name.toLowerCase()))
+    return agent?.color || '#6366f1'
   }
 
   function getAgentEmoji(agentName: string) {
-    const agent = agents.find(a => agentName.toLowerCase().includes(a.name.toLowerCase()))
-    return agent?.emoji || "🤖"
+    const agent = agents.find((a) => agentName.toLowerCase().includes(a.name.toLowerCase()))
+    return agent?.emoji || '🤖'
   }
 
   return (
@@ -134,17 +134,14 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
                   <span className="text-lg">{getAgentEmoji(msg.from_agent)}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span 
+                      <span
                         className="font-medium"
                         style={{ color: getAgentColor(msg.from_agent) }}
                       >
                         {msg.from_agent}
                       </span>
                       <span className="text-slate-500">→</span>
-                      <span 
-                        className="font-medium"
-                        style={{ color: getAgentColor(msg.to_agent) }}
-                      >
+                      <span className="font-medium" style={{ color: getAgentColor(msg.to_agent) }}>
                         {msg.to_agent}
                       </span>
                       <span className="text-xs text-slate-600 ml-auto">
@@ -168,15 +165,16 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
               onClick={() => setSelectedAgent(agent.name)}
               className={`text-xs px-3 py-1.5 rounded-lg transition-all ${
                 selectedAgent === agent.name
-                  ? "ring-2 ring-offset-2 ring-offset-slate-800"
-                  : "opacity-60 hover:opacity-100"
+                  ? 'ring-2 ring-offset-2 ring-offset-slate-800'
+                  : 'opacity-60 hover:opacity-100'
               }`}
               style={{
-                backgroundColor: agent.color + "20",
+                backgroundColor: agent.color + '20',
                 color: agent.color,
-                ...(selectedAgent === agent.name && {
-                  '--tw-ring-color': agent.color
-                } as any)
+                ...(selectedAgent === agent.name &&
+                  ({
+                    '--tw-ring-color': agent.color,
+                  } as any)),
               }}
             >
               {agent.emoji} {agent.name}
@@ -189,7 +187,7 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
                 sendMessage(selectedAgent)
               }
@@ -209,4 +207,3 @@ export default function MultiAgentPanel({ sessionId }: MultiAgentPanelProps) {
     </motion.div>
   )
 }
-

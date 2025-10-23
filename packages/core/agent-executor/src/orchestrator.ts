@@ -1,6 +1,11 @@
-import { executeSkill } from "@total-audio/core-skills-engine"
-import { supabase } from "@total-audio/core-supabase"
-import type { AgentStep, AgentWorkflowResult, AgentWorkflowCallbacks, AgentStepUpdate } from "./types"
+import { executeSkill } from '@total-audio/core-skills-engine'
+import { supabase } from '@total-audio/core-supabase'
+import type {
+  AgentStep,
+  AgentWorkflowResult,
+  AgentWorkflowCallbacks,
+  AgentStepUpdate,
+} from './types'
 
 export async function runAgentWorkflow(
   agentName: string,
@@ -13,15 +18,15 @@ export async function runAgentWorkflow(
   const start = Date.now()
 
   // Create session
-  await supabase.from("agent_sessions").insert({
+  await supabase.from('agent_sessions').insert({
     id: sessionId,
     agent_name: agentName,
     user_id: userId,
     initial_input: initialInput,
-    status: "running",
+    status: 'running',
     current_step: 0,
     total_steps: steps.length,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   })
 
   const outputs: Record<string, any>[] = []
@@ -32,24 +37,24 @@ export async function runAgentWorkflow(
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i]
       const stepStartTime = Date.now()
-      
+
       // Update current step
       await supabase
-        .from("agent_sessions")
+        .from('agent_sessions')
         .update({ current_step: i + 1 })
-        .eq("id", sessionId)
+        .eq('id', sessionId)
 
       // Insert step record
       const stepId = crypto.randomUUID()
-      await supabase.from("agent_session_steps").insert({
+      await supabase.from('agent_session_steps').insert({
         id: stepId,
         session_id: sessionId,
         step_number: i + 1,
         skill_name: step.skill,
         description: step.description,
         input: step.input,
-        status: "running",
-        started_at: new Date().toISOString()
+        status: 'running',
+        started_at: new Date().toISOString(),
       })
 
       // Notify step started
@@ -58,18 +63,13 @@ export async function runAgentWorkflow(
           step_number: i + 1,
           skill: step.skill,
           description: step.description,
-          status: "running"
+          status: 'running',
         })
       }
 
       try {
         // Execute skill
-        const result = await executeSkill(
-          step.skill,
-          step.input,
-          userId,
-          sessionId
-        )
+        const result = await executeSkill(step.skill, step.input, userId, sessionId)
 
         outputs.push(result.output)
         totalTokens += result.tokens_used
@@ -79,13 +79,13 @@ export async function runAgentWorkflow(
 
         // Update step as completed
         await supabase
-          .from("agent_session_steps")
+          .from('agent_session_steps')
           .update({
-            status: "completed",
+            status: 'completed',
             output: result.output,
-            completed_at: new Date().toISOString()
+            completed_at: new Date().toISOString(),
           })
-          .eq("id", stepId)
+          .eq('id', stepId)
 
         // Notify step completed
         if (callbacks?.onStep) {
@@ -93,24 +93,23 @@ export async function runAgentWorkflow(
             step_number: i + 1,
             skill: step.skill,
             description: step.description,
-            status: "completed",
+            status: 'completed',
             output: result.output,
-            duration_ms: stepDuration
+            duration_ms: stepDuration,
           })
         }
-
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error"
-        
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
         // Update step as failed
         await supabase
-          .from("agent_session_steps")
+          .from('agent_session_steps')
           .update({
-            status: "failed",
+            status: 'failed',
             error_message: errorMessage,
-            completed_at: new Date().toISOString()
+            completed_at: new Date().toISOString(),
           })
-          .eq("id", stepId)
+          .eq('id', stepId)
 
         // Notify step failed
         if (callbacks?.onStep) {
@@ -118,8 +117,8 @@ export async function runAgentWorkflow(
             step_number: i + 1,
             skill: step.skill,
             description: step.description,
-            status: "failed",
-            error: errorMessage
+            status: 'failed',
+            error: errorMessage,
           })
         }
 
@@ -131,22 +130,22 @@ export async function runAgentWorkflow(
 
     // Mark session as completed
     await supabase
-      .from("agent_sessions")
+      .from('agent_sessions')
       .update({
-        status: "completed",
+        status: 'completed',
         final_output: outputs,
         tokens_used: totalTokens,
         cost_usd: totalCost,
         duration_ms,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
-      .eq("id", sessionId)
+      .eq('id', sessionId)
 
     const result: AgentWorkflowResult = {
       sessionId,
       outputs,
       duration_ms,
-      status: "completed"
+      status: 'completed',
     }
 
     // Notify completion
@@ -155,24 +154,23 @@ export async function runAgentWorkflow(
     }
 
     return result
-
   } catch (error) {
     // Notify error
     if (callbacks?.onError) {
       callbacks.onError(error as Error)
     }
     const duration_ms = Date.now() - start
-    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
     // Mark session as failed
     await supabase
-      .from("agent_sessions")
+      .from('agent_sessions')
       .update({
-        status: "failed",
+        status: 'failed',
         duration_ms,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
-      .eq("id", sessionId)
+      .eq('id', sessionId)
 
     throw new Error(`Agent workflow failed: ${errorMessage}`)
   }
@@ -180,24 +178,23 @@ export async function runAgentWorkflow(
 
 export async function getAgentSession(sessionId: string) {
   const { data: session, error: sessionError } = await supabase
-    .from("agent_sessions")
-    .select("*")
-    .eq("id", sessionId)
+    .from('agent_sessions')
+    .select('*')
+    .eq('id', sessionId)
     .single()
 
   if (sessionError) throw sessionError
 
   const { data: steps, error: stepsError } = await supabase
-    .from("agent_session_steps")
-    .select("*")
-    .eq("session_id", sessionId)
-    .order("step_number", { ascending: true })
+    .from('agent_session_steps')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('step_number', { ascending: true })
 
   if (stepsError) throw stepsError
 
   return {
     ...session,
-    steps
+    steps,
   }
 }
-
