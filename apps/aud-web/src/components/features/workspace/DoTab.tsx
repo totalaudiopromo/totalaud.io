@@ -14,7 +14,8 @@
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
-import { Play, Search, FileText, Send } from 'lucide-react'
+import { Play, Search, FileText, Send, History } from 'lucide-react'
+import { EmptyState, Button } from '@/ui'
 
 export function DoTab() {
   const { runs, getActiveCampaign, runAction, isLoading } = useWorkspaceStore()
@@ -45,13 +46,11 @@ export function DoTab() {
   if (!activeCampaign) {
     return (
       <div className="do-tab container mx-auto px-4 py-8">
-        <div className="text-center py-16">
-          <Play className="w-16 h-16 mx-auto mb-4 text-muted" />
-          <h2 className="text-2xl font-semibold mb-2">No Active Campaign</h2>
-          <p className="text-muted mb-6">
-            Select or create a campaign from the Plan tab to start running workflows
-          </p>
-        </div>
+        <EmptyState
+          icon={Play}
+          title="No Active Campaign"
+          description="Select or create a campaign from the Plan tab to start running workflows"
+        />
       </div>
     )
   }
@@ -78,13 +77,15 @@ export function DoTab() {
                 <Icon className="w-8 h-8 mb-4 text-accent" />
                 <h3 className="font-semibold mb-2">{workflow.name}</h3>
                 <p className="text-sm text-muted mb-4">{workflow.description}</p>
-                <button
+                <Button
+                  variant="primary"
+                  fullWidth
                   onClick={() => runAction(workflow.type, { campaign_id: activeCampaign.id })}
                   disabled={isLoading}
-                  className="w-full px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                  isLoading={isLoading}
                 >
                   {isLoading ? 'Running...' : 'Start'}
-                </button>
+                </Button>
               </div>
             )
           })}
@@ -95,9 +96,12 @@ export function DoTab() {
       <section>
         <h2 className="text-2xl font-semibold mb-4">Recent Runs</h2>
         {runs.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-            <p className="text-muted">No runs yet. Start a workflow above to get started.</p>
-          </div>
+          <EmptyState
+            icon={History}
+            title="No runs yet"
+            description="Start a workflow above to get started"
+            variant="bordered"
+          />
         ) : (
           <div className="space-y-3">
             {runs.slice().reverse().slice(0, 10).map((run) => (
