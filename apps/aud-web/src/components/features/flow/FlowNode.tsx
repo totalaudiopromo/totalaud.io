@@ -67,7 +67,9 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
       />
 
       <div
-        className="flow-node bg-slate-900 border-2 rounded-xl overflow-hidden min-w-[180px]"
+        className={`flow-node bg-slate-900 border-2 rounded-xl overflow-hidden min-w-[180px] ${
+          status === 'running' ? 'flow-node-active' : ''
+        }`}
         style={{
           borderColor: color,
           boxShadow: selected ? `0 0 0 2px ${color}40, 0 0 20px ${color}30` : `0 0 10px ${color}20`,
