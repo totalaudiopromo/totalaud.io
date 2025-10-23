@@ -1,5 +1,19 @@
 # TotalAud.io Cursor Rules
 
+## ⚠️ MANDATORY FIRST STEP
+
+**At the start of EVERY conversation, Claude Code MUST:**
+
+1. Run `git status` to check current state
+2. Run `git fetch origin` to check for remote changes
+3. If behind remote: Ask "You're behind by X commits. Pull latest changes?"
+4. If on main: Ask "Create a new feature branch for this work?"
+5. THEN proceed with user's request
+
+**User just says:** "Ready to work" or "I want to add [feature]" and Claude handles git automatically.
+
+---
+
 ## Project Context
 
 This is a monorepo for TotalAud.io - an AI-powered music marketing platform.
@@ -15,9 +29,30 @@ This is a monorepo for TotalAud.io - an AI-powered music marketing platform.
 ## Code Style
 
 - **TypeScript:** Strict mode enabled
-- **Formatting:** Follow existing patterns
+- **Formatting:** Prettier (100 char width, single quotes, no semicolons)
 - **Naming:** camelCase for variables/functions, PascalCase for components/types
 - **Imports:** Use workspace aliases (`@total-audio/core-*`)
+- **Linting:** ESLint v9 with strict rules (no `any` types, no console.log)
+
+## Commit Message Rules (MANDATORY)
+
+- **UK spelling ONLY:** optimise, colour, behaviour, organise
+- **NO emojis:** Keep commit messages professional
+- **Format:** `type(scope): subject` (lowercase, no period)
+- **Types:** feat, fix, docs, refactor, test, chore
+- **Subject:** Imperative mood ("add" not "added")
+- **Body:** Explain what and why, not how
+- **Footer:** `Co-Authored-By: Claude <noreply@anthropic.com>`
+
+Example:
+```
+feat(api): add user authentication with JWT
+
+Implemented JWT-based authentication for API routes.
+Users can now register and login securely.
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
 
 ## Key Principles
 
