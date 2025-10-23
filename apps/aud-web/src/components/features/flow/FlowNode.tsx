@@ -63,11 +63,11 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-slate-600 !border-2 !border-slate-400"
+        className="flow-port !bg-slate-600 !border-2 !border-slate-400"
       />
 
       <div
-        className="bg-slate-900 border-2 rounded-xl overflow-hidden min-w-[180px]"
+        className="flow-node bg-slate-900 border-2 rounded-xl overflow-hidden min-w-[180px]"
         style={{
           borderColor: color,
           boxShadow: selected ? `0 0 0 2px ${color}40, 0 0 20px ${color}30` : `0 0 10px ${color}20`,
@@ -148,7 +148,7 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
                   data.onExecute()
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 rounded text-xs font-mono font-semibold transition-all hover:scale-105 active:scale-95"
+                className="flow-start-button w-full px-2 py-1 rounded text-xs font-mono font-semibold transition-all hover:scale-105 active:scale-95"
                 style={{
                   backgroundColor: `${color}20`,
                   border: `1px solid ${color}`,
@@ -192,7 +192,7 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-slate-600 !border-2 !border-slate-400"
+        className="flow-port !bg-slate-600 !border-2 !border-slate-400"
       />
     </motion.div>
   )

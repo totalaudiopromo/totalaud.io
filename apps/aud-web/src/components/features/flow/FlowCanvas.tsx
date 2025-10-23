@@ -438,7 +438,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   }
 
   return (
-    <div className="relative h-full w-full flex">
+    <div className="relative h-full w-full flex flow-studio-wrapper">
       {/* Main Content Area */}
       <div className="flex-1 relative">
         {/* View Toggle Header */}
@@ -594,6 +594,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onPaneClick={onPaneClick}
               nodeTypes={nodeTypes}
               fitView
+              className="flow-studio-canvas"
               style={{ backgroundColor: themeConfig.colors.bg }}
             >
               <Controls className="bg-slate-800 border-slate-700" />
