@@ -1,5 +1,37 @@
 # Claude Code Configuration - totalaud.io (Experimental Project)
 
+---
+
+## ⚠️ MANDATORY: START EVERY SESSION HERE
+
+**BEFORE doing ANYTHING else, Claude Code MUST:**
+
+1. **Check git status:**
+   ```bash
+   git status
+   ```
+
+2. **If on main branch, check if behind remote:**
+   ```bash
+   git fetch origin
+   git status
+   ```
+
+3. **If behind, ask user:** "You're behind main by X commits. Shall I pull the latest changes?"
+
+4. **If user agrees, pull:**
+   ```bash
+   git pull origin main
+   ```
+
+5. **Check if on a feature branch. If not, ask:** "Shall I create a new branch for this work?"
+
+6. **Then proceed with the user's request.**
+
+**User should just say:** "I'm ready to work on [feature]" and Claude Code handles the git workflow automatically.
+
+---
+
 ## 🎯 PROJECT OVERVIEW
 
 **Project**: totalaud.io (Experimental Multi-Agent System)
