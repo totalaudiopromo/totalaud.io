@@ -35,9 +35,15 @@ import { MissionDashboard, MissionPanel, OnboardingOverlay } from '../../layouts
 import { AmbientSoundLayer } from '../../ui'
 import { useTheme } from '../../themes/ThemeResolver'
 import { Layers, BarChart3 } from 'lucide-react'
-import { logger } from '@total-audio/core-logger'
-
-const log = logger.scope('FlowCanvas')
+// TODO: Re-enable when @total-audio/core-logger is built
+// import { logger } from '@total-audio/core-logger'
+// Temporary fallback logger
+const log = {
+  debug: (...args: any[]) => console.debug('[FlowCanvas]', ...args),
+  info: (...args: any[]) => console.info('[FlowCanvas]', ...args),
+  warn: (...args: any[]) => console.warn('[FlowCanvas]', ...args),
+  error: (...args: any[]) => console.error('[FlowCanvas]', ...args),
+}
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
