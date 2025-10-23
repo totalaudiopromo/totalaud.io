@@ -12,10 +12,11 @@ interface TransitionSequenceProps {
 
 /**
  * Phase 3: Cinematic transition from operator to signal.
- * Fade to black → logo morph → ambient drone → reveal Flow Studio.
+ * Fade to black → logo morph → ambient drone → messages → "Press Enter" pause → reveal Flow Studio.
  */
 export function TransitionSequence({ theme, onComplete }: TransitionSequenceProps) {
-  const [phase, setPhase] = useState<'fade-out' | 'reveal' | 'complete'>('fade-out')
+  const [phase, setPhase] = useState<'fade-out' | 'reveal' | 'waiting' | 'complete'>('fade-out')
+  const [operatorMessageVisible, setOperatorMessageVisible] = useState(true)
 
   useEffect(() => {
     // Phase 1: Fade to black (500ms)
@@ -23,22 +24,42 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
       setPhase('reveal')
     }, 500)
 
-    // Phase 2: Logo reveal + messages (3000ms)
+    // Phase 2: Logo reveal + messages (3500ms)
     const revealTimer = setTimeout(() => {
-      setPhase('complete')
-    }, 3500)
-
-    // Phase 3: Transition to Flow Studio (4000ms total)
-    const completeTimer = setTimeout(() => {
-      onComplete()
+      setPhase('waiting')
     }, 4000)
+
+    // Phase 2.5: Fade out operator message before showing "Press Enter" (300ms opacity fade)
+    const operatorFadeTimer = setTimeout(() => {
+      setOperatorMessageVisible(false)
+    }, 3700) // Fade starts 300ms before waiting phase
 
     return () => {
       clearTimeout(fadeTimer)
       clearTimeout(revealTimer)
-      clearTimeout(completeTimer)
+      clearTimeout(operatorFadeTimer)
     }
-  }, [onComplete])
+  }, [])
+
+  // Listen for Enter key press when in waiting phase
+  useEffect(() => {
+    if (phase !== 'waiting') return
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        setPhase('complete')
+        // Delay studio reveal by 500ms after Enter press
+        setTimeout(() => {
+          onComplete()
+        }, 500)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [phase, onComplete])
 
   return (
     <div className="transition-sequence">
@@ -110,23 +131,44 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2, duration: 0.5 }}
             >
+              {/* Operator message with fade-out */}
               <motion.div
                 className="transition-sequence__message"
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.4, duration: 0.4 }}
+                animate={{ opacity: operatorMessageVisible ? 1 : 0, y: 0 }}
+                transition={{
+                  y: { delay: 1.4, duration: 0.4 },
+                  opacity: {
+                    delay: operatorMessageVisible ? 1.4 : 0,
+                    duration: operatorMessageVisible ? 0.4 : 0.3,
+                  },
+                }}
               >
                 operator&gt; signal online.
               </motion.div>
 
+              {/* Signal message - remains visible */}
               <motion.div
                 className="transition-sequence__message transition-sequence__message--signal"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2, duration: 0.4 }}
+                transition={{ delay: 2.2, duration: 0.4 }}
               >
                 signal&gt; hello. ready when you are.
               </motion.div>
+
+              {/* "Press Enter to Continue" prompt - appears after messages */}
+              {phase === 'waiting' && (
+                <motion.div
+                  className="transition-sequence__continue"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 0.6, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
+                >
+                  <span className="transition-sequence__continue-icon">↵</span> press enter to
+                  continue
+                </motion.div>
+              )}
             </motion.div>
           </motion.div>
         )}
