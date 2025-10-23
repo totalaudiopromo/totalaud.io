@@ -15,7 +15,7 @@
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { Play, Search, FileText, Send, History } from 'lucide-react'
-import { EmptyState, Button } from '@/ui'
+import { EmptyState, Button } from '@/ui/index'
 
 export function DoTab() {
   const { runs, getActiveCampaign, runAction, isLoading } = useWorkspaceStore()

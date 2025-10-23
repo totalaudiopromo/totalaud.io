@@ -15,7 +15,7 @@
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { Lightbulb, TrendingUp, Target, Sparkles } from 'lucide-react'
-import { Button } from '@/ui'
+import { Button } from '@/ui/index'
 
 export function LearnTab() {
   const { insights, addInsight } = useWorkspaceStore()

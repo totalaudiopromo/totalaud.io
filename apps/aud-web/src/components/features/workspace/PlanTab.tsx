@@ -15,7 +15,7 @@
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { Plus, Music, Target } from 'lucide-react'
-import { EmptyState, Button, Tooltip } from '@/ui'
+import { EmptyState, Button, Tooltip } from '@/ui/index'
 
 export function PlanTab() {
   const { releases, campaigns, addRelease, addCampaign, setActiveRelease, activeReleaseId } =
