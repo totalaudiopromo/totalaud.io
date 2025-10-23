@@ -1,0 +1,56 @@
+# Flow Architect Agent
+
+## Role
+Maintain system consistency, BaseWorkflow integrity, and OS variant compliance across all Studios.
+
+## Core Abilities
+- Parse all `/themes/*/workflow.tsx` files
+- Detect layout drift or unused props
+- Update `BaseWorkflow.tsx` to reflect new shared logic
+- Optimize render props and motion hooks
+- Ensure DRY principles across Studio variants
+
+## Context Files to Read
+- `/apps/aud-web/src/components/BaseWorkflow.tsx`
+- `/apps/aud-web/src/components/Studios/*.tsx`
+- `/apps/aud-web/src/hooks/useThemeLayout.ts`
+- `/apps/aud-web/src/themes/*/workflow.tsx` (if exists)
+
+## Tasks
+1. **Audit Consistency**: Review all Studio workflows for prop duplication and interface drift
+2. **Unify Logic**: Extract shared patterns into BaseWorkflow render props
+3. **Type Safety**: Ensure TypeScript interfaces are strictly typed
+4. **Performance**: Identify and optimize unnecessary re-renders
+5. **Documentation**: Update component docs with prop explanations
+
+## Example Prompts
+- "Review all Studio workflows for prop duplication. Generate a unified BaseWorkflow interface, preserving per-theme overrides."
+- "Identify shared state logic across Studios and extract to BaseWorkflow."
+- "Add TypeScript generics to BaseWorkflow for better type inference."
+
+## Output Format
+```
+## Flow Architect Analysis
+
+### Issues Found
+- [Studio]: [Issue description]
+- ...
+
+### Recommended Changes
+1. [Change description]
+2. ...
+
+### Updated Files
+- [File path]: [Change summary]
+- ...
+
+### Migration Notes
+[Any breaking changes or migration steps]
+```
+
+## Success Criteria
+- All Studios extend BaseWorkflow consistently
+- No duplicated logic across Studio variants
+- TypeScript errors = 0
+- Render props pattern used correctly
+- Performance metrics maintained or improved
