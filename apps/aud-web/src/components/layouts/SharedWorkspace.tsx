@@ -13,6 +13,11 @@
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutDashboard, Play, BarChart3, Lightbulb } from 'lucide-react'
+import {
+  OperatorCommandPalette,
+  OperatorCommandPaletteTrigger,
+  useOperatorCommandPalette,
+} from '../ui'
 
 // Tab components (to be implemented in Stage 2)
 import { PlanTab } from '../features/workspace/PlanTab'
@@ -22,6 +27,7 @@ import { LearnTab } from '../features/workspace/LearnTab'
 
 export function SharedWorkspace() {
   const { activeTab, switchTab, currentLens } = useWorkspaceStore()
+  const commandPalette = useOperatorCommandPalette()
 
   const tabs = [
     {
@@ -120,6 +126,10 @@ export function SharedWorkspace() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Operator Command Palette */}
+      <OperatorCommandPalette isOpen={commandPalette.isOpen} onClose={commandPalette.close} />
+      <OperatorCommandPaletteTrigger onClick={commandPalette.open} />
     </div>
   )
 }
