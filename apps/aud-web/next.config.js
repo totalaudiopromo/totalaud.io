@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
-const path = require('path');
+const path = require('path')
 
 const nextConfig = {
   transpilePackages: [
     '@total-audio/core-supabase',
     '@total-audio/core-skills-engine',
-    '@total-audio/ui'
+    '@total-audio/ui',
   ],
   typescript: {
     // TEMPORARY: Ignore build errors to unblock Vercel deployment
@@ -19,8 +19,8 @@ const nextConfig = {
   webpack: (config) => {
     // Fix path alias resolution for Vercel builds
     // Use package-scoped alias instead of generic @/* for better monorepo compatibility
-    config.resolve.alias['@aud-web'] = path.resolve(__dirname, 'src');
-    return config;
+    config.resolve.alias['@aud-web'] = path.resolve(__dirname, 'src')
+    return config
   },
 }
 

@@ -2,6 +2,16 @@
 
 AI-powered music marketing platform combining professional tools with experimental creative interface.
 
+---
+
+## 🚀 Quick Start for Cursor Users
+
+**Using Cursor IDE? Start here:** [CURSOR_QUICK_START.md](CURSOR_QUICK_START.md)
+
+Just open Cursor and say "Ready to work" - Claude Code handles all git operations automatically.
+
+---
+
 **🚀 Live Demo**: https://aud-web-production.up.railway.app
 
 ## 🎵 What is TotalAud.io?

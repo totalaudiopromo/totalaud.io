@@ -276,7 +276,8 @@ export class InsightAgent {
     const repliesReceived = metricsMap.get('replies_received') || 0
     const followUpsSent = coachDrafts.filter((d) => d.status === 'sent').length
 
-    const openRate = emailsSent > 0 ? ((metricsMap.get('emails_opened') || 0) / emailsSent) * 100 : 0
+    const openRate =
+      emailsSent > 0 ? ((metricsMap.get('emails_opened') || 0) / emailsSent) * 100 : 0
     const replyRate = emailsSent > 0 ? (repliesReceived / emailsSent) * 100 : 0
 
     // Calculate campaign duration

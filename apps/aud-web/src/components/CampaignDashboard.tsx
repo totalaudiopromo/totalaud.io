@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 /**
  * Campaign Mixdown Dashboard
@@ -37,7 +37,10 @@ interface CampaignDashboardProps {
   campaignName?: string
 }
 
-export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: CampaignDashboardProps) {
+export function CampaignDashboard({
+  sessionId,
+  campaignName = 'Campaign',
+}: CampaignDashboardProps) {
   const [showIntegrations, setShowIntegrations] = useState(false)
   const [hasIntegrations, setHasIntegrations] = useState(false)
   const [agentSummaries, setAgentSummaries] = useState<Record<string, AgentSummary>>({})
@@ -45,7 +48,12 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
   const supabase = createBrowserClient()
 
   // Use the new useCampaignMetrics hook
-  const { metrics, trackerMetrics, loading: isLoading, error: metricsError } = useCampaignMetrics({
+  const {
+    metrics,
+    trackerMetrics,
+    loading: isLoading,
+    error: metricsError,
+  } = useCampaignMetrics({
     sessionId,
     enableRealtime: true,
     playSoundCues: true,
@@ -118,17 +126,13 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
   if (error) {
     return (
       <div className="bg-red-500/10 border border-red-500 rounded-lg p-4">
-        <div className="text-red-500 font-mono text-sm">
-          Error loading metrics: {error.message}
-        </div>
+        <div className="text-red-500 font-mono text-sm">Error loading metrics: {error.message}</div>
       </div>
     )
   }
 
   const agentOrder = ['broker', 'scout', 'coach', 'tracker', 'insight']
-  const orderedSummaries = agentOrder
-    .map((id) => agentSummaries[id])
-    .filter(Boolean)
+  const orderedSummaries = agentOrder.map((id) => agentSummaries[id]).filter(Boolean)
 
   return (
     <div className="space-y-6">
@@ -141,9 +145,7 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
         <h2 className="text-2xl font-bold text-white font-mono">
           🎵 Campaign Mixdown: {campaignName}
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
-          Real-time metrics from your agent workflow
-        </p>
+        <p className="text-slate-400 text-sm mt-1">Real-time metrics from your agent workflow</p>
       </motion.div>
 
       {/* Integrations Status Strip */}
@@ -157,7 +159,9 @@ export function CampaignDashboard({ sessionId, campaignName = 'Campaign' }: Camp
             <div className="flex items-center gap-3">
               <span className="text-3xl">🔗</span>
               <div>
-                <h3 className="font-mono font-bold text-white">Connect integrations to see live stats</h3>
+                <h3 className="font-mono font-bold text-white">
+                  Connect integrations to see live stats
+                </h3>
                 <p className="text-sm text-slate-400 mt-0.5">
                   Sync Gmail and Google Sheets to automatically track campaign metrics
                 </p>

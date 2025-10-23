@@ -47,7 +47,7 @@ export function AmbientSoundLayer({ volume }: AmbientSoundLayerProps) {
     const frequencies = [
       130.81, // C3
       155.56, // Eb3
-      196.00, // G3
+      196.0, // G3
     ]
 
     // Start oscillators if volume > 0 and not already running

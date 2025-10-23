@@ -61,7 +61,7 @@ export interface FlowTemplate {
  */
 export const goalToFlowMap: Record<string, FlowTemplate> = {
   // Radio airplay campaign
-  'radio': {
+  radio: {
     name: 'Radio Airplay Campaign',
     description: 'Research radio contacts, prepare your pitch, and send professional emails',
     estimatedTime: '2-3 hours',
@@ -103,7 +103,7 @@ export const goalToFlowMap: Record<string, FlowTemplate> = {
   },
 
   // Press coverage campaign
-  'press': {
+  press: {
     name: 'Press Coverage Campaign',
     description: 'Find journalists, draft your press release, and pitch your story',
     estimatedTime: '3-4 hours',
@@ -145,7 +145,7 @@ export const goalToFlowMap: Record<string, FlowTemplate> = {
   },
 
   // Playlist placement campaign
-  'playlists': {
+  playlists: {
     name: 'Playlist Placement Campaign',
     description: 'Find relevant playlists, research curators, and submit your track',
     estimatedTime: '2-3 hours',
@@ -187,7 +187,7 @@ export const goalToFlowMap: Record<string, FlowTemplate> = {
   },
 
   // Live bookings campaign
-  'live': {
+  live: {
     name: 'Live Bookings Campaign',
     description: 'Research venues and promoters, prepare your EPK, and pitch your live show',
     estimatedTime: '3-4 hours',
@@ -221,7 +221,7 @@ export const goalToFlowMap: Record<string, FlowTemplate> = {
   },
 
   // Comprehensive campaign (all of the above)
-  'all': {
+  all: {
     name: 'Full Promotional Campaign',
     description: 'Comprehensive multi-channel campaign: radio, press, playlists, and live',
     estimatedTime: '8-10 hours',
@@ -309,18 +309,20 @@ export function getFlowTemplateForGoal(goal: string): FlowTemplate | null {
  * Serialize flow template for URL param
  */
 export function serializeFlowTemplate(template: FlowTemplate): string {
-  return encodeURIComponent(JSON.stringify({
-    name: template.name,
-    steps: template.steps.map(s => ({
-      id: s.id,
-      label: s.label,
-      type: s.type,
-      icon: s.icon,
-      position: s.position,
-      agentId: s.agentId,
-      skillId: s.skillId,
-    })),
-  }))
+  return encodeURIComponent(
+    JSON.stringify({
+      name: template.name,
+      steps: template.steps.map((s) => ({
+        id: s.id,
+        label: s.label,
+        type: s.type,
+        icon: s.icon,
+        position: s.position,
+        agentId: s.agentId,
+        skillId: s.skillId,
+      })),
+    })
+  )
 }
 
 /**

@@ -21,7 +21,9 @@ interface OAuthConfig {
 /**
  * Google OAuth configuration by integration type
  */
-function getOAuthConfig(provider: IntegrationType): Omit<OAuthConfig, 'clientId' | 'clientSecret' | 'redirectUri'> {
+function getOAuthConfig(
+  provider: IntegrationType
+): Omit<OAuthConfig, 'clientId' | 'clientSecret' | 'redirectUri'> {
   const configs = {
     gmail: {
       scopes: [
@@ -136,10 +138,7 @@ export async function getGoogleAuthUrl(
 
   // Store code verifier for later exchange
   const updatePayload: Record<string, any> = { code_verifier: verifier }
-  await (supabase as any)
-    .from('oauth_state_tokens')
-    .update(updatePayload)
-    .eq('state', state)
+  await (supabase as any).from('oauth_state_tokens').update(updatePayload).eq('state', state)
 
   const clientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -222,9 +221,7 @@ export async function exchangeCodeForTokens(
 /**
  * Refresh access token using refresh token
  */
-export async function refreshAccessToken(
-  refreshToken: string
-): Promise<{
+export async function refreshAccessToken(refreshToken: string): Promise<{
   access_token: string
   expires_in: number
 }> {

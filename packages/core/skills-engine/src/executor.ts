@@ -38,18 +38,18 @@ export async function executeSkill(
       const messages = [
         {
           role: 'system' as const,
-          content: `You are executing the "${skill.name}" skill. ${skill.description}\n\nReturn your response as valid JSON matching this schema: ${JSON.stringify(skill.output)}`
+          content: `You are executing the "${skill.name}" skill. ${skill.description}\n\nReturn your response as valid JSON matching this schema: ${JSON.stringify(skill.output)}`,
         },
         {
           role: 'user' as const,
-          content: JSON.stringify(input)
-        }
+          content: JSON.stringify(input),
+        },
       ]
 
       const result = await complete(skill.provider, messages, {
         model: skill.model,
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: 2000,
       })
 
       output = JSON.parse(result.content)
@@ -71,18 +71,18 @@ export async function executeSkill(
       status: 'success',
       user_id: userId,
       agent_session_id: sessionId,
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
     })
 
     return {
       output,
       tokens_used,
       cost_usd,
-      duration_ms
+      duration_ms,
     }
   } catch (error) {
     const duration_ms = Date.now() - startTime
-    
+
     // Log error
     await supabase.from('skill_executions').insert({
       id: executionId,
@@ -93,7 +93,7 @@ export async function executeSkill(
       error_message: error instanceof Error ? error.message : 'Unknown error',
       user_id: userId,
       agent_session_id: sessionId,
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
     })
 
     throw error
@@ -106,12 +106,11 @@ async function executeCustomSkill(
 ): Promise<Record<string, any>> {
   // Import custom skill implementations
   const { researchContactsCustom } = await import('./custom/researchContacts')
-  
+
   switch (skillName) {
-    case "research-contacts":
+    case 'research-contacts':
       return researchContactsCustom(input as any)
     default:
       throw new Error(`Custom skill not implemented: ${skillName}`)
   }
 }
-

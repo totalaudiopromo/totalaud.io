@@ -46,9 +46,10 @@ export function useFlowMode(): FlowModeState {
   const [isActive, setIsActive] = useState(false)
 
   // Calculate ambient volume based on preferences
-  const ambientVolume = isActive && !prefs?.mute_sounds
-    ? (prefs?.audio_volume ?? 0.7) * 0.15 // Ambient is 15% of global volume
-    : 0
+  const ambientVolume =
+    isActive && !prefs?.mute_sounds
+      ? (prefs?.audio_volume ?? 0.7) * 0.15 // Ambient is 15% of global volume
+      : 0
 
   // Calculate motion scale based on reduced motion preference
   const motionScale = prefs?.reduced_motion ? 0 : isActive ? 0.8 : 1.0

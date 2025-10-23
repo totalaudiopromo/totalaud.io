@@ -96,8 +96,14 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
     // Apply effects
     root.style.setProperty('--theme-blur', themeConfig.effects.blur)
     root.style.setProperty('--theme-opacity-dim', themeConfig.effects.opacity.dim.toString())
-    root.style.setProperty('--theme-opacity-overlay', themeConfig.effects.opacity.overlay.toString())
-    root.style.setProperty('--theme-opacity-disabled', themeConfig.effects.opacity.disabled.toString())
+    root.style.setProperty(
+      '--theme-opacity-overlay',
+      themeConfig.effects.opacity.overlay.toString()
+    )
+    root.style.setProperty(
+      '--theme-opacity-disabled',
+      themeConfig.effects.opacity.disabled.toString()
+    )
 
     console.log(`[ThemeResolver] Applied CSS variables for theme: ${themeConfig.name}`)
   }, [themeConfig])
@@ -109,11 +115,7 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
     isLoading: prefsLoading,
   }
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
 }
 
 /**

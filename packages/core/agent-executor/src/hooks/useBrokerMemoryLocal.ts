@@ -67,23 +67,20 @@ export function useBrokerMemoryLocal(sessionId: string): UseBrokerMemoryLocalRet
   /**
    * Save a conversation field to localStorage
    */
-  const save = useCallback(
-    (key: keyof BrokerMemoryData, value: string) => {
-      setData((prev: BrokerMemoryData) => {
-        const updated = { ...prev, [key]: value }
+  const save = useCallback((key: keyof BrokerMemoryData, value: string) => {
+    setData((prev: BrokerMemoryData) => {
+      const updated = { ...prev, [key]: value }
 
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-          console.log(`[BrokerMemoryLocal] Saved ${key}:`, value)
-        } catch (err) {
-          console.error(`[BrokerMemoryLocal] Error saving ${key}:`, err)
-        }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        console.log(`[BrokerMemoryLocal] Saved ${key}:`, value)
+      } catch (err) {
+        console.error(`[BrokerMemoryLocal] Error saving ${key}:`, err)
+      }
 
-        return updated
-      })
-    },
-    []
-  )
+      return updated
+    })
+  }, [])
 
   /**
    * Recall a previously saved field

@@ -39,10 +39,7 @@ export function useThemeManager() {
 
     // Preload textures for new theme
     const newTheme = getTheme(id)
-    await preloadTextures([
-      newTheme.textures.overlay,
-      newTheme.textures.pattern
-    ])
+    await preloadTextures([newTheme.textures.overlay, newTheme.textures.pattern])
 
     // Apply theme
     setCurrentThemeId(id)
@@ -71,7 +68,7 @@ export function useThemeManager() {
     cycleTheme,
     isLoaded,
     isTransitioning,
-    allThemes: THEMES
+    allThemes: THEMES,
   }
 }
 
@@ -105,4 +102,3 @@ function applyThemeVariables(theme: ThemeManifest) {
   // Apply data attribute for CSS selectors
   root.setAttribute('data-theme', theme.id)
 }
-
