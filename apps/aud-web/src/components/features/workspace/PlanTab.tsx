@@ -14,7 +14,8 @@
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
-import { Plus, Music } from 'lucide-react'
+import { Plus, Music, Target } from 'lucide-react'
+import { EmptyState, Button, Tooltip } from '@/ui'
 
 export function PlanTab() {
   const { releases, campaigns, addRelease, addCampaign, setActiveRelease, activeReleaseId } =
@@ -24,14 +25,26 @@ export function PlanTab() {
     <div className="plan-tab container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Plan Your Campaign</h1>
-        <p className="text-muted">Define releases and create targeted campaigns</p>
+        <p className="text-muted">
+          {releases.length === 0 ? (
+            <Tooltip content="Start by adding a release, then create campaigns to promote it">
+              <span className="border-b border-dashed border-muted cursor-help">
+                Define releases and create targeted campaigns
+              </span>
+            </Tooltip>
+          ) : (
+            'Define releases and create targeted campaigns'
+          )}
+        </p>
       </div>
 
       {/* Releases Section */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Releases</h2>
-          <button
+          <Button
+            variant="primary"
+            icon={Plus}
             onClick={() => {
               // TODO: Open release creation modal
               const id = addRelease({
@@ -43,33 +56,29 @@ export function PlanTab() {
               })
               setActiveRelease(id)
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity"
           >
-            <Plus className="w-4 h-4" />
             Add Release
-          </button>
+          </Button>
         </div>
 
         {releases.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-            <Music className="w-12 h-12 mx-auto mb-4 text-muted" />
-            <p className="text-muted mb-4">No releases yet</p>
-            <button
-              onClick={() => {
-                const id = addRelease({
-                  artist: 'Your Artist Name',
-                  title: 'Your Release Title',
-                  release_date: new Date().toISOString().split('T')[0],
-                  genre: [],
-                  links: {},
-                })
-                setActiveRelease(id)
-              }}
-              className="text-accent hover:underline"
-            >
-              Add your first release →
-            </button>
-          </div>
+          <EmptyState
+            icon={Music}
+            title="No releases yet"
+            description="Add your first release to get started with campaign planning"
+            ctaLabel="Add your first release"
+            onClick={() => {
+              const id = addRelease({
+                artist: 'Your Artist Name',
+                title: 'Your Release Title',
+                release_date: new Date().toISOString().split('T')[0],
+                genre: [],
+                links: {},
+              })
+              setActiveRelease(id)
+            }}
+            variant="bordered"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {releases.map((release) => (
@@ -99,7 +108,9 @@ export function PlanTab() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Campaigns</h2>
           {activeReleaseId && (
-            <button
+            <Button
+              variant="primary"
+              icon={Plus}
               onClick={() => {
                 addCampaign({
                   release_id: activeReleaseId,
@@ -108,22 +119,23 @@ export function PlanTab() {
                   status: 'draft',
                 })
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity"
             >
-              <Plus className="w-4 h-4" />
               Create Campaign
-            </button>
+            </Button>
           )}
         </div>
 
         {campaigns.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-            <p className="text-muted">
-              {activeReleaseId
+          <EmptyState
+            icon={Target}
+            title={activeReleaseId ? 'No campaigns yet' : 'Select a release first'}
+            description={
+              activeReleaseId
                 ? 'Create your first campaign for this release'
-                : 'Select a release to create a campaign'}
-            </p>
-          </div>
+                : 'Select a release above to start creating campaigns'
+            }
+            variant="bordered"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {campaigns.map((campaign) => (

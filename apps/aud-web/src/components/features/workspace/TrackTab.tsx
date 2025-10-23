@@ -14,7 +14,8 @@
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
-import { BarChart3, Users, Mail, TrendingUp } from 'lucide-react'
+import { BarChart3, Users, Mail, TrendingUp, Target } from 'lucide-react'
+import { EmptyState } from '@/ui/EmptyState'
 
 export function TrackTab() {
   const { getActiveCampaign, getTargetsForCampaign, getMetrics } = useWorkspaceStore()
@@ -26,13 +27,11 @@ export function TrackTab() {
   if (!activeCampaign) {
     return (
       <div className="track-tab container mx-auto px-4 py-8">
-        <div className="text-center py-16">
-          <BarChart3 className="w-16 h-16 mx-auto mb-4 text-muted" />
-          <h2 className="text-2xl font-semibold mb-2">No Active Campaign</h2>
-          <p className="text-muted">
-            Select a campaign from the Plan tab to view its metrics
-          </p>
-        </div>
+        <EmptyState
+          icon={BarChart3}
+          title="No Active Campaign"
+          description="Select a campaign from the Plan tab to view its metrics"
+        />
       </div>
     )
   }
@@ -75,11 +74,12 @@ export function TrackTab() {
       <section>
         <h2 className="text-2xl font-semibold mb-4">Found Targets ({targets.length})</h2>
         {targets.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-            <p className="text-muted">
-              No targets found yet. Run the "Find Curators" workflow from the Do tab.
-            </p>
-          </div>
+          <EmptyState
+            icon={Target}
+            title="No targets found yet"
+            description='Run the "Find Curators" workflow from the Do tab'
+            variant="bordered"
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">

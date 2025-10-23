@@ -107,7 +107,7 @@ export function SharedWorkspace() {
 
       {/* Tab Content */}
       <main className="tab-content flex-1 overflow-auto">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 20 }}

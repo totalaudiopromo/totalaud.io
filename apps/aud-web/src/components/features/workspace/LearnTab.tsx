@@ -15,6 +15,7 @@
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { Lightbulb, TrendingUp, Target, Sparkles } from 'lucide-react'
+import { Button } from '@/ui'
 
 export function LearnTab() {
   const { insights, addInsight } = useWorkspaceStore()
@@ -104,9 +105,9 @@ export function LearnTab() {
             <p className="text-sm text-muted mb-4">
               Adjust your sending schedule based on insights to improve open rates
             </p>
-            <button className="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity">
+            <Button variant="primary">
               Apply Recommendations
-            </button>
+            </Button>
           </div>
           <div className="action-card p-6 border border-border rounded-lg">
             <Target className="w-8 h-8 mb-4 text-accent" />
@@ -114,9 +115,9 @@ export function LearnTab() {
             <p className="text-sm text-muted mb-4">
               Use pattern analysis to find more curators likely to respond
             </p>
-            <button className="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity">
+            <Button variant="primary">
               Explore Patterns
-            </button>
+            </Button>
           </div>
         </div>
       </section>
