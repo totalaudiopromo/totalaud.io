@@ -17,6 +17,7 @@ import {
   OperatorCommandPalette,
   OperatorCommandPaletteTrigger,
   useOperatorCommandPalette,
+  SoundToggle,
 } from '../ui'
 
 // Tab components (to be implemented in Stage 2)
@@ -127,9 +128,10 @@ export function SharedWorkspace() {
         </AnimatePresence>
       </main>
 
-      {/* Operator Command Palette */}
+      {/* Global Controls */}
       <OperatorCommandPalette isOpen={commandPalette.isOpen} onClose={commandPalette.close} />
       <OperatorCommandPaletteTrigger onClick={commandPalette.open} />
+      <SoundToggle position="bottom-right" />
     </div>
   )
 }
