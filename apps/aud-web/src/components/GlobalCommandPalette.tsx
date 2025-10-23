@@ -32,6 +32,9 @@ import { useTheme } from './themes/ThemeResolver'
 import { OSTheme } from './themes/types'
 import { AgentSpawnModal } from './AgentSpawnModal'
 import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('GlobalCommandPalette')
 
 export function GlobalCommandPalette() {
   const { isOpen, close } = useCommandPalette()
@@ -45,7 +48,7 @@ export function GlobalCommandPalette() {
 
   // Handle agent spawn confirmation
   const handleAgentSpawned = useCallback((agentName: string) => {
-    console.log(`signal> agent '${agentName}' deployed.`)
+    log.info('Agent deployed', { agentName })
   }, [])
 
   // Define available commands
@@ -56,7 +59,7 @@ export function GlobalCommandPalette() {
       description: 'start executing your campaign flow',
       icon: Play,
       action: () => {
-        console.log('[Command] Run campaign')
+        log.debug('Command: Run campaign')
         // TODO: Implement campaign execution
       },
       keywords: ['start', 'execute', 'begin'],
@@ -67,7 +70,7 @@ export function GlobalCommandPalette() {
       description: 'create campaign report and results',
       icon: BarChart3,
       action: () => {
-        console.log('[Command] Generate mixdown')
+        log.debug('Command: Generate mixdown')
         // TODO: Implement mixdown generation
       },
       keywords: ['report', 'results', 'summary'],
@@ -140,7 +143,7 @@ export function GlobalCommandPalette() {
       icon: List,
       action: async () => {
         const agents = await listAgents()
-        console.log('signal> active agents:', agents)
+        log.info('Active agents listed', { count: agents.length })
         // TODO: Show agents in a list view
       },
       keywords: ['list', 'agents', 'show', 'all', 'manifests'],
@@ -151,7 +154,7 @@ export function GlobalCommandPalette() {
       description: 'minimalist producer — black and white',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to ASCII theme')
+        log.debug('Switching theme to ASCII')
         await setTheme('ascii')
         close()
       },
@@ -163,7 +166,7 @@ export function GlobalCommandPalette() {
       description: 'nostalgic optimist — soft gradients',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to XP theme')
+        log.debug('Switching theme to XP')
         await setTheme('xp')
         close()
       },
@@ -175,7 +178,7 @@ export function GlobalCommandPalette() {
       description: 'perfectionist designer — glassy blur',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to Aqua theme')
+        log.debug('Switching theme to Aqua')
         await setTheme('aqua')
         close()
       },
@@ -187,7 +190,7 @@ export function GlobalCommandPalette() {
       description: 'experimental creator — tempo-synced precision',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to DAW theme')
+        log.debug('Switching theme to DAW')
         await setTheme('daw')
         close()
       },
@@ -199,7 +202,7 @@ export function GlobalCommandPalette() {
       description: 'human hands, warm signal — textured and confident',
       icon: Palette,
       action: async () => {
-        console.log('[Command] Switch to Analogue theme')
+        log.debug('Switching theme to Analogue')
         await setTheme('analogue')
         close()
       },
@@ -267,7 +270,7 @@ export function GlobalCommandPalette() {
       description: 'dim ui for deep work',
       icon: Focus,
       action: () => {
-        console.log('[Command] Toggle focus mode')
+        log.debug('Command: Toggle focus mode')
         // TODO: Trigger focus mode (will be handled by useFlowMode in FlowCanvas)
       },
       keywords: ['focus', 'distraction', 'dim'],
@@ -278,7 +281,7 @@ export function GlobalCommandPalette() {
       description: 'toggle audio feedback',
       icon: prefs?.mute_sounds ? Volume2 : VolumeX,
       action: async () => {
-        console.log('[Command] Toggle mute')
+        log.debug('Toggling sound mute', { currentlyMuted: prefs?.mute_sounds })
         await updatePrefs({ mute_sounds: !prefs?.mute_sounds })
       },
       keywords: ['audio', 'sound', 'mute', 'volume'],

@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation'
 import { OSTheme, THEME_CONFIGS } from '@aud-web/types/themes'
 import { audioEngine, getTheme } from '@total-audio/core-theme-engine'
 import type { ThemeId } from '@total-audio/core-theme-engine'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('OSTransition')
 
 interface OSTransitionProps {
   selectedMode: OSTheme
@@ -50,7 +53,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
   const themeManifest = getTheme(selectedMode as ThemeId)
 
   useEffect(() => {
-    console.log('[OSTransition] Mounted with mode:', selectedMode)
+    log.info('OS transition mounted', { mode: selectedMode })
 
     // Play boot sound using Theme Engine audio synthesis
     audioEngine.play(themeManifest.sounds.boot)
@@ -60,28 +63,28 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
       {
         delay: 0,
         action: () => {
-          console.log('[OSTransition] Phase: fadeout')
+          log.debug('Phase: fadeout')
           setPhase('fadeout')
         },
       },
       {
         delay: 500,
         action: () => {
-          console.log('[OSTransition] Phase: boot')
+          log.debug('Phase: boot')
           setPhase('boot')
         },
       },
       {
         delay: 5500,
         action: () => {
-          console.log('[OSTransition] Phase: fadein')
+          log.debug('Phase: fadein')
           setPhase('fadein')
         },
       },
       {
         delay: 6500,
         action: () => {
-          console.log('[OSTransition] Redirecting...')
+          log.info('Redirecting to broker onboarding', { mode: selectedMode })
           if (onComplete) {
             onComplete()
           } else {
@@ -94,7 +97,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
     const timers = timeline.map(({ delay, action }) => setTimeout(action, delay))
 
     return () => {
-      console.log('[OSTransition] Cleanup')
+      log.debug('Component cleanup')
       timers.forEach(clearTimeout)
     }
   }, [selectedMode, router, onComplete])
