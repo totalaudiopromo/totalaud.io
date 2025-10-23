@@ -50,6 +50,9 @@ importers:
       '@total-audio/core-integrations':
         specifier: workspace:^
         version: link:../../packages/core/integrations
+      '@total-audio/core-logger':
+        specifier: workspace:^
+        version: link:../../packages/core/logger
       '@total-audio/core-skills-engine':
         specifier: workspace:*
         version: link:../../packages/core/skills-engine
