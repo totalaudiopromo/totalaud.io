@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.39.0",
     "@total-audio/core-agent-executor": "workspace:*",
     "@total-audio/core-integrations": "workspace:^",
+    "@total-audio/core-logger": "workspace:^",
     "@total-audio/core-skills-engine": "workspace:*",
     "@total-audio/core-supabase": "workspace:*",
     "@total-audio/core-theme-engine": "workspace:*",
