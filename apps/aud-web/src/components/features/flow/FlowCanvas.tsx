@@ -81,6 +81,11 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
   const previousStatuses = useRef<Record<string, string> & { _key?: string }>({ _key: '' })
+  const [showConnectionHint, setShowConnectionHint] = useState(false)
+  const [hasSeenConnectionHint, setHasSeenConnectionHint] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('flow_seen_connection_hint') === 'true'
+  })
 
   // Generate session ID (in production, this would come from user auth)
   const [sessionId] = useState(() => generateUUID())
@@ -258,8 +263,18 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const onConnect = useCallback(
     (params: Connection | Edge) => {
       setEdges((eds) => addEdge(params, eds))
+
+      // Show connection hint tooltip on first connection
+      if (!hasSeenConnectionHint && typeof window !== 'undefined') {
+        setShowConnectionHint(true)
+        setTimeout(() => {
+          setShowConnectionHint(false)
+          setHasSeenConnectionHint(true)
+          localStorage.setItem('flow_seen_connection_hint', 'true')
+        }, 5000) // Show for 5 seconds
+      }
     },
-    [setEdges]
+    [setEdges, hasSeenConnectionHint]
   )
 
   // Add skill node on canvas click
@@ -644,6 +659,32 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                   </div>
                 </div>
               </Panel>
+
+              {/* Connection Hint Tooltip (shows on first connection) */}
+              {showConnectionHint && (
+                <Panel position="top-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-indigo-500 text-white px-4 py-3 rounded-lg shadow-2xl max-w-md"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">✓</span>
+                      <div>
+                        <div className="font-semibold text-sm mb-1">
+                          Great! You've connected your first action
+                        </div>
+                        <div className="text-xs text-indigo-100">
+                          Drag from a + port to another node to link actions together. Build complex
+                          workflows by chaining multiple steps.
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Panel>
+              )}
             </ReactFlow>
           </>
         )}
