@@ -15,7 +15,7 @@
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { BarChart3, Users, Mail, TrendingUp, Target } from 'lucide-react'
-import { EmptyState } from '@/ui/EmptyState'
+import { EmptyState } from '@/ui/index'
 
 export function TrackTab() {
   const { getActiveCampaign, getTargetsForCampaign, getMetrics } = useWorkspaceStore()
