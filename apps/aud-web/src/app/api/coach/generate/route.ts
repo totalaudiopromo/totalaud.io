@@ -8,16 +8,23 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@aud-web/lib/supabase/server'
 import { createCoachAgent, type OSTheme } from '@total-audio/core-agent-executor/server'
+import { logger } from '@total-audio/core-logger'
+import { validateRequestBody, ValidationError, validationErrorResponse } from '@aud-web/lib/api-validation'
+
+const log = logger.scope('CoachGenerateAPI')
+
+// Schema for coach generate request
+const coachGenerateSchema = z.object({
+  sessionId: z.string().uuid().optional(),
+  theme: z.enum(['ascii', 'xp', 'aqua', 'daw', 'analogue']).optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { sessionId, theme } = body as {
-      sessionId?: string
-      theme?: OSTheme
-    }
+    const { sessionId, theme } = await validateRequestBody(request, coachGenerateSchema)
 
     // Get current user
     const supabase = createClient()
@@ -27,8 +34,11 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      log.warn('Unauthorized access attempt')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    log.info('Generating coach drafts', { sessionId, theme, userId: user.id })
 
     // Get or determine session
     let activeSessionId = sessionId
@@ -85,7 +95,13 @@ export async function POST(request: NextRequest) {
       } as any)
     }
 
-    // Return normalized response
+    log.info('Coach drafts generated successfully', {
+      sessionId: activeSessionId,
+      draftsCount: result.drafts.length,
+      executionTimeMs: executionTime
+    })
+
+    // Return normalised response
     return NextResponse.json({
       success: result.success,
       message: result.message,
@@ -102,7 +118,11 @@ export async function POST(request: NextRequest) {
       executionTimeMs: executionTime,
     })
   } catch (error) {
-    console.error('[Coach Generate] Error:', error)
+    if (error instanceof ValidationError) {
+      return validationErrorResponse(error)
+    }
+
+    log.error('Failed to generate coach drafts', error)
     const message = error instanceof Error ? error.message : 'Failed to generate follow-ups'
 
     return NextResponse.json(
@@ -133,8 +153,11 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      log.warn('Unauthorized access to drafts')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    log.debug('Fetching coach drafts', { sessionId, userId: user.id })
 
     // Get drafts
     let query = supabase
@@ -154,12 +177,14 @@ export async function GET(request: NextRequest) {
       throw new Error(error.message)
     }
 
+    log.info('Coach drafts fetched', { count: drafts?.length || 0 })
+
     return NextResponse.json({
       drafts: drafts || [],
       total: drafts?.length || 0,
     })
   } catch (error) {
-    console.error('[Coach Get Drafts] Error:', error)
+    log.error('Failed to fetch coach drafts', error)
     return NextResponse.json({ error: 'Failed to fetch drafts' }, { status: 500 })
   }
 }
