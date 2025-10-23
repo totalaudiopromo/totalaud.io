@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "pnpm"]
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["pnpm build --filter=aud-web"]
+
+[start]
+cmd = "cd apps/aud-web && pnpm start"
+
+[variables]
+NODE_ENV = "production"
+PNPM_HOME = "/root/.local/share/pnpm"
