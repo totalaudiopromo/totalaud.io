@@ -1,29 +1,22 @@
 import { sendAgentMessage } from '@total-audio/core-agent-executor'
-import { NextRequest } from 'next/server'
+import { logger } from '@total-audio/core-logger'
+import { createApiHandler, commonSchemas } from '@aud-web/lib/api-validation'
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
+const log = logger.scope('AgentsMessageAPI')
 
-    // Validate required fields
-    if (!body.from_agent || !body.to_agent || !body.content || !body.session_id) {
-      return Response.json(
-        { error: 'Missing required fields: from_agent, to_agent, content, session_id' },
-        { status: 400 }
-      )
-    }
+export const POST = createApiHandler({
+  bodySchema: commonSchemas.agentMessage,
+  handler: async ({ body }) => {
+    log.info('Sending agent message', {
+      from: body!.from_agent,
+      to: body!.to_agent,
+      sessionId: body!.session_id,
+    })
 
-    // Send the message
-    const data = await sendAgentMessage(body)
+    const data = await sendAgentMessage(body!)
 
-    return Response.json(data)
-  } catch (error) {
-    console.error('Error sending agent message:', error)
-    return Response.json(
-      {
-        error: error instanceof Error ? error.message : 'Failed to send message',
-      },
-      { status: 500 }
-    )
-  }
-}
+    log.info('Agent message sent successfully', { messageId: data.id })
+
+    return data
+  },
+})

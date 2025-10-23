@@ -8,21 +8,24 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@aud-web/lib/supabase/server'
 import { getValidAccessToken } from '@aud-web/lib/oauth'
 import { createGmailClient } from '@total-audio/core-integrations'
+import { logger } from '@total-audio/core-logger'
+import { validateRequestBody, ValidationError, validationErrorResponse } from '@aud-web/lib/api-validation'
+
+const log = logger.scope('CoachSendAPI')
+
+// Schema for coach send request
+const coachSendSchema = z.object({
+  draftId: z.string().uuid('Draft ID must be a valid UUID'),
+  customBody: z.string().max(10000).optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { draftId, customBody } = body as {
-      draftId: string
-      customBody?: string
-    }
-
-    if (!draftId) {
-      return NextResponse.json({ error: 'Draft ID is required' }, { status: 400 })
-    }
+    const { draftId, customBody } = await validateRequestBody(request, coachSendSchema)
 
     // Get current user
     const supabase = createClient()
@@ -32,8 +35,11 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      log.warn('Unauthorized access attempt')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    log.info('Sending coach email', { draftId, userId: user.id })
 
     // Get draft from database
     const { data: draft, error: draftError } = await supabase
@@ -119,6 +125,13 @@ export async function POST(request: NextRequest) {
       } as any)
     }
 
+    log.info('Coach email sent successfully', {
+      draftId,
+      messageId,
+      threadId,
+      contactEmail: draftRecord.contact_email
+    })
+
     return NextResponse.json({
       success: true,
       message: `Follow-up sent to ${draftRecord.contact_email}`,
@@ -126,7 +139,11 @@ export async function POST(request: NextRequest) {
       threadId,
     })
   } catch (error) {
-    console.error('[Coach Send] Error:', error)
+    if (error instanceof ValidationError) {
+      return validationErrorResponse(error)
+    }
+
+    log.error('Failed to send coach email', error)
     const message = error instanceof Error ? error.message : 'Failed to send email'
 
     return NextResponse.json(
