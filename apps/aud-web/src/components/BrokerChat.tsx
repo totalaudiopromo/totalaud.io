@@ -22,6 +22,9 @@ import {
   serializeFlowTemplate,
 } from '@total-audio/core-agent-executor/client'
 import { generateUUID } from '@aud-web/lib/uuid'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('BrokerChat')
 
 interface Message {
   id: string
@@ -71,7 +74,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     if (hasInitialized.current) return
     hasInitialized.current = true
 
-    console.log('[BrokerChat] Initializing conversation with personality:', personality.themeId)
+    log.info('Initializing conversation', { themeId: personality.themeId })
 
     // Add personality-specific opener
     const opener = personality.opener
@@ -86,7 +89,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
     // Load first question
     setTimeout(() => {
       const firstStep = getNextStep('greeting')
-      console.log('[BrokerChat] First step:', firstStep)
+      log.debug('Loading first conversation step', { stepId: firstStep?.id })
       if (firstStep) {
         setCurrentStep(firstStep)
         const needsOptions = firstStep.inputType === 'buttons' || firstStep.inputType === 'select'
@@ -99,7 +102,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   // Focus input when options are hidden
   useEffect(() => {
-    console.log('[BrokerChat] State:', {
+    log.debug('State update', {
       currentStep: currentStep?.id,
       inputType: currentStep?.inputType,
       showOptions,
@@ -224,7 +227,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       // Save to memory
       if (memoryKey) {
         memory.save(memoryKey as any, value)
-        console.log(`[BrokerChat] Saved ${memoryKey} to memory:`, value)
+        log.debug('Saved data to memory', { memoryKey, value })
       }
 
       return updated
@@ -250,14 +253,14 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
         // Get all saved data
         const memoryData = memory.getAll()
-        console.log('[BrokerChat] Onboarding complete. Memory data:', memoryData)
+        log.info('Onboarding complete', memoryData)
 
         // Generate flow template based on user's goal
         const flowTemplate = getFlowTemplateForGoal(memoryData.goal || '')
 
         if (flowTemplate) {
           const serialized = serializeFlowTemplate(flowTemplate)
-          console.log('[BrokerChat] Generated flow template:', flowTemplate.name)
+          log.info('Generated flow template', { templateName: flowTemplate.name })
 
           // Redirect to Flow Canvas with prefilled nodes
           window.location.href = `/?welcome=true&flow=${serialized}`

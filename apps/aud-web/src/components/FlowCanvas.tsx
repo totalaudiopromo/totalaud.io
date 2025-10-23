@@ -37,6 +37,9 @@ import { OnboardingOverlay } from './OnboardingOverlay'
 import { AmbientSoundLayer } from './AmbientSoundLayer'
 import { useTheme } from './themes/ThemeResolver'
 import { Layers, BarChart3 } from 'lucide-react'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('FlowCanvas')
 
 const nodeTypes: NodeTypes = {
   skill: FlowNode,
@@ -103,7 +106,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       if (!isMounted) return
 
       try {
-        console.log('[FlowCanvas] Checking if session exists:', sessionId)
+        log.debug('Checking if session exists', { sessionId })
 
         // Check if session already exists
         const { data: existingSession } = await supabase
@@ -113,14 +116,14 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
           .maybeSingle()
 
         if (existingSession) {
-          console.log('[FlowCanvas] Session already exists, skipping creation')
+          log.debug('Session already exists, skipping creation')
           if (isMounted) {
             setSessionCreated(true)
           }
           return
         }
 
-        console.log('[FlowCanvas] Creating new session in database:', sessionId)
+        log.debug('Creating new session in database', { sessionId })
 
         // Get current user (might be null for demo mode)
         const {
@@ -140,29 +143,29 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
             : {},
         }
 
-        console.log('[FlowCanvas] Attempting to insert session:', insertData)
+        log.debug('Attempting to insert session', { insertData })
 
         const { data, error } = await supabase.from('agent_sessions').insert(insertData).select()
 
         if (error) {
           // Ignore duplicate key errors (race condition on hot reload)
           if (error.code === '23505') {
-            console.log('[FlowCanvas] Session already exists (race condition), continuing')
+            log.debug('Session already exists (race condition), continuing')
             if (isMounted) {
               setSessionCreated(true)
             }
             return
           }
 
-          console.error('[FlowCanvas] Failed to create session:', error.message)
+          log.error('Failed to create session', error, { errorMessage: error.message })
         } else {
-          console.log('[FlowCanvas] Session created successfully:', data)
+          log.info('Session created successfully', { sessionId: data?.[0]?.id })
           if (isMounted) {
             setSessionCreated(true)
           }
         }
       } catch (err) {
-        console.error('[FlowCanvas] Error creating session:', err)
+        log.error('Error creating session', err)
       }
     }
 
@@ -207,7 +210,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     if (initialTemplate && !hasInitialized.current) {
       hasInitialized.current = true
 
-      console.log('[FlowCanvas] Initializing from template:', initialTemplate.name)
+      log.info('Initializing from template', { templateName: initialTemplate.name })
 
       // Convert template steps to ReactFlow nodes
       const templateNodes: Node[] = initialTemplate.steps.map((step) => ({
@@ -237,8 +240,10 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       setNodes(templateNodes)
       setEdges(templateEdges)
 
-      console.log('[FlowCanvas] Generated nodes:', templateNodes.length)
-      console.log('[FlowCanvas] Generated edges:', templateEdges.length)
+      log.debug('Generated flow nodes and edges', {
+        nodeCount: templateNodes.length,
+        edgeCount: templateEdges.length
+      })
     }
   }, [initialTemplate, setNodes, setEdges])
 
@@ -484,9 +489,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
             theme={currentTheme}
             agentStatuses={nodeStatuses}
             metrics={{}}
-            onGenerateMixdown={() => console.log('Generate mixdown')}
-            onRunAgain={() => console.log('Run again')}
-            onShareReport={() => console.log('Share report')}
+            onGenerateMixdown={() => log.debug('Generate mixdown action triggered')}
+            onRunAgain={() => log.debug('Run again action triggered')}
+            onShareReport={() => log.debug('Share report action triggered')}
             reducedMotion={prefs?.reduced_motion}
             muteSounds={prefs?.mute_sounds}
           />
