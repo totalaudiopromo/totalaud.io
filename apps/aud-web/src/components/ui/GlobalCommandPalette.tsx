@@ -32,6 +32,7 @@ import { useTheme } from '../themes/ThemeResolver'
 import { OSTheme } from '../themes/types'
 import { AgentSpawnModal } from '../features/agents/AgentSpawnModal'
 import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
+import { useStudioSound, STUDIO_SOUND_PROFILES } from '@aud-web/hooks/useStudioSound'
 import { logger } from '@total-audio/core-logger'
 
 const log = logger.scope('GlobalCommandPalette')
@@ -46,10 +47,24 @@ export function GlobalCommandPalette() {
   const { list: listAgents, remove: removeAgent } = useAgentSpawner()
   const router = useRouter()
 
+  // Sound system integration
+  const { playProceduralSound } = useStudioSound(currentTheme)
+
+  // Play sound for command interaction (respects mute setting)
+  const playCommandSound = useCallback((type: 'interact' | 'execute' | 'complete') => {
+    if (prefs?.mute_sounds) return
+    const profile = STUDIO_SOUND_PROFILES[currentTheme as keyof typeof STUDIO_SOUND_PROFILES]
+    if (profile && profile[type]) {
+      const { frequency, duration, type: waveType } = profile[type]
+      playProceduralSound(frequency, duration, waveType)
+    }
+  }, [currentTheme, prefs?.mute_sounds, playProceduralSound])
+
   // Handle agent spawn confirmation
   const handleAgentSpawned = useCallback((agentName: string) => {
     log.info('Agent deployed', { agentName })
-  }, [])
+    playCommandSound('complete')
+  }, [playCommandSound])
 
   // Define available commands
   const commands: CommandAction[] = [
@@ -59,6 +74,7 @@ export function GlobalCommandPalette() {
       description: 'start executing your campaign flow',
       icon: Play,
       action: () => {
+        playCommandSound('execute')
         log.debug('Command: Run campaign')
         // TODO: Implement campaign execution
       },
@@ -82,6 +98,7 @@ export function GlobalCommandPalette() {
       description: 'create new scout agent for contact discovery',
       icon: Users,
       action: () => {
+        playCommandSound('execute')
         setSpawnRole('scout')
         setShowSpawnModal(true)
         close()
@@ -154,6 +171,7 @@ export function GlobalCommandPalette() {
       description: 'minimalist producer — black and white',
       icon: Palette,
       action: async () => {
+        playCommandSound('interact')
         log.debug('Switching theme to ASCII')
         await setTheme('ascii')
         close()
