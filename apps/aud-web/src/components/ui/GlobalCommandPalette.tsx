@@ -33,6 +33,7 @@ import { OSTheme } from '../themes/types'
 import { AgentSpawnModal } from '../features/agents/AgentSpawnModal'
 import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
 import { useStudioSound, STUDIO_SOUND_PROFILES } from '@aud-web/hooks/useStudioSound'
+import { useConsoleStore } from '@aud-web/stores/consoleStore'
 import { logger } from '@total-audio/core-logger'
 
 const log = logger.scope('GlobalCommandPalette')
@@ -45,6 +46,7 @@ export function GlobalCommandPalette() {
   const [showSpawnModal, setShowSpawnModal] = useState(false)
   const [spawnRole, setSpawnRole] = useState<AgentRole>('scout')
   const { list: listAgents, remove: removeAgent } = useAgentSpawner()
+  const { setMissionView, setActivePane } = useConsoleStore()
   const router = useRouter()
 
   // Sound system integration
@@ -164,6 +166,89 @@ export function GlobalCommandPalette() {
         // TODO: Show agents in a list view
       },
       keywords: ['list', 'agents', 'show', 'all', 'manifests'],
+    },
+    // Console Navigation Commands
+    {
+      id: 'console-open-plan',
+      label: 'open plan',
+      description: 'navigate to plan view in mission stack',
+      icon: Layout,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('mission')
+        setMissionView('plan')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'plan', 'mission', 'navigate'],
+    },
+    {
+      id: 'console-open-do',
+      label: 'open do',
+      description: 'navigate to do view in mission stack',
+      icon: Play,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('mission')
+        setMissionView('do')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'do', 'execute', 'mission'],
+    },
+    {
+      id: 'console-open-track',
+      label: 'open track',
+      description: 'navigate to track view in mission stack',
+      icon: BarChart3,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('mission')
+        setMissionView('track')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'track', 'monitor', 'mission'],
+    },
+    {
+      id: 'console-open-learn',
+      label: 'open learn',
+      description: 'navigate to learn view in mission stack',
+      icon: BookOpen,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('mission')
+        setMissionView('learn')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'learn', 'analyze', 'mission'],
+    },
+    {
+      id: 'console-open-activity',
+      label: 'open activity',
+      description: 'focus on activity stream',
+      icon: Layers,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('activity')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'activity', 'stream', 'events'],
+    },
+    {
+      id: 'console-open-insight',
+      label: 'open insight',
+      description: 'focus on insight panel',
+      icon: Sparkles,
+      action: () => {
+        playCommandSound('interact')
+        setActivePane('insight')
+        router.push('/console')
+        close()
+      },
+      keywords: ['console', 'open', 'insight', 'metrics', 'recommendations'],
     },
     {
       id: 'theme-ascii',

@@ -9,7 +9,6 @@
  */
 
 import type { SkillExecutionContext, SkillExecutionResult } from '../types'
-import { logger } from '@total-audio/core-logger'
 import {
   puppeteerMCP,
   navigateWithDialogHandling,
@@ -18,7 +17,12 @@ import {
   fillForm,
 } from '../integrations/puppeteer-mcp'
 
-const log = logger.scope('BrowserAutomation')
+// Simple console logger (replace with proper logger when available)
+const log = {
+  info: (msg: string, data?: any) => console.log('[BrowserAutomation]', msg, data || ''),
+  debug: (msg: string, data?: any) => console.debug('[BrowserAutomation]', msg, data || ''),
+  error: (msg: string, error: Error, data?: any) => console.error('[BrowserAutomation]', msg, error, data || ''),
+}
 
 export interface BrowserAutomationInput {
   action: 'navigate' | 'screenshot' | 'click' | 'fill' | 'evaluate' | 'extract'
@@ -277,7 +281,7 @@ export const browserWorkflows = {
    * Form fill and submit
    */
   async fillForm(url: string, formData: Record<string, string>) {
-    const steps = [{ action: 'navigate', url, autoAcceptDialogs: true }]
+    const steps: any[] = [{ action: 'navigate', url, autoAcceptDialogs: true }]
 
     for (const [selector, value] of Object.entries(formData)) {
       steps.push({ action: 'fill', selector, value })

@@ -18,7 +18,7 @@ export interface UserPreferences {
   auto_sync_enabled: boolean
   reduced_motion: boolean
   mute_sounds: boolean
-  preferred_theme: 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+  preferred_theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue' | 'ableton' | 'punk'
   created_at: string
   updated_at: string
 }
