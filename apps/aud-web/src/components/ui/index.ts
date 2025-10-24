@@ -14,7 +14,7 @@ export * from './effects'
 // UI Controls & Components
 export { Button } from './Button'
 export { CommandPalette } from './CommandPalette'
-export { ConsoleShell } from './ConsoleShell'
+export { default as ConsoleShell, ConsolePanel } from './ConsoleShell'
 export { EmptyState } from './EmptyState'
 export { GlobalCommandPalette } from './GlobalCommandPalette'
 export { IntegrationManager } from './IntegrationManager'
@@ -23,10 +23,10 @@ export {
   OperatorCommandPaletteTrigger,
   useOperatorCommandPalette,
 } from './OperatorCommandPalette'
-export { OSCard } from './OSCard'
-export { OSTransition } from './OSTransition'
+export { default as OSCard } from './OSCard'
+export { default as OSTransition } from './OSTransition'
 export { SignalPresence } from './SignalPresence'
 export { SmartComposer } from './SmartComposer'
 export { SoundToggle, useSoundEnabled } from './SoundToggle'
-export { ThemeToggle } from './ThemeToggle'
+export { default as ThemeToggle } from './ThemeToggle'
 export { Tooltip } from './Tooltip'
