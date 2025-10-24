@@ -8,6 +8,7 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Connection,
   Edge,
   Node,
@@ -78,6 +79,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
+  const { project } = useReactFlow()
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
   const previousStatuses = useRef<Record<string, string> & { _key?: string }>({ _key: '' })
@@ -285,11 +287,11 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       const skill = skillNodes.find((s) => s.name === selectedSkill)
       if (!skill) return
 
-      const reactFlowBounds = event.currentTarget.getBoundingClientRect()
-      const position = {
-        x: event.clientX - reactFlowBounds.left - 100,
-        y: event.clientY - reactFlowBounds.top - 30,
-      }
+      // Use React Flow's project() to convert screen coordinates to canvas space
+      const position = project({
+        x: event.clientX,
+        y: event.clientY,
+      })
 
       const nodeId = `skill-${Date.now()}`
       const newNode: Node = {
@@ -317,7 +319,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       setNodes((nds) => [...nds, newNode])
       setSelectedSkill(null)
     },
-    [selectedSkill, setNodes, executeNode]
+    [selectedSkill, setNodes, executeNode, project]
   )
 
   // Real-time status updates from agent execution
@@ -610,7 +612,6 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               nodeTypes={nodeTypes}
               fitView
               className="flow-studio-canvas"
-              style={{ backgroundColor: themeConfig.colors.bg }}
             >
               <Controls className="bg-slate-800 border-slate-700" />
               <MiniMap
