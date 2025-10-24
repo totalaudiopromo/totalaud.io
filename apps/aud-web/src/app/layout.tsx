@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
 import { GlobalCommandPalette } from '@aud-web/components/GlobalCommandPalette'
+import { ErrorBoundary } from '@aud-web/components/ErrorBoundary'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,12 +31,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-        <ThemeResolver>
-          {children}
-          <Suspense fallback={null}>
-            <GlobalCommandPalette />
-          </Suspense>
-        </ThemeResolver>
+        <ErrorBoundary>
+          <ThemeResolver>
+            {children}
+            <Suspense fallback={null}>
+              <GlobalCommandPalette />
+            </Suspense>
+          </ThemeResolver>
+        </ErrorBoundary>
       </body>
     </html>
   )
