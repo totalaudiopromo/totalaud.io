@@ -239,31 +239,41 @@ export function useStudioSound(theme: string) {
 
 /**
  * Studio-specific procedural sound profiles
+ *
+ * Phase 2: Motion-Synced Audio
+ * Durations now match motion system for unified feel (< 50ms variance target)
+ *
+ * Motion durations from /lib/motion.ts:
+ * - ascii: 0.12s (snap)
+ * - xp: 0.4s (normal)
+ * - aqua: 0.6s (smooth)
+ * - daw: 0.5s (beat)
+ * - analogue: 0.8s (slow)
  */
 export const STUDIO_SOUND_PROFILES = {
   ascii: {
-    interact: { frequency: 880, duration: 0.05, type: 'square' as OscillatorType },
-    execute: { frequency: 1760, duration: 0.1, type: 'square' as OscillatorType },
-    complete: { frequency: 440, duration: 0.2, type: 'square' as OscillatorType },
+    interact: { frequency: 880, duration: 0.12, type: 'square' as OscillatorType },   // Synced with snap motion
+    execute: { frequency: 1760, duration: 0.12, type: 'square' as OscillatorType },   // Instant response
+    complete: { frequency: 440, duration: 0.12, type: 'square' as OscillatorType },   // Sharp completion
   },
   xp: {
-    interact: { frequency: 523, duration: 0.08, type: 'sine' as OscillatorType },
-    execute: { frequency: 659, duration: 0.15, type: 'sine' as OscillatorType },
-    complete: { frequency: 784, duration: 0.25, type: 'sine' as OscillatorType },
+    interact: { frequency: 523, duration: 0.24, type: 'sine' as OscillatorType },     // Synced with fast motion
+    execute: { frequency: 659, duration: 0.4, type: 'sine' as OscillatorType },       // Bouncy normal motion
+    complete: { frequency: 784, duration: 0.4, type: 'sine' as OscillatorType },      // Playful completion
   },
   aqua: {
-    interact: { frequency: 698, duration: 0.12, type: 'triangle' as OscillatorType },
-    execute: { frequency: 831, duration: 0.2, type: 'triangle' as OscillatorType },
-    complete: { frequency: 988, duration: 0.3, type: 'triangle' as OscillatorType },
+    interact: { frequency: 698, duration: 0.4, type: 'triangle' as OscillatorType },  // Synced with normal motion
+    execute: { frequency: 831, duration: 0.6, type: 'triangle' as OscillatorType },   // Smooth dissolve
+    complete: { frequency: 988, duration: 0.6, type: 'triangle' as OscillatorType },  // Fluid completion
   },
   daw: {
-    interact: { frequency: 440, duration: 0.06, type: 'sawtooth' as OscillatorType },
-    execute: { frequency: 554, duration: 0.12, type: 'sawtooth' as OscillatorType },
-    complete: { frequency: 659, duration: 0.18, type: 'sawtooth' as OscillatorType },
+    interact: { frequency: 440, duration: 0.24, type: 'sawtooth' as OscillatorType }, // Synced with fast motion
+    execute: { frequency: 554, duration: 0.5, type: 'sawtooth' as OscillatorType },   // Tempo-locked (120 BPM)
+    complete: { frequency: 659, duration: 0.5, type: 'sawtooth' as OscillatorType },  // Rhythmic completion
   },
   analogue: {
-    interact: { frequency: 280, duration: 0.4, type: 'sine' as OscillatorType },
-    execute: { frequency: 330, duration: 0.5, type: 'sine' as OscillatorType },
-    complete: { frequency: 392, duration: 0.6, type: 'sine' as OscillatorType },
+    interact: { frequency: 280, duration: 0.6, type: 'sine' as OscillatorType },      // Synced with smooth motion
+    execute: { frequency: 330, duration: 0.8, type: 'sine' as OscillatorType },       // Gentle drift
+    complete: { frequency: 392, duration: 0.8, type: 'sine' as OscillatorType },      // Warm completion
   },
 }
