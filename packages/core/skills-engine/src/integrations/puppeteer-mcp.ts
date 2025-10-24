@@ -5,9 +5,12 @@
  * Provides type-safe wrappers and automatic dialog handling
  */
 
-import { logger } from '@total-audio/core-logger'
-
-const log = logger.scope('PuppeteerMCP')
+// Simple console logger (replace with proper logger when available)
+const log = {
+  info: (msg: string, data?: any) => console.log('[PuppeteerMCP]', msg, data || ''),
+  debug: (msg: string, data?: any) => console.debug('[PuppeteerMCP]', msg, data || ''),
+  error: (msg: string, error: Error, data?: any) => console.error('[PuppeteerMCP]', msg, error, data || ''),
+}
 
 export interface PuppeteerNavigateOptions {
   url: string
@@ -58,14 +61,19 @@ export class PuppeteerMCPClient {
     log.info('Navigating to URL', { url: options.url })
 
     try {
-      // Note: In Claude Code, you would use the MCP tool directly:
-      // await mcp__puppeteer__puppeteer_navigate({
-      //   url: options.url,
-      //   allowDangerous: options.allowDangerous,
-      //   launchOptions: options.launchOptions
-      // })
+      // Note: This requires MCP tools to be available in the runtime context
+      // In a browser/Node.js environment, this would be called via the MCP client
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_navigate === 'function') {
+        await globalWithMCP.mcp__puppeteer__puppeteer_navigate({
+          url: options.url,
+          allowDangerous: options.allowDangerous,
+          launchOptions: options.launchOptions
+        })
+      } else {
+        throw new Error('Puppeteer MCP tool not available in this runtime')
+      }
 
-      // For now, this is a placeholder that shows the integration pattern
       log.debug('Navigation completed', { url: options.url })
     } catch (error) {
       log.error('Navigation failed', error as Error, { url: options.url })
@@ -126,17 +134,19 @@ export class PuppeteerMCPClient {
     log.debug('Taking screenshot', { name: options.name, selector: options.selector })
 
     try {
-      // Note: In Claude Code, you would use:
-      // const result = await mcp__puppeteer__puppeteer_screenshot({
-      //   name: options.name,
-      //   selector: options.selector,
-      //   width: options.width,
-      //   height: options.height,
-      //   encoded: options.encoded
-      // })
-      // return result.screenshot
-
-      return 'base64-encoded-screenshot-placeholder'
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_screenshot === 'function') {
+        const result = await globalWithMCP.mcp__puppeteer__puppeteer_screenshot({
+          name: options.name,
+          selector: options.selector,
+          width: options.width,
+          height: options.height,
+          encoded: options.encoded
+        })
+        return result
+      } else {
+        throw new Error('Puppeteer MCP screenshot tool not available in this runtime')
+      }
     } catch (error) {
       log.error('Screenshot failed', error as Error, { name: options.name })
       throw error
@@ -150,10 +160,14 @@ export class PuppeteerMCPClient {
     log.debug('Clicking element', { selector: options.selector })
 
     try {
-      // Note: In Claude Code, you would use:
-      // await mcp__puppeteer__puppeteer_click({
-      //   selector: options.selector
-      // })
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_click === 'function') {
+        await globalWithMCP.mcp__puppeteer__puppeteer_click({
+          selector: options.selector
+        })
+      } else {
+        throw new Error('Puppeteer MCP click tool not available in this runtime')
+      }
 
       log.debug('Click completed', { selector: options.selector })
     } catch (error) {
@@ -169,11 +183,15 @@ export class PuppeteerMCPClient {
     log.debug('Filling input', { selector: options.selector })
 
     try {
-      // Note: In Claude Code, you would use:
-      // await mcp__puppeteer__puppeteer_fill({
-      //   selector: options.selector,
-      //   value: options.value
-      // })
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_fill === 'function') {
+        await globalWithMCP.mcp__puppeteer__puppeteer_fill({
+          selector: options.selector,
+          value: options.value
+        })
+      } else {
+        throw new Error('Puppeteer MCP fill tool not available in this runtime')
+      }
 
       log.debug('Fill completed', { selector: options.selector })
     } catch (error) {
@@ -189,11 +207,15 @@ export class PuppeteerMCPClient {
     log.debug('Selecting option', { selector: options.selector, value: options.value })
 
     try {
-      // Note: In Claude Code, you would use:
-      // await mcp__puppeteer__puppeteer_select({
-      //   selector: options.selector,
-      //   value: options.value
-      // })
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_select === 'function') {
+        await globalWithMCP.mcp__puppeteer__puppeteer_select({
+          selector: options.selector,
+          value: options.value
+        })
+      } else {
+        throw new Error('Puppeteer MCP select tool not available in this runtime')
+      }
 
       log.debug('Select completed', { selector: options.selector })
     } catch (error) {
@@ -209,13 +231,15 @@ export class PuppeteerMCPClient {
     log.debug('Evaluating script', { scriptLength: options.script.length })
 
     try {
-      // Note: In Claude Code, you would use:
-      // const result = await mcp__puppeteer__puppeteer_evaluate({
-      //   script: options.script
-      // })
-      // return result
-
-      return null
+      const globalWithMCP = globalThis as any
+      if (typeof globalWithMCP.mcp__puppeteer__puppeteer_evaluate === 'function') {
+        const result = await globalWithMCP.mcp__puppeteer__puppeteer_evaluate({
+          script: options.script
+        })
+        return result
+      } else {
+        throw new Error('Puppeteer MCP evaluate tool not available in this runtime')
+      }
     } catch (error) {
       log.error('Evaluate failed', error as Error)
       throw error
@@ -225,7 +249,7 @@ export class PuppeteerMCPClient {
   /**
    * Extract data from page using selector and optional transformation
    */
-  async extract(selector: string, transform?: (element: any) => any): Promise<any[]> {
+  async extract(selector: string, _transform?: (element: any) => any): Promise<any[]> {
     log.debug('Extracting data', { selector })
 
     const script = `

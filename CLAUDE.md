@@ -552,6 +552,142 @@ This is an **experimental sandbox** for:
 
 ---
 
+## 🤖 BROWSER AUTOMATION & VISUAL CONTEXT (October 2025)
+
+**Status**: ✅ **DUAL MCP SETUP COMPLETE**
+
+### Two MCP Servers for Different Purposes
+
+#### 1. Chrome DevTools MCP - Visual Context ⭐
+**Purpose**: Let Claude Code **SEE** what it's building in real-time
+
+**When to use:**
+- Building UI components (need visual feedback)
+- Debugging CSS/layout issues (see the page)
+- Performance analysis (profiling tools)
+- Console debugging (JavaScript errors)
+- Network inspection (API requests)
+
+**Available tools:**
+- `take_screenshot` - Screenshot of localhost during development
+- `take_snapshot` - DOM structure with CSS
+- `record_trace` - Performance profiling
+- `get_console_logs` - JavaScript console output
+- `get_network_activity` - Network requests inspection
+
+**Example workflow:**
+```
+User: "Add a new ConsolePanel component to the app"
+Claude: [Writes component code]
+Claude: [Takes screenshot of localhost:3000]
+Claude: "I can see the panel is rendering but the border is too thick, let me adjust..."
+Claude: [Fixes styling]
+Claude: [Takes screenshot to confirm]
+Claude: "Perfect! The console panel now matches the theme."
+```
+
+**Configuration:**
+```json
+{
+  "chrome-devtools": {
+    "command": "npx",
+    "args": ["chrome-devtools-mcp@latest"]
+  }
+}
+```
+
+#### 2. Puppeteer MCP - Background Automation 🤖
+**Purpose**: Automate tasks that don't need visual feedback
+
+**When to use:**
+- Web scraping (radio contacts, playlists)
+- Form automation (login, submissions)
+- Dialog auto-handling (alerts/confirms)
+- Data extraction (emails, contact info)
+- Background workflows (no visual needed)
+
+**Available tools:**
+- `puppeteer_navigate` - Navigate to URLs
+- `puppeteer_screenshot` - Take screenshots
+- `puppeteer_click` - Click elements
+- `puppeteer_fill` - Fill form inputs
+- `puppeteer_evaluate` - Execute JavaScript
+- `puppeteer_select` - Select dropdown options
+- `puppeteer_hover` - Hover elements
+
+**Key feature:** Auto-dialog handling
+```javascript
+// Automatically injected to handle popups
+window.alert = (msg) => console.log('[AUTO-HANDLED] Alert:', msg);
+window.confirm = (msg) => { console.log('[AUTO-HANDLED] Confirm:', msg); return true; };
+window.prompt = (msg, def) => { console.log('[AUTO-HANDLED] Prompt:', msg); return def || ''; };
+```
+
+**Example workflow:**
+```
+User: "Get all BBC Radio 1 DJ email addresses"
+Claude: [Navigates to BBC Radio 1 contacts page]
+Claude: [Auto-handles any dialog popups]
+Claude: [Extracts all email addresses]
+Claude: "Found 15 DJ contacts with emails"
+```
+
+**Configuration:**
+```json
+{
+  "puppeteer": {
+    "command": "npx",
+    "args": ["@modelcontextprotocol/server-puppeteer"]
+  }
+}
+```
+
+### When to Use Which?
+
+| Task | Use This | Why |
+|------|----------|-----|
+| Building UI components | **Chrome DevTools** | Need to see visual result |
+| Debugging CSS/layout | **Chrome DevTools** | Visual feedback required |
+| Performance profiling | **Chrome DevTools** | Built-in trace viewer |
+| JavaScript debugging | **Chrome DevTools** | Console logs + snapshots |
+| Scraping contact info | **Puppeteer** | Background task |
+| Form automation | **Puppeteer** | No visual needed |
+| Login workflows | **Puppeteer** | Dialog handling + automation |
+| Data extraction | **Puppeteer** | Headless efficiency |
+
+### Verify Setup
+
+```bash
+claude mcp list
+
+# Should show:
+# ✓ chrome-devtools: npx chrome-devtools-mcp@latest - Connected
+# ✓ puppeteer: npx @modelcontextprotocol/server-puppeteer - Connected
+```
+
+### Documentation Files
+- [VISUAL_CONTEXT_WORKFLOW.md](VISUAL_CONTEXT_WORKFLOW.md) - Complete Chrome DevTools workflow
+- [BROWSER_AUTOMATION_GUIDE.md](BROWSER_AUTOMATION_GUIDE.md) - Puppeteer automation guide
+
+### Default Behavior for Claude Code
+
+**When building UI:**
+1. Write component code
+2. Take screenshot of localhost:3000 (Chrome DevTools MCP)
+3. Visually verify the result
+4. Make adjustments based on what you see
+5. Take screenshot to confirm
+
+**When automating tasks:**
+1. Navigate to target URL (Puppeteer MCP)
+2. Auto-inject dialog handler
+3. Execute automation workflow
+4. Return structured data
+
+**Key advantage:** Claude Code can now SEE what it's building (visual context) AND automate background tasks (no manual clicking). Best of both worlds!
+
+---
+
 ## 🚨 NOTES FOR CLAUDE CODE
 
 ### Deployment Platform: Railway (October 2025)

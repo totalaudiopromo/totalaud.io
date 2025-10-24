@@ -3,6 +3,7 @@
  *
  * Manages theme selection and configuration based on user preferences.
  * Provides theme context to all child components.
+ * Integrates palettes, motion, sound, tone, and adaptive logic.
  */
 
 'use client'
@@ -15,6 +16,16 @@ import { aquaTheme } from './aqua.theme'
 import { dawTheme } from './daw.theme'
 import { analogueTheme } from './analogue.theme'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
+import { applyPalette } from './palettes'
+import { getMotionProfile } from './motionProfiles'
+import { playSound } from './soundPalettes'
+import { getTone } from './toneSystem'
+import {
+  getAdaptiveAdjustments,
+  getTimeOfDay,
+  ActivityMonitor,
+  type AdaptiveContext,
+} from './adaptiveLogic'
 
 // Theme registry - all 5 themes fully implemented
 const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {
@@ -36,6 +47,12 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
   const { prefs, updatePrefs, loading: prefsLoading } = useUserPrefs()
   const [currentTheme, setCurrentTheme] = useState<OSTheme>(defaultTheme)
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(THEME_REGISTRY[defaultTheme])
+  const [activityMonitor] = useState(() => new ActivityMonitor())
+  const [adaptiveContext, setAdaptiveContext] = useState<AdaptiveContext>({
+    activityIntensity: 'low',
+    timeOfDay: getTimeOfDay(),
+    campaignProgress: 0,
+  })
 
   // Sync with user preferences
   useEffect(() => {
@@ -49,19 +66,61 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
   }, [prefs?.preferred_theme])
 
   // Update theme and persist to preferences
-  const setTheme = async (theme: OSTheme) => {
+  const setTheme = async (theme: OSTheme, playTransitionSound: boolean = true) => {
     if (!THEME_REGISTRY[theme]) {
       console.warn(`[ThemeResolver] Theme "${theme}" not found in registry`)
       return
     }
 
     console.log(`[ThemeResolver] Switching to theme: ${theme}`)
+
+    // Play transition sound if enabled
+    if (playTransitionSound && !prefs?.mute_sounds) {
+      playSound(currentTheme, 'interact', false)
+    }
+
     setCurrentTheme(theme)
     setThemeConfig(THEME_REGISTRY[theme])
+
+    // Apply new palette
+    applyPalette(theme)
 
     // Persist to user preferences
     await updatePrefs({ preferred_theme: theme })
   }
+
+  // Monitor time of day changes
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        const newTimeOfDay = getTimeOfDay()
+        if (newTimeOfDay !== adaptiveContext.timeOfDay) {
+          setAdaptiveContext((prev) => ({
+            ...prev,
+            timeOfDay: newTimeOfDay,
+          }))
+        }
+      },
+      60000 // Check every minute
+    )
+
+    return () => clearInterval(interval)
+  }, [adaptiveContext.timeOfDay])
+
+  // Update activity intensity from monitor
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const intensity = activityMonitor.getIntensity()
+      if (intensity !== adaptiveContext.activityIntensity) {
+        setAdaptiveContext((prev) => ({
+          ...prev,
+          activityIntensity: intensity,
+        }))
+      }
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [activityMonitor, adaptiveContext.activityIntensity])
 
   // Apply theme CSS variables to document
   useEffect(() => {
@@ -113,6 +172,15 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
     themeConfig,
     setTheme,
     isLoading: prefsLoading,
+    // Expose adaptive utilities
+    adaptiveContext,
+    activityMonitor,
+    getAdaptiveAdjustments: () => getAdaptiveAdjustments(adaptiveContext),
+    // Helper functions
+    getTone: (messageType: string) => getTone(currentTheme, messageType as any),
+    playSound: (soundType: string) =>
+      playSound(currentTheme, soundType as any, prefs?.mute_sounds === true),
+    getMotionProfile: () => getMotionProfile(currentTheme),
   }
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>

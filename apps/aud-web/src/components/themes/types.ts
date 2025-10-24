@@ -93,6 +93,12 @@ export interface ThemeConfig {
 export interface ThemeContextValue {
   currentTheme: OSTheme
   themeConfig: ThemeConfig
-  setTheme: (theme: OSTheme) => void
+  setTheme: (theme: OSTheme, playTransitionSound?: boolean) => void
   isLoading: boolean
+  adaptiveContext?: any
+  activityMonitor?: any
+  getAdaptiveAdjustments?: () => any
+  getTone?: (messageType: string) => string
+  playSound?: (soundType: string) => void
+  getMotionProfile?: () => any
 }
