@@ -57,7 +57,7 @@ export const agentRoles: Record<string, AgentRole> = {
     name: 'Scout',
     emoji: '🧭',
     color: '#10b981', // Green
-    skills: ['research-contacts', 'analyze-datasets', 'discover-opportunities'],
+    skills: ['research-contacts', 'analyze-datasets', 'discover-opportunities', 'browser-automation'],
     voice: 'optimistic, adventurous, resourceful',
     expertise: 'Contact research and opportunity discovery',
     soundCue: 'ping',

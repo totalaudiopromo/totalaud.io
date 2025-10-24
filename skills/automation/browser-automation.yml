@@ -1,0 +1,40 @@
+name: browser-automation
+version: 1.0.0
+category: automation
+description: Automated browser interactions with Puppeteer MCP - navigate, screenshot, click, fill forms, and extract data with automatic dialog handling
+
+input:
+  action:
+    enum: [navigate, screenshot, click, fill, evaluate, extract]
+    description: The browser action to perform
+  url: string
+  selector: string
+  value: string
+  script: string
+  autoAcceptDialogs:
+    type: boolean
+    default: true
+    description: Automatically accept all browser dialogs (alerts, confirms, prompts)
+  waitForSelector: string
+  timeout:
+    type: number
+    default: 30000
+    description: Maximum time to wait for action completion in milliseconds
+
+output:
+  success: boolean
+  data: object
+  screenshot: string
+  error: string
+
+provider: custom
+model: puppeteer-mcp
+config:
+  max_timeout_ms: 60000
+  auto_dialog_handling: true
+  headless: true
+  viewport:
+    width: 1920
+    height: 1080
+enabled: true
+is_beta: false
