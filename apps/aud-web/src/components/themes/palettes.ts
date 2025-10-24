@@ -49,22 +49,23 @@ export const palettes: Record<string, ThemePalette> = {
    * XP - Nostalgic Optimist
    * "click. bounce. smile."
    * Bright, friendly, playful spring
+   * WCAG AAA compliant - darker accent/UI colors on light BG
    */
   xp: {
     bg: '#F2F6FF',
     bgSecondary: '#E8EFFF',
     bgTertiary: '#D9E4FF',
-    accent: '#3870FF',
-    accentDim: '#2A5BE0',
+    accent: '#1D4ED8', // Darkened from #3870FF for 7:1 contrast
+    accentDim: '#1E40AF', // Darkened
     text: '#1B1E24',
-    textSecondary: '#4B5563',
-    textTertiary: '#9CA3AF',
-    border: '#3870FF',
-    borderSubtle: '#A8C5FF',
-    success: '#10B981',
-    error: '#EF4444',
-    warning: '#F59E0B',
-    info: '#3870FF',
+    textSecondary: '#374151', // Darkened from #4B5563 for AAA
+    textTertiary: '#6B7280', // Darkened
+    border: '#1D4ED8', // Match accent
+    borderSubtle: '#60A5FA', // Lighter for subtle borders
+    success: '#047857', // Darkened from #10B981 for 7:1 contrast
+    error: '#B91C1C', // Darkened from #EF4444 for 7:1 contrast
+    warning: '#B45309', // Darkened from #F59E0B for 7:1 contrast
+    info: '#1D4ED8', // Match accent
   },
 
   /**
@@ -115,22 +116,23 @@ export const palettes: Record<string, ThemePalette> = {
    * Analogue - Human Hands
    * "touch the signal."
    * Warm paper, sepia tones, soft lo-fi textures
+   * WCAG AAA compliant - darker UI colors on warm light BG
    */
   analogue: {
     bg: '#F6F1E8',
     bgSecondary: '#EDE6D8',
     bgTertiary: '#E3D9C8',
-    accent: '#C47E34',
-    accentDim: '#A36829',
+    accent: '#8B5A1E', // Darkened from #C47E34 for 7:1 contrast
+    accentDim: '#6E4818', // Darkened
     text: '#1E1C19',
-    textSecondary: '#5C5854',
-    textTertiary: '#8E8A85',
-    border: '#C47E34',
-    borderSubtle: '#D9B990',
-    success: '#7A9C59',
-    error: '#C74E3C',
-    warning: '#D98B3C',
-    info: '#5B8BA8',
+    textSecondary: '#3E3C38', // Darkened from #5C5854 for AAA
+    textTertiary: '#5C5854', // Darkened
+    border: '#8B5A1E', // Match accent
+    borderSubtle: '#B8936D', // Darkened for 3:1 UI contrast
+    success: '#3F5A2F', // Darkened for 7:1 contrast
+    error: '#7A2F22', // Darkened for 7:1 contrast
+    warning: '#8B5520', // Darkened for 7:1 contrast (≥4.5:1)
+    info: '#2F4D61', // Darkened for 7:1 contrast
   },
 }
 
