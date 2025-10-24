@@ -264,6 +264,65 @@ export function getCSSTransition(themeName: string, property: string, speed: 'fa
 }
 
 /**
+ * Check if user prefers reduced motion (OS setting)
+ */
+export function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/**
+ * Get reduced motion variant of motion profile
+ * - Disables springs (use linear/ease-out instead)
+ * - Reduces durations by reducedMotionScale
+ * - Max duration capped at 120ms
+ */
+export function getReducedMotionProfile(themeName: string): MotionProfile {
+  const profile = getMotionProfile(themeName)
+  const scale = profile.reducedMotionScale
+
+  return {
+    ...profile,
+    duration: {
+      instant: 0,
+      fast: Math.min(80, Math.round(profile.duration.fast * scale)),
+      medium: Math.min(100, Math.round(profile.duration.medium * scale)),
+      slow: Math.min(120, Math.round(profile.duration.slow * scale)),
+      lazy: Math.min(120, Math.round(profile.duration.lazy * scale)),
+    },
+    easing: {
+      ease: 'ease-out',
+      easeIn: 'ease-out',
+      easeOut: 'ease-out',
+      easeInOut: 'ease-out',
+      spring: 'ease-out', // No springs in reduced motion
+    },
+    spring: {
+      stiffness: 1000, // Instant = no spring bounce
+      damping: 100,
+      mass: 0.1,
+    },
+    transitions: {
+      fadeIn: 'opacity 100ms ease-out',
+      fadeOut: 'opacity 100ms ease-out',
+      slideIn: 'transform 100ms ease-out',
+      slideOut: 'transform 100ms ease-out',
+      scale: 'opacity 100ms ease-out', // Scale becomes fade-only
+    },
+  }
+}
+
+/**
+ * Get motion profile with automatic reduced motion detection
+ */
+export function getAdaptiveMotionProfile(themeName: string, calmModeEnabled: boolean = false): MotionProfile {
+  if (prefersReducedMotion() || calmModeEnabled) {
+    return getReducedMotionProfile(themeName)
+  }
+  return getMotionProfile(themeName)
+}
+
+/**
  * Sync animation to DAW BPM (if applicable)
  */
 export function syncToBPM(themeName: string, beats: number = 1): number {

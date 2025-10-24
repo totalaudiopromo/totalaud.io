@@ -32,6 +32,9 @@ importers:
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
+      tsx:
+        specifier: ^4.7.0
+        version: 4.20.6
       turbo:
         specifier: ^2.0.0
         version: 2.5.8
@@ -119,13 +122,13 @@ importers:
         version: 8.5.6
       tailwindcss:
         specifier: ^3.4.0
-        version: 3.4.18
+        version: 3.4.18(tsx@4.20.6)
       typescript:
         specifier: ^5
         version: 5.9.3
       vitest:
         specifier: ^4.0.3
-        version: 4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)
+        version: 4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)(tsx@4.20.6)
 
   apps/orchestrator:
     dependencies:
@@ -1907,7 +1910,7 @@ packages:
       '@vitest/spy': 4.0.3
       estree-walker: 3.0.3
       magic-string: 0.30.19
-      vite: 7.1.12(@types/node@20.19.22)
+      vite: 7.1.12(@types/node@20.19.22)(tsx@4.20.6)
     dev: true
 
   /@vitest/pretty-format@4.0.3:
@@ -1947,7 +1950,7 @@ packages:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)
+      vitest: 4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)(tsx@4.20.6)
     dev: true
 
   /@vitest/utils@4.0.3:
@@ -4327,7 +4330,7 @@ packages:
       postcss: 8.5.6
     dev: true
 
-  /postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.6):
+  /postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.6)(tsx@4.20.6):
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
     engines: {node: '>= 18'}
     peerDependencies:
@@ -4348,27 +4351,6 @@ packages:
       jiti: 1.21.7
       lilconfig: 3.1.3
       postcss: 8.5.6
-    dev: true
-
-  /postcss-load-config@6.0.1(tsx@4.20.6):
-    resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      jiti: '>=1.21.0'
-      postcss: '>=8.0.9'
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      jiti:
-        optional: true
-      postcss:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
-    dependencies:
-      lilconfig: 3.1.3
       tsx: 4.20.6
     dev: true
 
@@ -5007,7 +4989,7 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /tailwindcss@3.4.18:
+  /tailwindcss@3.4.18(tsx@4.20.6):
     resolution: {integrity: sha512-6A2rnmW5xZMdw11LYjhcI5846rt9pbLSabY5XPxo+XWdxwZaFEn47Go4NzFiHu9sNNmr/kXivP1vStfvMaK1GQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -5029,7 +5011,7 @@ packages:
       postcss: 8.5.6
       postcss-import: 15.1.0(postcss@8.5.6)
       postcss-js: 4.1.0(postcss@8.5.6)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(tsx@4.20.6)
       postcss-nested: 6.2.0(postcss@8.5.6)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.10
@@ -5145,7 +5127,7 @@ packages:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(tsx@4.20.6)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.6)(tsx@4.20.6)
       resolve-from: 5.0.0
       rollup: 4.52.5
       source-map: 0.8.0-beta.0
@@ -5353,7 +5335,7 @@ packages:
     hasBin: true
     dev: false
 
-  /vite@7.1.12(@types/node@20.19.22):
+  /vite@7.1.12(@types/node@20.19.22)(tsx@4.20.6):
     resolution: {integrity: sha512-ZWyE8YXEXqJrrSLvYgrRP7p62OziLW7xI5HYGWFzOvupfAlrLvURSzv/FyGyy0eidogEM3ujU+kUG1zuHgb6Ug==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -5400,11 +5382,12 @@ packages:
       postcss: 8.5.6
       rollup: 4.52.5
       tinyglobby: 0.2.15
+      tsx: 4.20.6
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
 
-  /vitest@4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3):
+  /vitest@4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)(tsx@4.20.6):
     resolution: {integrity: sha512-IUSop8jgaT7w0g1yOM/35qVtKjr/8Va4PrjzH1OUb0YH4c3OXB2lCZDkMAB6glA8T5w8S164oJGsbcmAecr4sA==}
     engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
@@ -5458,7 +5441,7 @@ packages:
       tinyexec: 0.3.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.1.12(@types/node@20.19.22)
+      vite: 7.1.12(@types/node@20.19.22)(tsx@4.20.6)
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
       - jiti
