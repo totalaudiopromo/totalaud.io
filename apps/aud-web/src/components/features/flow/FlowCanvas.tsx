@@ -8,13 +8,13 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
   Connection,
   Edge,
   Node,
   BackgroundVariant,
   Panel,
   NodeTypes,
+  ReactFlowInstance,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { motion } from 'framer-motion'
@@ -79,7 +79,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges)
-  const { project } = useReactFlow()
+  const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
   const hasInitialized = useRef(false)
   const previousStatuses = useRef<Record<string, string> & { _key?: string }>({ _key: '' })
@@ -282,13 +282,13 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   // Add skill node on canvas click
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
-      if (!selectedSkill) return
+      if (!selectedSkill || !reactFlowInstance.current) return
 
       const skill = skillNodes.find((s) => s.name === selectedSkill)
       if (!skill) return
 
       // Use React Flow's project() to convert screen coordinates to canvas space
-      const position = project({
+      const position = reactFlowInstance.current.project({
         x: event.clientX,
         y: event.clientY,
       })
@@ -319,7 +319,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       setNodes((nds) => [...nds, newNode])
       setSelectedSkill(null)
     },
-    [selectedSkill, setNodes, executeNode, project]
+    [selectedSkill, setNodes, executeNode]
   )
 
   // Real-time status updates from agent execution
@@ -609,6 +609,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               onPaneClick={onPaneClick}
+              onInit={(instance) => {
+                reactFlowInstance.current = instance
+              }}
               nodeTypes={nodeTypes}
               fitView
               className="flow-studio-canvas"
