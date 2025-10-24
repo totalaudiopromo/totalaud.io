@@ -32,6 +32,7 @@ import { supabase } from '@aud-web/lib/supabase'
 import { generateUUID } from '@aud-web/lib/uuid'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { useFlowMode } from '@aud-web/hooks/useFlowMode'
+import { useStudioSound, STUDIO_SOUND_PROFILES } from '@aud-web/hooks/useStudioSound'
 import { MissionDashboard, MissionPanel, OnboardingOverlay } from '../../layouts'
 import { AmbientSoundLayer } from '../../ui'
 import { useTheme } from '../../themes/ThemeResolver'
@@ -102,6 +103,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
   // Flow State: Focus mode (⌘F)
   const flowMode = useFlowMode()
+
+  // Sound system integration
+  const { playProceduralSound } = useStudioSound(currentTheme)
 
   // Create session in database on mount (only once)
   useEffect(() => {
@@ -277,6 +281,45 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
       }
     },
     [setEdges, hasSeenConnectionHint]
+  )
+
+  // Handle start node click - execute all connected nodes
+  const onNodeClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (node.id === 'start') {
+        log.info('Start node clicked - executing connected workflow')
+
+        // Play execute sound if not muted
+        if (!prefs?.mute_sounds) {
+          const profile = STUDIO_SOUND_PROFILES[currentTheme as keyof typeof STUDIO_SOUND_PROFILES]
+          if (profile && profile.execute) {
+            const { frequency, duration, type: waveType } = profile.execute
+            playProceduralSound(frequency, duration, waveType)
+          }
+        }
+
+        // Find all nodes connected to the start node
+        const connectedNodes = edges
+          .filter(edge => edge.source === 'start')
+          .map(edge => nodes.find(n => n.id === edge.target))
+          .filter((n): n is Node => n !== undefined)
+
+        if (connectedNodes.length === 0) {
+          log.warn('No nodes connected to start node')
+          return
+        }
+
+        // Execute the first connected node
+        const firstNode = connectedNodes[0]
+        if (firstNode.data.onExecute) {
+          log.debug('Executing first node', { nodeId: firstNode.id })
+          firstNode.data.onExecute()
+        } else {
+          log.warn('First node has no onExecute handler', { nodeId: firstNode.id })
+        }
+      }
+    },
+    [edges, nodes, currentTheme, prefs?.mute_sounds, playProceduralSound]
   )
 
   // Add skill node on canvas click
@@ -608,6 +651,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
+              onNodeClick={onNodeClick}
               onPaneClick={onPaneClick}
               onInit={(instance) => {
                 reactFlowInstance.current = instance
