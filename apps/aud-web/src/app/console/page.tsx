@@ -1,17 +1,18 @@
 /**
- * Console Page - Main Workspace Entry
+ * Console Page - Unified Workspace Entry
  *
- * Replaces the dashboard with a single-screen workspace.
+ * Phase 10: Unified Console Refactor
+ * Cinematic workspace with theme selector, tool switcher, and mode navigation
  * Route: /console
  */
 
-import { ConsoleLayout } from '@aud-web/layouts/ConsoleLayout'
+import { ConsoleDashboard } from '@aud-web/components/layouts/ConsoleDashboard'
 
 export const metadata = {
-  title: 'Console | aud',
-  description: 'Campaign command center',
+  title: 'Console | totalaud.io',
+  description: 'Unified creative workspace',
 }
 
 export default function ConsolePage() {
-  return <ConsoleLayout />
+  return <ConsoleDashboard />
 }
