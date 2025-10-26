@@ -270,7 +270,7 @@ export function OnboardingOverlay({
               className="px-6 py-2 rounded font-mono font-semibold flex items-center gap-2 transition-all hover:scale-105"
               style={{
                 backgroundColor: colors.accent,
-                color: theme === 'ascii' ? '#000000' : '#ffffff',
+                color: theme === 'operator' ? '#000000' : '#ffffff',
               }}
             >
               {isLastStep ? 'Got it → Begin' : 'Next'}

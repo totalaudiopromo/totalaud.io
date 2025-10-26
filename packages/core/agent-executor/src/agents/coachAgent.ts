@@ -14,7 +14,7 @@ import { complete, type AIProvider } from '@total-audio/core-ai-provider'
 import { getBrokerPersonality } from '../personas/brokerPersonalityRegistry'
 
 // OSTheme type (matches broker personalities)
-export type OSTheme = 'ascii' | 'xp' | 'apple' | 'quantum'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline'
 
 interface SupabaseClient {
   from(table: string): any

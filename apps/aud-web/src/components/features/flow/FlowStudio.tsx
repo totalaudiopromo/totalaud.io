@@ -15,7 +15,7 @@ import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
  */
 export function FlowStudio() {
   const searchParams = useSearchParams()
-  const [theme, setTheme] = useState<string>('ascii')
+  const [theme, setTheme] = useState<string>('operator')
   const flowParam = searchParams.get('flow')
   const welcomeParam = searchParams.get('welcome')
 

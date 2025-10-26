@@ -673,7 +673,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               <Background
                 variant={BackgroundVariant.Dots}
                 gap={16}
-                size={themeConfig.id === 'ascii' ? 2 : 1}
+                size={themeConfig.id === 'operator' ? 2 : 1}
                 color={`${themeConfig.colors.border}40`}
                 style={{
                   animation:

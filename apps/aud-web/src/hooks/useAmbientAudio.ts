@@ -91,7 +91,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
           analogue: { freq: 130.81, type: 'sine' }, // C3
         }
 
-        const themeConfig = themeConfigs[config.theme || 'ascii']
+        const themeConfig = themeConfigs[config.theme || 'operator']
         oscillator.type = themeConfig.type
         oscillator.frequency.value = themeConfig.freq
         gainNode.gain.setValueAtTime(0, ctx.currentTime)

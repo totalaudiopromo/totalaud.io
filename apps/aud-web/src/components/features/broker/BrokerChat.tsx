@@ -282,7 +282,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
   const getPrefix = () => {
     const prefixes: Record<OSTheme, string> = {
-      ascii: '⟩',
+      operator: '⟩',
       xp: '►',
       aqua: '•',
       daw: '●',
@@ -301,7 +301,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
       }}
     >
       {/* Scanline effect for ASCII mode */}
-      {selectedMode === 'ascii' && (
+      {selectedMode === 'operator' && (
         <div className="absolute inset-0 scanline-effect opacity-10 pointer-events-none" />
       )}
 

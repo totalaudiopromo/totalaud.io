@@ -21,7 +21,7 @@ export interface PresenceState {
   user_id: string
   user_email?: string
   user_name?: string
-  theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+  theme: 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
   mode: 'plan' | 'track' | 'learn'
   calm_mode: boolean
   joined_at: string
@@ -33,7 +33,7 @@ export interface Collaborator {
   user_id: string
   user_email?: string
   user_name?: string
-  theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+  theme: 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
   mode: 'plan' | 'track' | 'learn'
   calm_mode: boolean
   is_active: boolean
@@ -120,7 +120,7 @@ export class PresenceManager {
 
     const presenceState: PresenceState = {
       user_id: this.userId,
-      theme: state.theme || 'ascii',
+      theme: state.theme || 'operator',
       mode: state.mode || 'plan',
       calm_mode: state.calm_mode || false,
       user_email: state.user_email,
@@ -190,7 +190,7 @@ export class PresenceManager {
       user_id: key,
       user_email: presence.user_email,
       user_name: presence.user_name,
-      theme: presence.theme || 'ascii',
+      theme: presence.theme || 'operator',
       mode: presence.mode || 'plan',
       calm_mode: presence.calm_mode || false,
       is_active: true,

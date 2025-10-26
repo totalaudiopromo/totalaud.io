@@ -14,7 +14,7 @@ import { persist } from 'zustand/middleware'
 // Types
 // ========================================
 
-export type StudioLens = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+export type StudioLens = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 export type WorkspaceTab = 'plan' | 'do' | 'track' | 'learn'
 export type WorkflowType = 'find_curators' | 'generate_pitch' | 'send_outreach'
 export type CampaignGoal = 'radio' | 'press' | 'playlist' | 'blog'
@@ -189,7 +189,7 @@ const initialState = {
   activeTab: 'plan' as WorkspaceTab,
   activeCampaignId: null,
   activeReleaseId: null,
-  currentLens: 'xp' as StudioLens, // Default to XP (most user-friendly)
+  currentLens: 'guide' as StudioLens, // Default to XP (most user-friendly)
   isLoading: false,
   error: null,
   uiPreferences: {

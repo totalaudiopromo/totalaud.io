@@ -111,7 +111,7 @@ export {
   applyPersonalityTone,
   getQuirkAnimationClass,
 } from './personas/brokerPersonalityRegistry'
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 
 // Flow template helpers
 export { getFlowTemplateForGoal } from './config/goalToFlowMap'

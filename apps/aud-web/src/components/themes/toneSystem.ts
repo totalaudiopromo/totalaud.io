@@ -105,11 +105,11 @@ export function formatMessage(themeName: string, messageType: keyof ToneProfile,
   if (context) {
     // Add context for certain themes
     switch (themeName) {
-      case 'ascii':
+      case 'operator':
         return `${tone} [${context}]`
-      case 'daw':
+      case 'timeline':
         return `${tone} // ${context}`
-      case 'analogue':
+      case 'tape':
         return `${tone} (${context})`
       default:
         return `${tone} ${context}`

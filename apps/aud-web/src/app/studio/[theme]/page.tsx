@@ -22,7 +22,7 @@ interface StudioPageProps {
   }>
 }
 
-const VALID_THEMES = ['ascii', 'xp', 'aqua', 'daw', 'analogue']
+const VALID_THEMES = ['operator', 'guide', 'map', 'timeline', 'tape']
 
 export function generateStaticParams() {
   return VALID_THEMES.map((theme) => ({
@@ -40,15 +40,15 @@ export default async function StudioPage({ params }: StudioPageProps) {
 
   // Render appropriate Studio
   switch (theme) {
-    case 'ascii':
+    case 'operator':
       return <ASCIIStudio />
-    case 'xp':
+    case 'guide':
       return <XPStudio />
-    case 'aqua':
+    case 'map':
       return <AquaStudio />
-    case 'daw':
+    case 'timeline':
       return <DAWStudio />
-    case 'analogue':
+    case 'tape':
       return <AnalogueStudio />
     default:
       notFound()

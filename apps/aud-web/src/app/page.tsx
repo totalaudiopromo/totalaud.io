@@ -11,7 +11,7 @@ import { AnimatePresence } from 'framer-motion'
 function HomePageContent() {
   const searchParams = useSearchParams()
   const { phase, next, setPhase } = useOnboardingPhase()
-  const [selectedTheme, setSelectedTheme] = useState<OSTheme>('ascii')
+  const [selectedTheme, setSelectedTheme] = useState<OSTheme>('operator')
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false)
 
   // Check if user has already completed onboarding
