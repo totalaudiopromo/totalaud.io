@@ -10,7 +10,7 @@
 
 'use client'
 
-import { useCallback, useEffect, useState, useRef, ReactNode } from 'react'
+import { useCallback, useEffect, useState, useRef, ReactNode, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ReactFlow, {
   addEdge,
@@ -78,7 +78,11 @@ export interface WorkflowActions {
   deleteNode: (nodeId: string) => void
 }
 
-export function BaseWorkflow({
+/**
+ * Internal component that uses useSearchParams
+ * Must be wrapped in Suspense boundary
+ */
+function BaseWorkflowInternal({
   initialTemplate,
   children,
   onExecutionComplete,
@@ -272,4 +276,16 @@ export function BaseWorkflow({
   }
 
   return <>{children(state, actions)}</>
+}
+
+/**
+ * BaseWorkflow - Main export with Suspense boundary
+ * Wraps BaseWorkflowInternal to satisfy Next.js 15 requirements
+ */
+export function BaseWorkflow(props: BaseWorkflowProps) {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading workflow...</div>}>
+      <BaseWorkflowInternal {...props} />
+    </Suspense>
+  )
 }
