@@ -5,6 +5,9 @@
 /* Import Onboarding Styles */
 @import '../styles/onboarding.css';
 
+/* Import Theme Selector V2 Styles */
+@import '../styles/theme-selector-v2.css';
+
 /* Import Agent Spawn Modal Styles */
 @import '../styles/agent-spawn-modal.css';
 
