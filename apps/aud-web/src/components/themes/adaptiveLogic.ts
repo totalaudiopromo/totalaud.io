@@ -51,11 +51,11 @@ export function getAdaptiveAdjustments(context: AdaptiveContext): AdaptiveAdjust
   let suggestedTheme: string | undefined
 
   if (timeOfDay === 'morning' && activityIntensity === 'low') {
-    suggestedTheme = 'aqua' // Calm, focused start
+    suggestedTheme = 'map' // Calm, focused start
   } else if (timeOfDay === 'afternoon' && activityIntensity === 'high') {
-    suggestedTheme = 'daw' // Peak productivity
+    suggestedTheme = 'timeline' // Peak productivity
   } else if (timeOfDay === 'evening' || timeOfDay === 'night') {
-    suggestedTheme = 'analogue' // Warm, relaxed
+    suggestedTheme = 'tape' // Warm, relaxed
   }
 
   // Energy level mapping
@@ -79,10 +79,10 @@ export function getAdaptiveAdjustments(context: AdaptiveContext): AdaptiveAdjust
   // Campaign progress milestones
   if (campaignProgress >= 75 && activityIntensity === 'high') {
     // Near completion - suggest energetic theme
-    suggestedTheme = 'xp'
+    suggestedTheme = 'guide'
   } else if (campaignProgress < 25 && activityIntensity === 'low') {
     // Early stage, low activity - suggest focused theme
-    suggestedTheme = 'ascii'
+    suggestedTheme = 'operator'
   }
 
   return {

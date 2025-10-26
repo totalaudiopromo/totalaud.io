@@ -9,7 +9,7 @@
  * const { collaborators, updatePresence, isConnected } = usePresence(
  *   campaignId,
  *   userId,
- *   { theme: 'ascii', mode: 'plan', calm_mode: false }
+ *   { theme: 'operator', mode: 'plan', calm_mode: false }
  * )
  * ```
  */
@@ -23,7 +23,7 @@ import {
 } from '@/lib/realtimePresence'
 
 interface UsePresenceOptions {
-  theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+  theme: 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
   mode: 'plan' | 'track' | 'learn'
   calm_mode: boolean
   user_email?: string

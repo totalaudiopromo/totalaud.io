@@ -52,7 +52,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         className="absolute inset-0 opacity-30 bg-cover bg-center"
         style={{
           backgroundImage: `url(${textureUrl})`,
-          mixBlendMode: theme.id === 'xp' || theme.id === 'aqua' ? 'overlay' : 'multiply',
+          mixBlendMode: theme.id === 'guide' || theme.id === 'map' ? 'overlay' : 'multiply',
         }}
       />
 
@@ -92,7 +92,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
         }}
       >
         {/* ASCII Header for terminal theme */}
-        {theme.id === 'ascii' && (
+        {theme.id === 'operator' && (
           <pre className="text-[10px] leading-tight mb-4 opacity-60 ascii-art">
             {`┌────────────────────────────┐
 │ ${theme.displayName.padEnd(26)} │
@@ -161,7 +161,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
       </div>
 
       {/* Loading Bar Easter Egg (XP theme) */}
-      {theme.id === 'xp' && isHovered && (
+      {theme.id === 'guide' && isHovered && (
         <motion.div
           initial={{ width: '0%' }}
           animate={{ width: '100%' }}
@@ -172,7 +172,7 @@ export default function OSCard({ theme, index, onSelect, isSelected }: OSCardPro
       )}
 
       {/* Analogue Texture Effect */}
-      {theme.id === 'analogue' && isHovered && (
+      {theme.id === 'tape' && isHovered && (
         <motion.div
           initial={{ rotate: -5, x: -10, y: -10 }}
           animate={{ rotate: 5, x: 10, y: 10 }}

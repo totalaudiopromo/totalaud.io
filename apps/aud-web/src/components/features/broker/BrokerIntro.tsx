@@ -70,7 +70,7 @@ export default function BrokerIntro({ selectedMode, onComplete }: BrokerIntroPro
       />
 
       {/* Scanline effect for ASCII mode */}
-      {selectedMode === 'ascii' && (
+      {selectedMode === 'operator' && (
         <div className="absolute inset-0 scanline-effect opacity-20 pointer-events-none" />
       )}
 

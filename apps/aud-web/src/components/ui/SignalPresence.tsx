@@ -22,7 +22,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
   const activity = Math.min(100, Math.max(0, activityLevel)) / 100
 
   switch (studio) {
-    case 'ascii':
+    case 'operator':
       // Static cursor that blinks faster with activity
       return (
         <motion.div
@@ -40,7 +40,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         </motion.div>
       )
 
-    case 'xp':
+    case 'guide':
       // Floating orb that bounces
       return (
         <motion.div
@@ -77,7 +77,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         </motion.div>
       )
 
-    case 'aqua':
+    case 'map':
       // Shimmering particle
       return (
         <motion.div
@@ -106,7 +106,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         </motion.div>
       )
 
-    case 'daw':
+    case 'timeline':
       // Pulse synced to BPM
       const bpm = 120
       const beatDuration = 60 / bpm
@@ -140,7 +140,7 @@ export function SignalPresence({ studio, activityLevel, className = '' }: Signal
         </motion.div>
       )
 
-    case 'analogue':
+    case 'tape':
       // Soft brushstroke signature
       return (
         <motion.div

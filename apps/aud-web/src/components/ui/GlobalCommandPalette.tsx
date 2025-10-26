@@ -258,10 +258,10 @@ export function GlobalCommandPalette() {
       action: async () => {
         playCommandSound('interact')
         log.debug('Switching theme to ASCII')
-        await setTheme('ascii')
+        await setTheme('operator')
         close()
       },
-      keywords: ['theme', 'ascii', 'terminal', 'minimal'],
+      keywords: ['theme', 'operator', 'terminal', 'minimal'],
     },
     {
       id: 'theme-xp',
@@ -270,10 +270,10 @@ export function GlobalCommandPalette() {
       icon: Palette,
       action: async () => {
         log.debug('Switching theme to XP')
-        await setTheme('xp')
+        await setTheme('guide')
         close()
       },
-      keywords: ['theme', 'xp', 'windows', 'nostalgic'],
+      keywords: ['theme', 'guide', 'windows', 'nostalgic'],
     },
     {
       id: 'theme-aqua',
@@ -282,10 +282,10 @@ export function GlobalCommandPalette() {
       icon: Palette,
       action: async () => {
         log.debug('Switching theme to Aqua')
-        await setTheme('aqua')
+        await setTheme('map')
         close()
       },
-      keywords: ['theme', 'aqua', 'mac', 'design'],
+      keywords: ['theme', 'map', 'mac', 'design'],
     },
     {
       id: 'theme-daw',
@@ -294,10 +294,10 @@ export function GlobalCommandPalette() {
       icon: Palette,
       action: async () => {
         log.debug('Switching theme to DAW')
-        await setTheme('daw')
+        await setTheme('timeline')
         close()
       },
-      keywords: ['theme', 'daw', 'producer', 'music', 'workstation'],
+      keywords: ['theme', 'timeline', 'producer', 'music', 'workstation'],
     },
     {
       id: 'theme-analogue',
@@ -306,10 +306,10 @@ export function GlobalCommandPalette() {
       icon: Palette,
       action: async () => {
         log.debug('Switching theme to Analogue')
-        await setTheme('analogue')
+        await setTheme('tape')
         close()
       },
-      keywords: ['theme', 'analogue', 'analog', 'studio', 'warm', 'tape'],
+      keywords: ['theme', 'tape', 'analog', 'studio', 'warm', 'tape'],
     },
     // Studio Navigation Commands
     {
@@ -321,7 +321,7 @@ export function GlobalCommandPalette() {
         router.push('/studio/ascii')
         close()
       },
-      keywords: ['studio', 'ascii', 'terminal', 'command', 'minimal'],
+      keywords: ['studio', 'operator', 'terminal', 'command', 'minimal'],
     },
     {
       id: 'studio-xp',
@@ -332,7 +332,7 @@ export function GlobalCommandPalette() {
         router.push('/studio/xp')
         close()
       },
-      keywords: ['studio', 'xp', 'wizard', 'guided', 'friendly'],
+      keywords: ['studio', 'guide', 'wizard', 'guided', 'friendly'],
     },
     {
       id: 'studio-aqua',
@@ -343,7 +343,7 @@ export function GlobalCommandPalette() {
         router.push('/studio/aqua')
         close()
       },
-      keywords: ['studio', 'aqua', 'canvas', 'visual', 'map', 'design'],
+      keywords: ['studio', 'map', 'canvas', 'visual', 'map', 'design'],
     },
     {
       id: 'studio-daw',
@@ -354,7 +354,7 @@ export function GlobalCommandPalette() {
         router.push('/studio/daw')
         close()
       },
-      keywords: ['studio', 'daw', 'timeline', 'sequencer', 'tempo'],
+      keywords: ['studio', 'timeline', 'timeline', 'sequencer', 'tempo'],
     },
     {
       id: 'studio-analogue',
@@ -365,7 +365,7 @@ export function GlobalCommandPalette() {
         router.push('/studio/analogue')
         close()
       },
-      keywords: ['studio', 'analogue', 'analog', 'journal', 'writing', 'reflection'],
+      keywords: ['studio', 'tape', 'analog', 'journal', 'writing', 'reflection'],
     },
     {
       id: 'toggle-focus',

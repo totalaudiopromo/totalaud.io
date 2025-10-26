@@ -152,8 +152,9 @@ export default function LandingPage() {
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -100])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
 
-  const proofY = useTransform(scrollYProgress, [0.55, 0.75], [100, 0])
-  const proofOpacity = useTransform(scrollYProgress, [0.55, 0.75], [0, 1])
+  // Visual Proof Strip - fade in quickly and stay at full opacity
+  const proofY = useTransform(scrollYProgress, [0.45, 0.55], [100, 0])
+  const proofOpacity = useTransform(scrollYProgress, [0.45, 0.55], [0, 1])
 
   return (
     <div

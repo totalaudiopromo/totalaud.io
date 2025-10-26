@@ -118,7 +118,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
           clearInterval(interval)
         }
       },
-      selectedMode === 'analogue' || selectedMode === 'ascii' ? 200 : 400
+      selectedMode === 'tape' || selectedMode === 'operator' ? 200 : 400
     )
 
     return () => clearInterval(interval)
@@ -126,7 +126,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
 
   // Animate progress bar for XP mode
   useEffect(() => {
-    if (phase !== 'boot' || selectedMode !== 'xp') return
+    if (phase !== 'boot' || selectedMode !== 'guide') return
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -202,7 +202,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
           >
             <div className="max-w-3xl w-full space-y-6">
               {/* ASCII Terminal Mode */}
-              {selectedMode === 'ascii' && (
+              {selectedMode === 'operator' && (
                 <div className="space-y-3">
                   <pre className="text-xs text-green-400 leading-tight mb-6 opacity-60">
                     {`┌────────────────────────────────────┐
@@ -234,7 +234,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
               )}
 
               {/* Windows XP Mode */}
-              {selectedMode === 'xp' && (
+              {selectedMode === 'guide' && (
                 <div className="space-y-6">
                   <div className="text-center mb-8">
                     <motion.div
@@ -284,7 +284,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
               )}
 
               {/* Mac OS Aqua Mode */}
-              {selectedMode === 'aqua' && (
+              {selectedMode === 'map' && (
                 <div className="space-y-6">
                   <div className="text-center mb-8">
                     <motion.div
@@ -325,7 +325,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
               )}
 
               {/* DAW Mode */}
-              {selectedMode === 'daw' && (
+              {selectedMode === 'timeline' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-center gap-3 mb-8">
                     <motion.div
@@ -389,7 +389,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
               )}
 
               {/* Analogue Studio Mode */}
-              {selectedMode === 'analogue' && (
+              {selectedMode === 'tape' && (
                 <div className="space-y-6">
                   <div className="text-center mb-8">
                     <motion.div
@@ -468,7 +468,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
       </AnimatePresence>
 
       {/* Easter egg memory check for ASCII mode */}
-      {selectedMode === 'ascii' && phase === 'boot' && visibleLines >= 2 && (
+      {selectedMode === 'operator' && phase === 'boot' && visibleLines >= 2 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}

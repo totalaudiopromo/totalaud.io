@@ -24,7 +24,7 @@ export interface BrokerPersonalityQuirk {
 
 export interface BrokerPersonality {
   /** Theme identifier */
-  themeId: 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+  themeId: 'operator' | 'guide' | 'map' | 'ableton' | 'punk'
 
   /** Overall speaking tone/character */
   tone: string
@@ -62,7 +62,7 @@ export interface BrokerPersonality {
  */
 export const brokerPersonalities: Record<string, BrokerPersonality> = {
   ascii: {
-    themeId: 'ascii',
+    themeId: 'operator',
     tone: 'deadpan, quick-witted sysadmin',
     slang: ['init', 'proc', 'ping me', 'exec', 'daemon', 'grep'],
     quirks: [
@@ -96,7 +96,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
   },
 
   xp: {
-    themeId: 'xp',
+    themeId: 'guide',
     tone: 'cheerful, nostalgic tech mate',
     slang: ['mate', 'cheers', 'pop that in', 'lovely', 'sorted'],
     quirks: [
@@ -138,7 +138,7 @@ export const brokerPersonalities: Record<string, BrokerPersonality> = {
   },
 
   aqua: {
-    themeId: 'aqua',
+    themeId: 'map',
     tone: 'calm, reflective creative coach',
     slang: ['smooth', 'compose', 'flow', 'breathe', 'space'],
     quirks: [
@@ -283,7 +283,7 @@ export function applyPersonalityTone(message: string, personality: BrokerPersona
   let modified = message
 
   // ASCII: lowercase everything
-  if (personality.themeId === 'ascii') {
+  if (personality.themeId === 'operator') {
     modified = modified.toLowerCase()
   }
 

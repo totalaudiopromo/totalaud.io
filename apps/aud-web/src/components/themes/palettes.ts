@@ -164,7 +164,7 @@ export function applyPalette(themeName: string): void {
   const palette = palettes[themeName]
   if (!palette) {
     console.warn(`[Palettes] Theme "${themeName}" not found, falling back to ascii`)
-    return applyPalette('ascii')
+    return applyPalette('operator')
   }
 
   const root = document.documentElement
@@ -183,7 +183,7 @@ export function applyPalette(themeName: string): void {
  * Get current palette from data-theme attribute
  */
 export function getCurrentPalette(): ThemePalette {
-  const themeName = document.documentElement.getAttribute('data-theme') || 'ascii'
+  const themeName = document.documentElement.getAttribute('data-theme') || 'operator'
   return palettes[themeName] || palettes.ascii
 }
 

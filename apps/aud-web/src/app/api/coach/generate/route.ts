@@ -19,7 +19,7 @@ const log = logger.scope('CoachGenerateAPI')
 // Schema for coach generate request
 const coachGenerateSchema = z.object({
   sessionId: z.string().uuid().optional(),
-  theme: z.enum(['ascii', 'xp', 'aqua', 'daw', 'analogue']).optional(),
+  theme: z.enum(['operator', 'guide', 'map', 'timeline', 'tape']).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Determine theme (default to 'ascii' if not provided)
-    const activeTheme: OSTheme = theme || 'ascii'
+    // Determine theme (default to 'operator' if not provided)
+    const activeTheme: OSTheme = theme || 'operator'
 
     // Create Coach agent
     const coach = createCoachAgent({

@@ -35,20 +35,20 @@ export function ScrollFlow({ onPhraseEnter }: ScrollFlowProps) {
     offset: ['start start', 'end end'],
   })
 
-  // Phrase 1: plan your release (stays centred, fades out in place)
-  const y1 = useTransform(scrollYProgress, [0.0, 0.3], [0, 0])
-  const opacity1 = useTransform(scrollYProgress, [0.0, 0.2, 0.3], [1, 1, 0])
-  const scale1 = useTransform(scrollYProgress, [0.0, 0.3], [1, 0.95])
+  // Phrase 1: plan your release (fades IN after hero fades OUT, stays centred, fades out in place)
+  const y1 = useTransform(scrollYProgress, [0.0, 0.1, 0.3], [0, 0, 0])
+  const opacity1 = useTransform(scrollYProgress, [0.0, 0.1, 0.25, 0.35], [0, 1, 1, 0])
+  const scale1 = useTransform(scrollYProgress, [0.0, 0.1, 0.35], [0.95, 1, 0.95])
 
-  // Phrase 2: send with precision (enters from below, stays centred, fades in place)
-  const y2 = useTransform(scrollYProgress, [0.25, 0.35, 0.65], [60, 0, 0])
-  const opacity2 = useTransform(scrollYProgress, [0.25, 0.35, 0.55, 0.65], [0, 1, 1, 0])
-  const scale2 = useTransform(scrollYProgress, [0.25, 0.35, 0.65], [0.95, 1, 0.95])
+  // Phrase 2: send with precision (enters from below, stays centred, fades out in place)
+  const y2 = useTransform(scrollYProgress, [0.3, 0.4, 0.65], [60, 0, 0])
+  const opacity2 = useTransform(scrollYProgress, [0.3, 0.4, 0.6, 0.7], [0, 1, 1, 0])
+  const scale2 = useTransform(scrollYProgress, [0.3, 0.4, 0.7], [0.95, 1, 0.95])
 
   // Phrase 3: see what resonates (enters from below, stays centred, fades out COMPLETELY before end)
-  const y3 = useTransform(scrollYProgress, [0.6, 0.7, 0.9], [60, 0, 0])
-  const opacity3 = useTransform(scrollYProgress, [0.6, 0.7, 0.85, 0.95, 1.0], [0, 1, 1, 0, 0])
-  const scale3 = useTransform(scrollYProgress, [0.6, 0.7, 0.9], [0.95, 1, 0.95])
+  const y3 = useTransform(scrollYProgress, [0.65, 0.75, 0.95], [60, 0, 0])
+  const opacity3 = useTransform(scrollYProgress, [0.65, 0.75, 0.9, 0.98, 1.0], [0, 1, 1, 0, 0])
+  const scale3 = useTransform(scrollYProgress, [0.65, 0.75, 0.95], [0.95, 1, 0.95])
 
   // Velocity-based blur for scroll tempo feeling
   const velocity = useVelocity(scrollYProgress)
@@ -137,11 +137,11 @@ export function ScrollFlow({ onPhraseEnter }: ScrollFlowProps) {
           {phrases[2].text}
         </motion.h2>
 
-        {/* Closing subtitle (appears with phrase 3, fades out before end) - locked to viewport centre with vh */}
+        {/* Closing subtitle (appears with phrase 3, fades out COMPLETELY before end) - locked to viewport centre with vh */}
         <motion.p
           style={{
-            opacity: useTransform(scrollYProgress, [0.55, 0.65, 0.85, 0.95], [0, 1, 1, 0]),
-            y: useTransform(scrollYProgress, [0.55, 0.65], [140, 100]),
+            opacity: useTransform(scrollYProgress, [0.7, 0.8, 0.9, 0.98, 1.0], [0, 1, 1, 0, 0]),
+            y: useTransform(scrollYProgress, [0.7, 0.8], [140, 100]),
             top: '50vh',
           }}
           className="fixed left-0 right-0 text-center text-2xl md:text-3xl font-light text-[#6B7280] tracking-tight will-change-transform z-10"

@@ -328,7 +328,7 @@ export function getAdaptiveMotionProfile(themeName: string, calmModeEnabled: boo
 export function syncToBPM(themeName: string, beats: number = 1): number {
   const profile = getMotionProfile(themeName)
 
-  if (themeName === 'daw' && profile.keyframes.bpm) {
+  if (themeName === 'timeline' && profile.keyframes.bpm) {
     const msPerBeat = 60000 / profile.keyframes.bpm
     return msPerBeat * beats
   }

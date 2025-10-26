@@ -461,7 +461,7 @@ export function MissionDashboard({
               className="px-6 py-3 rounded font-mono font-semibold flex items-center gap-2 transition-all hover:scale-105"
               style={{
                 backgroundColor: colors.accent,
-                color: theme === 'ascii' ? '#000000' : '#ffffff',
+                color: theme === 'operator' ? '#000000' : '#ffffff',
               }}
             >
               <FileText className="w-5 h-5" />
