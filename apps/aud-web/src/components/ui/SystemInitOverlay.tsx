@@ -106,9 +106,7 @@ export function SystemInitOverlay({ isVisible, onComplete }: SystemInitOverlayPr
                         }
                   }
                   transition={{
-                    duration: prefersReducedMotion
-                      ? 0
-                      : motionTokens.normal.duration / 1000,
+                    duration: prefersReducedMotion ? 0 : motionTokens.normal.duration / 1000,
                     ease: 'easeOut',
                   }}
                 >

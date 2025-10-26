@@ -74,7 +74,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem; /* Increased spacing for better visual breathing */
 }
 
 /* Active highlight bar (follows selection with spring) */
@@ -154,6 +154,10 @@
   text-transform: none;
   margin-top: 0.25rem;
   font-style: italic;
+  /* Ensure posture hint only shows when parent is hovered/active */
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Active indicator (right edge) */

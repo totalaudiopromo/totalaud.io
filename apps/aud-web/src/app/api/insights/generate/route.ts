@@ -79,7 +79,14 @@ Current Metrics:
 - Replies: ${metrics.replies} (${metrics.reply_rate}% reply rate)
 
 Recent Activity:
-${events ? events.slice(0, 10).map(e => `- ${e.type} to ${e.target} (${e.status})`).join('\n') : 'No events yet'}
+${
+  events
+    ? events
+        .slice(0, 10)
+        .map((e) => `- ${e.type} to ${e.target} (${e.status})`)
+        .join('\n')
+    : 'No events yet'
+}
 
 Generate 3-5 insights in the following JSON format:
 [

@@ -80,15 +80,20 @@ export interface ThemeAmbient {
 export interface ThemeWorkflow {
   posture: ThemePosture
   primaryLayout: 'split-cli' | 'wizard' | 'canvas' | 'tracks' | 'journal'
-  coreActions: string[]  // Top-level actions available
+  coreActions: string[] // Top-level actions available
   inputModel: 'command-bar' | 'form-wizard' | 'drag-connect' | 'clip-drag' | 'natural-lang'
-  feedbackStyle: 'inline-ticks' | 'next-step-chip' | 'edge-heat' | 'playhead-sweep' | 'parse-propose'
+  feedbackStyle:
+    | 'inline-ticks'
+    | 'next-step-chip'
+    | 'edge-heat'
+    | 'playhead-sweep'
+    | 'parse-propose'
 }
 
 export interface ThemeMicrocopy {
-  tagline: string        // "when you need speed."
-  emptyState: string     // "Nothing here yet. Add one thing that matters."
-  primaryCTA: string     // Theme-specific action label
+  tagline: string // "when you need speed."
+  emptyState: string // "Nothing here yet. Add one thing that matters."
+  primaryCTA: string // Theme-specific action label
   onboardingHint: string // One-liner for first-time users
 }
 

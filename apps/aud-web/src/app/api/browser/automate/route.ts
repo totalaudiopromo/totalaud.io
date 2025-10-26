@@ -68,11 +68,15 @@ export async function POST(req: NextRequest) {
         // Auto-install dialog handler if requested
         if (params.autoAcceptDialogs) {
           await (globalThis as any).mcp__puppeteer__puppeteer_evaluate({
-            script: DIALOG_HANDLER_SCRIPT
+            script: DIALOG_HANDLER_SCRIPT,
           })
         }
 
-        result = { success: true, url: params.url, dialogHandlerInstalled: params.autoAcceptDialogs }
+        result = {
+          success: true,
+          url: params.url,
+          dialogHandlerInstalled: params.autoAcceptDialogs,
+        }
         break
 
       case 'screenshot':

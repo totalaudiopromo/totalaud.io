@@ -13,7 +13,11 @@ import { createClient } from '@aud-web/lib/supabase/server'
 import { getValidAccessToken } from '@aud-web/lib/oauth'
 import { createGmailClient } from '@total-audio/core-integrations'
 import { logger } from '@total-audio/core-logger'
-import { validateRequestBody, ValidationError, validationErrorResponse } from '@aud-web/lib/api-validation'
+import {
+  validateRequestBody,
+  ValidationError,
+  validationErrorResponse,
+} from '@aud-web/lib/api-validation'
 
 const log = logger.scope('CoachSendAPI')
 
@@ -129,7 +133,7 @@ export async function POST(request: NextRequest) {
       draftId,
       messageId,
       threadId,
-      contactEmail: draftRecord.contact_email
+      contactEmail: draftRecord.contact_email,
     })
 
     return NextResponse.json({

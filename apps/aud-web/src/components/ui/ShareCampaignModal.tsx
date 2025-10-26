@@ -204,9 +204,7 @@ export function ShareCampaignModal({
           {/* Header */}
           <div className="px-6 py-4 border-b border-[#1E2933] flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-[#3AA9BE] font-mono">
-                Share Campaign
-              </h2>
+              <h2 className="text-xl font-bold text-[#3AA9BE] font-mono">Share Campaign</h2>
               <p className="text-sm text-[#6B7280] mt-1">{campaignTitle}</p>
             </div>
             <button
@@ -219,7 +217,14 @@ export function ShareCampaignModal({
               "
               aria-label="Close modal"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
@@ -330,9 +335,7 @@ export function ShareCampaignModal({
                   Loading collaborators...
                 </div>
               ) : collaborators.length === 0 ? (
-                <div className="text-center py-8 text-[#6B7280] text-sm">
-                  No collaborators yet
-                </div>
+                <div className="text-center py-8 text-[#6B7280] text-sm">No collaborators yet</div>
               ) : (
                 <div className="space-y-2">
                   {collaborators.map((collab) => {
@@ -353,20 +356,20 @@ export function ShareCampaignModal({
                         "
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="
+                          <div
+                            className="
                             w-10 h-10 rounded-full
                             bg-[#1E2933] text-[#3AA9BE]
                             flex items-center justify-center
                             font-mono text-sm font-bold
-                          ">
+                          "
+                          >
                             {collab.user_id.slice(0, 2).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-[#E5E7EB] font-mono truncate">
                               {collab.user_id}
-                              {isCurrentUser && (
-                                <span className="ml-2 text-[#6B7280]">(You)</span>
-                              )}
+                              {isCurrentUser && <span className="ml-2 text-[#6B7280]">(You)</span>}
                             </div>
                           </div>
                         </div>
@@ -380,8 +383,8 @@ export function ShareCampaignModal({
                                 collab.role === 'owner'
                                   ? 'bg-[#3AA9BE]/20 text-[#3AA9BE]'
                                   : collab.role === 'editor'
-                                  ? 'bg-[#0078D7]/20 text-[#0078D7]'
-                                  : 'bg-[#6B7280]/20 text-[#9CA3AF]'
+                                    ? 'bg-[#0078D7]/20 text-[#0078D7]'
+                                    : 'bg-[#6B7280]/20 text-[#9CA3AF]'
                               }
                             `}
                           >
@@ -400,7 +403,14 @@ export function ShareCampaignModal({
                               "
                               aria-label="Remove collaborator"
                             >
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
                                 <path d="M18 6L6 18M6 6l12 12" />
                               </svg>
                             </button>
@@ -419,9 +429,17 @@ export function ShareCampaignModal({
                 Role Permissions:
               </p>
               <div className="space-y-1 text-xs text-[#6B7280] font-mono">
-                <div><span className="text-[#3AA9BE]">Owner:</span> Full control (manage collaborators, delete campaign)</div>
-                <div><span className="text-[#0078D7]">Editor:</span> Can add events and edit campaign details</div>
-                <div><span className="text-[#9CA3AF]">Viewer:</span> Read-only access to campaign</div>
+                <div>
+                  <span className="text-[#3AA9BE]">Owner:</span> Full control (manage collaborators,
+                  delete campaign)
+                </div>
+                <div>
+                  <span className="text-[#0078D7]">Editor:</span> Can add events and edit campaign
+                  details
+                </div>
+                <div>
+                  <span className="text-[#9CA3AF]">Viewer:</span> Read-only access to campaign
+                </div>
               </div>
             </div>
           </div>
@@ -457,11 +475,7 @@ export function ShareCampaignModal({
               className={`
                 px-4 py-3 rounded-lg shadow-lg
                 font-mono text-sm
-                ${
-                  toast.type === 'success'
-                    ? 'bg-green-500 text-white'
-                    : 'bg-red-500 text-white'
-                }
+                ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}
               `}
             >
               {toast.message}

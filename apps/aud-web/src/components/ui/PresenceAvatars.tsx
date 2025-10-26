@@ -32,10 +32,10 @@ interface PresenceAvatarsProps {
 
 // Theme colors for avatar borders
 const themeColors: Record<string, string> = {
-  ascii: '#3AA9BE',    // Slate Cyan (updated)
-  xp: '#0078D7',       // Blue
-  aqua: '#007AFF',     // Blue
-  daw: '#FF6B35',      // Orange
+  ascii: '#3AA9BE', // Slate Cyan (updated)
+  xp: '#0078D7', // Blue
+  aqua: '#007AFF', // Blue
+  daw: '#FF6B35', // Orange
   analogue: '#D4A574', // Warm brown
 }
 
@@ -105,7 +105,7 @@ export function PresenceAvatars({
         <AnimatePresence mode="popLayout">
           {visibleCollaborators.map((collaborator, index) => {
             const initials = getInitials(collaborator.user_name, collaborator.user_email)
-            const borderColor = themeColors[collaborator.theme] || '#3AA9BE'  // Fallback to Slate Cyan
+            const borderColor = themeColors[collaborator.theme] || '#3AA9BE' // Fallback to Slate Cyan
             const isGlowing = glowingAvatars.has(collaborator.user_id)
 
             return (
@@ -182,7 +182,8 @@ export function PresenceAvatars({
                 </motion.button>
 
                 {/* Tooltip (enhanced on hover) */}
-                <div className="
+                <div
+                  className="
                   absolute top-full mt-2 left-1/2 -translate-x-1/2
                   opacity-0 pointer-events-none
                   group-hover:opacity-100 group-hover:pointer-events-auto
@@ -191,7 +192,8 @@ export function PresenceAvatars({
                   px-3 py-2 whitespace-nowrap
                   text-xs text-[#9CA3AF] font-mono
                   z-50
-                ">
+                "
+                >
                   <div className="font-semibold text-[#3AA9BE] mb-1">
                     {collaborator.user_name || collaborator.user_email}
                   </div>
@@ -205,9 +207,7 @@ export function PresenceAvatars({
                   <div className="text-[#6B7280]">{formatMode(collaborator.mode)} mode</div>
 
                   {/* Tooltip arrow */}
-                  <div
-                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0F1419] border-l border-t border-[#1E2933] rotate-45"
-                  />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0F1419] border-l border-t border-[#1E2933] rotate-45" />
                 </div>
               </motion.div>
             )

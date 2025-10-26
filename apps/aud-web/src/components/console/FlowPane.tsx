@@ -122,18 +122,18 @@ export function FlowPane() {
     setSaveStatus('saving')
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const { error } = await supabase
-        .from('campaign_workflows')
-        .upsert({
-          campaign_id: activeCampaignId,
-          user_id: user.id,
-          nodes: nodes as any,
-          edges: edges as any,
-          name: 'Campaign Workflow',
-        })
+      const { error } = await supabase.from('campaign_workflows').upsert({
+        campaign_id: activeCampaignId,
+        user_id: user.id,
+        nodes: nodes as any,
+        edges: edges as any,
+        name: 'Campaign Workflow',
+      })
 
       if (error) throw error
 
@@ -421,8 +421,7 @@ export function FlowPane() {
               style={{
                 padding: 'var(--space-2)',
                 background: selectedSkill === skill.id ? 'var(--accent)' : 'transparent',
-                color:
-                  selectedSkill === skill.id ? '#000' : 'var(--text-primary)',
+                color: selectedSkill === skill.id ? '#000' : 'var(--text-primary)',
                 border: `1px solid ${selectedSkill === skill.id ? 'var(--accent)' : 'var(--border)'}`,
                 borderRadius: 'var(--radius-sm)',
                 fontSize: '13px',

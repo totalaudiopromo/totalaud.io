@@ -16,7 +16,9 @@ interface UseUserPrefsReturn {
   prefs: UserPrefs | null
   isLoading: boolean
   error: Error | null
-  updatePrefs: (updates: Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>) => Promise<void>
+  updatePrefs: (
+    updates: Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>
+  ) => Promise<void>
   refetch: () => Promise<void>
 }
 

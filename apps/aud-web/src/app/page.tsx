@@ -52,10 +52,7 @@ function HomePageContent() {
       </AnimatePresence>
 
       {/* System Init Overlay - Cinematic transition after theme selection */}
-      <SystemInitOverlay
-        isVisible={phase === 'transition'}
-        onComplete={next}
-      />
+      <SystemInitOverlay isVisible={phase === 'transition'} onComplete={next} />
     </>
   )
 }

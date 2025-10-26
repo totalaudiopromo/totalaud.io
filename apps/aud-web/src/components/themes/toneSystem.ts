@@ -99,7 +99,11 @@ export function getTone(themeName: string, messageType: keyof ToneProfile): stri
 /**
  * Format message with theme personality
  */
-export function formatMessage(themeName: string, messageType: keyof ToneProfile, context?: string): string {
+export function formatMessage(
+  themeName: string,
+  messageType: keyof ToneProfile,
+  context?: string
+): string {
   const tone = getTone(themeName, messageType)
 
   if (context) {

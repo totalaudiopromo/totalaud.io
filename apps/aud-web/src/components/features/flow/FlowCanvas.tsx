@@ -251,7 +251,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
       log.debug('Generated flow nodes and edges', {
         nodeCount: templateNodes.length,
-        edgeCount: templateEdges.length
+        edgeCount: templateEdges.length,
       })
     }
   }, [initialTemplate, setNodes, setEdges])
@@ -300,8 +300,8 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
         // Find all nodes connected to the start node
         const connectedNodes = edges
-          .filter(edge => edge.source === 'start')
-          .map(edge => nodes.find(n => n.id === edge.target))
+          .filter((edge) => edge.source === 'start')
+          .map((edge) => nodes.find((n) => n.id === edge.target))
           .filter((n): n is Node => n !== undefined)
 
         if (connectedNodes.length === 0) {
