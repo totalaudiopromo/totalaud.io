@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, useSpring, useTransform, useMotionValue, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { THEME_CONFIGS, type OSTheme } from '@aud-web/types/themes'
-import { springPresets, motionTokens } from '@aud-web/tokens/motion'
+import { springPresets, motionTokens, extendedMotionTokens } from '@aud-web/tokens/motion'
 import { semanticColours, withOpacity } from '@aud-web/tokens/colors'
 import { playSound } from '@aud-web/tokens/sounds'
 
@@ -136,7 +136,7 @@ export function ThemeSelectorV2({
           // Delay to show confirmation animation
           setTimeout(() => {
             onSelect(THEMES[activeIndex])
-          }, motionTokens.normal)
+          }, motionTokens.normal.duration)
           break
 
         case 'Escape':
@@ -177,7 +177,7 @@ export function ThemeSelectorV2({
 
     setTimeout(() => {
       onSelect(THEMES[index])
-    }, motionTokens.normal)
+    }, motionTokens.normal.duration)
   }
 
   // Cursor magnetism tracking
@@ -221,7 +221,7 @@ export function ThemeSelectorV2({
           className="theme-selector-v2__header"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: motionTokens.fadeDuration }}
+          transition={{ delay: 0.1, duration: extendedMotionTokens.fadeDuration }}
         >
           <div className="theme-selector-v2__title">select your environment</div>
           <div className="theme-selector-v2__subtitle">
@@ -299,7 +299,10 @@ export function ThemeSelectorV2({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 0.05, scale: 1 }}
                       exit={{ opacity: 0, scale: 1.2 }}
-                      transition={{ duration: motionTokens.slow }}
+                      transition={{
+                        duration: motionTokens.slow.duration / 1000, // Convert ms to seconds
+                        ease: 'easeInOut'
+                      }}
                       style={{
                         position: 'absolute',
                         inset: 0,
@@ -318,7 +321,7 @@ export function ThemeSelectorV2({
                       animate={{
                         opacity: isActive || isHovered ? 1 : 0.5,
                       }}
-                      transition={{ duration: motionTokens.fast }}
+                      transition={{ duration: motionTokens.fast.duration / 1000 }}
                     >
                       {config.tagline}
                     </motion.div>
@@ -329,7 +332,7 @@ export function ThemeSelectorV2({
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 0.6, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: motionTokens.fast }}
+                        transition={{ duration: motionTokens.fast.duration / 1000 }}
                       >
                         {THEME_POSTURES[themeId]}
                       </motion.div>
@@ -357,7 +360,7 @@ export function ThemeSelectorV2({
             className="theme-selector-v2__hints"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.4 }}
-            transition={{ delay: 1.5, duration: motionTokens.slow }}
+            transition={{ delay: 1.5, duration: motionTokens.slow.duration / 1000 }}
           >
             <span className="theme-selector-v2__hint">↑↓ or j/k to navigate</span>
             <span className="theme-selector-v2__hint-separator">·</span>
