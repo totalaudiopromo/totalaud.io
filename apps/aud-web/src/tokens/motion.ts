@@ -142,3 +142,49 @@ export const themeMotionOverrides = {
     slow: 400,
   },
 } as const
+
+/**
+ * Framer Motion Spring Presets
+ * Phase 9.5: Cinematic cohesion with landing page
+ */
+export const springPresets = {
+  fast: {
+    type: 'spring' as const,
+    stiffness: 180,
+    damping: 18,
+  },
+  medium: {
+    type: 'spring' as const,
+    stiffness: 140,
+    damping: 20,
+  },
+  soft: {
+    type: 'spring' as const,
+    stiffness: 100,
+    damping: 26,
+  },
+} as const
+
+/**
+ * Framer Motion easing curves
+ * Matches landing page ScrollFlow motion
+ */
+export const framerEasing = {
+  fast: [0.22, 1, 0.36, 1] as const, // cubic-bezier matching motionEasing.fast
+  medium: [0.22, 1, 0.36, 1] as const,
+  slow: [0.32, 0.72, 0, 1] as const, // Smooth parallax
+} as const
+
+/**
+ * Extended motion tokens for Framer Motion cohesion
+ */
+export const extendedMotionTokens = {
+  fadeDuration: 0.24, // seconds
+  longDrift: 12.0, // seconds for ambient loops
+  parallaxRange: { min: 20, max: 60 }, // px for scroll parallax
+  magneticRange: 8, // px for cursor magnetics
+  scaleSubtle: { from: 0.9, to: 1.0 }, // Subtle scale for reveals
+  scaleHover: { from: 1.0, to: 1.03 }, // Hover scale for clips
+  glowBloom: { from: 0, to: 6 }, // px for shadow bloom
+  velocityBlurThreshold: 500, // scroll velocity for blur trigger
+} as const
