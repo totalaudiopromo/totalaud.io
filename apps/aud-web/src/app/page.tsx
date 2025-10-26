@@ -3,7 +3,8 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useOnboardingPhase } from '@aud-web/hooks/useOnboardingPhase'
-import { OperatorTerminal, OSSelector, TransitionSequence } from '@aud-web/components/features/onboarding'
+import { OperatorTerminal, OSSelector } from '@aud-web/components/features/onboarding'
+import { SystemInitOverlay } from '@aud-web/components/ui/SystemInitOverlay'
 import { FlowStudio } from '@aud-web/components/features/flow'
 import type { OSTheme } from '@aud-web/hooks/useOSSelection'
 import { AnimatePresence } from 'framer-motion'
@@ -43,14 +44,19 @@ function HomePageContent() {
   }
 
   return (
-    <AnimatePresence mode="wait">
-      {phase === 'operator' && <OperatorTerminal key="operator" onComplete={next} />}
-      {phase === 'selection' && <OSSelector key="selection" onConfirm={handleOSConfirm} />}
-      {phase === 'transition' && (
-        <TransitionSequence key="transition" theme={selectedTheme} onComplete={next} />
-      )}
-      {phase === 'signal' && <FlowStudio key="signal" />}
-    </AnimatePresence>
+    <>
+      <AnimatePresence mode="wait">
+        {phase === 'operator' && <OperatorTerminal key="operator" onComplete={next} />}
+        {phase === 'selection' && <OSSelector key="selection" onConfirm={handleOSConfirm} />}
+        {phase === 'signal' && <FlowStudio key="signal" />}
+      </AnimatePresence>
+
+      {/* System Init Overlay - Cinematic transition after theme selection */}
+      <SystemInitOverlay
+        isVisible={phase === 'transition'}
+        onComplete={next}
+      />
+    </>
   )
 }
 
