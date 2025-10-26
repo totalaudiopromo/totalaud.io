@@ -97,6 +97,6 @@ export const mapTheme: ThemeConfig = {
     tagline: 'when you think in systems.',
     emptyState: 'Connect two phases to see flow.',
     primaryCTA: 'Add Phase',
-    onboardingHint: 'We'll stay out of your way.',
+    onboardingHint: "We'll stay out of your way.",
   },
 }

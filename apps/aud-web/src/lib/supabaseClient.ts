@@ -52,7 +52,7 @@ export interface CampaignInsight {
 
 export interface UserPrefs {
   user_id: string
-  theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+  theme: 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
   comfort_mode: boolean
   calm_mode: boolean
   sound_muted: boolean

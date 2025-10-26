@@ -45,10 +45,10 @@ export function ScrollFlow({ onPhraseEnter }: ScrollFlowProps) {
   const opacity2 = useTransform(scrollYProgress, [0.25, 0.35, 0.55, 0.65], [0, 1, 1, 0])
   const scale2 = useTransform(scrollYProgress, [0.25, 0.35, 0.65], [0.95, 1, 0.95])
 
-  // Phrase 3: see what resonates (enters from below, stays centred, fades out)
-  const y3 = useTransform(scrollYProgress, [0.6, 0.7, 0.95], [60, 0, 0])
-  const opacity3 = useTransform(scrollYProgress, [0.6, 0.7, 0.85, 0.95], [0, 1, 1, 0])
-  const scale3 = useTransform(scrollYProgress, [0.6, 0.7, 0.95], [0.95, 1, 0.95])
+  // Phrase 3: see what resonates (enters from below, stays centred, fades out COMPLETELY before end)
+  const y3 = useTransform(scrollYProgress, [0.6, 0.7, 0.9], [60, 0, 0])
+  const opacity3 = useTransform(scrollYProgress, [0.6, 0.7, 0.85, 0.95, 1.0], [0, 1, 1, 0, 0])
+  const scale3 = useTransform(scrollYProgress, [0.6, 0.7, 0.9], [0.95, 1, 0.95])
 
   // Velocity-based blur for scroll tempo feeling
   const velocity = useVelocity(scrollYProgress)
@@ -66,11 +66,11 @@ export function ScrollFlow({ onPhraseEnter }: ScrollFlowProps) {
   return (
     <div
       ref={containerRef}
-      className="relative h-[200vh]"
+      className="relative h-[200vh] z-0"
       style={{ fontFamily: 'var(--font-inter)' }}
     >
       {/* Sticky viewport - no flex, pure absolute positioning */}
-      <div className="sticky top-0 left-0 right-0 h-screen overflow-hidden">
+      <div className="sticky top-0 left-0 right-0 h-screen overflow-hidden z-0">
         {/* Ambient parallax layer - behind phrases */}
         <motion.div
           style={{
