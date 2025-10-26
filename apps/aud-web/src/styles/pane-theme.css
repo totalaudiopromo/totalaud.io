@@ -1,0 +1,543 @@
+/**
+ * Pane Theme - Phase 10.2 Cinematic Editorial System
+ *
+ * Centralised visual design tokens for Plan / Do / Track / Learn inner panes.
+ * Applied consistently across all workspace tabs.
+ *
+ * Design Principles:
+ * - Matte aesthetic: Slate Cyan (#3AA9BE) + Matte Black (#0F1113)
+ * - Editorial rhythm: generous spacing, breathing room
+ * - Cinematic motion: fade + slide, border pulse, ambient glow
+ * - Studio-grade feel: sharp edges, strong borders, proper hierarchy
+ */
+
+/* ========================================
+   COLOUR TOKENS
+   ======================================== */
+
+:root {
+  /* Core Palette */
+  --pane-bg: #1a1c1f; /* Surface */
+  --pane-bg-matte: #0f1113; /* Matte Black background */
+  --pane-accent: #3aa9be; /* Slate Cyan */
+  --pane-text-primary: #eaecee; /* High contrast */
+  --pane-text-secondary: #a0a4a8; /* Muted */
+  --pane-border: rgba(58, 169, 190, 0.25); /* Slate Cyan 25% */
+  --pane-border-hover: rgba(58, 169, 190, 0.4); /* Slate Cyan 40% */
+  --pane-border-active: rgba(58, 169, 190, 0.6); /* Slate Cyan 60% */
+
+  /* Semantic Colours */
+  --pane-success: #10b981; /* Green */
+  --pane-warning: #f59e0b; /* Amber */
+  --pane-error: #ef4444; /* Red */
+  --pane-info: #3b82f6; /* Blue */
+
+  /* Glow & Effects */
+  --pane-glow-subtle: rgba(58, 169, 190, 0.05);
+  --pane-glow-medium: rgba(58, 169, 190, 0.1);
+  --pane-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pane-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --pane-shadow-glow: 0 0 12px rgba(58, 169, 190, 0.2);
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+.pane-container {
+  font-family: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--pane-text-primary);
+  line-height: 1.6;
+}
+
+.pane-heading-xl {
+  font-family: 'Geist Sans', 'Inter', sans-serif;
+  font-size: 2rem; /* 32px - 1.1× size increase */
+  font-weight: 600;
+  letter-spacing: -0.02em; /* Tighter tracking */
+  color: var(--pane-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.pane-heading-lg {
+  font-family: 'Geist Sans', 'Inter', sans-serif;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--pane-text-primary);
+  margin-bottom: 1rem;
+}
+
+.pane-heading-md {
+  font-family: 'Geist Sans', 'Inter', sans-serif;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500;
+  color: var(--pane-text-primary);
+}
+
+.pane-body {
+  font-family: 'Geist Sans', 'Inter', sans-serif;
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  color: var(--pane-text-secondary);
+}
+
+.pane-meta {
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  color: var(--pane-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   LAYOUT & SPACING
+   ======================================== */
+
+.pane-container {
+  padding: 2rem; /* 32px vertical gaps */
+  background: var(--pane-bg-matte);
+  min-height: 100vh;
+}
+
+.pane-section {
+  margin-bottom: 3rem; /* 48px section gaps */
+}
+
+.pane-grid-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem; /* 16px base grid */
+}
+
+.pane-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.pane-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pane-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .pane-grid-2,
+  .pane-grid-3,
+  .pane-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .pane-grid-3,
+  .pane-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   CARDS & SURFACES
+   ======================================== */
+
+.pane-card {
+  background: var(--pane-bg);
+  border: 2px solid var(--pane-border);
+  border-radius: 0; /* Sharp edges */
+  padding: 1.5rem; /* 24px */
+  transition:
+    border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pane-card:hover {
+  border-color: var(--pane-border-hover);
+  box-shadow: var(--pane-shadow-glow);
+}
+
+.pane-card-active {
+  border-color: var(--pane-accent);
+  background: rgba(58, 169, 190, 0.05);
+  box-shadow: var(--pane-shadow-glow);
+}
+
+.pane-card-clickable {
+  cursor: pointer;
+}
+
+.pane-metric-card {
+  background: var(--pane-bg);
+  border: 2px solid var(--pane-border);
+  border-radius: 0;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pane-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--pane-text-primary);
+  line-height: 1;
+}
+
+.pane-metric-label {
+  font-size: 0.875rem;
+  color: var(--pane-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.pane-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Geist Sans', 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 2px solid var(--pane-accent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--pane-accent);
+  cursor: pointer;
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pane-button:hover {
+  transform: scale(1.03);
+  background: rgba(58, 169, 190, 0.1);
+  box-shadow:
+    0 0 8px rgba(58, 169, 190, 0.3),
+    inset 0 0 12px rgba(58, 169, 190, 0.1);
+}
+
+.pane-button:active {
+  transform: scale(1.0);
+  box-shadow:
+    0 0 12px rgba(58, 169, 190, 0.5),
+    inset 0 0 16px rgba(58, 169, 190, 0.2);
+}
+
+.pane-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pane-button-primary {
+  background: var(--pane-accent);
+  color: var(--pane-bg-matte);
+  border-color: var(--pane-accent);
+}
+
+.pane-button-primary:hover {
+  background: rgba(58, 169, 190, 0.9);
+  box-shadow:
+    0 0 12px rgba(58, 169, 190, 0.5),
+    inset 0 0 16px rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   ICONS
+   ======================================== */
+
+.pane-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: rgba(234, 236, 238, 0.6);
+  transition: color 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pane-icon-lg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.pane-icon-accent {
+  color: var(--pane-accent);
+}
+
+.pane-card:hover .pane-icon,
+.pane-button:hover .pane-icon {
+  color: var(--pane-accent);
+}
+
+/* ========================================
+   EMPTY STATES
+   ======================================== */
+
+.pane-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  max-width: 60%; /* Editorial layout: 60% width centered */
+  margin: 0 auto;
+}
+
+.pane-empty-state-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1.5rem;
+  color: var(--pane-text-secondary);
+  opacity: 0.4;
+}
+
+.pane-empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--pane-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.pane-empty-state-description {
+  font-size: 1rem;
+  color: var(--pane-text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.pane-empty-state-tagline {
+  font-size: 0.875rem;
+  color: var(--pane-text-secondary);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ========================================
+   BORDERS & DIVIDERS
+   ======================================== */
+
+.pane-border-top {
+  border-top: 2px solid var(--pane-border);
+}
+
+.pane-border-bottom {
+  border-bottom: 2px solid var(--pane-border);
+}
+
+.pane-divider {
+  height: 2px;
+  background: var(--pane-border);
+  margin: 2rem 0;
+  border: none;
+}
+
+/* ========================================
+   BADGES & TAGS
+   ======================================== */
+
+.pane-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pane-badge-primary {
+  background: rgba(58, 169, 190, 0.2);
+  color: var(--pane-accent);
+  border: 1px solid var(--pane-accent);
+}
+
+.pane-badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--pane-success);
+  border: 1px solid var(--pane-success);
+}
+
+.pane-badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--pane-warning);
+  border: 1px solid var(--pane-warning);
+}
+
+.pane-badge-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--pane-error);
+  border: 1px solid var(--pane-error);
+}
+
+.pane-badge-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--pane-info);
+  border: 1px solid var(--pane-info);
+}
+
+.pane-badge-neutral {
+  background: rgba(160, 164, 168, 0.2);
+  color: var(--pane-text-secondary);
+  border: 1px solid var(--pane-text-secondary);
+}
+
+/* ========================================
+   AMBIENT BACKGROUND LAYER
+   ======================================== */
+
+.pane-ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    circle at 50% 60%,
+    rgba(58, 169, 190, 0.05) 0%,
+    transparent 60%
+  );
+  animation: pane-ambient-pulse 12s ease-in-out infinite;
+}
+
+@keyframes pane-ambient-pulse {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+/* Disable ambient animation for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pane-ambient-glow {
+    animation: none;
+    opacity: 0.05;
+  }
+}
+
+/* ========================================
+   MOTION GRAMMAR
+   ======================================== */
+
+/* Pane enter animation */
+.pane-enter {
+  animation: pane-fade-slide-in 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pane-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Border intensity pulse on mount */
+.pane-card-mount {
+  animation: pane-border-pulse 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pane-border-pulse {
+  0% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--pane-accent);
+  }
+  100% {
+    border-color: var(--pane-border);
+  }
+}
+
+/* Editorial content fade */
+.pane-editorial-fade {
+  animation: pane-editorial-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pane-editorial-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Disable all animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pane-enter,
+  .pane-card-mount,
+  .pane-editorial-fade {
+    animation: none;
+  }
+
+  .pane-card,
+  .pane-button,
+  .pane-icon {
+    transition: none;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.pane-text-center {
+  text-align: center;
+}
+
+.pane-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pane-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pane-space-y-sm > * + * {
+  margin-top: 0.5rem;
+}
+
+.pane-space-y-md > * + * {
+  margin-top: 1rem;
+}
+
+.pane-space-y-lg > * + * {
+  margin-top: 2rem;
+}
+
+.pane-hidden {
+  display: none;
+}
+
+.pane-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

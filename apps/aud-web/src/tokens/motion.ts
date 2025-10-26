@@ -16,14 +16,24 @@ export const motionTokens = {
     use: 'Micro feedback, key confirmations, inline ticks',
   },
   normal: {
-    duration: 240, // ms
+    duration: 400, // ms (updated from 240ms for editorial breathing)
     easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
     use: 'Pane transitions, modal opens, theme switches',
   },
   slow: {
-    duration: 400, // ms
+    duration: 600, // ms (updated from 400ms for cinematic fades)
     easing: 'ease-in-out',
     use: 'Calm fades, ambient effects, background animations',
+  },
+  editorial: {
+    duration: 800, // ms (new for hero/testimonials)
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    use: 'Hero reveals, testimonials, emotional content',
+  },
+  ringPulse: {
+    duration: 400, // ms (new for CTA ring pulse)
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    use: 'CTA hover ring pulse animation',
   },
 } as const
 
@@ -34,6 +44,8 @@ export const motionDurations = {
   fast: motionTokens.fast.duration,
   normal: motionTokens.normal.duration,
   slow: motionTokens.slow.duration,
+  editorial: motionTokens.editorial.duration,
+  ringPulse: motionTokens.ringPulse.duration,
 } as const
 
 /**
@@ -43,6 +55,8 @@ export const motionEasing = {
   fast: motionTokens.fast.easing,
   normal: motionTokens.normal.easing,
   slow: motionTokens.slow.easing,
+  editorial: motionTokens.editorial.easing,
+  ringPulse: motionTokens.ringPulse.easing,
   spring: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // For Guide theme bounce
 } as const
 
@@ -180,6 +194,7 @@ export const framerEasing = {
  */
 export const extendedMotionTokens = {
   fadeDuration: 0.24, // seconds
+  editorialFade: 0.6, // seconds - Phase 10.2: editorial content loads
   longDrift: 12.0, // seconds for ambient loops
   parallaxRange: { min: 20, max: 60 }, // px for scroll parallax
   magneticRange: 8, // px for cursor magnetics

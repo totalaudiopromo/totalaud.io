@@ -7,15 +7,17 @@
  * - Monitor agent progress
  * - View live logs
  *
- * Shared Workspace Redesign - Stage 1 (Stub)
- * To be enhanced by Experience Composer in Stage 2
+ * Phase 10.2: Cinematic Editorial Pass
+ * Visual layer refinement with pane-theme tokens
  */
 
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
 import { Play, Search, FileText, Send, History } from 'lucide-react'
-import { EmptyState, Button } from '@/ui/index'
+import { motion } from 'framer-motion'
+import { extendedMotionTokens, framerEasing } from '@aud-web/tokens/motion'
+import '@aud-web/styles/pane-theme.css'
 
 export function DoTab() {
   const { runs, getActiveCampaign, runAction, isLoading } = useWorkspaceStore()
@@ -45,97 +47,162 @@ export function DoTab() {
 
   if (!activeCampaign) {
     return (
-      <div className="do-tab container mx-auto px-4 py-8">
-        <EmptyState
-          icon={Play}
-          title="No Active Campaign"
-          description="Select or create a campaign from the Plan tab to start running workflows"
-        />
-      </div>
+      <>
+        <div className="pane-ambient-glow" />
+        <motion.div
+          className="pane-container"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: extendedMotionTokens.editorialFade,
+            ease: framerEasing.fast,
+          }}
+        >
+          <div className="pane-empty-state">
+            <Play className="pane-empty-state-icon" />
+            <h3 className="pane-empty-state-title">No active campaign</h3>
+            <p className="pane-empty-state-description">
+              Select or create a campaign from the Plan tab to start running workflows
+            </p>
+            <p className="pane-empty-state-tagline">workflows need direction.</p>
+          </div>
+        </motion.div>
+      </>
     )
   }
 
   return (
-    <div className="do-tab container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Execute Workflows</h1>
-        <p className="text-muted">Campaign: {activeCampaign.name}</p>
-      </div>
+    <>
+      {/* Ambient background glow */}
+      <div className="pane-ambient-glow" />
 
-      {/* Workflow Launcher */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Available Workflows</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {workflows.map((workflow) => {
-            const Icon = workflow.icon
-
-            return (
-              <div
-                key={workflow.type}
-                className="workflow-card p-6 border border-border rounded-lg hover:border-accent/50 transition-colors"
-              >
-                <Icon className="w-8 h-8 mb-4 text-accent" />
-                <h3 className="font-semibold mb-2">{workflow.name}</h3>
-                <p className="text-sm text-muted mb-4">{workflow.description}</p>
-                <Button
-                  variant="primary"
-                  fullWidth
-                  onClick={() => runAction(workflow.type, { campaign_id: activeCampaign.id })}
-                  disabled={isLoading}
-                  isLoading={isLoading}
-                >
-                  {isLoading ? 'Running...' : 'Start'}
-                </Button>
-              </div>
-            )
-          })}
+      <motion.div
+        className="pane-container"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: extendedMotionTokens.editorialFade,
+          ease: framerEasing.fast,
+        }}
+      >
+        <div className="pane-section">
+          <h1 className="pane-heading-xl">Execute workflows.</h1>
+          <p className="pane-body">Campaign: {activeCampaign.name}</p>
         </div>
-      </section>
 
-      {/* Recent Runs */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Recent Runs</h2>
-        {runs.length === 0 ? (
-          <EmptyState
-            icon={History}
-            title="No runs yet"
-            description="Start a workflow above to get started"
-            variant="bordered"
-          />
-        ) : (
-          <div className="space-y-3">
-            {runs
-              .slice()
-              .reverse()
-              .slice(0, 10)
-              .map((run) => (
-                <div key={run.id} className="run-card p-4 border border-border rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium capitalize">
-                        {run.workflow_type.replace('_', ' ')}
-                      </h3>
-                      <p className="text-sm text-muted">
-                        Started: {new Date(run.started_at).toLocaleString()}
-                      </p>
-                    </div>
-                    <span
-                      className={`
-                      px-3 py-1 rounded-full text-xs font-medium
-                      ${run.status === 'complete' ? 'bg-green-500/20 text-green-600' : ''}
-                      ${run.status === 'running' ? 'bg-blue-500/20 text-blue-600' : ''}
-                      ${run.status === 'failed' ? 'bg-red-500/20 text-red-600' : ''}
-                      ${run.status === 'pending' ? 'bg-gray-500/20 text-gray-600' : ''}
-                    `}
-                    >
-                      {run.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+        {/* Workflow Launcher */}
+        <section className="pane-section">
+          <h2 className="pane-heading-lg" style={{ marginBottom: '1.5rem' }}>
+            Available Workflows
+          </h2>
+          <div className="pane-grid-3">
+            {workflows.map((workflow, index) => {
+              const Icon = workflow.icon
+
+              return (
+                <motion.div
+                  key={workflow.type}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.24,
+                    delay: index * 0.05,
+                    ease: framerEasing.fast,
+                  }}
+                  className="pane-card"
+                  style={{ display: 'flex', flexDirection: 'column' }}
+                >
+                  <Icon
+                    className="pane-icon pane-icon-lg pane-icon-accent"
+                    style={{ marginBottom: '1rem' }}
+                  />
+                  <h3 className="pane-heading-md" style={{ marginBottom: '0.5rem' }}>
+                    {workflow.name}
+                  </h3>
+                  <p className="pane-body" style={{ marginBottom: '1.5rem', flexGrow: 1 }}>
+                    {workflow.description}
+                  </p>
+                  <button
+                    className="pane-button pane-button-primary"
+                    style={{ width: '100%' }}
+                    onClick={() => runAction(workflow.type, { campaign_id: activeCampaign.id })}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Running...' : 'Start'}
+                  </button>
+                </motion.div>
+              )
+            })}
           </div>
-        )}
-      </section>
-    </div>
+        </section>
+
+        {/* Recent Runs */}
+        <section className="pane-section">
+          <h2 className="pane-heading-lg" style={{ marginBottom: '1.5rem' }}>
+            Recent Runs
+          </h2>
+          {runs.length === 0 ? (
+            <motion.div
+              className="pane-empty-state"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: extendedMotionTokens.editorialFade }}
+            >
+              <History className="pane-empty-state-icon" />
+              <h3 className="pane-empty-state-title">No runs yet</h3>
+              <p className="pane-empty-state-description">Start a workflow above to get started</p>
+              <p className="pane-empty-state-tagline">execution builds momentum.</p>
+            </motion.div>
+          ) : (
+            <div className="pane-space-y-md">
+              {runs
+                .slice()
+                .reverse()
+                .slice(0, 10)
+                .map((run, index) => (
+                  <motion.div
+                    key={run.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      duration: 0.24,
+                      delay: index * 0.03,
+                      ease: framerEasing.fast,
+                    }}
+                    className="pane-card"
+                  >
+                    <div className="pane-flex-between">
+                      <div>
+                        <h3
+                          className="pane-heading-md"
+                          style={{ marginBottom: '0.25rem', textTransform: 'capitalize' }}
+                        >
+                          {run.workflow_type.replace('_', ' ')}
+                        </h3>
+                        <p className="pane-meta">
+                          Started: {new Date(run.started_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <span
+                        className={`pane-badge ${
+                          run.status === 'complete'
+                            ? 'pane-badge-success'
+                            : run.status === 'running'
+                              ? 'pane-badge-info'
+                              : run.status === 'failed'
+                                ? 'pane-badge-error'
+                                : 'pane-badge-neutral'
+                        }`}
+                      >
+                        {run.status}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+            </div>
+          )}
+        </section>
+      </motion.div>
+    </>
   )
 }
