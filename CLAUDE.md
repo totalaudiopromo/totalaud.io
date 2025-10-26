@@ -32,6 +32,123 @@
 
 ---
 
+## 🇬🇧 BRITISH ENGLISH REQUIREMENT
+
+**MANDATORY**: All code, documentation, UI copy, and comments MUST use British English spelling.
+
+**Common Differences**:
+- ✅ `colour` (not color)
+- ✅ `behaviour` (not behavior)
+- ✅ `centre` (not center)
+- ✅ `optimise` (not optimize)
+- ✅ `analyse` (not analyze)
+- ✅ `organise` (not organize)
+- ✅ `visualise` (not visualize)
+- ✅ `recognise` (not recognize)
+- ✅ `licence` (noun), `license` (verb)
+- ✅ `practise` (verb), `practice` (noun)
+
+**Code Variables**: Use British spelling where human-readable:
+```typescript
+// ✅ Correct
+const backgroundColour = '#0F1113'
+const userBehaviour = 'active'
+const optimisePerformance = () => {}
+
+// ❌ Incorrect
+const backgroundColor = '#0F1113'
+const userBehavior = 'active'
+const optimizePerformance = () => {}
+```
+
+**Exception**: Keep framework/library conventions:
+```typescript
+// ✅ Keep React/CSS conventions
+style={{ backgroundColor: 'red' }}  // React prop name
+.text-center { }                    // Tailwind class
+```
+
+**Documentation**: ALL markdown files, comments, and UI strings use British English.
+
+---
+
+## 🎨 DESIGN SYSTEM & STYLE TOKENS
+
+**Status**: Phase 4.5 - Scroll Flow Enhancements (Landing Page)
+
+### Colour Palette
+- **Accent**: Slate Cyan `#3AA9BE`
+- **Background**: Matte Black `#0F1113`
+- **Foreground**: Light Grey/White (theme-dependent)
+- **Border**: Subtle grey variations
+
+### Motion & Animation Tokens
+All animations use Framer Motion (NOT CSS transitions):
+
+```typescript
+// Motion tokens (from /packages/ui/tokens/motion.ts)
+const motionTokens = {
+  fast: '120ms cubic-bezier(0.22, 1, 0.36, 1)',    // Micro feedback
+  normal: '240ms cubic-bezier(0.22, 1, 0.36, 1)',  // Pane transitions
+  slow: '400ms ease-in-out',                        // Calm fades
+  glow: 'text-shadow: 0 0 40px rgba(58, 169, 190, 0.15)'
+}
+```
+
+**Animation Guidelines**:
+- Use `useScroll` + `useTransform` for cinematic scroll effects
+- Maintain consistent easing curves (120/240/400ms)
+- All scroll-based animations in landing page
+- Micro-interactions use 120ms for instant feedback
+- Modal/pane transitions use 240ms
+- Ambient/atmospheric effects use 400ms
+
+### Typography
+- **Primary**: Geist Sans / Inter
+- **Monospace**: Geist Mono / IBM Plex Mono
+- **Line Height**: 1.4–1.6
+- **Max Width**: 70ch (optimal reading)
+
+### Responsive Design
+- **Mobile-first**: Always design for mobile first
+- **Breakpoints**: Use Tailwind utilities (`sm:`, `md:`, `lg:`, `xl:`)
+- **Never hardcode media queries** - use Tailwind responsive classes
+
+---
+
+## 🔧 GIT WORKFLOW & BRANCH NAMING
+
+### Branch Naming Convention
+
+| Type | Format | Example |
+|------|--------|---------|
+| Feature | `feature/{scope}-{desc}` | `feature/landing-scrollflow` |
+| Fix | `fix/{bug-summary}` | `fix/api-auth-headers` |
+| Refactor | `refactor/{area}` | `refactor/presence-hook` |
+| Style | `style/{ui-update}` | `style/landing-colours` |
+
+**Rule**: Each branch represents one clear functional change
+
+### Commit Message Convention
+
+```
+type(scope): short summary
+
+Examples:
+feature(landing): add scrollflow cinematic transitions
+fix(api): resolve Supabase auth token issue
+style(ui): update accent glow for Slate Cyan
+refactor(hooks): extract presence logic to custom hook
+```
+
+**Rules**:
+- ✅ British spelling
+- ✅ Descriptive, not verbose
+- ✅ Each commit = one logical change
+- ❌ No emojis in commit messages
+
+---
+
 ## 🎯 PROJECT OVERVIEW
 
 **Project**: totalaud.io (Experimental Multi-Agent System)
@@ -370,6 +487,116 @@ cd apps/aud-web && pnpm test  # Run tests
 
 ---
 
+## 🤖 CLAUDE CODE BEHAVIOUR RULES
+
+### For Every Development Session
+
+Claude Code should **always**:
+
+1. **Read CLAUDE.md and .cursorrules before editing** - Load project context first
+2. **Verify Git status before every change** - Check for uncommitted work
+3. **Use branch naming conventions** - Follow the format table above
+4. **Follow design + motion tokens when styling** - Use the design system
+5. **Maintain consistent easing curves** - 120ms/240ms/400ms only
+6. **Format with Prettier + ESLint** - No `any` types allowed
+7. **Use Framer Motion for animation** - NOT CSS transitions
+8. **Test on mobile breakpoints before completion** - Mobile-first approach
+
+### Component Development Workflow
+
+When building UI components:
+
+1. **Write component code** using design tokens
+2. **Use Framer Motion** for all animations (`useScroll`, `useTransform`)
+3. **Apply motion tokens** - 120ms (micro), 240ms (transition), 400ms (ambient)
+4. **Follow mobile-first** - Start with mobile, enhance for desktop
+5. **Use Tailwind responsive utilities** - Never hardcode media queries
+6. **Test visual result** - Verify appearance and behaviour
+7. **Check accessibility** - WCAG AA minimum contrast
+
+### Animation-Specific Rules
+
+- **Framer Motion required** for all interactive motion
+- **useScroll + useTransform** for cinematic scroll effects (landing page)
+- **Motion tokens only** - 120ms/240ms/400ms (no custom timings)
+- **All animation tokens** live in `/packages/ui/tokens/motion.ts`
+- **Consistent easing** - `cubic-bezier(0.22, 1, 0.36, 1)` for fast/normal
+
+### Component Naming Conventions
+
+When adding components to `/apps/aud-web/src/components/ui`:
+
+- Prefix with **Studio** or **Flow** for naming consistency
+- Examples: `StudioPanel`, `FlowCanvas`, `StudioHeader`
+- Use PascalCase for component files
+- Use kebab-case for utility/hook files
+
+---
+
+## 💬 QUICK START PROMPTS FOR USERS
+
+### Starting a Development Session
+
+| Goal | Example Prompt |
+|------|----------------|
+| Start dev session | "Ready to work on ScrollFlow improvements" |
+| Add feature | "Add magnetic CTA button to landing page" |
+| Fix issue | "Fix text blur timing in ScrollFlow animation" |
+| Review code | "Audit all Framer Motion transitions for consistency" |
+| Test | "Run UI lint and check for a11y compliance" |
+
+### What Happens Automatically
+
+**User says:** "Ready to work on [feature]"
+
+**Claude Code does:**
+1. Checks git status
+2. Pulls latest if needed
+3. Creates feature branch (if not on one)
+4. Implements changes using design system
+5. Commits following conventions
+6. Formats everything with Prettier/ESLint
+7. Pushes when ready
+
+**No terminal needed** - Claude + Cursor handle everything
+
+---
+
+## 🧩 CURSOR-SPECIFIC INTEGRATION
+
+### For Cursor IDE Users
+
+- **Framer Motion** for all cinematic motion (not CSS transitions)
+- **useScroll + useTransform** for scroll-based animations
+- **Never hardcode media queries** - Tailwind responsive utilities only
+- **Component prefix convention** - Studio/Flow for `/components/ui`
+- **Motion tokens location** - `/packages/ui/tokens/motion.ts`
+
+### Safety & Linting
+
+Claude automatically:
+- ✅ Checks git before editing
+- ✅ Warns if behind remote
+- ✅ Creates feature branches
+- ✅ Runs Prettier + ESLint fix on save
+- ✅ Removes console logs (unless in debug mode)
+- ✅ Uses `logger.ts` from `/packages/utils` for debug output
+
+---
+
+## 🪄 MULTI-AGENT HANDOFF NOTES
+
+If GPT-5, Claude, or another model edits this project:
+
+- **Respect this CLAUDE.md** as canonical workflow
+- **Preserve animation + colour tokens** - Do not modify design system
+- **Never rewrite working Framer Motion logic** unless explicitly requested
+- **Check active phase before refactoring** - Respect Phase 4.5 status
+- **Use clear commit messages** with British spelling
+- **Follow all style conventions** - This maintains consistency
+
+---
+
 ## 🧪 IMPLEMENTED FEATURES (October 2025)
 
 ### Phase 4: Cinematic Onboarding System ✅
@@ -665,6 +892,22 @@ claude mcp list
 # ✓ puppeteer: npx @modelcontextprotocol/server-puppeteer - Connected
 ```
 
+### Auto-Approval Configuration
+
+**Status**: ✅ Configured in `~/.claude/settings.json`
+
+All Chrome DevTools MCP tools are pre-approved for automatic execution without confirmation prompts:
+- `take_screenshot` - Capture visual state
+- `take_snapshot` - DOM structure analysis
+- `list_pages` - Browser tab management
+- `navigate_page` - Page navigation
+- `click`, `fill`, `hover` - UI interactions
+- `list_console_messages`, `get_console_message` - Console debugging
+- `list_network_requests`, `get_network_request` - Network inspection
+- `performance_*` - Performance profiling
+
+This enables **seamless visual context workflow** without interruptions during UI development.
+
 ### Documentation Files
 - [VISUAL_CONTEXT_WORKFLOW.md](VISUAL_CONTEXT_WORKFLOW.md) - Complete Chrome DevTools workflow
 - [BROWSER_AUTOMATION_GUIDE.md](BROWSER_AUTOMATION_GUIDE.md) - Puppeteer automation guide
@@ -721,8 +964,36 @@ claude mcp list
 
 ---
 
+## 📋 CURRENT BUILD PHASES
+
+| Phase | Focus | Status |
+|-------|-------|--------|
+| 3 | Collaboration + Presence | ✅ Complete |
+| 4 | Landing Page Foundations | ✅ Complete |
+| 4.5 | Scroll Flow Enhancements | 🔄 In Progress |
+| 5 | Launch Readiness + Analytics | ⏳ Pending |
+
+**Current Priority**: Phase 4.5 - Finalise cinematic scroll flow, add magnetic CTA + video proof section
+
+---
+
+## 📚 ADDITIONAL DOCUMENTATION
+
+Project-specific documentation files:
+
+- **[CURSOR_QUICK_START.md](CURSOR_QUICK_START.md)** - Cursor IDE quick reference guide
+- **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** - Step-by-step migration instructions
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Complete implementation details
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command and pattern quick reference
+- **[AUDIT_IMPLEMENTATION_COMPLETE.md](AUDIT_IMPLEMENTATION_COMPLETE.md)** - Final status report
+- **[VISUAL_CONTEXT_WORKFLOW.md](VISUAL_CONTEXT_WORKFLOW.md)** - Chrome DevTools workflow
+- **[BROWSER_AUTOMATION_GUIDE.md](BROWSER_AUTOMATION_GUIDE.md)** - Puppeteer automation guide
+
+---
+
 **Last Updated**: October 2025
-**Status**: Phase 4/5 Complete - Onboarding + Agent Spawning implemented + Railway deployment live
+**Status**: Phase 4.5 In Progress - Scroll Flow Enhancements (Landing Page)
 **Recent Work**: Successfully deployed to Railway after resolving Vercel monorepo issues
-**Live URL**: https://aud-web-production.up.railway.app
-**Next**: Phase 6 - Supabase Realtime integration for live agent rendering
+**Live URL**: <https://aud-web-production.up.railway.app>
+**Next**: Complete Phase 4.5 scroll flow, then Phase 5 (Launch Readiness + Analytics)
+**Development Focus**: Cinematic landing page with Framer Motion scroll effects

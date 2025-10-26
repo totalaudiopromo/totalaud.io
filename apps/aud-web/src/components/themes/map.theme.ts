@@ -1,17 +1,18 @@
 /**
- * macOS Aqua Theme Configuration
+ * Map Theme Configuration
  *
- * Personality: Thoughtful Designer
- * Aesthetic: Translucent layers, smooth parallax, glassy blur
- * Typography: Lowercase, refined, precise
+ * Posture: The Strategist
+ * Use Case: Plotting a quarter, coordinating drops, seeing the whole
+ * Primary Layout: Canvas (spatial planning with nodes and dependencies)
+ * Core Value: Systems thinking at a glance
  */
 
 import type { ThemeConfig } from './types'
 
-export const aquaTheme: ThemeConfig = {
-  id: 'aqua',
-  name: 'macos aqua',
-  description: 'thoughtful designer — translucent layers, glassy precision',
+export const mapTheme: ThemeConfig = {
+  id: 'map',
+  name: 'Map',
+  description: 'the strategist — spatial planning, dependencies, campaign arcs',
 
   colors: {
     bg: '#1c1c1e',
@@ -28,11 +29,11 @@ export const aquaTheme: ThemeConfig = {
 
   motion: {
     duration: {
-      fast: 200,
-      medium: 300,
+      fast: 120,
+      medium: 240,
       slow: 400,
     },
-    easing: 'cubic-bezier(0.32, 0.72, 0, 1)', // Smooth parallax
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)', // Confident ease
     reducedMotionScale: 1.03,
   },
 
@@ -56,11 +57,11 @@ export const aquaTheme: ThemeConfig = {
   },
 
   sounds: {
-    start: 'aqua-start',
-    complete: 'aqua-complete',
-    error: 'aqua-error',
-    click: 'aqua-click',
-    focus: 'aqua-focus',
+    start: 'map-start',
+    complete: 'map-complete',
+    error: 'map-error',
+    click: 'map-click',
+    focus: 'map-focus',
   },
 
   layout: {
@@ -74,7 +75,7 @@ export const aquaTheme: ThemeConfig = {
 
   narrative: {
     tagline: 'craft with clarity.',
-    personality: 'thoughtful designer — precise and refined',
+    personality: 'strategist — systems thinker, precise and spatial',
   },
 
   ambient: {
@@ -82,5 +83,20 @@ export const aquaTheme: ThemeConfig = {
     gridSpeed: 12,
     hoverScale: 1.03,
     hapticsEnabled: true,
+  },
+
+  workflow: {
+    posture: 'map',
+    primaryLayout: 'canvas',
+    coreActions: ['add phase', 'attach target set', 'start automation', 'watch path heatmap'],
+    inputModel: 'drag-connect',
+    feedbackStyle: 'edge-heat',
+  },
+
+  microcopy: {
+    tagline: 'when you think in systems.',
+    emptyState: 'Connect two phases to see flow.',
+    primaryCTA: 'Add Phase',
+    onboardingHint: 'We'll stay out of your way.',
   },
 }

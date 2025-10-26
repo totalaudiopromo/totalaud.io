@@ -3,11 +3,10 @@
  *
  * Metrics, goals, and AI recommendations
  * Phase 1: Placeholder metrics
+ * Stage 8.5: Migrated to CSS variable system (Slate Cyan)
  */
 
 'use client'
-
-import { consolePalette } from '@aud-web/themes/consolePalette'
 
 interface MetricCardProps {
   label: string
@@ -18,10 +17,10 @@ interface MetricCardProps {
 function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
   const trendColor =
     trend === 'up'
-      ? consolePalette.accent.primary
+      ? 'var(--accent)'
       : trend === 'down'
-        ? consolePalette.grid.lineError
-        : consolePalette.text.tertiary
+        ? 'var(--error)'
+        : 'var(--text-secondary)'
 
   const trendSymbol = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '•'
 
@@ -29,16 +28,16 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
     <div
       data-testid={`metric-${label.toLowerCase().replace(/\s+/g, '-')}`}
       style={{
-        padding: consolePalette.spacing.elementPadding,
-        backgroundColor: consolePalette.background.tertiary,
-        border: `1px solid ${consolePalette.border.default}`,
+        padding: 'var(--space-3)',
+        backgroundColor: 'var(--surface)',
+        border: '1px solid var(--border)',
         borderRadius: '6px',
       }}
     >
       <div
         style={{
-          fontSize: consolePalette.typography.fontSize.small,
-          color: consolePalette.text.tertiary,
+          fontSize: '14px',
+          color: 'var(--text-secondary)',
           marginBottom: '4px',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
@@ -48,16 +47,16 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
       </div>
       <div
         style={{
-          fontSize: consolePalette.typography.fontSize.h3,
+          fontSize: '20px',
           fontWeight: 600,
-          color: consolePalette.text.primary,
+          color: 'var(--text-primary)',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: 'var(--space-2)',
         }}
       >
         {value}
-        <span style={{ fontSize: consolePalette.typography.fontSize.small, color: trendColor }}>
+        <span style={{ fontSize: '14px', color: trendColor }}>
           {trendSymbol}
         </span>
       </div>
@@ -67,15 +66,15 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
 
 export function InsightPanel() {
   return (
-    <div data-testid="insight-panel" style={{ display: 'flex', flexDirection: 'column', gap: consolePalette.spacing.gap }}>
+    <div data-testid="insight-panel" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
       {/* Metrics Section */}
       <section data-testid="campaign-metrics">
         <h3
           style={{
-            fontSize: consolePalette.typography.fontSize.body,
+            fontSize: '16px',
             fontWeight: 600,
-            marginBottom: consolePalette.spacing.elementPadding,
-            color: consolePalette.text.secondary,
+            marginBottom: 'var(--space-3)',
+            color: 'var(--text-secondary)',
           }}
         >
           Campaign Metrics
@@ -89,53 +88,53 @@ export function InsightPanel() {
       </section>
 
       {/* Goals Section */}
-      <section style={{ marginTop: consolePalette.spacing.sectionMargin }}>
+      <section style={{ marginTop: 'var(--space-4)' }}>
         <h3
           style={{
-            fontSize: consolePalette.typography.fontSize.body,
+            fontSize: '16px',
             fontWeight: 600,
-            marginBottom: consolePalette.spacing.elementPadding,
-            color: consolePalette.text.secondary,
+            marginBottom: 'var(--space-3)',
+            color: 'var(--text-secondary)',
           }}
         >
           Current Goals
         </h3>
         <div
           style={{
-            padding: consolePalette.spacing.elementPadding,
-            backgroundColor: consolePalette.background.tertiary,
-            border: `1px solid ${consolePalette.border.default}`,
+            padding: 'var(--space-3)',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border)',
             borderRadius: '6px',
-            fontSize: consolePalette.typography.fontSize.small,
-            color: consolePalette.text.secondary,
+            fontSize: '14px',
+            color: 'var(--text-secondary)',
           }}
         >
-          <div style={{ marginBottom: '8px' }}>• Enrich 100 radio contacts</div>
-          <div style={{ marginBottom: '8px' }}>• Send 50 personalized pitches</div>
+          <div style={{ marginBottom: 'var(--space-2)' }}>• Enrich 100 radio contacts</div>
+          <div style={{ marginBottom: 'var(--space-2)' }}>• Send 50 personalized pitches</div>
           <div>• Achieve 30% open rate</div>
         </div>
       </section>
 
       {/* Recommendations Section */}
-      <section style={{ marginTop: consolePalette.spacing.sectionMargin }}>
+      <section style={{ marginTop: 'var(--space-4)' }}>
         <h3
           style={{
-            fontSize: consolePalette.typography.fontSize.body,
+            fontSize: '16px',
             fontWeight: 600,
-            marginBottom: consolePalette.spacing.elementPadding,
-            color: consolePalette.text.secondary,
+            marginBottom: 'var(--space-3)',
+            color: 'var(--text-secondary)',
           }}
         >
           AI Recommendations
         </h3>
         <div
           style={{
-            padding: consolePalette.spacing.elementPadding,
-            backgroundColor: consolePalette.background.tertiary,
-            border: `1px solid ${consolePalette.accent.primary}`,
+            padding: 'var(--space-3)',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--accent)',
             borderRadius: '6px',
-            fontSize: consolePalette.typography.fontSize.small,
-            color: consolePalette.text.primary,
+            fontSize: '14px',
+            color: 'var(--text-primary)',
           }}
         >
           Focus on BBC Radio contacts for highest engagement potential based on your track genre.

@@ -1,17 +1,18 @@
 /**
- * Analogue Studio Theme Configuration
+ * Tape Theme Configuration
  *
- * Personality: Hands-on, Textured, Quietly Confident
- * Aesthetic: Warm lo-fi studio, tape grain, gentle sine waves
- * Typography: Lowercase, monospace, warm beige tones
+ * Posture: The Receipt
+ * Use Case: Capturing ideas, writing drafts, turning thoughts into runs
+ * Primary Layout: Journal (notes left, conversion panel right)
+ * Core Value: Thoughts that become runs
  */
 
 import type { ThemeConfig } from './types'
 
-export const analogueTheme: ThemeConfig = {
-  id: 'analogue',
-  name: 'analogue studio',
-  description: 'hands-on, textured, quietly confident — human hands, warm signal',
+export const tapeTheme: ThemeConfig = {
+  id: 'tape',
+  name: 'Tape',
+  description: 'the receipt — grounded notes turn into actions, living log with intent',
 
   colors: {
     bg: '#1a1a18',
@@ -29,10 +30,10 @@ export const analogueTheme: ThemeConfig = {
   motion: {
     duration: {
       fast: 120,
-      medium: 180,
-      slow: 240,
+      medium: 240,
+      slow: 400,
     },
-    easing: 'ease-in-out',
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)', // Soft ease
     reducedMotionScale: 1.02,
   },
 
@@ -56,11 +57,11 @@ export const analogueTheme: ThemeConfig = {
   },
 
   sounds: {
-    start: 'analogue-start',
-    complete: 'analogue-complete',
-    error: 'analogue-error',
-    click: 'analogue-click',
-    focus: 'analogue-focus',
+    start: 'tape-start',
+    complete: 'tape-complete',
+    error: 'tape-error',
+    click: 'tape-click',
+    focus: 'tape-focus',
   },
 
   layout: {
@@ -74,7 +75,7 @@ export const analogueTheme: ThemeConfig = {
 
   narrative: {
     tagline: 'touch the signal.',
-    personality: 'hands-on tactile — warm and present',
+    personality: 'archivist — notes with intent, grounded and present',
   },
 
   ambient: {
@@ -82,5 +83,20 @@ export const analogueTheme: ThemeConfig = {
     gridSpeed: 10,
     hoverScale: 1.02,
     hapticsEnabled: true,
+  },
+
+  workflow: {
+    posture: 'tape',
+    primaryLayout: 'journal',
+    coreActions: ['capture note', 'detect intent', 'propose actions', 'one-click commit'],
+    inputModel: 'natural-lang',
+    feedbackStyle: 'parse-propose',
+  },
+
+  microcopy: {
+    tagline: 'when notes become runs.',
+    emptyState: 'Write a note. We'll turn it into work.',
+    primaryCTA: 'Make it a Run',
+    onboardingHint: 'Write it. Run it.',
   },
 }

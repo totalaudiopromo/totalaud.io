@@ -7,13 +7,13 @@
  * - Insight Panel (right): Metrics, goals, recommendations
  *
  * Phase 1: Core Structure with placeholders
+ * Stage 8.5: Migrated to CSS variable system (Slate Cyan)
  */
 
 'use client'
 
 import { useTheme } from '@aud-web/components/themes/ThemeResolver'
 import { useConsoleStore } from '@aud-web/stores/consoleStore'
-import { consolePalette } from '@aud-web/themes/consolePalette'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudioMotion } from '@aud-web/hooks/useStudioMotion'
 import { MissionStack } from '@aud-web/components/console/MissionStack'
@@ -21,7 +21,12 @@ import { ActivityStream } from '@aud-web/components/console/ActivityStream'
 import { InsightPanel } from '@aud-web/components/console/InsightPanel'
 import { AgentFooter } from '@aud-web/components/console/AgentFooter'
 import { ContextPane } from '@aud-web/components/console/ContextPane'
-import { useState, useCallback } from 'react'
+import { AccessibilityToggle } from '@aud-web/components/ui/AccessibilityToggle'
+import { PresenceAvatars } from '@aud-web/components/ui/PresenceAvatars'
+import { ShareCampaignModal } from '@aud-web/components/ui/ShareCampaignModal'
+import { usePresence } from '@aud-web/hooks/usePresence'
+import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
+import { useState, useCallback, useEffect } from 'react'
 
 export function ConsoleLayout() {
   const { currentTheme } = useTheme()
@@ -34,6 +39,73 @@ export function ConsoleLayout() {
     showOperatorPalette,
     toggleOperatorPalette,
   } = useConsoleStore()
+
+  // Share modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+
+  // Auth state
+  const supabase = getSupabaseClient()
+  const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
+  const [currentCampaign, setCurrentCampaign] = useState<{ id: string; title: string } | null>(null)
+  const [userRole, setUserRole] = useState<'owner' | 'editor' | 'viewer'>('viewer')
+
+  // Fetch current user and campaign on mount
+  useEffect(() => {
+    const fetchAuthData = async () => {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user) {
+        setCurrentUser({
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'Operator',
+        })
+
+        // Get user's first campaign (for now - TODO: allow campaign selection)
+        const { data: campaigns } = await supabase
+          .from('campaigns')
+          .select('id, title')
+          .limit(1)
+          .single()
+
+        if (campaigns) {
+          setCurrentCampaign({ id: campaigns.id, title: campaigns.title })
+
+          // Get user's role for this campaign
+          const { data: collaborator } = await supabase
+            .from('campaign_collaborators')
+            .select('role')
+            .eq('campaign_id', campaigns.id)
+            .eq('user_id', user.id)
+            .single()
+
+          if (collaborator) {
+            setUserRole(collaborator.role as 'owner' | 'editor' | 'viewer')
+          }
+        }
+      }
+    }
+
+    fetchAuthData()
+  }, [])
+
+  // Map activeMode to presence mode (filter out 'do' which doesn't exist in presence)
+  const presenceMode: 'plan' | 'track' | 'learn' =
+    activeMode === 'do' ? 'track' : (activeMode || 'plan') as 'plan' | 'track' | 'learn'
+
+  // Presence hook - track collaborators in real-time
+  const { collaborators, isConnected } = usePresence(
+    currentCampaign?.id || null,
+    currentUser?.id || null,
+    {
+      theme: currentTheme,
+      mode: presenceMode,
+      calm_mode: false,
+      user_email: currentUser?.email,
+      user_name: currentUser?.name,
+    }
+  )
 
   // Custom events that can be added from ContextPane forms
   const [customEvents, setCustomEvents] = useState<Array<{id: string, message: string, timestamp: Date}>>([])
@@ -56,15 +128,15 @@ export function ConsoleLayout() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(12, 1fr)',
-        gridTemplateRows: `${consolePalette.layout.header} 1fr ${consolePalette.layout.footer}`,
+        gridTemplateRows: '64px 1fr 48px',
         height: '100vh',
         width: '100vw',
-        backgroundColor: consolePalette.background.primary,
-        color: consolePalette.text.primary,
-        fontFamily: consolePalette.typography.fontFamily,
-        fontSize: consolePalette.typography.fontSize.body,
-        gap: consolePalette.spacing.gap,
-        padding: consolePalette.spacing.containerPadding,
+        backgroundColor: 'var(--bg)',
+        color: 'var(--text-primary)',
+        fontFamily: 'var(--font-primary)',
+        fontSize: '16px',
+        gap: 'var(--space-3)',
+        padding: 'var(--space-3)',
       }}
     >
       {/* Header */}
@@ -77,18 +149,18 @@ export function ConsoleLayout() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingInline: consolePalette.spacing.panePadding,
-          borderBottom: `1px solid ${consolePalette.border.default}`,
-          backgroundColor: consolePalette.background.secondary,
+          paddingInline: 'var(--space-4)',
+          borderBottom: '1px solid var(--border)',
+          backgroundColor: 'var(--surface)',
         }}
       >
         {/* Brand */}
         <div
           style={{
-            fontSize: consolePalette.typography.fontSize.h3,
+            fontSize: '20px',
             fontWeight: 600,
-            letterSpacing: consolePalette.typography.letterSpacing.wide,
-            color: consolePalette.accent.primary,
+            letterSpacing: '0.02em',
+            color: 'var(--accent)',
           }}
         >
           totalaud.io
@@ -97,39 +169,109 @@ export function ConsoleLayout() {
         {/* Campaign Name */}
         <div
           style={{
-            fontSize: consolePalette.typography.fontSize.body,
-            color: consolePalette.text.secondary,
-            letterSpacing: consolePalette.typography.letterSpacing.normal,
+            fontSize: '16px',
+            color: 'var(--text-secondary)',
+            letterSpacing: '0',
           }}
         >
           {campaignName || 'Untitled Campaign'}
         </div>
 
-        {/* Operator Toggle */}
-        <button
-          onClick={toggleOperatorPalette}
-          style={{
-            padding: `${consolePalette.spacing.elementPadding} ${parseInt(consolePalette.spacing.elementPadding) * 2}px`,
-            backgroundColor: showOperatorPalette
-              ? consolePalette.accent.primary
-              : 'transparent',
-            color: showOperatorPalette
-              ? consolePalette.background.primary
-              : consolePalette.text.secondary,
-            border: `1px solid ${
-              showOperatorPalette
-                ? consolePalette.accent.primary
-                : consolePalette.border.default
-            }`,
-            borderRadius: '6px',
-            fontSize: consolePalette.typography.fontSize.small,
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: `all ${transitionSpeed}s ease`,
-          }}
-        >
-          ⌘K
-        </button>
+        {/* Right Side Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Presence Avatars */}
+          <PresenceAvatars
+            collaborators={collaborators}
+            maxVisible={5}
+            className="mr-2"
+          />
+
+          {/* Connection Status Indicator */}
+          {isConnected && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '12px',
+                color: 'var(--text-secondary)',
+              }}
+              title="Connected to presence channel"
+            >
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#4ADE80',
+                  boxShadow: '0 0 4px rgba(74, 222, 128, 0.5)',
+                }}
+              />
+              <span>Live</span>
+            </div>
+          )}
+
+          {/* Share Button */}
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              backgroundColor: 'transparent',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: `all ${transitionSpeed}s ease`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent)'
+              e.currentTarget.style.color = 'var(--accent)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.color = 'var(--text-secondary)'
+            }}
+            title="Share campaign with collaborators"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+            Share
+          </button>
+
+          {/* Operator Toggle */}
+          <button
+            onClick={toggleOperatorPalette}
+            style={{
+              padding: 'var(--space-3) var(--space-4)',
+              backgroundColor: showOperatorPalette
+                ? 'var(--accent)'
+                : 'transparent',
+              color: showOperatorPalette
+                ? 'var(--bg)'
+                : 'var(--text-secondary)',
+              border: `1px solid ${
+                showOperatorPalette
+                  ? 'var(--accent)'
+                  : 'var(--border)'
+              }`,
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: `all ${transitionSpeed}s ease`,
+            }}
+          >
+            ⌘K
+          </button>
+        </div>
       </motion.header>
 
       {/* Main: Three Panes */}
@@ -141,7 +283,7 @@ export function ConsoleLayout() {
           gridColumn: '1 / -1',
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',
-          gap: consolePalette.spacing.gap,
+          gap: 'var(--space-3)',
           overflow: 'hidden',
         }}
       >
@@ -152,10 +294,10 @@ export function ConsoleLayout() {
           transition={{ duration: transitionSpeed, delay: 0.15 }}
           style={{
             gridColumn: '1 / 4',
-            backgroundColor: consolePalette.background.secondary,
-            border: `1px solid ${consolePalette.border.default}`,
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border)',
             borderRadius: '8px',
-            padding: consolePalette.spacing.panePadding,
+            padding: 'var(--space-4)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
@@ -165,10 +307,10 @@ export function ConsoleLayout() {
         >
           <h2
             style={{
-              fontSize: consolePalette.typography.fontSize.h3,
+              fontSize: '20px',
               fontWeight: 600,
-              marginBottom: consolePalette.spacing.sectionMargin,
-              color: consolePalette.accent.primary,
+              marginBottom: 'var(--space-4)',
+              color: 'var(--accent)',
             }}
           >
             Mission Stack
@@ -186,12 +328,12 @@ export function ConsoleLayout() {
           transition={{ duration: transitionSpeed, delay: 0.2 }}
           style={{
             gridColumn: '4 / 10',
-            backgroundColor: consolePalette.background.secondary,
-            border: `1px solid ${consolePalette.border.default}`,
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border)',
             borderRadius: '8px',
-            borderLeft: `1px solid rgba(58, 225, 194, 0.2)`,  // Accent divider
-            borderRight: `1px solid rgba(58, 225, 194, 0.2)`,  // Accent divider
-            padding: consolePalette.spacing.panePadding,
+            borderLeft: '1px solid rgba(58, 169, 190, 0.2)',  // Slate Cyan accent divider
+            borderRight: '1px solid rgba(58, 169, 190, 0.2)',  // Slate Cyan accent divider
+            padding: 'var(--space-4)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -222,10 +364,10 @@ export function ConsoleLayout() {
               >
                 <h2
                   style={{
-                    fontSize: consolePalette.typography.fontSize.h3,
+                    fontSize: '20px',
                     fontWeight: 600,
-                    marginBottom: consolePalette.spacing.sectionMargin,
-                    color: consolePalette.accent.primary,
+                    marginBottom: 'var(--space-4)',
+                    color: 'var(--accent)',
                   }}
                 >
                   Activity Stream
@@ -243,10 +385,10 @@ export function ConsoleLayout() {
           transition={{ duration: transitionSpeed, delay: 0.25 }}
           style={{
             gridColumn: '10 / -1',
-            backgroundColor: consolePalette.background.secondary,
-            border: `1px solid ${consolePalette.border.default}`,
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border)',
             borderRadius: '8px',
-            padding: consolePalette.spacing.panePadding,
+            padding: 'var(--space-4)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
@@ -256,10 +398,10 @@ export function ConsoleLayout() {
         >
           <h2
             style={{
-              fontSize: consolePalette.typography.fontSize.h3,
+              fontSize: '20px',
               fontWeight: 600,
-              marginBottom: consolePalette.spacing.sectionMargin,
-              color: consolePalette.accent.primary,
+              marginBottom: 'var(--space-4)',
+              color: 'var(--accent)',
             }}
           >
             Insight Panel
@@ -278,15 +420,27 @@ export function ConsoleLayout() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingInline: consolePalette.spacing.panePadding,
-          borderTop: `1px solid ${consolePalette.border.default}`,
-          backgroundColor: consolePalette.background.secondary,
-          fontSize: consolePalette.typography.fontSize.small,
-          color: consolePalette.text.secondary,
+          paddingInline: 'var(--space-4)',
+          borderTop: '1px solid var(--border)',
+          backgroundColor: 'var(--surface)',
+          fontSize: '14px',
+          color: 'var(--text-secondary)',
         }}
       >
         <AgentFooter />
       </motion.footer>
+
+      {/* Share Campaign Modal */}
+      {currentUser && currentCampaign && (
+        <ShareCampaignModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          campaignId={currentCampaign.id}
+          campaignTitle={currentCampaign.title || campaignName || 'Untitled Campaign'}
+          currentUserId={currentUser.id}
+          currentUserRole={userRole}
+        />
+      )}
     </div>
   )
 }

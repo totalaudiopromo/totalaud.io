@@ -1,17 +1,18 @@
 /**
- * DAW Workstation Theme Configuration
+ * Timeline Theme Configuration
  *
- * Personality: Experimental Creator
- * Aesthetic: Tempo-synced precision, rhythmic pulses at 120 BPM
- * Typography: Lowercase, technical, systematic
+ * Posture: The Sequencer
+ * Use Case: Release week, day-by-day outreach, time-boxed pushes
+ * Primary Layout: Tracks (time ruler with lanes: Research, Outreach, Follow-ups, Content)
+ * Core Value: Execution you can feel
  */
 
 import type { ThemeConfig } from './types'
 
-export const dawTheme: ThemeConfig = {
-  id: 'daw',
-  name: 'daw workstation',
-  description: 'experimental creator — tempo-synced precision, rhythmic pulses',
+export const timelineTheme: ThemeConfig = {
+  id: 'timeline',
+  name: 'Timeline',
+  description: 'the sequencer — time-based execution, clips, automation lanes',
 
   colors: {
     bg: '#0f0f0f',
@@ -28,11 +29,11 @@ export const dawTheme: ThemeConfig = {
 
   motion: {
     duration: {
-      fast: 125, // 16th note at 120 BPM (500ms / 4)
-      medium: 250, // 8th note at 120 BPM (500ms / 2)
-      slow: 500, // Quarter note at 120 BPM
+      fast: 120, // Micro-interactions
+      medium: 240, // Lane open/close
+      slow: 400, // Playhead sweep
     },
-    easing: 'steps(4, jump-end)', // Rhythmic stepping
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)', // Steady glide
     reducedMotionScale: 1.0,
   },
 
@@ -62,11 +63,11 @@ export const dawTheme: ThemeConfig = {
   },
 
   sounds: {
-    start: 'daw-start',
-    complete: 'daw-complete',
-    error: 'daw-error',
-    click: 'daw-click',
-    focus: 'daw-focus',
+    start: 'timeline-start',
+    complete: 'timeline-complete',
+    error: 'timeline-error',
+    click: 'timeline-click',
+    focus: 'timeline-focus',
   },
 
   layout: {
@@ -80,7 +81,7 @@ export const dawTheme: ThemeConfig = {
 
   narrative: {
     tagline: 'sync. sequence. create.',
-    personality: 'experimental creator — tempo-driven precision',
+    personality: 'sequencer — time-based precision, execution-focused',
   },
 
   ambient: {
@@ -88,5 +89,20 @@ export const dawTheme: ThemeConfig = {
     gridSpeed: 0.5, // 120 BPM = 0.5s per beat
     hoverScale: 1.01,
     hapticsEnabled: true,
+  },
+
+  workflow: {
+    posture: 'timeline',
+    primaryLayout: 'tracks',
+    coreActions: ['add clip', 'set duration', 'assign agent', 'arm automation'],
+    inputModel: 'clip-drag',
+    feedbackStyle: 'playhead-sweep',
+  },
+
+  microcopy: {
+    tagline: 'when time is the instrument.',
+    emptyState: 'No lanes armed. Drop in your week.',
+    primaryCTA: 'Add Clip',
+    onboardingHint: 'Calm Mode is ready when you are.',
   },
 }

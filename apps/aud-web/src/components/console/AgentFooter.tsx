@@ -3,11 +3,10 @@
  *
  * Shows active agents and system status
  * Phase 1: Placeholder agent count
+ * Stage 8.5: Migrated to CSS variable system (Slate Cyan)
  */
 
 'use client'
-
-import { consolePalette } from '@aud-web/themes/consolePalette'
 
 export function AgentFooter() {
   // Placeholder data
@@ -32,10 +31,10 @@ export function AgentFooter() {
             borderRadius: '50%',
             backgroundColor:
               systemStatus === 'ready'
-                ? consolePalette.accent.primary
+                ? 'var(--accent)'
                 : systemStatus === 'busy'
-                  ? consolePalette.grid.lineWarning
-                  : consolePalette.grid.lineError,
+                  ? 'var(--warning)'
+                  : 'var(--error)',
           }}
         />
         <span style={{ fontWeight: 500 }}>
@@ -53,10 +52,10 @@ export function AgentFooter() {
               height: '12px',
               backgroundColor:
                 i < 4
-                  ? consolePalette.accent.primary
+                  ? 'var(--accent)'
                   : i < 8
-                    ? consolePalette.grid.lineWarning
-                    : consolePalette.border.default,
+                    ? 'var(--warning)'
+                    : 'var(--border)',
               opacity: 0.6,
             }}
           />

@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
 import { GlobalCommandPalette } from '@aud-web/components/ui'
+import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,6 +37,7 @@ export default function RootLayout({
             <GlobalCommandPalette />
           </Suspense>
         </ThemeResolver>
+        <Analytics />
       </body>
     </html>
   )

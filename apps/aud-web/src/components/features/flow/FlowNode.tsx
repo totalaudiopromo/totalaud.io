@@ -16,13 +16,13 @@ const statusIcons = {
 }
 
 const statusColors = {
-  pending: '#6b7280',
-  running: '#3b82f6',
-  completed: '#10b981',
-  failed: '#ef4444',
-  queued: '#64748b',
-  error: '#ef4444',
-  cancelled: '#6b7280',
+  pending: '#A0A4A8',      // --text-secondary
+  running: '#3AA9BE',      // --accent (Slate Cyan)
+  completed: '#63C69C',    // --success (Mint)
+  failed: '#FF6B6B',       // --error
+  queued: '#A0A4A8',       // --text-secondary
+  error: '#FF6B6B',        // --error
+  cancelled: '#A0A4A8',    // --text-secondary
 }
 
 export const FlowNode = memo(({ data, selected }: NodeProps) => {
@@ -34,9 +34,9 @@ export const FlowNode = memo(({ data, selected }: NodeProps) => {
 
   return (
     <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
+      initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
       {/* Agent Bubble */}

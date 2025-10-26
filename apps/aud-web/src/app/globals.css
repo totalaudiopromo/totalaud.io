@@ -8,9 +8,32 @@
 /* Import Agent Spawn Modal Styles */
 @import '../styles/agent-spawn-modal.css';
 
-/* Flow State Design System - CSS Variables */
+/* ========================================
+   UI Style Guide v1.0 - Design System
+   Cursor-Inspired Minimal Design
+   ======================================== */
+
 :root {
-  /* Colours (Moodboard Brief) */
+  /* Typography */
+  --font-geist: 'Geist Sans', system-ui;
+  --font-inter: 'Inter', system-ui;
+  --font-mono: 'Geist Mono', 'IBM Plex Mono', monospace;
+  --font-primary: var(--font-inter), sans-serif;
+
+  /* Colors - UI Style Guide */
+  --bg: #0F1113;
+  --surface: #1A1C1F;
+  --text-primary: #EAECEE;
+  --text-secondary: #A0A4A8;
+  --accent: #3AA9BE;          /* Slate Cyan - professional, calm, creative-tech */
+  --accent-alt: #6FC8B5;      /* Hover/focus states - gentle depth (updated from #4FC8B5) */
+  --accent-warm: #D4A574;
+  --border: #2C2F33;
+  --success: #63C69C;         /* Subtle mint - matches cyan family (updated from #3ED598) */
+  --error: #FF6B6B;
+  --warning: #FFC857;
+
+  /* Legacy Colors (backward compatibility) */
   --color-deep-navy: #0a0d10;
   --color-soft-graphite: #14171b;
   --color-agent-green: #45ff7c;
@@ -22,22 +45,25 @@
   --color-slate-grey: #a0a4a8;
   --color-pure-white: #ffffff;
 
-  /* Typography */
-  --font-primary: var(--font-inter), sans-serif;
-  --font-mono: var(--font-mono), monospace;
-
-  /* Spacing (8px rhythm) */
-  --space-1: 8px;
-  --space-2: 16px;
-  --space-3: 24px;
-  --space-4: 32px;
-  --space-6: 48px;
+  /* Spacing - 8px rhythm */
+  --space-1: 4px;   /* micro-padding */
+  --space-2: 8px;   /* base grid unit */
+  --space-3: 16px;  /* compact gaps */
+  --space-4: 24px;  /* medium gaps */
+  --space-5: 32px;  /* large section gaps */
+  --space-6: 48px;  /* extra large (legacy) */
 
   /* Border radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-  /* Motion */
+  /* Motion - UI Style Guide */
+  --motion-fast: 120ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-normal: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-slow: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Legacy motion (backward compatibility) */
   --duration-fast: 120ms;
   --duration-medium: 200ms;
   --duration-slow: 300ms;
@@ -45,6 +71,11 @@
 
   /* Grid texture */
   --grid-opacity: 0.04;
+
+  /* Micro-Style Audit Additions */
+  --button-inner-glow: inset 0 1px 0 0 rgba(58, 169, 190, 0.2);  /* Figma-style depth */
+  --focus-ring-opacity: 0.7;  /* Accessibility improvement from 0.5 */
+  --tooltip-duration: 120ms;  /* Fast micro-feedback */
 }
 
 /* Accessibility: Respect reduced-motion preference */
@@ -77,6 +108,20 @@ body::before {
       transparent 2px
     );
   opacity: var(--grid-opacity);
+}
+
+/* Film Grain Overlay - Prevents flatness */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  opacity: 1;
 }
 
 /* Ambient Grid Animations - Per-Theme Motion */
