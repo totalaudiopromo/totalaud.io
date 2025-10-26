@@ -25,6 +25,7 @@
     "@total-audio/core-supabase": "workspace:*",
     "@total-audio/core-theme-engine": "workspace:*",
     "@total-audio/ui": "workspace:*",
+    "@vercel/analytics": "^1.5.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.546.0",
     "nanoid": "^5.1.6",

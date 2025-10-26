@@ -14,6 +14,7 @@ import { consolePalette } from '@aud-web/themes/consolePalette'
 import { useState, useEffect } from 'react'
 import { getSupabaseClient } from '@/lib/supabaseClient'
 import { subscribeToCampaignEvents, unsubscribeFromCampaignEvents } from '@/lib/realtime'
+import { FlowPane } from './FlowPane'
 
 // Helper function to format timestamps
 function formatTimeAgo(date: Date): string {
@@ -545,7 +546,7 @@ function TrackMode() {
                   color: consolePalette.accent.primary,
                   marginTop: '8px',
                   padding: '6px 8px',
-                  backgroundColor: 'rgba(58, 225, 194, 0.1)',
+                  backgroundColor: 'rgba(58, 169, 190, 0.1)',  // Slate Cyan
                   borderRadius: '4px',
                 }}>
                   Next: {event.next}
@@ -735,7 +736,7 @@ function LearnMode() {
         }}
         onMouseEnter={(e) => {
           if (!generating) {
-            e.currentTarget.style.backgroundColor = 'rgba(58, 225, 194, 0.1)'
+            e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)'  // Slate Cyan
           }
         }}
         onMouseLeave={(e) => {
@@ -842,7 +843,11 @@ export function ContextPane({ onAddEvent }: { onAddEvent: (message: string) => v
             animate="animate"
             exit="exit"
           >
-            {activeMode === 'plan' && <PlanMode onAddEvent={onAddEvent} />}
+            {activeMode === 'plan' && (
+              <div style={{ height: '100%', width: '100%' }}>
+                <FlowPane />
+              </div>
+            )}
             {activeMode === 'do' && <DoMode onAddEvent={onAddEvent} />}
             {activeMode === 'track' && <TrackMode />}
             {activeMode === 'learn' && <LearnMode />}

@@ -3,12 +3,12 @@
  *
  * Plan → Do → Track → Learn workflow progression
  * Phase 1: Placeholder structure
+ * Stage 8.5: Migrated to CSS variable system (Slate Cyan)
  */
 
 'use client'
 
 import { useConsoleStore, type MissionView } from '@aud-web/stores/consoleStore'
-import { consolePalette } from '@aud-web/themes/consolePalette'
 
 const MISSION_PHASES: { id: MissionView; label: string; description: string }[] = [
   { id: 'plan', label: 'Plan', description: 'Define campaign goals' },
@@ -26,7 +26,7 @@ export function MissionStack() {
   }
 
   return (
-    <div data-testid="mission-stack" style={{ display: 'flex', flexDirection: 'column', gap: consolePalette.spacing.gap }}>
+    <div data-testid="mission-stack" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
       {MISSION_PHASES.map((phase) => {
         const isActive = missionView === phase.id
 
@@ -36,29 +36,29 @@ export function MissionStack() {
             data-testid={`mission-${phase.id}`}
             onClick={() => handleClick(phase.id)}
             style={{
-              padding: consolePalette.spacing.elementPadding,
+              padding: 'var(--space-3)',
               backgroundColor: isActive
-                ? consolePalette.background.tertiary
+                ? 'var(--surface)'
                 : 'transparent',
               border: `1px solid ${
-                isActive ? consolePalette.accent.primary : consolePalette.border.default
+                isActive ? 'var(--accent)' : 'var(--border)'
               }`,
               borderRadius: '6px',
-              color: isActive ? consolePalette.accent.primary : consolePalette.text.secondary,
+              color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
               cursor: 'pointer',
               textAlign: 'left',
-              transition: 'all 0.15s ease',
-              fontFamily: consolePalette.typography.fontFamily,
+              transition: 'all var(--motion-fast) ease',
+              fontFamily: 'var(--font-primary)',
             }}
             onMouseEnter={(e) => {
               if (!isActive) {
-                e.currentTarget.style.borderColor = consolePalette.border.subtle
-                e.currentTarget.style.backgroundColor = consolePalette.background.tertiary
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.backgroundColor = 'var(--surface)'
               }
             }}
             onMouseLeave={(e) => {
               if (!isActive) {
-                e.currentTarget.style.borderColor = consolePalette.border.default
+                e.currentTarget.style.borderColor = 'var(--border)'
                 e.currentTarget.style.backgroundColor = 'transparent'
               }
             }}
@@ -66,8 +66,8 @@ export function MissionStack() {
             <div style={{ fontWeight: 600, marginBottom: '4px' }}>{phase.label}</div>
             <div
               style={{
-                fontSize: consolePalette.typography.fontSize.small,
-                color: consolePalette.text.tertiary,
+                fontSize: '14px',
+                color: 'var(--text-secondary)',
               }}
             >
               {phase.description}

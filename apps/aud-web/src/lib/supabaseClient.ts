@@ -50,6 +50,38 @@ export interface CampaignInsight {
   created_at: string
 }
 
+export interface UserPrefs {
+  user_id: string
+  theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+  comfort_mode: boolean
+  calm_mode: boolean
+  sound_muted: boolean
+  tone: 'minimal' | 'balanced' | 'verbose'
+  created_at: string
+  updated_at: string
+}
+
+export interface CampaignCollaborator {
+  id: string
+  campaign_id: string
+  user_id: string
+  role: 'owner' | 'editor' | 'viewer'
+  invited_by: string
+  created_at: string
+}
+
+export interface CollaborationInvite {
+  id: string
+  campaign_id: string
+  invited_email: string
+  role: 'editor' | 'viewer'
+  invite_token: string
+  invited_by: string
+  expires_at: string
+  accepted_at: string | null
+  created_at: string
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -72,6 +104,21 @@ export type Database = {
         Row: CampaignInsight
         Insert: Omit<CampaignInsight, 'id' | 'created_at'>
         Update: Partial<Omit<CampaignInsight, 'id' | 'created_at'>>
+      }
+      user_prefs: {
+        Row: UserPrefs
+        Insert: Omit<UserPrefs, 'created_at' | 'updated_at'>
+        Update: Partial<Omit<UserPrefs, 'user_id' | 'created_at'>>
+      }
+      campaign_collaborators: {
+        Row: CampaignCollaborator
+        Insert: Omit<CampaignCollaborator, 'id' | 'created_at'>
+        Update: Partial<Omit<CampaignCollaborator, 'id' | 'created_at'>>
+      }
+      collaboration_invites: {
+        Row: CollaborationInvite
+        Insert: Omit<CollaborationInvite, 'id' | 'created_at'>
+        Update: Partial<Omit<CollaborationInvite, 'id' | 'created_at'>>
       }
     }
   }

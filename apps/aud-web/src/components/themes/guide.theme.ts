@@ -1,17 +1,18 @@
 /**
- * Windows XP Theme Configuration
+ * Guide Theme Configuration
  *
- * Personality: Nostalgic Enthusiast
- * Aesthetic: Soft gradients, spring easing, round corners
- * Typography: Lowercase, approachable, friendly
+ * Posture: The Pathfinder
+ * Use Case: Starting a release, hand-holding a teammate, onboarding
+ * Primary Layout: Wizard (single track with 4 steps, progress top, context right)
+ * Core Value: Momentum without thinking
  */
 
 import type { ThemeConfig } from './types'
 
-export const xpTheme: ThemeConfig = {
-  id: 'xp',
-  name: 'windows xp',
-  description: 'nostalgic enthusiast — friendly gradients, spring bounce',
+export const guideTheme: ThemeConfig = {
+  id: 'guide',
+  name: 'Guide',
+  description: 'the pathfinder — step-by-step flows, guardrails, undo comfort',
 
   colors: {
     bg: '#0055cc',
@@ -28,11 +29,11 @@ export const xpTheme: ThemeConfig = {
 
   motion: {
     duration: {
-      fast: 150,
-      medium: 250,
-      slow: 350,
+      fast: 120,
+      medium: 240,
+      slow: 400,
     },
-    easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // Spring bounce
+    easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // Reassuring spring bounce
     reducedMotionScale: 1.05,
   },
 
@@ -56,11 +57,11 @@ export const xpTheme: ThemeConfig = {
   },
 
   sounds: {
-    start: 'xp-start',
-    complete: 'xp-complete',
-    error: 'xp-error',
-    click: 'xp-click',
-    focus: 'xp-focus',
+    start: 'guide-start',
+    complete: 'guide-complete',
+    error: 'guide-error',
+    click: 'guide-click',
+    focus: 'guide-focus',
   },
 
   layout: {
@@ -74,7 +75,7 @@ export const xpTheme: ThemeConfig = {
 
   narrative: {
     tagline: 'click. bounce. smile.',
-    personality: 'nostalgic enthusiast — warm and playful',
+    personality: 'pathfinder — warm and reassuring',
   },
 
   ambient: {
@@ -82,5 +83,20 @@ export const xpTheme: ThemeConfig = {
     gridSpeed: 8,
     hoverScale: 1.05,
     hapticsEnabled: true,
+  },
+
+  workflow: {
+    posture: 'guide',
+    primaryLayout: 'wizard',
+    coreActions: ['define release', 'find targets', 'generate pitch', 'send + schedule'],
+    inputModel: 'form-wizard',
+    feedbackStyle: 'next-step-chip',
+  },
+
+  microcopy: {
+    tagline: 'when you want a path.',
+    emptyState: 'Nothing here yet. Start a release.',
+    primaryCTA: 'Next Step',
+    onboardingHint: 'You can always undo.',
   },
 }

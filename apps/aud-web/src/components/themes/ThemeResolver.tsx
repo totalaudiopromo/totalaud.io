@@ -10,11 +10,11 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import type { OSTheme, ThemeConfig, ThemeContextValue } from './types'
-import { asciiTheme } from './ascii.theme'
-import { xpTheme } from './xp.theme'
-import { aquaTheme } from './aqua.theme'
-import { dawTheme } from './daw.theme'
-import { analogueTheme } from './analogue.theme'
+import { operatorTheme } from './operator.theme'
+import { guideTheme } from './guide.theme'
+import { mapTheme } from './map.theme'
+import { timelineTheme } from './timeline.theme'
+import { tapeTheme } from './tape.theme'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
 import { applyPalette } from './palettes'
 import { getMotionProfile } from './motionProfiles'
@@ -27,13 +27,13 @@ import {
   type AdaptiveContext,
 } from './adaptiveLogic'
 
-// Theme registry - all 5 themes fully implemented
+// Theme registry - all 5 posture-based workflows fully implemented
 const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {
-  ascii: asciiTheme,
-  xp: xpTheme,
-  aqua: aquaTheme,
-  daw: dawTheme,
-  analogue: analogueTheme,
+  operator: operatorTheme,
+  guide: guideTheme,
+  map: mapTheme,
+  timeline: timelineTheme,
+  tape: tapeTheme,
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
@@ -43,7 +43,7 @@ interface ThemeResolverProps {
   defaultTheme?: OSTheme
 }
 
-export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolverProps) {
+export function ThemeResolver({ children, defaultTheme = 'operator' }: ThemeResolverProps) {
   const { prefs, updatePrefs, loading: prefsLoading } = useUserPrefs()
   const [currentTheme, setCurrentTheme] = useState<OSTheme>(defaultTheme)
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(THEME_REGISTRY[defaultTheme])

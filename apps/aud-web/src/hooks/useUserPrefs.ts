@@ -1,113 +1,82 @@
 /**
  * User Preferences Hook
  *
- * Manages user-specific UI preferences with automatic sync to Supabase.
+ * Stage 8: Studio Personalisation & Collaboration
+ * Manages user-specific preferences with automatic sync to Supabase.
  * Provides optimistic updates and real-time synchronization.
+ *
+ * Updated to use new `user_prefs` table schema.
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@aud-web/lib/supabase'
-
-export interface UserPreferences {
-  id: string
-  user_id: string
-  show_onboarding_overlay: boolean
-  onboarding_completed_at: string | null
-  preferred_view: 'flow' | 'dashboard'
-  demo_mode: boolean
-  auto_sync_enabled: boolean
-  reduced_motion: boolean
-  mute_sounds: boolean
-  preferred_theme: 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue' | 'ableton' | 'punk'
-  created_at: string
-  updated_at: string
-}
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { getSupabaseClient } from '@/lib/supabaseClient'
+import type { UserPrefs } from '@/lib/supabaseClient'
 
 interface UseUserPrefsReturn {
-  prefs: UserPreferences | null
-  loading: boolean
+  prefs: UserPrefs | null
+  isLoading: boolean
   error: Error | null
-  updatePrefs: (updates: Partial<UserPreferences>) => Promise<void>
-  dismissOnboarding: () => Promise<void>
-  toggleView: () => Promise<void>
-  toggleDemoMode: () => Promise<void>
-  toggleReducedMotion: () => Promise<void>
-  toggleMuteSounds: () => Promise<void>
+  updatePrefs: (updates: Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>) => Promise<void>
+  refetch: () => Promise<void>
 }
 
 /**
- * Hook to manage user preferences
+ * Hook to manage user preferences with Supabase sync
  *
- * @param userId - User ID (optional, will use authenticated user if not provided)
- * @returns User preferences and update functions
+ * Features:
+ * - Auto-fetch prefs on mount
+ * - Auto-create default prefs if none exist
+ * - Optimistic updates (instant UI)
+ * - Debounced Supabase sync (500ms)
+ * - Real-time subscription for cross-device sync
+ *
+ * @param userId - User ID (required)
+ * @returns User preferences state and update function
  */
-export function useUserPrefs(userId?: string): UseUserPrefsReturn {
-  const [prefs, setPrefs] = useState<UserPreferences | null>(null)
-  const [loading, setLoading] = useState(true)
+export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
+  const [prefs, setPrefs] = useState<UserPrefs | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  // Fetch or create user preferences
+  const supabase = getSupabaseClient()
+  const updateTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const pendingUpdatesRef = useRef<Partial<UserPrefs>>({})
+
+  // Fetch preferences from Supabase
   const fetchPrefs = useCallback(async () => {
+    if (!userId) {
+      setPrefs(null)
+      setIsLoading(false)
+      return
+    }
+
     try {
-      setLoading(true)
+      setIsLoading(true)
       setError(null)
-
-      // Get authenticated user if no userId provided
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      const uid = userId || user?.id
-
-      // If no user, use localStorage fallback for demo mode
-      if (!uid) {
-        const localPrefs = localStorage.getItem('userPrefs')
-        if (localPrefs) {
-          setPrefs(JSON.parse(localPrefs))
-        } else {
-          const defaultPrefs: UserPreferences = {
-            id: 'local',
-            user_id: 'local',
-            show_onboarding_overlay: true,
-            onboarding_completed_at: null,
-            preferred_view: 'flow',
-            demo_mode: true,
-            auto_sync_enabled: false,
-            reduced_motion: false,
-            mute_sounds: false,
-            preferred_theme: 'ascii',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }
-          localStorage.setItem('userPrefs', JSON.stringify(defaultPrefs))
-          setPrefs(defaultPrefs)
-        }
-        setLoading(false)
-        return
-      }
 
       // Try to get existing preferences
       const { data: existing, error: fetchError } = await supabase
-        .from('user_preferences')
+        .from('user_prefs')
         .select('*')
-        .eq('user_id', uid)
+        .eq('user_id', userId)
         .maybeSingle()
 
       if (fetchError) throw fetchError
 
       // Create default preferences if they don't exist
       if (!existing) {
+        const defaultPrefs: Omit<UserPrefs, 'created_at' | 'updated_at'> = {
+          user_id: userId,
+          theme: 'operator', // Default to Operator theme (keyboard-first, fast lane)
+          comfort_mode: false,
+          calm_mode: false,
+          sound_muted: false,
+          tone: 'balanced',
+        }
+
         const { data: created, error: createError } = await supabase
-          .from('user_preferences')
-          .insert({
-            user_id: uid,
-            show_onboarding_overlay: true,
-            preferred_view: 'flow',
-            demo_mode: false,
-            auto_sync_enabled: true,
-            reduced_motion: false,
-            mute_sounds: false,
-            preferred_theme: 'ascii',
-          })
+          .from('user_prefs')
+          .insert(defaultPrefs)
           .select()
           .single()
 
@@ -120,31 +89,41 @@ export function useUserPrefs(userId?: string): UseUserPrefsReturn {
       console.error('[useUserPrefs] Error fetching preferences:', err)
       setError(err instanceof Error ? err : new Error('Failed to fetch preferences'))
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
-  }, [userId])
+  }, [userId, supabase])
 
   // Initial fetch
   useEffect(() => {
     fetchPrefs()
   }, [fetchPrefs])
 
-  // Subscribe to real-time updates
+  // Subscribe to real-time updates (for cross-device sync)
   useEffect(() => {
-    if (!prefs?.user_id) return
+    if (!userId) return
 
     const channel = supabase
-      .channel(`user-prefs-${prefs.user_id}`)
+      .channel(`user-prefs:${userId}`)
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'user_preferences',
-          filter: `user_id=eq.${prefs.user_id}`,
+          table: 'user_prefs',
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setPrefs(payload.new as UserPreferences)
+          // Only update if the change came from another device
+          // (don't overwrite our optimistic updates)
+          setPrefs((current) => {
+            if (!current) return payload.new as UserPrefs
+
+            // Check if this update is from us (same updated_at)
+            const isSelfUpdate = current.updated_at === (payload.new as UserPrefs).updated_at
+            if (isSelfUpdate) return current
+
+            return payload.new as UserPrefs
+          })
         }
       )
       .subscribe()
@@ -152,83 +131,84 @@ export function useUserPrefs(userId?: string): UseUserPrefsReturn {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [prefs?.user_id])
+  }, [userId, supabase])
 
-  // Update preferences
+  // Flush pending updates to Supabase
+  const flushUpdates = useCallback(async () => {
+    if (!userId || Object.keys(pendingUpdatesRef.current).length === 0) return
+
+    try {
+      const updates = { ...pendingUpdatesRef.current }
+      pendingUpdatesRef.current = {}
+
+      const { error: updateError } = await supabase
+        .from('user_prefs')
+        .update(updates)
+        .eq('user_id', userId)
+
+      if (updateError) throw updateError
+    } catch (err) {
+      console.error('[useUserPrefs] Error syncing preferences:', err)
+      // Revert optimistic update on error
+      await fetchPrefs()
+      throw err
+    }
+  }, [userId, supabase, fetchPrefs])
+
+  // Update preferences (optimistic + debounced sync)
   const updatePrefs = useCallback(
-    async (updates: Partial<UserPreferences>) => {
-      if (!prefs) return
+    async (updates: Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>) => {
+      if (!prefs || !userId) return
 
       try {
-        // Optimistic update
-        const updated = { ...prefs, ...updates, updated_at: new Date().toISOString() }
-        setPrefs(updated)
+        // Optimistic update (instant UI)
+        const optimisticUpdate = {
+          ...prefs,
+          ...updates,
+          updated_at: new Date().toISOString(),
+        }
+        setPrefs(optimisticUpdate)
 
-        // If demo mode (no auth), save to localStorage
-        if (prefs.user_id === 'local' || prefs.demo_mode) {
-          localStorage.setItem('userPrefs', JSON.stringify(updated))
-          return
+        // Queue update for Supabase (debounced 500ms)
+        pendingUpdatesRef.current = {
+          ...pendingUpdatesRef.current,
+          ...updates,
         }
 
-        const { error: updateError } = await supabase
-          .from('user_preferences')
-          .update(updates)
-          .eq('user_id', prefs.user_id)
+        // Clear existing timer
+        if (updateTimerRef.current) {
+          clearTimeout(updateTimerRef.current)
+        }
 
-        if (updateError) throw updateError
+        // Set new timer
+        updateTimerRef.current = setTimeout(() => {
+          flushUpdates()
+        }, 500)
       } catch (err) {
         console.error('[useUserPrefs] Error updating preferences:', err)
-        // Revert optimistic update on error
-        await fetchPrefs()
+        setError(err instanceof Error ? err : new Error('Failed to update preferences'))
         throw err
       }
     },
-    [prefs, fetchPrefs]
+    [prefs, userId, flushUpdates]
   )
 
-  // Dismiss onboarding overlay
-  const dismissOnboarding = useCallback(async () => {
-    await updatePrefs({
-      show_onboarding_overlay: false,
-      onboarding_completed_at: new Date().toISOString(),
-    })
-  }, [updatePrefs])
-
-  // Toggle between flow and dashboard view
-  const toggleView = useCallback(async () => {
-    if (!prefs) return
-    await updatePrefs({
-      preferred_view: prefs.preferred_view === 'flow' ? 'dashboard' : 'flow',
-    })
-  }, [prefs, updatePrefs])
-
-  // Toggle demo mode
-  const toggleDemoMode = useCallback(async () => {
-    if (!prefs) return
-    await updatePrefs({ demo_mode: !prefs.demo_mode })
-  }, [prefs, updatePrefs])
-
-  // Toggle reduced motion
-  const toggleReducedMotion = useCallback(async () => {
-    if (!prefs) return
-    await updatePrefs({ reduced_motion: !prefs.reduced_motion })
-  }, [prefs, updatePrefs])
-
-  // Toggle mute sounds
-  const toggleMuteSounds = useCallback(async () => {
-    if (!prefs) return
-    await updatePrefs({ mute_sounds: !prefs.mute_sounds })
-  }, [prefs, updatePrefs])
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimerRef.current) {
+        clearTimeout(updateTimerRef.current)
+        // Flush any pending updates immediately
+        flushUpdates()
+      }
+    }
+  }, [flushUpdates])
 
   return {
     prefs,
-    loading,
+    isLoading,
     error,
     updatePrefs,
-    dismissOnboarding,
-    toggleView,
-    toggleDemoMode,
-    toggleReducedMotion,
-    toggleMuteSounds,
+    refetch: fetchPrefs,
   }
 }

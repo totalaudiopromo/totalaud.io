@@ -1,17 +1,18 @@
 /**
- * ASCII Theme Configuration
+ * Operator Theme Configuration
  *
- * Personality: Minimalist Producer
- * Aesthetic: Black-and-white terminal, scan-line overlay, no easing
- * Typography: Monospace only, uppercase commands
+ * Posture: The Fast Lane
+ * Use Case: Sprinting tasks, late-night bursts, power users
+ * Primary Layout: Split CLI (command bar left 40%, live feed right 60%)
+ * Core Value: Frictionless velocity
  */
 
 import type { ThemeConfig } from './types'
 
-export const asciiTheme: ThemeConfig = {
-  id: 'ascii',
-  name: 'ASCII Terminal',
-  description: 'minimalist producer — black and white terminal aesthetic',
+export const operatorTheme: ThemeConfig = {
+  id: 'operator',
+  name: 'Operator',
+  description: 'the fast lane — keyboard-first, dense signals, instant feedback',
 
   colors: {
     bg: '#000000',
@@ -88,5 +89,20 @@ export const asciiTheme: ThemeConfig = {
     gridSpeed: 0,
     hoverScale: 1.0,
     hapticsEnabled: true,
+  },
+
+  workflow: {
+    posture: 'operator',
+    primaryLayout: 'split-cli',
+    coreActions: ['run research', 'generate pitch', 'send batch', 'follow up'],
+    inputModel: 'command-bar',
+    feedbackStyle: 'inline-ticks',
+  },
+
+  microcopy: {
+    tagline: 'when you need speed.',
+    emptyState: 'Nothing here yet. Type a command.',
+    primaryCTA: 'Run',
+    onboardingHint: 'Keyboard works everywhere.',
   },
 }

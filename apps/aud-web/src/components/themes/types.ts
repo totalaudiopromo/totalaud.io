@@ -1,11 +1,12 @@
 /**
  * Theme System Types
  *
- * Multi-OS Flow Dashboard System - Phase 2
- * Base type definitions for theme variants and abstractions
+ * Theme System Anti-Gimmick Refactor - Posture-Based Workflows
+ * Each theme represents a distinct way of working, not just visual styling
  */
 
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
+export type ThemePosture = OSTheme // Alias for clarity in workflow contexts
 
 export interface ThemeColors {
   bg: string
@@ -76,6 +77,21 @@ export interface ThemeAmbient {
   hapticsEnabled: boolean
 }
 
+export interface ThemeWorkflow {
+  posture: ThemePosture
+  primaryLayout: 'split-cli' | 'wizard' | 'canvas' | 'tracks' | 'journal'
+  coreActions: string[]  // Top-level actions available
+  inputModel: 'command-bar' | 'form-wizard' | 'drag-connect' | 'clip-drag' | 'natural-lang'
+  feedbackStyle: 'inline-ticks' | 'next-step-chip' | 'edge-heat' | 'playhead-sweep' | 'parse-propose'
+}
+
+export interface ThemeMicrocopy {
+  tagline: string        // "when you need speed."
+  emptyState: string     // "Nothing here yet. Add one thing that matters."
+  primaryCTA: string     // Theme-specific action label
+  onboardingHint: string // One-liner for first-time users
+}
+
 export interface ThemeConfig {
   id: OSTheme
   name: string
@@ -88,6 +104,8 @@ export interface ThemeConfig {
   layout: ThemeLayout
   narrative: ThemeNarrative
   ambient: ThemeAmbient
+  workflow: ThemeWorkflow
+  microcopy: ThemeMicrocopy
 }
 
 export interface ThemeContextValue {
