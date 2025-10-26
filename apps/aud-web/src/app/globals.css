@@ -21,6 +21,7 @@
   --font-geist: 'Geist Sans', system-ui;
   --font-inter: 'Inter', system-ui;
   --font-mono: 'Geist Mono', 'IBM Plex Mono', monospace;
+  --font-editorial: 'EB Garamond Variable', Georgia, serif;
   --font-primary: var(--font-inter), sans-serif;
 
   /* Colors - UI Style Guide */

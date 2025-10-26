@@ -47,6 +47,9 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.17.0
         version: 0.17.2
+      '@fontsource-variable/eb-garamond':
+        specifier: ^5.2.7
+        version: 5.2.7
       '@supabase/supabase-js':
         specifier: ^2.39.0
         version: 2.75.1
@@ -788,6 +791,10 @@ packages:
       '@eslint/core': 0.16.0
       levn: 0.4.1
     dev: true
+
+  /@fontsource-variable/eb-garamond@5.2.7:
+    resolution: {integrity: sha512-TbR+Pun4k5g85lgdxRNSbWka5vJgi9pzdFzFswgf7/7NRhKssvoumft1+ZGz3n91YYet96JcnjWrgPGGj6JTzg==}
+    dev: false
 
   /@humanfs/core@0.19.1:
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
