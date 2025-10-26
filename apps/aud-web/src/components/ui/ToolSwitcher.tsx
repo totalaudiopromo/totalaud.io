@@ -64,8 +64,9 @@ export function ToolSwitcher({ activeTool, onToolChange, muted = false }: ToolSw
         flexDirection: 'column',
         gap: '0.5rem',
         padding: '1rem',
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '2px solid rgba(58, 169, 190, 0.1)',
+        background: '#1A1C1F', // Surface
+        border: '2px solid rgba(58, 169, 190, 0.25)',
+        borderRadius: 0, // Sharp edges
       }}
     >
       {/* Header */}
@@ -75,8 +76,9 @@ export function ToolSwitcher({ activeTool, onToolChange, muted = false }: ToolSw
           fontWeight: 500,
           letterSpacing: '1px',
           textTransform: 'uppercase',
-          color: 'rgba(255, 255, 255, 0.4)',
+          color: '#A0A4A8', // Text secondary
           marginBottom: '0.5rem',
+          fontFamily: 'JetBrains Mono, monospace',
         }}
       >
         Tools
@@ -98,10 +100,11 @@ export function ToolSwitcher({ activeTool, onToolChange, muted = false }: ToolSw
               alignItems: 'center',
               gap: '0.75rem',
               padding: '0.875rem 1rem',
-              background: isActive ? 'rgba(58, 169, 190, 0.08)' : 'transparent',
-              border: `2px solid ${isActive ? 'rgba(58, 169, 190, 0.3)' : 'transparent'}`,
+              background: isActive ? 'rgba(58, 169, 190, 0.1)' : 'transparent',
+              border: `2px solid ${isActive ? 'rgba(58, 169, 190, 0.4)' : 'transparent'}`,
               borderLeft: isActive ? '3px solid #3AA9BE' : '3px solid transparent',
-              color: isActive ? '#3AA9BE' : 'rgba(255, 255, 255, 0.6)',
+              borderRadius: 0, // Sharp edges
+              color: isActive ? '#3AA9BE' : '#A0A4A8',
               cursor: isActive ? 'default' : 'pointer',
               fontSize: '0.875rem',
               fontWeight: isActive ? 500 : 400,
@@ -113,8 +116,9 @@ export function ToolSwitcher({ activeTool, onToolChange, muted = false }: ToolSw
               !isActive && !prefersReducedMotion
                 ? {
                     x: 4,
-                    backgroundColor: 'rgba(58, 169, 190, 0.04)',
-                    borderColor: 'rgba(58, 169, 190, 0.15)',
+                    backgroundColor: 'rgba(58, 169, 190, 0.05)',
+                    borderColor: 'rgba(58, 169, 190, 0.2)',
+                    color: '#EAECEE',
                   }
                 : {}
             }
@@ -149,7 +153,7 @@ export function ToolSwitcher({ activeTool, onToolChange, muted = false }: ToolSw
               <div
                 style={{
                   fontSize: '0.6875rem',
-                  color: 'rgba(255, 255, 255, 0.4)',
+                  color: '#7A7E82', // Darker text secondary
                   letterSpacing: '0.2px',
                 }}
               >

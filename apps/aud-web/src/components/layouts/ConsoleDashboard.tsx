@@ -153,7 +153,7 @@ export function ConsoleDashboard() {
         width: '100vw',
         height: '100vh',
         background: '#0F1113', // Matte Black
-        color: '#ffffff',
+        color: '#EAECEE', // Text primary
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         overflow: 'hidden',
       }}
@@ -199,15 +199,16 @@ export function ConsoleDashboard() {
         <motion.header
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
           style={{
             gridColumn: '1 / -1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 1.5rem',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '2px solid rgba(58, 169, 190, 0.1)',
+            background: '#1A1C1F', // Surface
+            border: '2px solid rgba(58, 169, 190, 0.25)',
+            borderRadius: 0, // Sharp edges
           }}
         >
           {/* Brand */}
@@ -231,26 +232,42 @@ export function ConsoleDashboard() {
 
             {/* Connection indicator */}
             {isConnected && (
-              <div
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.24 }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  color: '#A0A4A8', // Text secondary
+                  letterSpacing: '0.3px',
                 }}
               >
-                <div
+                <motion.div
+                  animate={{
+                    boxShadow: [
+                      '0 0 8px rgba(58, 169, 190, 0.4)',
+                      '0 0 12px rgba(58, 169, 190, 0.8)',
+                      '0 0 8px rgba(58, 169, 190, 0.4)',
+                    ],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
                   style={{
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
                     background: '#3AA9BE',
-                    boxShadow: '0 0 8px rgba(58, 169, 190, 0.6)',
                   }}
                 />
-                <span>Live</span>
-              </div>
+                <span>live</span>
+              </motion.div>
             )}
 
             {/* Theme selector button */}
@@ -259,8 +276,9 @@ export function ConsoleDashboard() {
               style={{
                 padding: '0.5rem 1rem',
                 background: 'transparent',
-                border: '2px solid rgba(58, 169, 190, 0.15)',
-                color: 'rgba(255, 255, 255, 0.6)',
+                border: '2px solid rgba(58, 169, 190, 0.25)',
+                borderRadius: 0, // Sharp edges
+                color: '#A0A4A8',
                 fontSize: '0.875rem',
                 fontWeight: 500,
                 letterSpacing: '0.3px',
@@ -270,11 +288,12 @@ export function ConsoleDashboard() {
                 gap: '0.5rem',
               }}
               whileHover={{
-                borderColor: 'rgba(58, 169, 190, 0.4)',
+                borderColor: 'rgba(58, 169, 190, 0.6)',
                 color: '#3AA9BE',
+                backgroundColor: 'rgba(58, 169, 190, 0.05)',
               }}
               whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.12 }}
+              transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
             >
               <Settings size={16} />
               Theme
@@ -286,9 +305,9 @@ export function ConsoleDashboard() {
             LEFT SIDEBAR - Navigation + Tools
             ======================================== */}
         <motion.aside
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ duration: 0.24, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           style={{
             gridColumn: '1',
             gridRow: '2 / 3',
@@ -302,8 +321,9 @@ export function ConsoleDashboard() {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '2px solid rgba(58, 169, 190, 0.1)',
+              background: '#1A1C1F', // Surface
+              border: '2px solid rgba(58, 169, 190, 0.25)',
+              borderRadius: 0, // Sharp edges
             }}
           >
             <div
@@ -312,8 +332,9 @@ export function ConsoleDashboard() {
                 fontWeight: 500,
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: '#A0A4A8', // Text secondary
                 marginBottom: '1rem',
+                fontFamily: 'JetBrains Mono, monospace',
               }}
             >
               Workspace
@@ -328,10 +349,11 @@ export function ConsoleDashboard() {
                     onClick={() => handleModeChange(mode.id)}
                     style={{
                       padding: '0.75rem 1rem',
-                      background: isActive ? 'rgba(58, 169, 190, 0.08)' : 'transparent',
-                      border: `2px solid ${isActive ? 'rgba(58, 169, 190, 0.3)' : 'transparent'}`,
+                      background: isActive ? 'rgba(58, 169, 190, 0.1)' : 'transparent',
+                      border: `2px solid ${isActive ? 'rgba(58, 169, 190, 0.4)' : 'transparent'}`,
                       borderLeft: isActive ? '3px solid #3AA9BE' : '3px solid transparent',
-                      color: isActive ? '#3AA9BE' : 'rgba(255, 255, 255, 0.6)',
+                      borderRadius: 0, // Sharp edges
+                      color: isActive ? '#3AA9BE' : '#A0A4A8',
                       fontSize: '0.875rem',
                       fontWeight: isActive ? 500 : 400,
                       letterSpacing: '0.4px',
@@ -342,13 +364,14 @@ export function ConsoleDashboard() {
                       !isActive
                         ? {
                             x: 4,
-                            backgroundColor: 'rgba(58, 169, 190, 0.04)',
-                            borderColor: 'rgba(58, 169, 190, 0.15)',
+                            backgroundColor: 'rgba(58, 169, 190, 0.05)',
+                            borderColor: 'rgba(58, 169, 190, 0.2)',
+                            color: '#EAECEE',
                           }
                         : {}
                     }
                     whileTap={!isActive ? { scale: 0.98 } : {}}
-                    transition={{ duration: 0.12 }}
+                    transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {mode.label}
                   </motion.button>
@@ -365,14 +388,15 @@ export function ConsoleDashboard() {
             CENTER - Active Tool Viewport
             ======================================== */}
         <motion.main
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.24, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           style={{
             gridColumn: '2',
             gridRow: '2 / 3',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '2px solid rgba(58, 169, 190, 0.15)',
+            background: '#1A1C1F', // Surface
+            border: '2px solid rgba(58, 169, 190, 0.25)',
+            borderRadius: 0, // Sharp edges
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
@@ -382,8 +406,8 @@ export function ConsoleDashboard() {
           <div
             style={{
               padding: '1rem 1.5rem',
-              borderBottom: '2px solid rgba(58, 169, 190, 0.1)',
-              background: 'rgba(255, 255, 255, 0.01)',
+              borderBottom: '2px solid rgba(58, 169, 190, 0.15)',
+              background: 'rgba(58, 169, 190, 0.03)',
             }}
           >
             <div
@@ -392,7 +416,8 @@ export function ConsoleDashboard() {
                 fontWeight: 500,
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: '#A0A4A8',
+                fontFamily: 'JetBrains Mono, monospace',
               }}
             >
               {activeMode} Mode — {activeTool}
@@ -407,7 +432,7 @@ export function ConsoleDashboard() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.24 }}
+                transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                 style={{ height: '100%' }}
               >
                 {renderActiveContent()}
@@ -420,14 +445,15 @@ export function ConsoleDashboard() {
             RIGHT SIDEBAR - Insights / Presence
             ======================================== */}
         <motion.aside
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
+          transition={{ duration: 0.24, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           style={{
             gridColumn: '3',
             gridRow: '2 / 3',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '2px solid rgba(58, 169, 190, 0.1)',
+            background: '#1A1C1F', // Surface
+            border: '2px solid rgba(58, 169, 190, 0.25)',
+            borderRadius: 0, // Sharp edges
             overflow: 'auto',
             padding: '1.5rem',
           }}
@@ -452,26 +478,38 @@ export function ConsoleDashboard() {
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
+          transition={{ duration: 0.08, delay: 0.25, ease: 'easeOut' }}
           style={{
             gridColumn: '1 / -1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 1.5rem',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '2px solid rgba(58, 169, 190, 0.1)',
+            background: '#1A1C1F', // Surface
+            border: '2px solid rgba(58, 169, 190, 0.25)',
+            borderRadius: 0, // Sharp edges
             fontSize: '0.75rem',
-            color: 'rgba(255, 255, 255, 0.4)',
+            color: '#A0A4A8', // Text secondary
             letterSpacing: '0.3px',
+            fontFamily: 'JetBrains Mono, monospace',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            {/* Session active with pulse */}
+            <motion.div
+              animate={{
+                color: ['#A0A4A8', '#3AA9BE', '#A0A4A8'],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+            >
+              session active
+            </motion.div>
             <div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.3)' }}>Session Active</span>
-            </div>
-            <div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.3)' }}>Theme:</span>{' '}
+              <span>theme:</span>{' '}
               <span style={{ color: '#3AA9BE', fontWeight: 500 }}>{currentTheme}</span>
             </div>
           </div>
