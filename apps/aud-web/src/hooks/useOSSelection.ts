@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useUISound } from './useUISound'
 
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 
 interface OSOption {
   id: OSTheme
@@ -11,11 +11,11 @@ interface OSOption {
 }
 
 const OS_OPTIONS: OSOption[] = [
-  { id: 'ascii', label: 'ascii terminal' },
-  { id: 'xp', label: 'xp workstation' },
-  { id: 'aqua', label: 'aqua interface' },
-  { id: 'daw', label: 'daw console' },
-  { id: 'analogue', label: 'analogue studio' },
+  { id: 'operator', label: 'operator — when you need speed' },
+  { id: 'guide', label: 'guide — when you want a path' },
+  { id: 'map', label: 'map — when you think in systems' },
+  { id: 'timeline', label: 'timeline — when time is the instrument' },
+  { id: 'tape', label: 'tape — when notes become runs' },
 ]
 
 interface UseOSSelectionReturn {

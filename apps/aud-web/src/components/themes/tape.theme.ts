@@ -95,7 +95,7 @@ export const tapeTheme: ThemeConfig = {
 
   microcopy: {
     tagline: 'when notes become runs.',
-    emptyState: 'Write a note. We'll turn it into work.',
+    emptyState: "Write a note. We'll turn it into work.",
     primaryCTA: 'Make it a Run',
     onboardingHint: 'Write it. Run it.',
   },

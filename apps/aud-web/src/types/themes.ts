@@ -1,4 +1,4 @@
-export type OSTheme = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 
 export interface ThemeConfig {
   id: OSTheme
@@ -44,12 +44,12 @@ export interface ThemeConfig {
 }
 
 export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
-  ascii: {
-    id: 'ascii',
-    name: 'ASCII Terminal',
-    displayName: 'ASCII TERMINAL',
-    description: 'For those who mix code and caffeine',
-    tagline: 'Pure text. Pure focus.',
+  operator: {
+    id: 'operator',
+    name: 'Operator',
+    displayName: 'OPERATOR',
+    description: 'The fast lane — keyboard-first, dense signals, instant feedback',
+    tagline: 'when you need speed.',
     colors: {
       primary: '#00ff00',
       secondary: '#00cc00',
@@ -74,12 +74,12 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     },
   },
 
-  xp: {
-    id: 'xp',
-    name: 'Windows XP Studio',
-    displayName: 'WINDOWS XP STUDIO',
-    description: 'Nostalgic productivity at its finest',
-    tagline: 'Loading VSTs...',
+  guide: {
+    id: 'guide',
+    name: 'Guide',
+    displayName: 'GUIDE',
+    description: 'The pathfinder — step-by-step flows, guardrails, undo comfort',
+    tagline: 'when you want a path.',
     colors: {
       primary: '#0078d7',
       secondary: '#69b3f7',
@@ -103,12 +103,12 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     },
   },
 
-  aqua: {
-    id: 'aqua',
-    name: 'Mac OS Retro',
-    displayName: 'MAC OS RETRO (2001)',
-    description: 'When design was an art form',
-    tagline: 'Think different. Sound different.',
+  map: {
+    id: 'map',
+    name: 'Map',
+    displayName: 'MAP',
+    description: 'The strategist — spatial planning, dependencies, campaign arcs',
+    tagline: 'when you think in systems.',
     colors: {
       primary: '#4a90e2',
       secondary: '#7fb8f0',
@@ -133,12 +133,12 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     },
   },
 
-  daw: {
-    id: 'daw',
-    name: 'DAW Workstation',
-    displayName: 'DAW WORKSTATION',
-    description: 'Flow like a DAW',
-    tagline: 'Arrange. Produce. Promote.',
+  timeline: {
+    id: 'timeline',
+    name: 'Timeline',
+    displayName: 'TIMELINE',
+    description: 'The sequencer — time-based execution, clips, automation lanes',
+    tagline: 'when time is the instrument.',
     colors: {
       primary: '#ff764d',
       secondary: '#ffb84d',
@@ -162,12 +162,12 @@ export const THEME_CONFIGS: Record<OSTheme, ThemeConfig> = {
     },
   },
 
-  analogue: {
-    id: 'analogue',
-    name: 'Analogue Studio',
-    displayName: 'ANALOGUE STUDIO',
-    description: 'Touch the signal.',
-    tagline: 'Warm signal, human hands.',
+  tape: {
+    id: 'tape',
+    name: 'Tape',
+    displayName: 'TAPE',
+    description: 'The receipt — grounded notes turn into actions, living log with intent',
+    tagline: 'when notes become runs.',
     colors: {
       primary: '#ff00ff',
       secondary: '#00ffff',
