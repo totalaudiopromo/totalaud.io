@@ -7,18 +7,19 @@
  * - Browse successful pitch examples
  * - Analyze campaign patterns
  *
- * Shared Workspace Redesign - Stage 1 (Stub)
- * To be enhanced by Experience Composer in Stage 2
+ * Phase 10.3.5: Connected to CampaignContext
  */
 
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
+import { useCampaign } from '@/contexts/CampaignContext'
 import { Lightbulb, TrendingUp, Target, Sparkles } from 'lucide-react'
 import { Button } from '@/ui/index'
 
 export function LearnTab() {
   const { insights, addInsight } = useWorkspaceStore()
+  const { activeCampaign } = useCampaign()
 
   // Demo insights for initial experience
   const demoInsights =
@@ -48,8 +49,12 @@ export function LearnTab() {
   return (
     <div className="learn-tab container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Learn & Improve</h1>
-        <p className="text-muted">AI-powered insights from your campaign data</p>
+        <h1 className="text-3xl font-bold mb-2 lowercase">learn & improve</h1>
+        <p className="text-muted lowercase">
+          {activeCampaign
+            ? `insights for ${activeCampaign.release} by ${activeCampaign.artist}`
+            : 'ai-powered insights from your campaign data'}
+        </p>
       </div>
 
       {/* Insights Feed */}

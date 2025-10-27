@@ -50,8 +50,7 @@ function useAmbientSound() {
     // Initialize Web Audio API on first interaction
     const initAudio = () => {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext ||
-          (window as any).webkitAudioContext)()
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
       }
     }
 
@@ -390,10 +389,7 @@ export default function LandingPage() {
                 whileHover={{
                   backgroundColor: 'rgba(58, 169, 190, 0.12)',
                   borderColor: 'rgba(58, 169, 190, 1)',
-                  boxShadow: [
-                    '0 0 0 rgba(58, 169, 190, 0)',
-                    '0 0 24px rgba(58, 169, 190, 0.25)',
-                  ],
+                  boxShadow: ['0 0 0 rgba(58, 169, 190, 0)', '0 0 24px rgba(58, 169, 190, 0.25)'],
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{
@@ -405,10 +401,7 @@ export default function LandingPage() {
                 <span>→</span>
               </motion.button>
 
-              <p
-                className="text-[#6B7280] text-xs"
-                style={{ fontFamily: 'var(--font-inter)' }}
-              >
+              <p className="text-[#6B7280] text-xs" style={{ fontFamily: 'var(--font-inter)' }}>
                 No AI hype, just workflow clarity.
               </p>
             </motion.div>

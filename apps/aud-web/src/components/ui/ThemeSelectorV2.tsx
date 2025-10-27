@@ -257,7 +257,7 @@ export function ThemeSelectorV2({
               return (
                 <motion.button
                   key={themeId}
-                  className={`theme-selector-v2__option ${
+                  className={`theme-selector-v2__option theme-selector-v2__option--${themeId} ${
                     isActive ? 'theme-selector-v2__option--active' : ''
                   } ${isConfirmed && isActive ? 'theme-selector-v2__option--confirmed' : ''}`}
                   onClick={() => handleThemeClick(index)}

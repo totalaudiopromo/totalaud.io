@@ -7,30 +7,31 @@
  * - Browse found curators
  * - Analyze outreach performance
  *
- * Shared Workspace Redesign - Stage 1 (Stub)
- * To be enhanced by Experience Composer in Stage 2
+ * Phase 10.3.5: Connected to CampaignContext
  */
 
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
+import { useCampaign } from '@/contexts/CampaignContext'
 import { BarChart3, Users, Mail, TrendingUp, Target } from 'lucide-react'
 import { EmptyState } from '@/ui/index'
 
 export function TrackTab() {
   const { getActiveCampaign, getTargetsForCampaign, getMetrics } = useWorkspaceStore()
+  const { activeCampaign } = useCampaign()
 
-  const activeCampaign = getActiveCampaign()
-  const targets = activeCampaign ? getTargetsForCampaign(activeCampaign.id) : []
-  const metrics = activeCampaign ? getMetrics(activeCampaign.id) : null
+  const oldActiveCampaign = getActiveCampaign()
+  const targets = activeCampaign ? [] : [] // TODO: Connect to actual campaign data
+  const metrics = activeCampaign ? null : null // TODO: Connect to actual campaign data
 
   if (!activeCampaign) {
     return (
       <div className="track-tab container mx-auto px-4 py-8">
         <EmptyState
           icon={BarChart3}
-          title="No Active Campaign"
-          description="Select a campaign from the Plan tab to view its metrics"
+          title="no active campaign"
+          description="create a campaign in plan tab to view metrics"
         />
       </div>
     )
@@ -39,8 +40,11 @@ export function TrackTab() {
   return (
     <div className="track-tab container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Track Performance</h1>
-        <p className="text-muted">Campaign: {activeCampaign.name}</p>
+        <h1 className="text-3xl font-bold mb-2 lowercase">track performance</h1>
+        <p className="text-muted lowercase">
+          campaign: <span className="text-[#3AA9BE]">{activeCampaign.release}</span> by{' '}
+          {activeCampaign.artist}
+        </p>
       </div>
 
       {/* Metrics Overview */}

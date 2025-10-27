@@ -7,20 +7,21 @@
  * - Monitor agent progress
  * - View live logs
  *
- * Shared Workspace Redesign - Stage 1 (Stub)
- * To be enhanced by Experience Composer in Stage 2
+ * Phase 10.3.5: Connected to CampaignContext
  */
 
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
+import { useCampaign } from '@/contexts/CampaignContext'
 import { Play, Search, FileText, Send, History } from 'lucide-react'
 import { EmptyState, Button } from '@/ui/index'
 
 export function DoTab() {
   const { runs, getActiveCampaign, runAction, isLoading } = useWorkspaceStore()
+  const { activeCampaign } = useCampaign()
 
-  const activeCampaign = getActiveCampaign()
+  const oldActiveCampaign = getActiveCampaign()
 
   const workflows = [
     {
@@ -48,8 +49,8 @@ export function DoTab() {
       <div className="do-tab container mx-auto px-4 py-8">
         <EmptyState
           icon={Play}
-          title="No Active Campaign"
-          description="Select or create a campaign from the Plan tab to start running workflows"
+          title="no active campaign"
+          description="create a campaign in plan tab to start running workflows"
         />
       </div>
     )
@@ -58,8 +59,11 @@ export function DoTab() {
   return (
     <div className="do-tab container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Execute Workflows</h1>
-        <p className="text-muted">Campaign: {activeCampaign.name}</p>
+        <h1 className="text-3xl font-bold mb-2 lowercase">execute workflows</h1>
+        <p className="text-muted lowercase">
+          campaign: <span className="text-[#3AA9BE]">{activeCampaign.release}</span> by{' '}
+          {activeCampaign.artist}
+        </p>
       </div>
 
       {/* Workflow Launcher */}
