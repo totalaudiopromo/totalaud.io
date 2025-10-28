@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
-import { logger } from '@/lib/logger'
+import { logger } from '@total-audio/core-logger'
 
 const log = logger.scope('CampaignsAPI')
 
