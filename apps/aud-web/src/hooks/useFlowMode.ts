@@ -11,6 +11,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useUserPrefs } from './useUserPrefs'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useFlowMode')
 
 export interface FlowModeState {
   /** Whether focus mode is active */
@@ -62,20 +65,20 @@ export function useFlowMode(): FlowModeState {
   const toggleFocus = useCallback(() => {
     setIsActive((prev) => {
       const newState = !prev
-      console.log(`[FlowMode] ${newState ? 'Entering' : 'Exiting'} focus mode`)
+      log.debug(newState ? 'Entering focus mode' : 'Exiting focus mode')
       return newState
     })
   }, [])
 
   // Enter focus mode explicitly
   const enterFocus = useCallback(() => {
-    console.log('[FlowMode] Entering focus mode')
+    log.debug('Entering focus mode')
     setIsActive(true)
   }, [])
 
   // Exit focus mode explicitly
   const exitFocus = useCallback(() => {
-    console.log('[FlowMode] Exiting focus mode')
+    log.debug('Exiting focus mode')
     setIsActive(false)
   }, [])
 
@@ -101,7 +104,7 @@ export function useFlowMode(): FlowModeState {
   // Log state changes for debugging
   useEffect(() => {
     if (isActive) {
-      console.log('[FlowMode] State:', {
+      log.debug('Focus mode state', {
         ambientVolume,
         sidebarOpacity,
         headerOpacity,

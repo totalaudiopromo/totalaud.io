@@ -10,6 +10,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createBrowserClient } from '@aud-web/lib/supabase'
 import { playAgentSound } from '@total-audio/core-theme-engine'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useCampaignMetrics')
 
 export interface CampaignMetric {
   id: string
@@ -82,7 +85,7 @@ export function useCampaignMetrics({
 
       setMetrics((data as CampaignMetric[]) || [])
     } catch (err) {
-      console.error('[useCampaignMetrics] Fetch error:', err)
+      log.error('Fetch error', err, { sessionId })
       setError(err instanceof Error ? err.message : 'Failed to fetch metrics')
     } finally {
       setLoading(false)

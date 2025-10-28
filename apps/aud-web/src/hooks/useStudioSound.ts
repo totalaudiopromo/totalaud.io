@@ -8,6 +8,9 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useStudioSound')
 
 export interface StudioSoundConfig {
   /** Ambient loop audio file */
@@ -138,7 +141,7 @@ export function useStudioSound(theme: string) {
     }
 
     ambientRef.current.play().catch((err) => {
-      console.log('[StudioSound] Ambient playback blocked:', err)
+      log.warn('Ambient playback blocked', { error: err, studio: studioName })
     })
   }, [config.ambientLoop, config.ambientVolume])
 
@@ -197,7 +200,7 @@ export function useStudioSound(theme: string) {
       const audio = new Audio(soundFile)
       audio.volume = config.uiVolume
       audio.play().catch((err) => {
-        console.log(`[StudioSound] ${type} sound blocked:`, err)
+        log.warn('Sound blocked', { type, error: err, studio: studioName })
       })
     },
     [config.uiSounds, config.uiVolume]

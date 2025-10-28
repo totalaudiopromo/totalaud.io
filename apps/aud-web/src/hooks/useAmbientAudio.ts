@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useUserPrefs } from './useUserPrefs'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useAmbientAudio')
 
 type AmbientType = 'operator-hum' | 'transition-glide' | 'theme-ambient'
 
@@ -101,7 +104,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
       oscillator.start(ctx.currentTime)
       setIsPlaying(true)
     } catch (error) {
-      console.warn('Failed to play ambient audio:', error)
+      log.warn('Failed to play ambient audio', { error, type: config.type })
     }
   }
 
@@ -122,7 +125,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
           setIsPlaying(false)
         }, 350)
       } catch (error) {
-        console.warn('Failed to stop ambient audio:', error)
+        log.warn('Failed to stop ambient audio', { error })
       }
     }
   }
@@ -143,7 +146,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
           duration * 1000 + 50
         )
       } catch (error) {
-        console.warn('Failed to fade out ambient audio:', error)
+        log.warn('Failed to fade out ambient audio', { error })
       }
     }
   }
@@ -159,7 +162,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
         gainNode.gain.setValueAtTime(currentGain, ctx.currentTime)
         gainNode.gain.linearRampToValueAtTime(newGain, ctx.currentTime + 0.2)
       } catch (error) {
-        console.warn('Failed to increase volume:', error)
+        log.warn('Failed to increase volume', { error })
       }
     }
   }
