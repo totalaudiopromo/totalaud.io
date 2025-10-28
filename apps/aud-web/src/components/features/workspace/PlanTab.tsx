@@ -29,6 +29,8 @@ export function PlanTab() {
 
   const handleCreateCampaign = async (campaignData: Omit<Campaign, 'id' | 'createdAt'>) => {
     try {
+      console.log('[PlanTab] Creating campaign with data:', campaignData)
+
       // Call API to persist to Supabase
       const response = await fetch('/api/campaigns', {
         method: 'POST',
@@ -36,14 +38,30 @@ export function PlanTab() {
         body: JSON.stringify(campaignData),
       })
 
+      console.log('[PlanTab] API response status:', response.status, response.statusText)
+
       if (!response.ok) {
-        const error = await response.json()
-        console.error('Failed to create campaign:', error)
+        const errorText = await response.text()
+        console.error('[PlanTab] API returned error:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        })
+
+        try {
+          const errorJson = JSON.parse(errorText)
+          console.error('[PlanTab] Parsed error:', errorJson)
+        } catch (e) {
+          console.error('[PlanTab] Could not parse error as JSON')
+        }
+
         playSound('task-failed', { volume: 0.2 })
         return
       }
 
       const result = await response.json()
+      console.log('[PlanTab] API success response:', result)
+
       const newCampaign: Campaign = result.campaign
 
       // Add to context for immediate UI update
@@ -52,7 +70,7 @@ export function PlanTab() {
       // Play success sound
       playSound('success-soft', { volume: 0.15 })
     } catch (error) {
-      console.error('Error creating campaign:', error)
+      console.error('[PlanTab] Exception creating campaign:', error)
       playSound('task-failed', { volume: 0.2 })
     }
   }
