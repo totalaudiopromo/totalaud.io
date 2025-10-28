@@ -15,6 +15,9 @@ import { aquaTheme } from './aqua.theme'
 import { dawTheme } from './daw.theme'
 import { analogueTheme } from './analogue.theme'
 import { useUserPrefs } from '@aud-web/hooks/useUserPrefs'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('ThemeResolver')
 
 // Theme registry - all 5 themes fully implemented
 const THEME_REGISTRY: Record<OSTheme, ThemeConfig> = {
@@ -51,11 +54,11 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
   // Update theme and persist to preferences
   const setTheme = async (theme: OSTheme) => {
     if (!THEME_REGISTRY[theme]) {
-      console.warn(`[ThemeResolver] Theme "${theme}" not found in registry`)
+      log.warn('Theme not found in registry', { theme })
       return
     }
 
-    console.log(`[ThemeResolver] Switching to theme: ${theme}`)
+    log.info('Switching theme', { theme })
     setCurrentTheme(theme)
     setThemeConfig(THEME_REGISTRY[theme])
 
@@ -105,7 +108,7 @@ export function ThemeResolver({ children, defaultTheme = 'ascii' }: ThemeResolve
       themeConfig.effects.opacity.disabled.toString()
     )
 
-    console.log(`[ThemeResolver] Applied CSS variables for theme: ${themeConfig.name}`)
+    log.debug('Applied CSS variables for theme', { theme: themeConfig.name })
   }, [themeConfig])
 
   const contextValue: ThemeContextValue = {

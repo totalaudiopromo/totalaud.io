@@ -8,6 +8,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { nanoid } from 'nanoid'
 import crypto from 'crypto'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('OAuth')
 
 export type IntegrationType = 'gmail' | 'google_sheets'
 
@@ -388,7 +391,7 @@ export async function getValidAccessToken(
 
       return newTokens.access_token
     } catch (error) {
-      console.error('[OAuth] Token refresh failed:', error)
+      log.error('Token refresh failed', error, { userId, provider })
       return null
     }
   }
