@@ -59,7 +59,7 @@ export function LearnTab() {
 
       {/* Insights Feed */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Insights</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">insights</h2>
         <div className="space-y-4">
           {demoInsights.map((insight) => {
             const Icon =
@@ -80,7 +80,7 @@ export function LearnTab() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold">{insight.title}</h3>
+                      <h3 className="font-medium lowercase">{insight.title}</h3>
                       <span
                         className={`
                           px-2 py-1 rounded text-xs font-medium
@@ -92,9 +92,9 @@ export function LearnTab() {
                         {insight.type}
                       </span>
                     </div>
-                    <p className="text-muted mb-3">{insight.description}</p>
-                    <div className="flex items-center gap-4 text-xs text-muted">
-                      <span>Relevance: {Math.round(insight.relevance_score * 100)}%</span>
+                    <p className="text-muted mb-3 lowercase">{insight.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted lowercase">
+                      <span>relevance: {Math.round(insight.relevance_score * 100)}%</span>
                       <span>{new Date(insight.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -107,21 +107,21 @@ export function LearnTab() {
 
       {/* Quick Actions */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Recommended Actions</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">recommended actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="action-card p-6 border border-border rounded-lg">
             <Sparkles className="w-8 h-8 mb-4 text-accent" />
-            <h3 className="font-semibold mb-2">Optimize pitch timing</h3>
-            <p className="text-sm text-muted mb-4">
-              Adjust your sending schedule based on insights to improve open rates
+            <h3 className="font-medium mb-2 lowercase">optimise pitch timing</h3>
+            <p className="text-sm text-muted mb-4 lowercase">
+              adjust your sending schedule based on insights to improve open rates
             </p>
             <Button variant="primary">Apply Recommendations</Button>
           </div>
           <div className="action-card p-6 border border-border rounded-lg">
             <Target className="w-8 h-8 mb-4 text-accent" />
-            <h3 className="font-semibold mb-2">Refine targeting</h3>
-            <p className="text-sm text-muted mb-4">
-              Use pattern analysis to find more curators likely to respond
+            <h3 className="font-medium mb-2 lowercase">refine targeting</h3>
+            <p className="text-sm text-muted mb-4 lowercase">
+              use pattern analysis to find more curators likely to respond
             </p>
             <Button variant="primary">Explore Patterns</Button>
           </div>

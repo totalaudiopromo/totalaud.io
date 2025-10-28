@@ -45,16 +45,16 @@ export function PlanTab() {
   return (
     <div className="plan-tab container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Plan Your Campaign</h1>
-        <p className="text-muted">
+        <h1 className="text-3xl font-semibold mb-2 lowercase">plan your campaign</h1>
+        <p className="text-muted lowercase">
           {releases.length === 0 ? (
-            <Tooltip content="Start by adding a release, then create campaigns to promote it">
+            <Tooltip content="start by adding a release, then create campaigns to promote it">
               <span className="border-b border-dashed border-muted cursor-help">
-                Define releases and create targeted campaigns
+                define releases and create targeted campaigns
               </span>
             </Tooltip>
           ) : (
-            'Define releases and create targeted campaigns'
+            'define releases and create targeted campaigns'
           )}
         </p>
       </div>
@@ -62,7 +62,7 @@ export function PlanTab() {
       {/* Releases Section */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">Releases</h2>
+          <h2 className="text-2xl font-medium lowercase">releases</h2>
           <Button
             variant="primary"
             icon={Plus}
@@ -85,9 +85,9 @@ export function PlanTab() {
         {releases.length === 0 ? (
           <EmptyState
             icon={Music}
-            title="No releases yet"
-            description="Add your first release to get started with campaign planning"
-            ctaLabel="Add your first release"
+            title="no releases yet"
+            description="add your first release to get started with campaign planning"
+            ctaLabel="add your first release"
             onClick={() => {
               const id = addRelease({
                 artist: 'Your Artist Name',
@@ -127,7 +127,7 @@ export function PlanTab() {
       {/* Campaigns Section */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">Campaigns</h2>
+          <h2 className="text-2xl font-medium lowercase">campaigns</h2>
           <Button variant="primary" icon={Plus} onClick={() => setIsModalOpen(true)}>
             Create Campaign
           </Button>

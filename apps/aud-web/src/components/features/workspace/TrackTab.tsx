@@ -49,39 +49,39 @@ export function TrackTab() {
 
       {/* Metrics Overview */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Metrics</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">metrics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="metric-card p-6 border border-border rounded-lg">
             <Users className="w-8 h-8 mb-2 text-accent" />
-            <p className="text-sm text-muted mb-1">Curators Found</p>
-            <p className="text-3xl font-bold">{metrics?.curators_found || 0}</p>
+            <p className="text-sm text-muted mb-1 lowercase">curators found</p>
+            <p className="text-3xl font-semibold">{metrics?.curators_found || 0}</p>
           </div>
           <div className="metric-card p-6 border border-border rounded-lg">
             <Mail className="w-8 h-8 mb-2 text-accent" />
-            <p className="text-sm text-muted mb-1">Pitches Sent</p>
-            <p className="text-3xl font-bold">{metrics?.pitches_sent || 0}</p>
+            <p className="text-sm text-muted mb-1 lowercase">pitches sent</p>
+            <p className="text-3xl font-semibold">{metrics?.pitches_sent || 0}</p>
           </div>
           <div className="metric-card p-6 border border-border rounded-lg">
             <TrendingUp className="w-8 h-8 mb-2 text-accent" />
-            <p className="text-sm text-muted mb-1">Emails Opened</p>
-            <p className="text-3xl font-bold">{metrics?.emails_opened || 0}</p>
+            <p className="text-sm text-muted mb-1 lowercase">emails opened</p>
+            <p className="text-3xl font-semibold">{metrics?.emails_opened || 0}</p>
           </div>
           <div className="metric-card p-6 border border-border rounded-lg">
             <BarChart3 className="w-8 h-8 mb-2 text-accent" />
-            <p className="text-sm text-muted mb-1">Replies Received</p>
-            <p className="text-3xl font-bold">{metrics?.replies_received || 0}</p>
+            <p className="text-sm text-muted mb-1 lowercase">replies received</p>
+            <p className="text-3xl font-semibold">{metrics?.replies_received || 0}</p>
           </div>
         </div>
       </section>
 
       {/* Targets List */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Found Targets ({targets.length})</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">found targets ({targets.length})</h2>
         {targets.length === 0 ? (
           <EmptyState
             icon={Target}
-            title="No targets found yet"
-            description='Run the "Find Curators" workflow from the Do tab'
+            title="no targets found yet"
+            description='run the "find curators" workflow from the do tab'
             variant="bordered"
           />
         ) : (
@@ -89,10 +89,10 @@ export function TrackTab() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="pb-3 font-semibold">Name</th>
-                  <th className="pb-3 font-semibold">Type</th>
-                  <th className="pb-3 font-semibold">Status</th>
-                  <th className="pb-3 font-semibold">Contact</th>
+                  <th className="pb-3 font-medium lowercase">name</th>
+                  <th className="pb-3 font-medium lowercase">type</th>
+                  <th className="pb-3 font-medium lowercase">status</th>
+                  <th className="pb-3 font-medium lowercase">contact</th>
                 </tr>
               </thead>
               <tbody>

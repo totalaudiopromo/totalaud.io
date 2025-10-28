@@ -68,7 +68,7 @@ export function DoTab() {
 
       {/* Workflow Launcher */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Available Workflows</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">available workflows</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {workflows.map((workflow) => {
             const Icon = workflow.icon
@@ -79,8 +79,8 @@ export function DoTab() {
                 className="workflow-card p-6 border border-border rounded-lg hover:border-accent/50 transition-colors"
               >
                 <Icon className="w-8 h-8 mb-4 text-accent" />
-                <h3 className="font-semibold mb-2">{workflow.name}</h3>
-                <p className="text-sm text-muted mb-4">{workflow.description}</p>
+                <h3 className="font-medium mb-2 lowercase">{workflow.name}</h3>
+                <p className="text-sm text-muted mb-4 lowercase">{workflow.description}</p>
                 <Button
                   variant="primary"
                   fullWidth
@@ -98,12 +98,12 @@ export function DoTab() {
 
       {/* Recent Runs */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Recent Runs</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">recent runs</h2>
         {runs.length === 0 ? (
           <EmptyState
             icon={History}
-            title="No runs yet"
-            description="Start a workflow above to get started"
+            title="no runs yet"
+            description="start a workflow above to get started"
             variant="bordered"
           />
         ) : (
