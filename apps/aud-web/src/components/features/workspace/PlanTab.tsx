@@ -27,19 +27,34 @@ export function PlanTab() {
   const { addCampaign: addCampaignToContext, campaigns: contextCampaigns } = useCampaign()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleCreateCampaign = (campaignData: Omit<Campaign, 'id' | 'createdAt'>) => {
-    // Generate ID and timestamp
-    const newCampaign: Campaign = {
-      ...campaignData,
-      id: `campaign-${Date.now()}`,
-      createdAt: new Date().toISOString(),
+  const handleCreateCampaign = async (campaignData: Omit<Campaign, 'id' | 'createdAt'>) => {
+    try {
+      // Call API to persist to Supabase
+      const response = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(campaignData),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        console.error('Failed to create campaign:', error)
+        playSound('task-failed', { volume: 0.2 })
+        return
+      }
+
+      const result = await response.json()
+      const newCampaign: Campaign = result.campaign
+
+      // Add to context for immediate UI update
+      addCampaignToContext(newCampaign)
+
+      // Play success sound
+      playSound('success-soft', { volume: 0.15 })
+    } catch (error) {
+      console.error('Error creating campaign:', error)
+      playSound('task-failed', { volume: 0.2 })
     }
-
-    // Add to context
-    addCampaignToContext(newCampaign)
-
-    // Play success sound
-    playSound('success-soft', { volume: 0.15 })
   }
 
   return (

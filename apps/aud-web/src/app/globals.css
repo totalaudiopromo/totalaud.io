@@ -17,12 +17,15 @@
    ======================================== */
 
 :root {
-  /* Typography */
-  --font-geist: 'Geist Sans', system-ui;
-  --font-inter: 'Inter', system-ui;
-  --font-mono: 'Geist Mono', 'IBM Plex Mono', monospace;
-  --font-editorial: 'EB Garamond Variable', Georgia, serif;
-  --font-primary: var(--font-inter), sans-serif;
+  /* Typography - Design System (Phase 10.4)
+   * Primary fonts loaded via Next.js font system (layout.tsx)
+   * Hierarchy: Inter (UI) → JetBrains Mono (Code) → EB Garamond (Editorial)
+   * Matches /apps/aud-web/src/design-system/typography.ts canonical definitions */
+  --font-geist: 'Geist Sans', system-ui;  /* Legacy fallback */
+  --font-inter: 'Inter', system-ui;        /* PRIMARY: UI text, components, navigation */
+  --font-mono: 'Geist Mono', 'IBM Plex Mono', monospace;  /* Code, console, monospace contexts */
+  --font-editorial: 'EB Garamond Variable', Georgia, serif;  /* Hero sections, testimonials, emotional content */
+  --font-primary: var(--font-inter), sans-serif;  /* Default application font */
 
   /* Colors - UI Style Guide */
   --bg: #0F1113;
@@ -62,16 +65,21 @@
   --radius-md: 8px;
   --radius-lg: 12px;
 
-  /* Motion - UI Style Guide */
+  /* Motion - Design System (Phase 10.4)
+   * Unified timing rhythm: 120ms / 240ms / 400ms / 600ms / 800ms
+   * Matches /apps/aud-web/src/design-system/motion.ts canonical values */
   --motion-fast: 120ms cubic-bezier(0.22, 1, 0.36, 1);
   --motion-normal: 240ms cubic-bezier(0.22, 1, 0.36, 1);
   --motion-slow: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-editorial: 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-cinematic: 800ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Legacy motion (backward compatibility) */
+  /* Legacy motion (backward compatibility - update to new values)
+   * DEPRECATED: Use --motion-* variables instead */
   --duration-fast: 120ms;
-  --duration-medium: 200ms;
-  --duration-slow: 300ms;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-medium: 240ms;  /* Updated from 200ms to match design system */
+  --duration-slow: 400ms;     /* Updated from 300ms to match design system */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);  /* Updated to match design system softOut curve */
 
   /* Grid texture */
   --grid-opacity: 0.04;

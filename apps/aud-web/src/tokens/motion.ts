@@ -1,6 +1,19 @@
 /**
  * Motion Tokens - Centralised Animation Standards
  *
+ * ⚠️ DEPRECATED - Phase 10.4 Design System Unification
+ *
+ * Please use: /apps/aud-web/src/design-system/motion.ts instead
+ *
+ * This file contains legacy motion values with conflicting durations:
+ * - normal: 400ms (should be 240ms)
+ * - slow: 600ms (should be 400ms)
+ *
+ * The canonical design system motion tokens use consistent rhythm:
+ * fast: 120ms / normal: 240ms / slow: 400ms / editorial: 600ms / cinematic: 800ms
+ *
+ * Migration: Replace imports from this file with design-system/motion.ts
+ *
  * Theme System Anti-Gimmick Refactor
  * All animations use these standardised durations and easing curves.
  * Respects user's reduced motion preference.
