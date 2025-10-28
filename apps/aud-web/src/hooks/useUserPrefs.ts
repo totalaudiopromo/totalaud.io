@@ -7,6 +7,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@aud-web/lib/supabase'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useUserPrefs')
 
 export interface UserPreferences {
   id: string
@@ -117,7 +120,7 @@ export function useUserPrefs(userId?: string): UseUserPrefsReturn {
         setPrefs(existing)
       }
     } catch (err) {
-      console.error('[useUserPrefs] Error fetching preferences:', err)
+      log.error('Error fetching preferences', err)
       setError(err instanceof Error ? err : new Error('Failed to fetch preferences'))
     } finally {
       setLoading(false)
@@ -177,7 +180,7 @@ export function useUserPrefs(userId?: string): UseUserPrefsReturn {
 
         if (updateError) throw updateError
       } catch (err) {
-        console.error('[useUserPrefs] Error updating preferences:', err)
+        log.error('Error updating preferences', err)
         // Revert optimistic update on error
         await fetchPrefs()
         throw err

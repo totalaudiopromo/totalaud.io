@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useSupabaseRealtime')
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -40,7 +43,7 @@ export function useSupabaseRealtime(userId?: string) {
           filter: userId ? `user_id=eq.${userId}` : undefined,
         },
         (payload: any) => {
-          console.log('Realtime update:', payload)
+          log.debug('Realtime update', { eventType: payload.eventType, table: 'skill_executions' })
 
           if (payload.eventType === 'INSERT') {
             const newExecution = payload.new as SkillExecution
@@ -84,7 +87,7 @@ export function useAgentSessionRealtime(sessionId?: string) {
           filter: `id=eq.${sessionId}`,
         },
         (payload: any) => {
-          console.log('Session update:', payload)
+          log.debug('Session update', { sessionId, status: payload.new?.status })
           setSession(payload.new)
         }
       )
@@ -102,7 +105,7 @@ export function useAgentSessionRealtime(sessionId?: string) {
           filter: `session_id=eq.${sessionId}`,
         },
         (payload: any) => {
-          console.log('Step update:', payload)
+          log.debug('Step update', { sessionId, eventType: payload.eventType, stepId: payload.new?.id })
 
           if (payload.eventType === 'INSERT') {
             setSteps((prev) => [...prev, payload.new])

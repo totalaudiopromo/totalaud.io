@@ -3,6 +3,9 @@
 import { useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useFlowStore } from '@aud-web/stores/flowStore'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useFlowRealtime')
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
@@ -29,7 +32,11 @@ export function useFlowRealtime(
           filter: `session_id=eq.${sessionId}`,
         },
         (payload: any) => {
-          console.log('Flow step update:', payload)
+          log.debug('Flow step update', {
+            sessionId,
+            eventType: payload.eventType,
+            stepNumber: payload.new?.step_number
+          })
 
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             const { step_number, status, skill_name, output } = payload.new
@@ -68,7 +75,7 @@ export function useFlowSessionSync(flowId?: string) {
         }
       })
       .catch((error) => {
-        console.error('Failed to load flow:', error)
+        log.error('Failed to load flow', error, { flowId })
       })
   }, [flowId, setNodes, setEdges, setSessionId])
 }

@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { OSTheme } from '@aud-web/components/themes/types'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useUISound')
 
 interface UISoundConfig {
   enabled: boolean
@@ -102,7 +105,7 @@ export function useUISound() {
       oscillator.start(ctx.currentTime)
       oscillator.stop(ctx.currentTime + duration)
     } catch (error) {
-      console.warn('Failed to play UI sound:', error)
+      log.warn('Failed to play UI sound', { error })
     }
   }
 
@@ -113,7 +116,7 @@ export function useUISound() {
     const sound = soundBank[soundType]
 
     if (!sound) {
-      console.warn(`[useUISound] Sound "${soundType}" not found for theme "${theme}"`)
+      log.warn('Sound not found for theme', { soundType, theme })
       return
     }
 
@@ -135,7 +138,7 @@ export function useUISound() {
       audioCache.current.set(url, audioBuffer)
       return audioBuffer
     } catch (error) {
-      console.warn(`Failed to load audio file ${url}:`, error)
+      log.warn('Failed to load audio file', { url, error })
       return null
     }
   }
@@ -157,7 +160,7 @@ export function useUISound() {
       gainNode.gain.value = config.volume
       source.start(0)
     } catch (error) {
-      console.warn('Failed to play audio file:', error)
+      log.warn('Failed to play audio file', { error })
     }
   }
 

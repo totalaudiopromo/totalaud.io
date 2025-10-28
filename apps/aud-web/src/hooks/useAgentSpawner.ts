@@ -3,6 +3,9 @@
 import { useState, useCallback, useMemo } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useUISound } from './useUISound'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('useAgentSpawner')
 
 export type AgentRole = 'scout' | 'coach' | 'tracker' | 'insight' | 'custom'
 
@@ -110,12 +113,12 @@ export function useAgentSpawner(): UseAgentSpawnerReturn {
         // Play spawn sound (240Hz → 480Hz glide)
         sound.agentStart()
 
-        console.log(`[useAgentSpawner] Agent '${params.name}' spawned:`, data)
+        log.info('Agent spawned', { name: params.name, role: params.role, id: data.id })
         return data as AgentManifest
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'failed to spawn agent'
         setError(errorMessage)
-        console.error('[useAgentSpawner] Spawn error:', err)
+        log.error('Spawn error', err, { name: params.name })
         sound.error()
         return null
       } finally {
@@ -153,7 +156,7 @@ export function useAgentSpawner(): UseAgentSpawnerReturn {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'failed to list agents'
       setError(errorMessage)
-      console.error('[useAgentSpawner] List error:', err)
+      log.error('List error', err)
       return []
     }
   }, [supabase])
@@ -196,12 +199,12 @@ export function useAgentSpawner(): UseAgentSpawnerReturn {
           oscillator.stop(ctx.currentTime + 0.3)
         }
 
-        console.log(`[useAgentSpawner] Agent ${id} removed`)
+        log.info('Agent removed', { id })
         return true
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'failed to remove agent'
         setError(errorMessage)
-        console.error('[useAgentSpawner] Remove error:', err)
+        log.error('Remove error', err, { id })
         sound.error()
         return false
       }
