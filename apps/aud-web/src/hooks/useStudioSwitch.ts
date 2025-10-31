@@ -55,8 +55,7 @@ export function useStudioSwitch(): StudioSwitchState {
 
   // Check for reduced motion preference
   const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
     // Initialize ambient player on mount

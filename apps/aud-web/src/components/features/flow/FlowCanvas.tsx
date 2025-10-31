@@ -90,6 +90,14 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     return localStorage.getItem('flow_seen_connection_hint') === 'true'
   })
 
+  // Ghost node placement affordance (Phase 13.0.2)
+  const [ghostNodePosition, setGhostNodePosition] = useState<{ x: number; y: number } | null>(null)
+  const [showPlacementTooltip, setShowPlacementTooltip] = useState(false)
+  const [hasSeenPlacementTooltip, setHasSeenPlacementTooltip] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('flow_seen_placement_tooltip') === 'true'
+  })
+
   // Generate session ID (in production, this would come from user auth)
   const [sessionId] = useState(() => generateUUID())
   const [sessionCreated, setSessionCreated] = useState(false)
@@ -265,6 +273,20 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     setStoreEdges(edges)
   }, [edges, setStoreEdges])
 
+  // Esc key handler to cancel ghost node placement (Phase 13.0.2)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && selectedSkill) {
+        setSelectedSkill(null)
+        setGhostNodePosition(null)
+        setShowPlacementTooltip(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedSkill])
+
   // Handle connections
   const onConnect = useCallback(
     (params: Connection | Edge) => {
@@ -322,7 +344,31 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     [edges, nodes, currentTheme, prefs?.mute_sounds, playProceduralSound]
   )
 
-  // Add skill node on canvas click
+  // Track mouse position for ghost node (Phase 13.0.2)
+  const onPaneMouseMove = useCallback(
+    (event: React.MouseEvent) => {
+      if (!selectedSkill || !reactFlowInstance.current) {
+        setGhostNodePosition(null)
+        return
+      }
+
+      // Convert screen coordinates to canvas space
+      const position = reactFlowInstance.current.project({
+        x: event.clientX,
+        y: event.clientY,
+      })
+
+      setGhostNodePosition(position)
+
+      // Show placement tooltip on first skill selection
+      if (!hasSeenPlacementTooltip) {
+        setShowPlacementTooltip(true)
+      }
+    },
+    [selectedSkill, hasSeenPlacementTooltip]
+  )
+
+  // Add skill node on canvas click (Phase 13.0.2 enhanced)
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       if (!selectedSkill || !reactFlowInstance.current) return
@@ -361,8 +407,16 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
       setNodes((nds) => [...nds, newNode])
       setSelectedSkill(null)
+      setGhostNodePosition(null)
+
+      // Hide tooltip after first placement and mark as seen
+      if (!hasSeenPlacementTooltip && typeof window !== 'undefined') {
+        setShowPlacementTooltip(false)
+        setHasSeenPlacementTooltip(true)
+        localStorage.setItem('flow_seen_placement_tooltip', 'true')
+      }
     },
-    [selectedSkill, setNodes, executeNode]
+    [selectedSkill, setNodes, executeNode, hasSeenPlacementTooltip]
   )
 
   // Real-time status updates from agent execution
@@ -653,12 +707,16 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               onConnect={onConnect}
               onNodeClick={onNodeClick}
               onPaneClick={onPaneClick}
+              onPaneMouseMove={onPaneMouseMove}
               onInit={(instance) => {
                 reactFlowInstance.current = instance
               }}
               nodeTypes={nodeTypes}
               fitView
               className="flow-studio-canvas"
+              style={{
+                cursor: selectedSkill ? 'crosshair' : 'default',
+              }}
             >
               <Controls className="bg-slate-800 border-slate-700" />
               <MiniMap
@@ -707,6 +765,112 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                   </div>
                 </div>
               </Panel>
+
+              {/* Ghost Node Preview (Phase 13.0.2) */}
+              {ghostNodePosition && selectedSkill && (
+                <Panel position="top-left">
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: ghostNodePosition.x,
+                      top: ghostNodePosition.y,
+                      transform: 'translate(-50%, -50%)',
+                      pointerEvents: 'none',
+                      zIndex: 1000,
+                    }}
+                  >
+                    {/* Cyan crosshair indicator */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '40px',
+                        height: '40px',
+                      }}
+                    >
+                      {/* Horizontal crosshair line */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '0',
+                          top: '50%',
+                          width: '100%',
+                          height: '1px',
+                          backgroundColor: '#3AA9BE',
+                          opacity: 0.6,
+                        }}
+                      />
+                      {/* Vertical crosshair line */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '50%',
+                          top: '0',
+                          width: '1px',
+                          height: '100%',
+                          backgroundColor: '#3AA9BE',
+                          opacity: 0.6,
+                        }}
+                      />
+                      {/* Center dot */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '50%',
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '4px',
+                          height: '4px',
+                          borderRadius: '50%',
+                          backgroundColor: '#3AA9BE',
+                        }}
+                      />
+                    </div>
+
+                    {/* Ghost node preview */}
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 0.4 }}
+                      transition={{ duration: 0.2 }}
+                      className="bg-slate-700 border-2 border-cyan-500 border-dashed rounded-lg px-4 py-2"
+                      style={{
+                        minWidth: '120px',
+                        marginTop: '30px',
+                      }}
+                    >
+                      <div className="text-sm font-medium text-white text-center lowercase">
+                        {skillNodes.find((s) => s.name === selectedSkill)?.label}
+                      </div>
+                    </motion.div>
+                  </div>
+                </Panel>
+              )}
+
+              {/* Placement Tooltip (shows on first skill selection) */}
+              {showPlacementTooltip && selectedSkill && (
+                <Panel position="top-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-cyan-600 text-white px-4 py-3 rounded-lg shadow-2xl max-w-md"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">→</span>
+                      <div>
+                        <div className="font-semibold text-sm mb-1">left-click to place node</div>
+                        <div className="text-xs text-cyan-100">
+                          move your cursor to position the node, then click to place it. press Esc to
+                          cancel placement.
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Panel>
+              )}
 
               {/* Connection Hint Tooltip (shows on first connection) */}
               {showConnectionHint && (

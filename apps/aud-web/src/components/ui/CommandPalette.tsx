@@ -240,11 +240,17 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold lowercase truncate" style={{ color: colors.text }}>
+                          <p
+                            className="text-sm font-semibold lowercase truncate"
+                            style={{ color: colors.text }}
+                          >
                             {command.label}
                           </p>
                           {command.description && (
-                            <p className="text-xs lowercase truncate" style={{ color: colors.textSecondary }}>
+                            <p
+                              className="text-xs lowercase truncate"
+                              style={{ color: colors.textSecondary }}
+                            >
                               {command.description}
                             </p>
                           )}
