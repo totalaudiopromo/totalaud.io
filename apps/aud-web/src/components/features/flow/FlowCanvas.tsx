@@ -36,8 +36,9 @@ import { useStudioSound, STUDIO_SOUND_PROFILES } from '@aud-web/hooks/useStudioS
 import { MissionDashboard, MissionPanel, OnboardingOverlay } from '../../layouts'
 import { AmbientSoundLayer } from '../../ui'
 import { useTheme } from '../../themes/ThemeResolver'
-import { Layers, BarChart3 } from 'lucide-react'
+import { Layers, BarChart3, Save, Share2 } from 'lucide-react'
 import { logger } from '@total-audio/core-logger'
+import { Toast } from '../../ui/Toast'
 
 const log = logger.scope('FlowCanvas')
 
@@ -97,6 +98,11 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     if (typeof window === 'undefined') return true
     return localStorage.getItem('flow_seen_placement_tooltip') === 'true'
   })
+
+  // Toast notifications (Phase 13.0.3)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success')
 
   // Generate session ID (in production, this would come from user auth)
   const [sessionId] = useState(() => generateUUID())
@@ -419,6 +425,57 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     [selectedSkill, setNodes, executeNode, hasSeenPlacementTooltip]
   )
 
+  // Save canvas scene (Phase 13.0.3)
+  const handleSave = useCallback(() => {
+    try {
+      // Serialize canvas state
+      const canvasState = {
+        nodes,
+        edges,
+        timestamp: new Date().toISOString(),
+        sessionId,
+      }
+
+      // Save to localStorage (in production, would save to database)
+      localStorage.setItem('flow_canvas_state', JSON.stringify(canvasState))
+
+      log.info('Canvas saved', { nodeCount: nodes.length, edgeCount: edges.length })
+
+      // Show success toast with theme microcopy
+      setToastMessage('saved')
+      setToastType('success')
+      setShowToast(true)
+    } catch (error) {
+      log.error('Failed to save canvas', error)
+      setToastMessage('save failed')
+      setToastType('error')
+      setShowToast(true)
+    }
+  }, [nodes, edges, sessionId])
+
+  // Share canvas (Phase 13.0.3)
+  const handleShare = useCallback(async () => {
+    try {
+      // Generate shareable link (in production, would create short URL)
+      const shareUrl = `${window.location.origin}/flow?session=${sessionId}`
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(shareUrl)
+
+      log.info('Canvas link copied', { sessionId })
+
+      // Show success toast with theme microcopy
+      setToastMessage('link copied')
+      setToastType('success')
+      setShowToast(true)
+    } catch (error) {
+      log.error('Failed to copy link', error)
+      setToastMessage('copy failed')
+      setToastType('error')
+      setShowToast(true)
+    }
+  }, [sessionId])
+
   // Real-time status updates from agent execution
   useEffect(() => {
     // Create a stable string representation for comparison
@@ -634,6 +691,24 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               {selectedSkill && (
                 <p className="mt-3 text-xs text-slate-400">Click on canvas to add</p>
               )}
+
+              {/* Save/Share Buttons (Phase 13.0.3) */}
+              <div className="mt-4 pt-4 border-t border-slate-700 space-y-2">
+                <button
+                  onClick={handleSave}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-cyan-600 hover:bg-cyan-500 text-white transition-all"
+                >
+                  <Save className="w-4 h-4" />
+                  Save Flow
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 transition-all"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share Link
+                </button>
+              </div>
             </motion.div>
 
             {/* Agent Execution Status */}
@@ -913,6 +988,15 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         onToggleView={toggleView}
         reducedMotion={prefs?.reduced_motion}
         opacity={flowMode.sidebarOpacity}
+      />
+
+      {/* Toast Notifications (Phase 13.0.3) */}
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+        useThemeTone={true}
       />
     </div>
   )
