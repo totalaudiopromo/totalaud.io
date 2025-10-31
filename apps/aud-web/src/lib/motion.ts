@@ -7,7 +7,7 @@
  * Performance: All curves use GPU-accelerated properties (transform, opacity)
  */
 
-import { type Transition } from 'framer-motion';
+import { type Transition } from 'framer-motion'
 
 /**
  * Named Easing Curves
@@ -31,7 +31,7 @@ export const easings = {
   // Analogue: Human touch
   drift: [0.25, 0.46, 0.45, 0.94] as const, // Gentle acceleration
   driftSlow: [0.16, 1, 0.3, 1] as const, // Very gentle
-} as const;
+} as const
 
 /**
  * Named Duration Tokens
@@ -44,7 +44,7 @@ export const durations = {
   smooth: 0.6, // 600ms - Aqua dissolves
   slow: 0.8, // 800ms - Analogue gentle drifts
   beat: 0.5, // 500ms - DAW Studio (120 BPM)
-} as const;
+} as const
 
 /**
  * Studio Motion Signatures
@@ -105,7 +105,7 @@ export const studioMotion = {
     },
     description: 'Gentle drift - warm and human',
   },
-} as const;
+} as const
 
 /**
  * Framer Motion Transition Presets
@@ -157,7 +157,7 @@ export const transitions = {
     damping: 35,
     mass: 1.5,
   } satisfies Transition,
-} as const;
+} as const
 
 /**
  * Stagger Presets
@@ -167,20 +167,20 @@ export const stagger = {
   fast: 0.03, // ASCII rapid-fire
   normal: 0.05, // XP/Aqua comfortable pace
   slow: 0.08, // Analogue deliberate reveal
-} as const;
+} as const
 
 /**
  * Helper: Get motion for theme
  */
 export function getStudioMotion(theme: keyof typeof studioMotion) {
-  return studioMotion[theme];
+  return studioMotion[theme]
 }
 
 /**
  * Helper: Get transition for named curve
  */
 export function getTransition(curve: keyof typeof transitions): Transition {
-  return transitions[curve];
+  return transitions[curve]
 }
 
 /**
@@ -200,7 +200,7 @@ export const gpuProps = [
   'rotateX',
   'rotateY',
   'rotateZ',
-] as const;
+] as const
 
 /**
  * Avoid animating these (causes layout thrashing):
@@ -214,4 +214,4 @@ export const layoutProps = [
   'bottom',
   'padding',
   'margin',
-] as const;
+] as const

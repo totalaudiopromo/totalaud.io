@@ -35,8 +35,7 @@ export function useScrollSound({ scrollProgress, isMuted }: UseScrollSoundOption
   useEffect(() => {
     const initAudio = () => {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext ||
-          (window as any).webkitAudioContext)()
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
       }
     }
 

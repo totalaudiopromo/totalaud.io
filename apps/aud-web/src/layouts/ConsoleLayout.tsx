@@ -32,20 +32,19 @@ export function ConsoleLayout() {
   const { currentTheme } = useTheme()
   const motion_config = useStudioMotion(currentTheme)
 
-  const {
-    campaignName,
-    activePane,
-    activeMode,
-    showOperatorPalette,
-    toggleOperatorPalette,
-  } = useConsoleStore()
+  const { campaignName, activePane, activeMode, showOperatorPalette, toggleOperatorPalette } =
+    useConsoleStore()
 
   // Share modal state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
 
   // Auth state
   const supabase = getSupabaseClient()
-  const [currentUser, setCurrentUser] = useState<{ id: string; email?: string; name?: string } | null>(null)
+  const [currentUser, setCurrentUser] = useState<{
+    id: string
+    email?: string
+    name?: string
+  } | null>(null)
   const [currentCampaign, setCurrentCampaign] = useState<{ id: string; title: string } | null>(null)
   const [userRole, setUserRole] = useState<'owner' | 'editor' | 'viewer'>('viewer')
 
@@ -53,7 +52,9 @@ export function ConsoleLayout() {
   useEffect(() => {
     const fetchAuthData = async () => {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
       if (user) {
         setCurrentUser({
@@ -92,7 +93,7 @@ export function ConsoleLayout() {
 
   // Map activeMode to presence mode (filter out 'do' which doesn't exist in presence)
   const presenceMode: 'plan' | 'track' | 'learn' =
-    activeMode === 'do' ? 'track' : (activeMode || 'plan') as 'plan' | 'track' | 'learn'
+    activeMode === 'do' ? 'track' : ((activeMode || 'plan') as 'plan' | 'track' | 'learn')
 
   // Presence hook - track collaborators in real-time
   const { collaborators, isConnected } = usePresence(
@@ -108,7 +109,9 @@ export function ConsoleLayout() {
   )
 
   // Custom events that can be added from ContextPane forms
-  const [customEvents, setCustomEvents] = useState<Array<{id: string, message: string, timestamp: Date}>>([])
+  const [customEvents, setCustomEvents] = useState<
+    Array<{ id: string; message: string; timestamp: Date }>
+  >([])
 
   const handleAddEvent = useCallback((message: string) => {
     const newEvent = {
@@ -116,7 +119,7 @@ export function ConsoleLayout() {
       message,
       timestamp: new Date(),
     }
-    setCustomEvents(prev => [newEvent, ...prev])
+    setCustomEvents((prev) => [newEvent, ...prev])
   }, [])
 
   // Motion tokens (≤ 150ms for transitions as per spec)
@@ -180,11 +183,7 @@ export function ConsoleLayout() {
         {/* Right Side Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {/* Presence Avatars */}
-          <PresenceAvatars
-            collaborators={collaborators}
-            maxVisible={5}
-            className="mr-2"
-          />
+          <PresenceAvatars collaborators={collaborators} maxVisible={5} className="mr-2" />
 
           {/* Connection Status Indicator */}
           {isConnected && (
@@ -238,7 +237,14 @@ export function ConsoleLayout() {
             }}
             title="Share campaign with collaborators"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
               <polyline points="16 6 12 2 8 6" />
               <line x1="12" y1="2" x2="12" y2="15" />
@@ -251,17 +257,9 @@ export function ConsoleLayout() {
             onClick={toggleOperatorPalette}
             style={{
               padding: 'var(--space-3) var(--space-4)',
-              backgroundColor: showOperatorPalette
-                ? 'var(--accent)'
-                : 'transparent',
-              color: showOperatorPalette
-                ? 'var(--bg)'
-                : 'var(--text-secondary)',
-              border: `1px solid ${
-                showOperatorPalette
-                  ? 'var(--accent)'
-                  : 'var(--border)'
-              }`,
+              backgroundColor: showOperatorPalette ? 'var(--accent)' : 'transparent',
+              color: showOperatorPalette ? 'var(--bg)' : 'var(--text-secondary)',
+              border: `1px solid ${showOperatorPalette ? 'var(--accent)' : 'var(--border)'}`,
               borderRadius: '6px',
               fontSize: '14px',
               fontWeight: 500,
@@ -331,8 +329,8 @@ export function ConsoleLayout() {
             backgroundColor: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: '8px',
-            borderLeft: '1px solid rgba(58, 169, 190, 0.2)',  // Slate Cyan accent divider
-            borderRight: '1px solid rgba(58, 169, 190, 0.2)',  // Slate Cyan accent divider
+            borderLeft: '1px solid rgba(58, 169, 190, 0.2)', // Slate Cyan accent divider
+            borderRight: '1px solid rgba(58, 169, 190, 0.2)', // Slate Cyan accent divider
             padding: 'var(--space-4)',
             display: 'flex',
             flexDirection: 'column',

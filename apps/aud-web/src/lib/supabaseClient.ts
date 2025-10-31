@@ -136,21 +136,17 @@ export function getSupabaseClient(): SupabaseClient<Database> {
       throw new Error('Missing Supabase environment variables')
     }
 
-    supabaseClient = createClient<Database>(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
+    supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10, // Throttle for smooth performance
         },
-        realtime: {
-          params: {
-            eventsPerSecond: 10, // Throttle for smooth performance
-          },
-        },
-      }
-    )
+      },
+    })
   }
 
   return supabaseClient

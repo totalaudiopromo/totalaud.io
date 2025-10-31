@@ -35,14 +35,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    'bg-accent text-white hover:opacity-90 active:opacity-80 border border-accent',
+  primary: 'bg-accent text-white hover:opacity-90 active:opacity-80 border border-accent',
   secondary:
     'bg-background text-foreground hover:bg-accent/10 active:bg-accent/20 border border-border',
   ghost:
     'bg-transparent text-accent hover:bg-accent/10 active:bg-accent/20 border border-transparent',
-  danger:
-    'bg-red-500 text-white hover:bg-red-600 active:bg-red-700 border border-red-500',
+  danger: 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700 border border-red-500',
 }
 
 const sizeStyles: Record<ButtonSize, { padding: string; fontSize: string; iconSize: string }> = {
@@ -141,12 +139,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return (
-      <button
-        ref={ref}
-        className={baseClasses}
-        disabled={disabled || isLoading}
-        {...props}
-      >
+      <button ref={ref} className={baseClasses} disabled={disabled || isLoading} {...props}>
         {content}
       </button>
     )

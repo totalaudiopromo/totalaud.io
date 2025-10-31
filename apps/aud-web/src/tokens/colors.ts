@@ -79,7 +79,8 @@ export const glowEffects = {
   slateCyanStrong: 'rgba(58, 169, 190, 0.6)',
 
   // For ambient backgrounds
-  ambientGradient: 'radial-gradient(circle at 50% 50%, rgba(58, 169, 190, 0.08) 0%, transparent 60%)',
+  ambientGradient:
+    'radial-gradient(circle at 50% 50%, rgba(58, 169, 190, 0.08) 0%, transparent 60%)',
 } as const
 
 /**

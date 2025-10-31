@@ -63,9 +63,7 @@ export function EmptyState({
 
   const baseClasses = 'text-center py-12'
   const variantClasses =
-    variant === 'bordered'
-      ? 'border-2 border-dashed border-border rounded-lg'
-      : ''
+    variant === 'bordered' ? 'border-2 border-dashed border-border rounded-lg' : ''
 
   return (
     <motion.div
@@ -81,9 +79,7 @@ export function EmptyState({
       <h3 className="text-lg font-medium mb-2 text-foreground">{title}</h3>
 
       {/* Description (optional) */}
-      {description && (
-        <p className="text-muted mb-6 max-w-md mx-auto">{description}</p>
-      )}
+      {description && <p className="text-muted mb-6 max-w-md mx-auto">{description}</p>}
 
       {/* CTA Button (optional) */}
       {ctaLabel && onClick && (

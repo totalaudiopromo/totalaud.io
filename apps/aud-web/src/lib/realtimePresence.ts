@@ -180,10 +180,7 @@ export class PresenceManager {
   /**
    * Parse single presence entry
    */
-  private parsePresenceEntry(
-    key: string,
-    presence: any
-  ): Collaborator | null {
+  private parsePresenceEntry(key: string, presence: any): Collaborator | null {
     if (!presence) return null
 
     return {
@@ -221,9 +218,6 @@ export class PresenceManager {
 /**
  * Hook-friendly presence manager factory
  */
-export function createPresenceManager(
-  campaignId: string,
-  userId: string
-): PresenceManager {
+export function createPresenceManager(campaignId: string, userId: string): PresenceManager {
   return new PresenceManager(campaignId, userId)
 }

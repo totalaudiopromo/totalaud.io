@@ -63,15 +63,18 @@ function PlanMode({ onAddEvent }: { onAddEvent: (message: string) => void }) {
       const now = new Date()
       setFeedback({
         message: 'Saved',
-        timestamp: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+        timestamp: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
       })
 
       // Persist to localStorage
-      localStorage.setItem('currentRelease', JSON.stringify({
-        name: releaseName,
-        date: releaseDate,
-        updatedAt: now.toISOString()
-      }))
+      localStorage.setItem(
+        'currentRelease',
+        JSON.stringify({
+          name: releaseName,
+          date: releaseDate,
+          updatedAt: now.toISOString(),
+        })
+      )
 
       setReleaseName('')
       setReleaseDate('')
@@ -97,7 +100,10 @@ function PlanMode({ onAddEvent }: { onAddEvent: (message: string) => void }) {
         Define your release information to start planning your campaign.
       </p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
         <div>
           <label
             htmlFor="release-name"
@@ -233,7 +239,10 @@ function DoMode({ onAddEvent }: { onAddEvent: (message: string) => void }) {
         Execute your campaign by launching pitches to curators and contacts.
       </p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
         <div>
           <label
             htmlFor="pitch-target"
@@ -321,8 +330,8 @@ function DoMode({ onAddEvent }: { onAddEvent: (message: string) => void }) {
           color: consolePalette.text.tertiary,
         }}
       >
-        <strong style={{ color: consolePalette.text.secondary }}>Tip:</strong> Use ⌘K to access "generate
-        pitch" and "find curators" commands.
+        <strong style={{ color: consolePalette.text.secondary }}>Tip:</strong> Use ⌘K to access
+        "generate pitch" and "find curators" commands.
       </div>
     </div>
   )
@@ -338,12 +347,14 @@ function TrackMode() {
     openRate: 0,
     replyRate: 0,
   })
-  const [timeline, setTimeline] = useState<Array<{
-    status: string
-    contact: string
-    time: string
-    next: string | null
-  }>>([])
+  const [timeline, setTimeline] = useState<
+    Array<{
+      status: string
+      contact: string
+      time: string
+      next: string | null
+    }>
+  >([])
   const [loading, setLoading] = useState(true)
 
   // Fetch campaign metrics from Supabase
@@ -387,7 +398,7 @@ function TrackMode() {
       if (eventsError) {
         console.error('[ContextPane] Failed to fetch campaign events', eventsError)
       } else if (eventsData) {
-        const timelineEvents = eventsData.map(event => ({
+        const timelineEvents = eventsData.map((event) => ({
           status: event.status,
           contact: event.target,
           time: formatTimeAgo(new Date(event.created_at)),
@@ -417,25 +428,32 @@ function TrackMode() {
     }
   }, [activeCampaignId])
 
-  const progressPercentage = progress.pitchesTotal > 0
-    ? Math.round((progress.pitchesSent / progress.pitchesTotal) * 100)
-    : 0
+  const progressPercentage =
+    progress.pitchesTotal > 0 ? Math.round((progress.pitchesSent / progress.pitchesTotal) * 100) : 0
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'replied': return consolePalette.accent.primary
-      case 'opened': return consolePalette.grid.lineWarning
-      case 'sent': return consolePalette.text.secondary
-      default: return consolePalette.text.tertiary
+      case 'replied':
+        return consolePalette.accent.primary
+      case 'opened':
+        return consolePalette.grid.lineWarning
+      case 'sent':
+        return consolePalette.text.secondary
+      default:
+        return consolePalette.text.tertiary
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'replied': return '✓'
-      case 'opened': return '◉'
-      case 'sent': return '→'
-      default: return '•'
+      case 'replied':
+        return '✓'
+      case 'opened':
+        return '◉'
+      case 'sent':
+        return '→'
+      default:
+        return '•'
     }
   }
 
@@ -468,19 +486,34 @@ function TrackMode() {
       {/* Progress Bar */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span style={{ fontSize: consolePalette.typography.fontSize.small, color: consolePalette.text.tertiary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span
+            style={{
+              fontSize: consolePalette.typography.fontSize.small,
+              color: consolePalette.text.tertiary,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
             Campaign Progress
           </span>
-          <span style={{ fontSize: consolePalette.typography.fontSize.small, color: consolePalette.accent.primary, fontWeight: 600 }}>
+          <span
+            style={{
+              fontSize: consolePalette.typography.fontSize.small,
+              color: consolePalette.accent.primary,
+              fontWeight: 600,
+            }}
+          >
             {progress.pitchesSent} / {progress.pitchesTotal} pitches
           </span>
         </div>
-        <div style={{
-          height: '8px',
-          backgroundColor: consolePalette.background.tertiary,
-          borderRadius: '4px',
-          overflow: 'hidden',
-        }}>
+        <div
+          style={{
+            height: '8px',
+            backgroundColor: consolePalette.background.tertiary,
+            borderRadius: '4px',
+            overflow: 'hidden',
+          }}
+        >
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
@@ -491,20 +524,28 @@ function TrackMode() {
             }}
           />
         </div>
-        <div style={{ marginTop: '8px', fontSize: consolePalette.typography.fontSize.small, color: consolePalette.text.tertiary }}>
+        <div
+          style={{
+            marginTop: '8px',
+            fontSize: consolePalette.typography.fontSize.small,
+            color: consolePalette.text.tertiary,
+          }}
+        >
           {progress.opened} opened • {progress.replied} replied
         </div>
       </div>
 
       {/* Timeline */}
       <div style={{ marginTop: '16px' }}>
-        <h4 style={{
-          fontSize: consolePalette.typography.fontSize.small,
-          color: consolePalette.text.tertiary,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginBottom: '12px',
-        }}>
+        <h4
+          style={{
+            fontSize: consolePalette.typography.fontSize.small,
+            color: consolePalette.text.tertiary,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '12px',
+          }}
+        >
           Recent Activity
         </h4>
 
@@ -523,17 +564,26 @@ function TrackMode() {
                 borderLeft: `3px solid ${getStatusColor(event.status)}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{
-                  fontSize: consolePalette.typography.fontSize.small,
-                  color: getStatusColor(event.status),
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}
+              >
+                <span
+                  style={{
+                    fontSize: consolePalette.typography.fontSize.small,
+                    color: getStatusColor(event.status),
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   {getStatusIcon(event.status)} {event.status}
                 </span>
-                <span style={{ fontSize: consolePalette.typography.fontSize.small, color: consolePalette.text.tertiary }}>
+                <span
+                  style={{
+                    fontSize: consolePalette.typography.fontSize.small,
+                    color: consolePalette.text.tertiary,
+                  }}
+                >
                   {event.time}
                 </span>
               </div>
@@ -541,14 +591,16 @@ function TrackMode() {
                 {event.contact}
               </div>
               {event.next && (
-                <div style={{
-                  fontSize: consolePalette.typography.fontSize.small,
-                  color: consolePalette.accent.primary,
-                  marginTop: '8px',
-                  padding: '6px 8px',
-                  backgroundColor: 'rgba(58, 169, 190, 0.1)',  // Slate Cyan
-                  borderRadius: '4px',
-                }}>
+                <div
+                  style={{
+                    fontSize: consolePalette.typography.fontSize.small,
+                    color: consolePalette.accent.primary,
+                    marginTop: '8px',
+                    padding: '6px 8px',
+                    backgroundColor: 'rgba(58, 169, 190, 0.1)', // Slate Cyan
+                    borderRadius: '4px',
+                  }}
+                >
                   Next: {event.next}
                 </div>
               )}
@@ -562,12 +614,14 @@ function TrackMode() {
 
 function LearnMode() {
   const { activeCampaignId } = useConsoleStore()
-  const [insights, setInsights] = useState<Array<{
-    title: string
-    insight: string
-    metric: string
-    trend: 'up' | 'down' | 'neutral'
-  }>>([])
+  const [insights, setInsights] = useState<
+    Array<{
+      title: string
+      insight: string
+      metric: string
+      trend: 'up' | 'down' | 'neutral'
+    }>
+  >([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
 
@@ -591,7 +645,7 @@ function LearnMode() {
       if (error) {
         console.error('[ContextPane] Failed to fetch campaign insights', error)
       } else if (data && data.length > 0) {
-        const formattedInsights = data.map(insight => ({
+        const formattedInsights = data.map((insight) => ({
           title: insight.key,
           insight: insight.value,
           metric: insight.metric,
@@ -663,27 +717,43 @@ function LearnMode() {
               borderLeft: `3px solid ${consolePalette.accent.primary}`,
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-              <h4 style={{
-                fontSize: consolePalette.typography.fontSize.body,
-                fontWeight: 600,
-                color: consolePalette.text.primary,
-              }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'start',
+                marginBottom: '8px',
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: consolePalette.typography.fontSize.body,
+                  fontWeight: 600,
+                  color: consolePalette.text.primary,
+                }}
+              >
                 {item.title}
               </h4>
-              <span style={{
-                fontSize: consolePalette.typography.fontSize.h3,
-                fontWeight: 600,
-                color: item.trend === 'up' ? consolePalette.accent.primary : consolePalette.text.secondary,
-              }}>
+              <span
+                style={{
+                  fontSize: consolePalette.typography.fontSize.h3,
+                  fontWeight: 600,
+                  color:
+                    item.trend === 'up'
+                      ? consolePalette.accent.primary
+                      : consolePalette.text.secondary,
+                }}
+              >
                 {item.metric}
               </span>
             </div>
-            <p style={{
-              fontSize: consolePalette.typography.fontSize.small,
-              color: consolePalette.text.secondary,
-              lineHeight: '1.5',
-            }}>
+            <p
+              style={{
+                fontSize: consolePalette.typography.fontSize.small,
+                color: consolePalette.text.secondary,
+                lineHeight: '1.5',
+              }}
+            >
               {item.insight}
             </p>
           </motion.div>
@@ -736,7 +806,7 @@ function LearnMode() {
         }}
         onMouseEnter={(e) => {
           if (!generating) {
-            e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)'  // Slate Cyan
+            e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)' // Slate Cyan
           }
         }}
         onMouseLeave={(e) => {
@@ -747,35 +817,57 @@ function LearnMode() {
       </motion.button>
 
       {/* Historical Comparison */}
-      <div style={{
-        marginTop: '24px',
-        padding: consolePalette.spacing.elementPadding,
-        backgroundColor: consolePalette.background.tertiary,
-        border: `1px solid ${consolePalette.border.default}`,
-        borderRadius: '6px',
-      }}>
-        <div style={{
-          fontSize: consolePalette.typography.fontSize.small,
-          color: consolePalette.text.tertiary,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginBottom: '8px',
-        }}>
+      <div
+        style={{
+          marginTop: '24px',
+          padding: consolePalette.spacing.elementPadding,
+          backgroundColor: consolePalette.background.tertiary,
+          border: `1px solid ${consolePalette.border.default}`,
+          borderRadius: '6px',
+        }}
+      >
+        <div
+          style={{
+            fontSize: consolePalette.typography.fontSize.small,
+            color: consolePalette.text.tertiary,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '8px',
+          }}
+        >
           Campaign Comparison
         </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '12px',
-          fontSize: consolePalette.typography.fontSize.small,
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '12px',
+            fontSize: consolePalette.typography.fontSize.small,
+          }}
+        >
           <div>
             <div style={{ color: consolePalette.text.tertiary }}>This Campaign</div>
-            <div style={{ color: consolePalette.text.primary, fontWeight: 600, fontSize: consolePalette.typography.fontSize.body }}>24% open rate</div>
+            <div
+              style={{
+                color: consolePalette.text.primary,
+                fontWeight: 600,
+                fontSize: consolePalette.typography.fontSize.body,
+              }}
+            >
+              24% open rate
+            </div>
           </div>
           <div>
             <div style={{ color: consolePalette.text.tertiary }}>Previous</div>
-            <div style={{ color: consolePalette.text.secondary, fontWeight: 600, fontSize: consolePalette.typography.fontSize.body }}>21% open rate</div>
+            <div
+              style={{
+                color: consolePalette.text.secondary,
+                fontWeight: 600,
+                fontSize: consolePalette.typography.fontSize.body,
+              }}
+            >
+              21% open rate
+            </div>
           </div>
         </div>
       </div>
@@ -815,7 +907,14 @@ export function ContextPane({ onAddEvent }: { onAddEvent: (message: string) => v
   const currentIndex = modeOrder.indexOf(activeMode)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: consolePalette.spacing.gap, height: '100%' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: consolePalette.spacing.gap,
+        height: '100%',
+      }}
+    >
       {/* Mode Header */}
       <div
         style={{

@@ -3,7 +3,11 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useOnboardingPhase } from '@aud-web/hooks/useOnboardingPhase'
-import { OperatorTerminal, OSSelector, TransitionSequence } from '@aud-web/components/features/onboarding'
+import {
+  OperatorTerminal,
+  OSSelector,
+  TransitionSequence,
+} from '@aud-web/components/features/onboarding'
 import { FlowStudio } from '@aud-web/components/features/flow'
 import type { OSTheme } from '@aud-web/hooks/useOSSelection'
 import { AnimatePresence } from 'framer-motion'
