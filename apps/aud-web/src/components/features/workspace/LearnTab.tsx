@@ -21,24 +21,29 @@ export function LearnTab() {
   const { insights, addInsight } = useWorkspaceStore()
 
   // Demo insights for initial experience
-  const demoInsights = insights.length === 0 ? [
-    {
-      id: 'demo-1',
-      type: 'recommendation' as const,
-      title: 'Best time to send pitches',
-      description: 'Your open rates are 2.3x higher when sending between 9-11am on Tuesday or Wednesday.',
-      relevance_score: 0.95,
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 'demo-2',
-      type: 'pattern' as const,
-      title: 'Genre-specific curator preferences',
-      description: 'Radio DJs in your genre respond better to track history mentions than streaming numbers.',
-      relevance_score: 0.87,
-      created_at: new Date().toISOString(),
-    },
-  ] : insights
+  const demoInsights =
+    insights.length === 0
+      ? [
+          {
+            id: 'demo-1',
+            type: 'recommendation' as const,
+            title: 'Best time to send pitches',
+            description:
+              'Your open rates are 2.3x higher when sending between 9-11am on Tuesday or Wednesday.',
+            relevance_score: 0.95,
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 'demo-2',
+            type: 'pattern' as const,
+            title: 'Genre-specific curator preferences',
+            description:
+              'Radio DJs in your genre respond better to track history mentions than streaming numbers.',
+            relevance_score: 0.87,
+            created_at: new Date().toISOString(),
+          },
+        ]
+      : insights
 
   return (
     <div className="learn-tab container mx-auto px-4 py-8">
@@ -56,8 +61,8 @@ export function LearnTab() {
               insight.type === 'recommendation'
                 ? Lightbulb
                 : insight.type === 'pattern'
-                ? TrendingUp
-                : Target
+                  ? TrendingUp
+                  : Target
 
             return (
               <div
@@ -105,9 +110,7 @@ export function LearnTab() {
             <p className="text-sm text-muted mb-4">
               Adjust your sending schedule based on insights to improve open rates
             </p>
-            <Button variant="primary">
-              Apply Recommendations
-            </Button>
+            <Button variant="primary">Apply Recommendations</Button>
           </div>
           <div className="action-card p-6 border border-border rounded-lg">
             <Target className="w-8 h-8 mb-4 text-accent" />
@@ -115,9 +118,7 @@ export function LearnTab() {
             <p className="text-sm text-muted mb-4">
               Use pattern analysis to find more curators likely to respond
             </p>
-            <Button variant="primary">
-              Explore Patterns
-            </Button>
+            <Button variant="primary">Explore Patterns</Button>
           </div>
         </div>
       </section>

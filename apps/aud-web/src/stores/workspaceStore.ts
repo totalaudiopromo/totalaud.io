@@ -151,7 +151,10 @@ interface WorkspaceState {
   updateRun: (id: string, updates: Partial<Run>) => void
   setRuns: (runs: Run[]) => void
   getRunsForCampaign: (campaignId: string) => Run[]
-  runAction: (type: WorkflowType, params: { campaign_id: string; [key: string]: any }) => Promise<void>
+  runAction: (
+    type: WorkflowType,
+    params: { campaign_id: string; [key: string]: any }
+  ) => Promise<void>
 
   // Metrics Actions
   setMetrics: (campaignId: string, metrics: CampaignMetrics) => void
@@ -227,9 +230,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       updateRelease: (id, updates) =>
         set((state) => ({
           releases: state.releases.map((r) =>
-            r.id === id
-              ? { ...r, ...updates, updated_at: new Date().toISOString() }
-              : r
+            r.id === id ? { ...r, ...updates, updated_at: new Date().toISOString() } : r
           ),
         })),
 
@@ -262,9 +263,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       updateCampaign: (id, updates) =>
         set((state) => ({
           campaigns: state.campaigns.map((c) =>
-            c.id === id
-              ? { ...c, ...updates, updated_at: new Date().toISOString() }
-              : c
+            c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c
           ),
         })),
 
@@ -292,9 +291,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         set((state) => ({
           targets: [...state.targets, newTarget],
           campaigns: state.campaigns.map((c) =>
-            c.id === target.campaign_id
-              ? { ...c, targets_count: c.targets_count + 1 }
-              : c
+            c.id === target.campaign_id ? { ...c, targets_count: c.targets_count + 1 } : c
           ),
         }))
         return id
@@ -303,9 +300,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       updateTarget: (id, updates) =>
         set((state) => ({
           targets: state.targets.map((t) =>
-            t.id === id
-              ? { ...t, ...updates, updated_at: new Date().toISOString() }
-              : t
+            t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
           ),
         })),
 
@@ -344,15 +339,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       updateRun: (id, updates) =>
         set((state) => ({
-          runs: state.runs.map((r) =>
-            r.id === id ? { ...r, ...updates } : r
-          ),
+          runs: state.runs.map((r) => (r.id === id ? { ...r, ...updates } : r)),
         })),
 
       setRuns: (runs) => set({ runs }),
 
-      getRunsForCampaign: (campaignId) =>
-        get().runs.filter((r) => r.campaign_id === campaignId),
+      getRunsForCampaign: (campaignId) => get().runs.filter((r) => r.campaign_id === campaignId),
 
       runAction: async (type, params) => {
         set({ isLoading: true, error: null })

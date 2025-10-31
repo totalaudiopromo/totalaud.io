@@ -255,7 +255,11 @@ export function getFramerSpring(themeName: string) {
 /**
  * Generate CSS transition string from profile
  */
-export function getCSSTransition(themeName: string, property: string, speed: 'fast' | 'medium' | 'slow' = 'medium'): string {
+export function getCSSTransition(
+  themeName: string,
+  property: string,
+  speed: 'fast' | 'medium' | 'slow' = 'medium'
+): string {
   const profile = getMotionProfile(themeName)
   const duration = profile.duration[speed]
   const easing = profile.easing.easeOut
@@ -315,7 +319,10 @@ export function getReducedMotionProfile(themeName: string): MotionProfile {
 /**
  * Get motion profile with automatic reduced motion detection
  */
-export function getAdaptiveMotionProfile(themeName: string, calmModeEnabled: boolean = false): MotionProfile {
+export function getAdaptiveMotionProfile(
+  themeName: string,
+  calmModeEnabled: boolean = false
+): MotionProfile {
   if (prefersReducedMotion() || calmModeEnabled) {
     return getReducedMotionProfile(themeName)
   }

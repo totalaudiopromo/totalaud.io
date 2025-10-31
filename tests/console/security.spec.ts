@@ -113,7 +113,8 @@ test.describe('RLS & Security Enforcement', () => {
     await takeScreenshot(page, 'security-user-b-console')
 
     // Step 2: Check campaign name in header (should not show User A's campaign)
-    const campaignName = await page.textContent('text=Untitled Campaign') || await page.textContent('header')
+    const campaignName =
+      (await page.textContent('text=Untitled Campaign')) || (await page.textContent('header'))
 
     console.log('[Security] User B sees campaign:', campaignName)
 

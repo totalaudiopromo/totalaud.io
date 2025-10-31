@@ -50,12 +50,7 @@ export function AgentFooter() {
             style={{
               width: '3px',
               height: '12px',
-              backgroundColor:
-                i < 4
-                  ? 'var(--accent)'
-                  : i < 8
-                    ? 'var(--warning)'
-                    : 'var(--border)',
+              backgroundColor: i < 4 ? 'var(--accent)' : i < 8 ? 'var(--warning)' : 'var(--border)',
               opacity: 0.6,
             }}
           />

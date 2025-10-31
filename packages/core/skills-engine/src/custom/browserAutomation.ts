@@ -21,7 +21,8 @@ import {
 const log = {
   info: (msg: string, data?: any) => console.log('[BrowserAutomation]', msg, data || ''),
   debug: (msg: string, data?: any) => console.debug('[BrowserAutomation]', msg, data || ''),
-  error: (msg: string, error: Error, data?: any) => console.error('[BrowserAutomation]', msg, error, data || ''),
+  error: (msg: string, error: Error, data?: any) =>
+    console.error('[BrowserAutomation]', msg, error, data || ''),
 }
 
 export interface BrowserAutomationInput {
@@ -145,9 +146,7 @@ async function navigateWithDialogHandler(
 /**
  * Take screenshot with optional element selector
  */
-async function takeScreenshot(
-  input: BrowserAutomationInput
-): Promise<BrowserAutomationOutput> {
+async function takeScreenshot(input: BrowserAutomationInput): Promise<BrowserAutomationOutput> {
   log.debug('Taking screenshot', { selector: input.selector })
 
   const screenshot = await puppeteerMCP.screenshot({
@@ -165,9 +164,7 @@ async function takeScreenshot(
 /**
  * Click element by selector
  */
-async function clickElement(
-  input: BrowserAutomationInput
-): Promise<BrowserAutomationOutput> {
+async function clickElement(input: BrowserAutomationInput): Promise<BrowserAutomationOutput> {
   if (!input.selector) {
     throw new Error('Selector is required for click action')
   }
@@ -185,9 +182,7 @@ async function clickElement(
 /**
  * Fill input field by selector
  */
-async function fillInput(
-  input: BrowserAutomationInput
-): Promise<BrowserAutomationOutput> {
+async function fillInput(input: BrowserAutomationInput): Promise<BrowserAutomationOutput> {
   if (!input.selector || !input.value) {
     throw new Error('Selector and value are required for fill action')
   }
@@ -205,9 +200,7 @@ async function fillInput(
 /**
  * Evaluate JavaScript in browser context
  */
-async function evaluateScript(
-  input: BrowserAutomationInput
-): Promise<BrowserAutomationOutput> {
+async function evaluateScript(input: BrowserAutomationInput): Promise<BrowserAutomationOutput> {
   if (!input.script) {
     throw new Error('Script is required for evaluate action')
   }
@@ -225,9 +218,7 @@ async function evaluateScript(
 /**
  * Extract data from page using selector
  */
-async function extractData(
-  input: BrowserAutomationInput
-): Promise<BrowserAutomationOutput> {
+async function extractData(input: BrowserAutomationInput): Promise<BrowserAutomationOutput> {
   if (!input.selector) {
     throw new Error('Selector is required for extract action')
   }
