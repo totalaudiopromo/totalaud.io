@@ -395,12 +395,46 @@ describe('MyComponent', () => {
 
 ## 📚 DOCUMENTATION
 
-All detailed documentation is in the project root:
+**Status**: ✅ Automated organization system active (October 2025)
 
-- **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** - Step-by-step migration instructions
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Complete implementation details
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command and pattern quick reference
-- **[AUDIT_IMPLEMENTATION_COMPLETE.md](AUDIT_IMPLEMENTATION_COMPLETE.md)** - Final status report
+### Documentation Structure
+
+All documentation is organized in the `docs/` directory:
+
+```
+docs/
+├── INDEX.md                 # 📖 START HERE - Complete documentation index
+├── DOCUMENTATION_GUIDE.md   # 🗂️ How the documentation system works
+├── guides/                  # Step-by-step tutorials (max 15 files)
+├── specs/                   # Technical specifications (max 10 files)
+├── phases/                  # Current active phases ONLY (max 5 files)
+├── troubleshooting/         # Problem-solving guides (max 10 files)
+└── archive/                 # Completed phases & historical docs
+```
+
+**Root directory** contains only 4 essential files:
+- `README.md` - Project overview
+- `CLAUDE.md` - This file
+- `CHANGELOG.md` - Version history
+- `CONTRIBUTING.md` - Contribution guidelines
+
+### Documentation Commands
+
+```bash
+pnpm docs:organize    # Organize and clean up documentation
+pnpm docs:validate    # Validate documentation structure
+```
+
+**Automatic validation** runs on every commit via pre-commit hook.
+
+### Quick Links
+
+- **[Documentation Index](docs/INDEX.md)** - Browse all documentation
+- **[Documentation Guide](docs/DOCUMENTATION_GUIDE.md)** - How the system works
+- **[Getting Started](docs/guides/GETTING_STARTED.md)** - Initial setup
+- **[Quick Start](docs/guides/QUICK_START.md)** - Fast development workflow
+
+**Note**: Documentation is automatically organized to prevent clutter. Old phase docs are archived automatically.
 
 ---
 
@@ -974,20 +1008,6 @@ This enables **seamless visual context workflow** without interruptions during U
 | 5 | Launch Readiness + Analytics | ⏳ Pending |
 
 **Current Priority**: Phase 4.5 - Finalise cinematic scroll flow, add magnetic CTA + video proof section
-
----
-
-## 📚 ADDITIONAL DOCUMENTATION
-
-Project-specific documentation files:
-
-- **[CURSOR_QUICK_START.md](CURSOR_QUICK_START.md)** - Cursor IDE quick reference guide
-- **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** - Step-by-step migration instructions
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Complete implementation details
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command and pattern quick reference
-- **[AUDIT_IMPLEMENTATION_COMPLETE.md](AUDIT_IMPLEMENTATION_COMPLETE.md)** - Final status report
-- **[VISUAL_CONTEXT_WORKFLOW.md](VISUAL_CONTEXT_WORKFLOW.md)** - Chrome DevTools workflow
-- **[BROWSER_AUTOMATION_GUIDE.md](BROWSER_AUTOMATION_GUIDE.md)** - Puppeteer automation guide
 
 ---
 

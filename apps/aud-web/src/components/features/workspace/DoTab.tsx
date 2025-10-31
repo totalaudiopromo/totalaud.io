@@ -7,20 +7,21 @@
  * - Monitor agent progress
  * - View live logs
  *
- * Shared Workspace Redesign - Stage 1 (Stub)
- * To be enhanced by Experience Composer in Stage 2
+ * Phase 10.3.5: Connected to CampaignContext
  */
 
 'use client'
 
 import { useWorkspaceStore } from '@aud-web/stores/workspaceStore'
+import { useCampaign } from '@/contexts/CampaignContext'
 import { Play, Search, FileText, Send, History } from 'lucide-react'
 import { EmptyState, Button } from '@/ui/index'
 
 export function DoTab() {
   const { runs, getActiveCampaign, runAction, isLoading } = useWorkspaceStore()
+  const { activeCampaign } = useCampaign()
 
-  const activeCampaign = getActiveCampaign()
+  const oldActiveCampaign = getActiveCampaign()
 
   const workflows = [
     {
@@ -48,8 +49,8 @@ export function DoTab() {
       <div className="do-tab container mx-auto px-4 py-8">
         <EmptyState
           icon={Play}
-          title="No Active Campaign"
-          description="Select or create a campaign from the Plan tab to start running workflows"
+          title="no active campaign"
+          description="create a campaign in plan tab to start running workflows"
         />
       </div>
     )
@@ -58,13 +59,16 @@ export function DoTab() {
   return (
     <div className="do-tab container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Execute Workflows</h1>
-        <p className="text-muted">Campaign: {activeCampaign.name}</p>
+        <h1 className="text-3xl font-bold mb-2 lowercase">execute workflows</h1>
+        <p className="text-muted lowercase">
+          campaign: <span className="text-[#3AA9BE]">{activeCampaign.release}</span> by{' '}
+          {activeCampaign.artist}
+        </p>
       </div>
 
       {/* Workflow Launcher */}
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Available Workflows</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">available workflows</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {workflows.map((workflow) => {
             const Icon = workflow.icon
@@ -75,8 +79,8 @@ export function DoTab() {
                 className="workflow-card p-6 border border-border rounded-lg hover:border-accent/50 transition-colors"
               >
                 <Icon className="w-8 h-8 mb-4 text-accent" />
-                <h3 className="font-semibold mb-2">{workflow.name}</h3>
-                <p className="text-sm text-muted mb-4">{workflow.description}</p>
+                <h3 className="font-medium mb-2 lowercase">{workflow.name}</h3>
+                <p className="text-sm text-muted mb-4 lowercase">{workflow.description}</p>
                 <Button
                   variant="primary"
                   fullWidth
@@ -94,44 +98,45 @@ export function DoTab() {
 
       {/* Recent Runs */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Recent Runs</h2>
+        <h2 className="text-2xl font-medium mb-4 lowercase">recent runs</h2>
         {runs.length === 0 ? (
           <EmptyState
             icon={History}
-            title="No runs yet"
-            description="Start a workflow above to get started"
+            title="no runs yet"
+            description="start a workflow above to get started"
             variant="bordered"
           />
         ) : (
           <div className="space-y-3">
-            {runs.slice().reverse().slice(0, 10).map((run) => (
-              <div
-                key={run.id}
-                className="run-card p-4 border border-border rounded-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium capitalize">
-                      {run.workflow_type.replace('_', ' ')}
-                    </h3>
-                    <p className="text-sm text-muted">
-                      Started: {new Date(run.started_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <span
-                    className={`
+            {runs
+              .slice()
+              .reverse()
+              .slice(0, 10)
+              .map((run) => (
+                <div key={run.id} className="run-card p-4 border border-border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium capitalize">
+                        {run.workflow_type.replace('_', ' ')}
+                      </h3>
+                      <p className="text-sm text-muted">
+                        Started: {new Date(run.started_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <span
+                      className={`
                       px-3 py-1 rounded-full text-xs font-medium
                       ${run.status === 'complete' ? 'bg-green-500/20 text-green-600' : ''}
                       ${run.status === 'running' ? 'bg-blue-500/20 text-blue-600' : ''}
                       ${run.status === 'failed' ? 'bg-red-500/20 text-red-600' : ''}
                       ${run.status === 'pending' ? 'bg-gray-500/20 text-gray-600' : ''}
                     `}
-                  >
-                    {run.status}
-                  </span>
+                    >
+                      {run.status}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </section>

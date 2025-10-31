@@ -2,22 +2,28 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { FlowCanvas } from './FlowCanvas'
-import ConsoleShell from '../../ui/ConsoleShell'
-import ThemeToggle from '../../ui/ThemeToggle'
 import { AmbientSound } from '../../ui/ambient/AmbientSound'
 import { deserializeFlowTemplate } from '@total-audio/core-agent-executor/client'
 import type { FlowTemplate } from '@total-audio/core-agent-executor/client'
 
 /**
- * Phase 4: Flow Studio - Main application environment.
- * Wraps existing FlowCanvas + agent status in theme-aware layout.
+ * FlowStudio - Premium cinematic workspace
+ *
+ * Design Principles:
+ * - Slate Cyan (#3AA9BE) accent (brand colour)
+ * - Matte Black (#0F1113) background
+ * - Sharp 2px borders, minimal rounded corners
+ * - Matches onboarding aesthetic quality
+ * - No rainbow gradients, no cheap effects
  */
 export function FlowStudio() {
   const searchParams = useSearchParams()
   const [theme, setTheme] = useState<string>('operator')
   const flowParam = searchParams.get('flow')
   const welcomeParam = searchParams.get('welcome')
+  const prefersReducedMotion = useReducedMotion()
 
   // Get theme from localStorage (set during onboarding)
   useEffect(() => {
@@ -33,99 +39,152 @@ export function FlowStudio() {
   let flowTemplate: FlowTemplate | null = null
   if (flowParam) {
     flowTemplate = deserializeFlowTemplate(flowParam)
-    console.log('[FlowStudio] Loaded flow template:', flowTemplate?.name)
   }
 
   return (
-    <main className="min-h-screen text-white">
+    <main
+      className="min-h-screen text-white relative"
+      style={{
+        background: '#0F1113', // Matte Black
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      }}
+    >
+      {/* Ambient background glow (subtle Slate Cyan radial) */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 50% 50%, rgba(58, 169, 190, 0.04) 0%, transparent 60%)',
+          zIndex: 0,
+        }}
+      />
+
       {/* Theme ambient sound */}
       <AmbientSound type="theme-ambient" theme={theme} autoPlay />
 
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold font-mono lowercase bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent">
-            totalaud.io flow studio
+      <div className="relative z-10 container mx-auto px-6 py-12 space-y-12">
+        {/* Header - Clean and minimal */}
+        <motion.div
+          className="space-y-3"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+          <h1
+            className="text-2xl font-normal tracking-wide lowercase"
+            style={{
+              color: '#3AA9BE', // Slate Cyan
+              letterSpacing: '0.5px',
+            }}
+          >
+            flow studio
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto font-mono">
-            marketing your music should be as creative as making it. visualise and orchestrate agent
-            workflows in real time.
+          <p
+            className="text-sm max-w-2xl lowercase"
+            style={{
+              color: 'rgba(255, 255, 255, 0.5)',
+              letterSpacing: '0.3px',
+            }}
+          >
+            orchestrate your creative agents — build workflows, watch them collaborate
           </p>
+        </motion.div>
 
-          {/* Welcome Message (if coming from Broker) */}
-          {welcomeParam === 'true' && flowTemplate && (
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl p-4 max-w-2xl mx-auto">
-              <div className="text-blue-400 font-medium font-mono lowercase mb-1">
-                signal&gt; campaign flow generated
-              </div>
-              <div className="text-sm text-slate-300 font-mono">
-                {flowTemplate.name} — {flowTemplate.description}
-              </div>
-            </div>
-          )}
-
-          {/* Quick Stats */}
-          <div className="flex items-center justify-center gap-8 text-sm font-mono">
-            <div className="flex items-center gap-2">
-              <span className="text-green-400">●</span>
-              <span className="text-slate-500 lowercase">4 agents active</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-blue-400">●</span>
-              <span className="text-slate-500 lowercase">real-time synchronisation</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-400">●</span>
-              <span className="text-slate-500 lowercase">console mode ready</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Flow Canvas wrapped in Console Shell */}
-        <ConsoleShell title="agent workflow orchestrator" accentColor="#6366f1">
-          <div className="h-[70vh]">
-            <FlowCanvas initialTemplate={flowTemplate} />
-          </div>
-        </ConsoleShell>
-
-        {/* Agent Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[
-            { name: 'scout', color: '#10b981', status: 'ready' },
-            { name: 'coach', color: '#6366f1', status: 'ready' },
-            { name: 'tracker', color: '#f59e0b', status: 'ready' },
-            { name: 'insight', color: '#8b5cf6', status: 'ready' },
-          ].map((agent) => (
+        {/* Welcome Message (if coming from Broker) */}
+        {welcomeParam === 'true' && flowTemplate && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="p-4"
+            style={{
+              background: 'rgba(58, 169, 190, 0.04)',
+              border: '2px solid rgba(58, 169, 190, 0.2)',
+            }}
+          >
             <div
-              key={agent.name}
-              className="bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-all"
+              className="font-medium lowercase mb-1 text-sm"
+              style={{ color: '#3AA9BE', letterSpacing: '0.4px' }}
+            >
+              {flowTemplate.name}
+            </div>
+            <div className="text-xs lowercase" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+              {flowTemplate.description}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Flow Canvas - Premium container */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="relative"
+          style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '2px solid rgba(58, 169, 190, 0.15)',
+            minHeight: '600px',
+          }}
+        >
+          {/* Canvas header */}
+          <div
+            className="px-6 py-3 border-b-2"
+            style={{
+              borderColor: 'rgba(58, 169, 190, 0.15)',
+              background: 'rgba(255, 255, 255, 0.01)',
+            }}
+          >
+            <span
+              className="text-xs uppercase tracking-wider"
               style={{
-                boxShadow: `0 0 20px -10px ${agent.color}20`,
+                color: 'rgba(255, 255, 255, 0.4)',
+                letterSpacing: '1px',
               }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: agent.color }} />
-                <span
-                  className="text-xs px-2 py-1 rounded-full font-mono lowercase"
-                  style={{
-                    backgroundColor: `${agent.color}20`,
-                    color: agent.color,
-                  }}
-                >
-                  {agent.status}
-                </span>
-              </div>
-              <div className="text-white font-medium font-mono lowercase">{agent.name}</div>
-              <div className="text-xs text-slate-500 font-mono mt-1 lowercase">
-                agent_{agent.name}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+              Workspace
+            </span>
+          </div>
 
-      {/* Theme Toggle */}
-      <ThemeToggle />
+          {/* Flow Canvas */}
+          <div className="h-[600px]">
+            <FlowCanvas initialTemplate={flowTemplate} />
+          </div>
+        </motion.div>
+
+        {/* Status Footer - Minimal info bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="flex items-center justify-between px-6 py-4 text-xs"
+          style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '2px solid rgba(58, 169, 190, 0.1)',
+            color: 'rgba(255, 255, 255, 0.4)',
+            letterSpacing: '0.3px',
+          }}
+        >
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-1.5 h-1.5"
+                style={{
+                  background: '#3AA9BE',
+                  boxShadow: '0 0 8px rgba(58, 169, 190, 0.4)',
+                }}
+              />
+              <span className="lowercase">session active</span>
+            </div>
+            <div className="lowercase">theme: {theme}</div>
+          </div>
+          <div className="lowercase">
+            {new Date().toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </div>
+        </motion.div>
+      </div>
     </main>
   )
 }

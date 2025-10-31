@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Documentation validation
+echo "🔍 Validating documentation structure..."
+pnpm docs:validate || {
+  echo "⚠️  Documentation validation failed!"
+  echo "Run 'pnpm docs:organize' to fix issues"
+  exit 1
+}
+
+# Run linting and formatting
+echo "🎨 Running code quality checks..."
+pnpm lint:fix
+pnpm format

@@ -1,6 +1,19 @@
 /**
  * Motion Tokens - Centralised Animation Standards
  *
+ * ⚠️ DEPRECATED - Phase 10.4 Design System Unification
+ *
+ * Please use: /apps/aud-web/src/design-system/motion.ts instead
+ *
+ * This file contains legacy motion values with conflicting durations:
+ * - normal: 400ms (should be 240ms)
+ * - slow: 600ms (should be 400ms)
+ *
+ * The canonical design system motion tokens use consistent rhythm:
+ * fast: 120ms / normal: 240ms / slow: 400ms / editorial: 600ms / cinematic: 800ms
+ *
+ * Migration: Replace imports from this file with design-system/motion.ts
+ *
  * Theme System Anti-Gimmick Refactor
  * All animations use these standardised durations and easing curves.
  * Respects user's reduced motion preference.
@@ -16,14 +29,24 @@ export const motionTokens = {
     use: 'Micro feedback, key confirmations, inline ticks',
   },
   normal: {
-    duration: 240, // ms
+    duration: 400, // ms (updated from 240ms for editorial breathing)
     easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
     use: 'Pane transitions, modal opens, theme switches',
   },
   slow: {
-    duration: 400, // ms
+    duration: 600, // ms (updated from 400ms for cinematic fades)
     easing: 'ease-in-out',
     use: 'Calm fades, ambient effects, background animations',
+  },
+  editorial: {
+    duration: 800, // ms (new for hero/testimonials)
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    use: 'Hero reveals, testimonials, emotional content',
+  },
+  ringPulse: {
+    duration: 400, // ms (new for CTA ring pulse)
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    use: 'CTA hover ring pulse animation',
   },
 } as const
 
@@ -34,6 +57,8 @@ export const motionDurations = {
   fast: motionTokens.fast.duration,
   normal: motionTokens.normal.duration,
   slow: motionTokens.slow.duration,
+  editorial: motionTokens.editorial.duration,
+  ringPulse: motionTokens.ringPulse.duration,
 } as const
 
 /**
@@ -43,6 +68,8 @@ export const motionEasing = {
   fast: motionTokens.fast.easing,
   normal: motionTokens.normal.easing,
   slow: motionTokens.slow.easing,
+  editorial: motionTokens.editorial.easing,
+  ringPulse: motionTokens.ringPulse.easing,
   spring: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // For Guide theme bounce
 } as const
 
