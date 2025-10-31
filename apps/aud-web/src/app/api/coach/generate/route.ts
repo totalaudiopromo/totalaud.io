@@ -12,7 +12,11 @@ import { z } from 'zod'
 import { createClient } from '@aud-web/lib/supabase/server'
 import { createCoachAgent, type OSTheme } from '@total-audio/core-agent-executor/server'
 import { logger } from '@total-audio/core-logger'
-import { validateRequestBody, ValidationError, validationErrorResponse } from '@aud-web/lib/api-validation'
+import {
+  validateRequestBody,
+  ValidationError,
+  validationErrorResponse,
+} from '@aud-web/lib/api-validation'
 
 const log = logger.scope('CoachGenerateAPI')
 
@@ -98,7 +102,7 @@ export async function POST(request: NextRequest) {
     log.info('Coach drafts generated successfully', {
       sessionId: activeSessionId,
       draftsCount: result.drafts.length,
-      executionTimeMs: executionTime
+      executionTimeMs: executionTime,
     })
 
     // Return normalised response

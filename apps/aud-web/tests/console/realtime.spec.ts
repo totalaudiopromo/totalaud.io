@@ -190,7 +190,10 @@ test.describe('Realtime Event & Metric Sync', () => {
 
     console.log(`[Realtime] Metrics update latency: ${updateLatency.toFixed(2)}ms`)
 
-    logTestResult('Realtime metrics update', true, { duration: updateLatency, timestamp: Date.now() })
+    logTestResult('Realtime metrics update', true, {
+      duration: updateLatency,
+      timestamp: Date.now(),
+    })
 
     // Step 6: Verify progress bar animation
     // This would check for smooth easeOut animation (500ms as per spec)
@@ -261,9 +264,10 @@ test.describe('Realtime Event & Metric Sync', () => {
     // Step 5: Retrieve FPS measurements
     const fpsValues = await page.evaluate(() => (window as any).__fpsValues || [])
 
-    const avgFPS = fpsValues.length > 0
-      ? fpsValues.reduce((sum: number, fps: number) => sum + fps, 0) / fpsValues.length
-      : 0
+    const avgFPS =
+      fpsValues.length > 0
+        ? fpsValues.reduce((sum: number, fps: number) => sum + fps, 0) / fpsValues.length
+        : 0
 
     console.log(`[Realtime] Average FPS during updates: ${avgFPS.toFixed(1)}`)
     console.log(`[Realtime] FPS samples: ${fpsValues.join(', ')}`)

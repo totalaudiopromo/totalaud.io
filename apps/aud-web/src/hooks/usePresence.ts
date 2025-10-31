@@ -95,9 +95,7 @@ export function usePresence(
 
   // Update presence state (theme, mode, calm_mode changes)
   const updatePresence = useCallback(
-    async (
-      updates: Partial<Omit<PresenceState, 'user_id' | 'joined_at' | 'last_active'>>
-    ) => {
+    async (updates: Partial<Omit<PresenceState, 'user_id' | 'joined_at' | 'last_active'>>) => {
       if (presenceManagerRef.current && isConnected) {
         await presenceManagerRef.current.updatePresence(updates)
       }

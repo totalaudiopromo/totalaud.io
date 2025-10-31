@@ -154,11 +154,7 @@ export function searchCommands(query: string, scope?: CommandScope): Command[] {
     }
 
     // Match against label, description, and aliases
-    const searchableText = [
-      cmd.label,
-      cmd.description,
-      ...cmd.aliases,
-    ].join(' ').toLowerCase()
+    const searchableText = [cmd.label, cmd.description, ...cmd.aliases].join(' ').toLowerCase()
 
     return searchableText.includes(lowerQuery)
   })

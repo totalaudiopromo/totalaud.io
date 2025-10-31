@@ -160,10 +160,7 @@ export async function POST(req: NextRequest) {
 
     if (inviteError) {
       console.error('[Invite API] Error creating invite:', inviteError)
-      return NextResponse.json(
-        { error: 'Failed to create invite' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to create invite' }, { status: 500 })
     }
 
     // Generate invite URL
@@ -181,9 +178,6 @@ export async function POST(req: NextRequest) {
     )
   } catch (error) {
     console.error('[Invite API] Unexpected error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

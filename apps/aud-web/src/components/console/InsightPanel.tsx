@@ -16,11 +16,7 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
   const trendColor =
-    trend === 'up'
-      ? 'var(--accent)'
-      : trend === 'down'
-        ? 'var(--error)'
-        : 'var(--text-secondary)'
+    trend === 'up' ? 'var(--accent)' : trend === 'down' ? 'var(--error)' : 'var(--text-secondary)'
 
   const trendSymbol = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '•'
 
@@ -56,9 +52,7 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
         }}
       >
         {value}
-        <span style={{ fontSize: '14px', color: trendColor }}>
-          {trendSymbol}
-        </span>
+        <span style={{ fontSize: '14px', color: trendColor }}>{trendSymbol}</span>
       </div>
     </div>
   )
@@ -66,7 +60,10 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
 
 export function InsightPanel() {
   return (
-    <div data-testid="insight-panel" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+    <div
+      data-testid="insight-panel"
+      style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}
+    >
       {/* Metrics Section */}
       <section data-testid="campaign-metrics">
         <h3

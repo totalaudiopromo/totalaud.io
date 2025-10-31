@@ -194,10 +194,7 @@ export function LightSweep({
   }
 
   return (
-    <motion.div
-      className="relative overflow-hidden"
-      style={{ isolation: 'isolate' }}
-    >
+    <motion.div className="relative overflow-hidden" style={{ isolation: 'isolate' }}>
       {children}
       <motion.div
         style={{

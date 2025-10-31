@@ -35,7 +35,7 @@ interface ConsoleState {
   // View states
   activePane: ConsolePaneView
   missionView: MissionView
-  activeMode: ActiveMode  // Current mode - changes center pane content
+  activeMode: ActiveMode // Current mode - changes center pane content
   showOperatorPalette: boolean
 
   // Filters
@@ -70,7 +70,7 @@ export const useConsoleStore = create<ConsoleState>((set) => ({
   campaignName: 'Untitled Campaign',
   activePane: 'mission',
   missionView: 'plan',
-  activeMode: 'plan',  // Start in plan mode
+  activeMode: 'plan', // Start in plan mode
   showOperatorPalette: false,
   activityFilter: 'all',
   timeRange: '24h',
@@ -99,7 +99,8 @@ export const useConsoleStore = create<ConsoleState>((set) => ({
                 ...node.data,
                 status,
                 result,
-                completedAt: status === 'completed' ? new Date().toISOString() : node.data.completedAt,
+                completedAt:
+                  status === 'completed' ? new Date().toISOString() : node.data.completedAt,
               },
             }
           : node
@@ -107,14 +108,13 @@ export const useConsoleStore = create<ConsoleState>((set) => ({
     })),
 
   // Actions
-  setActiveCampaign: (id, name) =>
-    set({ activeCampaignId: id, campaignName: name }),
+  setActiveCampaign: (id, name) => set({ activeCampaignId: id, campaignName: name }),
 
   setActivePane: (pane) => set({ activePane: pane }),
 
-  setMissionView: (view) => set({ missionView: view, activeMode: view }),  // Sync activeMode with missionView
+  setMissionView: (view) => set({ missionView: view, activeMode: view }), // Sync activeMode with missionView
 
-  setActiveMode: (mode) => set({ activeMode: mode, missionView: mode }),  // Sync both ways
+  setActiveMode: (mode) => set({ activeMode: mode, missionView: mode }), // Sync both ways
 
   toggleOperatorPalette: () =>
     set((state) => ({ showOperatorPalette: !state.showOperatorPalette })),

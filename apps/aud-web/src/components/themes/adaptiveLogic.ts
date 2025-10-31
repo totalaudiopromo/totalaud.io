@@ -63,7 +63,10 @@ export function getAdaptiveAdjustments(context: AdaptiveContext): AdaptiveAdjust
 
   if (activityIntensity === 'low' && timeOfDay === 'night') {
     energyLevel = 'calm'
-  } else if (activityIntensity === 'high' && (timeOfDay === 'morning' || timeOfDay === 'afternoon')) {
+  } else if (
+    activityIntensity === 'high' &&
+    (timeOfDay === 'morning' || timeOfDay === 'afternoon')
+  ) {
     energyLevel = 'energized'
   }
 
@@ -104,7 +107,7 @@ export class ActivityMonitor {
     this.events.push(now)
 
     // Clean old events outside window
-    this.events = this.events.filter(time => now - time < this.windowSize)
+    this.events = this.events.filter((time) => now - time < this.windowSize)
   }
 
   getEventsPerMinute(): number {

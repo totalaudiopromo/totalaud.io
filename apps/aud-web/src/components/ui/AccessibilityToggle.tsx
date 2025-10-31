@@ -100,15 +100,16 @@ export function AccessibilityToggle({ className = '' }: AccessibilityToggleProps
               z-50
             `}
           >
-            <h3 className="text-sm font-semibold text-[var(--theme-text)] mb-3">
-              Accessibility
-            </h3>
+            <h3 className="text-sm font-semibold text-[var(--theme-text)] mb-3">Accessibility</h3>
 
             {/* Calm Mode Toggle */}
             <div className="flex items-start justify-between mb-4 pb-4 border-b border-[var(--theme-border-subtle)]">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <label htmlFor="calm-mode" className="text-sm font-medium text-[var(--theme-text)]">
+                  <label
+                    htmlFor="calm-mode"
+                    className="text-sm font-medium text-[var(--theme-text)]"
+                  >
                     Calm Mode
                   </label>
                   {systemReducedMotion && (
@@ -126,11 +127,7 @@ export function AccessibilityToggle({ className = '' }: AccessibilityToggleProps
                 className={`
                   relative flex-shrink-0 w-11 h-6 ml-3
                   rounded-full transition-colors duration-200
-                  ${
-                    calmModeActive
-                      ? 'bg-[var(--theme-accent)]'
-                      : 'bg-[var(--theme-border-subtle)]'
-                  }
+                  ${calmModeActive ? 'bg-[var(--theme-accent)]' : 'bg-[var(--theme-border-subtle)]'}
                   ${systemReducedMotion ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
                 role="switch"
@@ -151,7 +148,10 @@ export function AccessibilityToggle({ className = '' }: AccessibilityToggleProps
             {/* Mute Sounds Toggle */}
             <div className="flex items-start justify-between mb-4 pb-4 border-b border-[var(--theme-border-subtle)]">
               <div className="flex-1">
-                <label htmlFor="mute-sounds" className="text-sm font-medium text-[var(--theme-text)] block mb-1">
+                <label
+                  htmlFor="mute-sounds"
+                  className="text-sm font-medium text-[var(--theme-text)] block mb-1"
+                >
                   Mute Sounds
                 </label>
                 <p className="text-xs text-[var(--theme-text-secondary)]">

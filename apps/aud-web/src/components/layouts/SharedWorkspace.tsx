@@ -80,11 +80,7 @@ export function SharedWorkspace() {
                   className={`
                     tab-button
                     relative px-6 py-4 font-medium transition-colors
-                    ${
-                      isActive
-                        ? 'text-accent'
-                        : 'text-muted hover:text-foreground'
-                    }
+                    ${isActive ? 'text-accent' : 'text-muted hover:text-foreground'}
                   `}
                   aria-current={isActive ? 'page' : undefined}
                 >

@@ -18,19 +18,13 @@ export async function POST(req: NextRequest) {
 
     // Validate email
     if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
     }
 
     // Create Supabase client
@@ -44,10 +38,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existing) {
-      return NextResponse.json(
-        { error: 'Email already on waitlist' },
-        { status: 409 }
-      )
+      return NextResponse.json({ error: 'Email already on waitlist' }, { status: 409 })
     }
 
     // Insert into waitlist
@@ -63,10 +54,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json(
-        { error: 'Failed to add to waitlist' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to add to waitlist' }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -76,9 +64,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('Waitlist API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

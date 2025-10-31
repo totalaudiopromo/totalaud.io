@@ -41,12 +41,7 @@ const placementStyles = {
  * </Tooltip>
  * ```
  */
-export function Tooltip({
-  content,
-  children,
-  placement = 'top',
-  delay = 200,
-}: TooltipProps) {
+export function Tooltip({ content, children, placement = 'top', delay = 200 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
 
