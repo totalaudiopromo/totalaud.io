@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a problem with the application
+title: "Bug: [brief description]"
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to raise an issue! Please complete the following sections as thoroughly as possible so we can reproduce and fix the problem.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a concise summary of the problem.
+      placeholder: e.g. "Audio does not play on Safari"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe the steps needed to reproduce the issue.
+      placeholder: |
+        1. Go to '…'
+        2. Click on '…'
+        3. Scroll down to '…'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: Describe what you expected to happen.
+      placeholder: The audio should play without interruption.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Describe what actually happened.
+      placeholder: The audio stops after 5 seconds and an error is shown.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: Include browser/version, operating system, device, and any other relevant details.
+      placeholder: |
+        - Browser: Safari 16.4
+        - OS: macOS Ventura 13.3
+        - Device: MacBook Pro (M1)
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste any relevant console logs or attach screenshots to help diagnose the issue.
+      placeholder: Paste logs here.
+    validations:
+      required: false
