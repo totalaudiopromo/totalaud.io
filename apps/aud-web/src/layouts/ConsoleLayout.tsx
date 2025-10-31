@@ -16,6 +16,7 @@ import { useTheme } from '@aud-web/components/themes/ThemeResolver'
 import { useConsoleStore } from '@aud-web/stores/consoleStore'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStudioMotion } from '@aud-web/hooks/useStudioMotion'
+import { useStudioSwitch } from '@/hooks/useStudioSwitch'
 import { MissionStack } from '@aud-web/components/console/MissionStack'
 import { ActivityStream } from '@aud-web/components/console/ActivityStream'
 import { InsightPanel } from '@aud-web/components/console/InsightPanel'
@@ -32,6 +33,7 @@ import { useState, useCallback, useEffect } from 'react'
 export function ConsoleLayout() {
   const { currentTheme } = useTheme()
   const motion_config = useStudioMotion(currentTheme)
+  const { isTransitioning, lightingOpacity, panelScale } = useStudioSwitch()
 
   const {
     campaignName,
@@ -133,23 +135,46 @@ export function ConsoleLayout() {
   const transitionSpeed = Math.min(motion_config.duration, 0.15)
 
   return (
-    <div
-      className="console-layout"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(12, 1fr)',
-        gridTemplateRows: '64px 1fr 48px',
-        height: '100vh',
-        width: '100vw',
-        backgroundColor: 'var(--bg)',
-        color: 'var(--text-primary)',
-        fontFamily: 'var(--font-primary)',
-        fontSize: '16px',
-        gap: 'var(--space-3)',
-        padding: 'var(--space-3)',
-      }}
-    >
-      {/* Header */}
+    <div style={{ position: 'relative', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      {/* Studio Switch Lighting Overlay */}
+      {lightingOpacity > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              'radial-gradient(ellipse at 50% 50%, rgba(58, 169, 190, 0.08) 0%, transparent 60%)',
+            opacity: lightingOpacity,
+            pointerEvents: 'none',
+            zIndex: 9999,
+            transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        />
+      )}
+
+      <div
+        className="console-layout"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(12, 1fr)',
+          gridTemplateRows: '64px 1fr 48px',
+          height: '100vh',
+          width: '100vw',
+          backgroundColor: 'var(--bg)',
+          color: 'var(--text-primary)',
+          fontFamily: 'var(--font-primary)',
+          fontSize: '16px',
+          gap: 'var(--space-3)',
+          padding: 'var(--space-3)',
+          transform: `scale(${panelScale})`,
+          transformOrigin: 'center',
+          transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
+        {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -434,17 +459,18 @@ export function ConsoleLayout() {
         <AgentFooter />
       </motion.footer>
 
-      {/* Share Campaign Modal */}
-      {currentUser && currentCampaign && (
-        <ShareCampaignModal
-          isOpen={isShareModalOpen}
-          onClose={() => setIsShareModalOpen(false)}
-          campaignId={currentCampaign.id}
-          campaignTitle={currentCampaign.title || campaignName || 'Untitled Campaign'}
-          currentUserId={currentUser.id}
-          currentUserRole={userRole}
-        />
-      )}
+        {/* Share Campaign Modal */}
+        {currentUser && currentCampaign && (
+          <ShareCampaignModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            campaignId={currentCampaign.id}
+            campaignTitle={currentCampaign.title || campaignName || 'Untitled Campaign'}
+            currentUserId={currentUser.id}
+            currentUserRole={userRole}
+          />
+        )}
+      </div>
     </div>
   )
 }
