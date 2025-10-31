@@ -1,0 +1,56 @@
+name: Feature request
+description: Suggest an improvement or new feature
+title: "Feat: [brief description]"
+labels: ["feat"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an enhancement! Please fill out the details below so we can evaluate and prioritise your request.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the feature or improvement you would like to see.
+      placeholder: e.g. "Add dark mode support"
+    validations:
+      required: true
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Why is this useful?
+      description: Explain why this feature would be beneficial and who would benefit from it.
+      placeholder: This feature would improve accessibility for users who prefer dark interfaces.
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Proposed solution
+      description: Describe your proposed solution or design, if you have one.
+      placeholder: I propose adding a toggle in the settings page to switch between light and dark themes.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Mention any alternative approaches you've thought about.
+      placeholder: Another option is to auto-detect system theme preferences.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or references that may help.
+      placeholder: Links to related issues or examples.
+    validations:
+      required: false
