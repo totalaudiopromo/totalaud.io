@@ -90,7 +90,7 @@ export default function LandingPage() {
 
   const [showCTA, setShowCTA] = useState(false)
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false)
-  const { isMuted, playCTATone} = useAmbientSound()
+  const { isMuted, playCTATone } = useAmbientSound()
 
   // Magnetic CTA effect
   const ctaX = useMotionValue(0)
@@ -203,7 +203,8 @@ export default function LandingPage() {
             <motion.div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'linear-gradient(90deg, transparent 0%, rgba(58, 169, 190, 0.12) 50%, transparent 100%)',
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(58, 169, 190, 0.12) 50%, transparent 100%)',
                 filter: 'blur(30px)',
               }}
               animate={{
@@ -305,12 +306,13 @@ export default function LandingPage() {
                     {/* Temporary placeholder */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="text-[#3AA9BE] text-sm mb-2" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+                        <div
+                          className="text-[#3AA9BE] text-sm mb-2"
+                          style={{ fontFamily: 'var(--font-geist-mono)' }}
+                        >
                           Console Preview
                         </div>
-                        <div className="text-[#6B7280] text-xs">
-                          Click to expand
-                        </div>
+                        <div className="text-[#6B7280] text-xs">Click to expand</div>
                         <div className="text-[#4B5563] text-xs mt-2">
                           (Export screen recording to /public/videos/console-preview.mp4)
                         </div>
@@ -344,7 +346,7 @@ export default function LandingPage() {
                   style={{
                     x: ctaXSpring,
                     y: ctaYSpring,
-                    fontFamily: 'var(--font-geist-mono)'
+                    fontFamily: 'var(--font-geist-mono)',
                   }}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-[#3AA9BE]/60 text-[#3AA9BE] rounded-md
                     hover:bg-[#3AA9BE]/10 transition-colors
@@ -398,9 +400,7 @@ export default function LandingPage() {
             className="absolute bottom-4 left-4 md:bottom-12 md:left-12 text-[#6B7280] text-xs flex items-center gap-2"
             style={{ fontFamily: 'var(--font-geist-mono)' }}
           >
-            <span className={isMuted ? 'opacity-30' : 'opacity-100'}>
-              {isMuted ? '🔇' : '🔊'}
-            </span>
+            <span className={isMuted ? 'opacity-30' : 'opacity-100'}>{isMuted ? '🔇' : '🔊'}</span>
             <span className="opacity-50">⌘M</span>
           </div>
         </div>

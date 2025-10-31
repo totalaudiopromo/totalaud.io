@@ -43,10 +43,7 @@ export async function validateRequestBody<T extends ZodSchema>(
 /**
  * Validate query parameters against a Zod schema
  */
-export function validateQueryParams<T extends ZodSchema>(
-  req: NextRequest,
-  schema: T
-): z.infer<T> {
+export function validateQueryParams<T extends ZodSchema>(req: NextRequest, schema: T): z.infer<T> {
   try {
     const { searchParams } = new URL(req.url)
     const params = Object.fromEntries(searchParams.entries())

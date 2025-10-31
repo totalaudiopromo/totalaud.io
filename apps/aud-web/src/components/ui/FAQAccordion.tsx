@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'When can I access it?',
-    a: 'We\'re currently in private beta. Request access above and we\'ll invite you as we scale capacity.',
+    a: "We're currently in private beta. Request access above and we'll invite you as we scale capacity.",
   },
 ]
 

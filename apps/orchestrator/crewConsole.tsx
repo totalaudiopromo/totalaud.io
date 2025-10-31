@@ -102,7 +102,7 @@ const CrewConsole: React.FC<CrewConsoleProps> = ({ feed, initialStatuses = {} })
   return (
     <Box flexDirection="column" borderStyle="round" borderColor="gray" padding={1}>
       <Text bold color="cyan">
-        🎛️  Crew Console — live Claude agents
+        🎛️ Crew Console — live Claude agents
       </Text>
       <Text dimColor> </Text>
       {agents.map((id) => {
@@ -111,8 +111,7 @@ const CrewConsole: React.FC<CrewConsoleProps> = ({ feed, initialStatuses = {} })
         const color = theme.color
         const barWidth = Math.round(st.progress / 5) // 20 blocks total
         const bar =
-          chalk.hex(color)('▓'.repeat(barWidth)) +
-          chalk.hex('#444')('░'.repeat(20 - barWidth))
+          chalk.hex(color)('▓'.repeat(barWidth)) + chalk.hex('#444')('░'.repeat(20 - barWidth))
         const stateIcon = {
           waiting: '⏳',
           running: '🌀',
@@ -146,9 +145,19 @@ async function* createDemoFeed(): AsyncGenerator<AgentStatus> {
 
   yield { id: 'flow_architect', progress: 0, state: 'running', message: 'Reading BaseWorkflow.tsx' }
   await sleep(800)
-  yield { id: 'flow_architect', progress: 30, state: 'running', message: 'Creating SharedWorkspace.tsx' }
+  yield {
+    id: 'flow_architect',
+    progress: 30,
+    state: 'running',
+    message: 'Creating SharedWorkspace.tsx',
+  }
   await sleep(1000)
-  yield { id: 'flow_architect', progress: 60, state: 'running', message: 'Building workspaceStore.ts' }
+  yield {
+    id: 'flow_architect',
+    progress: 60,
+    state: 'running',
+    message: 'Building workspaceStore.ts',
+  }
   await sleep(1200)
   yield { id: 'flow_architect', progress: 90, state: 'running', message: 'Creating tab components' }
   await sleep(800)
@@ -156,19 +165,44 @@ async function* createDemoFeed(): AsyncGenerator<AgentStatus> {
 
   // Phase 2: Experience Composer
   await sleep(500)
-  yield { id: 'experience_composer', progress: 0, state: 'running', message: 'Analyzing user flows' }
+  yield {
+    id: 'experience_composer',
+    progress: 0,
+    state: 'running',
+    message: 'Analyzing user flows',
+  }
   await sleep(1000)
-  yield { id: 'experience_composer', progress: 40, state: 'running', message: 'Simplifying PlanTab layout' }
+  yield {
+    id: 'experience_composer',
+    progress: 40,
+    state: 'running',
+    message: 'Simplifying PlanTab layout',
+  }
   await sleep(1200)
-  yield { id: 'experience_composer', progress: 70, state: 'running', message: 'Adding progressive hints' }
+  yield {
+    id: 'experience_composer',
+    progress: 70,
+    state: 'running',
+    message: 'Adding progressive hints',
+  }
   await sleep(800)
   yield { id: 'experience_composer', progress: 100, state: 'done', message: 'UX optimized ✓' }
 
   // Phase 3: Motion Choreographer
   await sleep(500)
-  yield { id: 'motion_choreographer', progress: 0, state: 'running', message: 'Creating motion library' }
+  yield {
+    id: 'motion_choreographer',
+    progress: 0,
+    state: 'running',
+    message: 'Creating motion library',
+  }
   await sleep(1000)
-  yield { id: 'motion_choreographer', progress: 50, state: 'running', message: 'Building StudioTransition.tsx' }
+  yield {
+    id: 'motion_choreographer',
+    progress: 50,
+    state: 'running',
+    message: 'Building StudioTransition.tsx',
+  }
   await sleep(1000)
   yield { id: 'motion_choreographer', progress: 100, state: 'done', message: 'Animations wired ✓' }
 
@@ -182,9 +216,19 @@ async function* createDemoFeed(): AsyncGenerator<AgentStatus> {
 
   // Phase 5: Aesthetic Curator
   await sleep(500)
-  yield { id: 'aesthetic_curator', progress: 0, state: 'running', message: 'Auditing design tokens' }
+  yield {
+    id: 'aesthetic_curator',
+    progress: 0,
+    state: 'running',
+    message: 'Auditing design tokens',
+  }
   await sleep(1000)
-  yield { id: 'aesthetic_curator', progress: 50, state: 'running', message: 'Creating StudioPicker.tsx' }
+  yield {
+    id: 'aesthetic_curator',
+    progress: 50,
+    state: 'running',
+    message: 'Creating StudioPicker.tsx',
+  }
   await sleep(1000)
   yield { id: 'aesthetic_curator', progress: 100, state: 'done', message: 'Style guide ready ✓' }
 

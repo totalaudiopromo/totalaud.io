@@ -284,7 +284,11 @@ function BaseWorkflowInternal({
  */
 export function BaseWorkflow(props: BaseWorkflowProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading workflow...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">Loading workflow...</div>
+      }
+    >
       <BaseWorkflowInternal {...props} />
     </Suspense>
   )

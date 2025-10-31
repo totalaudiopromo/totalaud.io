@@ -53,11 +53,7 @@ export function ScrollFlow({ onPhraseEnter }: ScrollFlowProps) {
   // Velocity-based blur for scroll tempo feeling
   const velocity = useVelocity(scrollYProgress)
   const smoothVelocity = useSpring(velocity, { damping: 50, stiffness: 400 })
-  const blur = useTransform(
-    smoothVelocity,
-    [-0.05, 0, 0.05],
-    ['4px', '0px', '4px']
-  )
+  const blur = useTransform(smoothVelocity, [-0.05, 0, 0.05], ['4px', '0px', '4px'])
 
   // Ambient parallax background
   const bgY = useTransform(scrollYProgress, [0, 1], [0, 200])

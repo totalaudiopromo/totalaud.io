@@ -2,7 +2,11 @@ import { executeSkill } from '@total-audio/core-skills-engine'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@total-audio/core-logger'
-import { validateRequestBody, ValidationError, validationErrorResponse } from '@aud-web/lib/api-validation'
+import {
+  validateRequestBody,
+  ValidationError,
+  validationErrorResponse,
+} from '@aud-web/lib/api-validation'
 
 const log = logger.scope('SkillsInvokeAPI')
 
@@ -28,14 +32,14 @@ export async function POST(
     log.info('Executing skill', {
       skillName: resolvedParams.name,
       userId,
-      sessionId: validatedBody.session_id
+      sessionId: validatedBody.session_id,
     })
 
     const result = await executeSkill(resolvedParams.name, validatedBody.input, userId)
 
     log.info('Skill executed successfully', {
       skillName: resolvedParams.name,
-      success: result.success
+      success: result.success,
     })
 
     return NextResponse.json(result)

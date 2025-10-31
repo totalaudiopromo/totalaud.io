@@ -126,8 +126,7 @@ export function playSound(
     const gainNode = audioContext.createGain()
 
     // Get sound definition
-    const sound: SoundToken =
-      typeof soundId === 'string' ? soundTokens[soundId] : soundId
+    const sound: SoundToken = typeof soundId === 'string' ? soundTokens[soundId] : soundId
 
     // Configure oscillator
     oscillator.type = sound.type

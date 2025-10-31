@@ -9,10 +9,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Single worker to avoid race conditions
-  reporter: [
-    ['html', { outputFolder: 'tests/output/report' }],
-    ['list'],
-  ],
+  reporter: [['html', { outputFolder: 'tests/output/report' }], ['list']],
   use: {
     baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     trace: 'on-first-retry',

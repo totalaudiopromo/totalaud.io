@@ -16,13 +16,13 @@ const statusIcons = {
 }
 
 const statusColors = {
-  pending: '#A0A4A8',      // --text-secondary
-  running: '#3AA9BE',      // --accent (Slate Cyan)
-  completed: '#63C69C',    // --success (Mint)
-  failed: '#FF6B6B',       // --error
-  queued: '#A0A4A8',       // --text-secondary
-  error: '#FF6B6B',        // --error
-  cancelled: '#A0A4A8',    // --text-secondary
+  pending: '#A0A4A8', // --text-secondary
+  running: '#3AA9BE', // --accent (Slate Cyan)
+  completed: '#63C69C', // --success (Mint)
+  failed: '#FF6B6B', // --error
+  queued: '#A0A4A8', // --text-secondary
+  error: '#FF6B6B', // --error
+  cancelled: '#A0A4A8', // --text-secondary
 }
 
 export const FlowNode = memo(({ data, selected }: NodeProps) => {

@@ -53,20 +53,26 @@ export function GlobalCommandPalette() {
   const { playProceduralSound } = useStudioSound(currentTheme)
 
   // Play sound for command interaction (respects mute setting)
-  const playCommandSound = useCallback((type: 'interact' | 'execute' | 'complete') => {
-    if (prefs?.mute_sounds) return
-    const profile = STUDIO_SOUND_PROFILES[currentTheme as keyof typeof STUDIO_SOUND_PROFILES]
-    if (profile && profile[type]) {
-      const { frequency, duration, type: waveType } = profile[type]
-      playProceduralSound(frequency, duration, waveType)
-    }
-  }, [currentTheme, prefs?.mute_sounds, playProceduralSound])
+  const playCommandSound = useCallback(
+    (type: 'interact' | 'execute' | 'complete') => {
+      if (prefs?.mute_sounds) return
+      const profile = STUDIO_SOUND_PROFILES[currentTheme as keyof typeof STUDIO_SOUND_PROFILES]
+      if (profile && profile[type]) {
+        const { frequency, duration, type: waveType } = profile[type]
+        playProceduralSound(frequency, duration, waveType)
+      }
+    },
+    [currentTheme, prefs?.mute_sounds, playProceduralSound]
+  )
 
   // Handle agent spawn confirmation
-  const handleAgentSpawned = useCallback((agentName: string) => {
-    log.info('Agent deployed', { agentName })
-    playCommandSound('complete')
-  }, [playCommandSound])
+  const handleAgentSpawned = useCallback(
+    (agentName: string) => {
+      log.info('Agent deployed', { agentName })
+      playCommandSound('complete')
+    },
+    [playCommandSound]
+  )
 
   // Define available commands
   const commands: CommandAction[] = [
