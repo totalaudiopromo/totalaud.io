@@ -1,17 +1,17 @@
 /**
  * Button Component
  *
- * Reusable button component with variant system and design tokens.
+ * Reusable button component with variant system and FlowCore design tokens.
  * Provides consistent styling, states, and interaction patterns.
  *
- * Stage 2: Aesthetic Curator - Design Consistency
+ * Phase 12.3: FlowCore Integration - Unified design system with sound feedback
  */
 
 'use client'
 
-import { ButtonHTMLAttributes, forwardRef } from 'react'
-import { motion, MotionProps } from 'framer-motion'
-import { tokens } from '@/themes/tokens'
+import { ButtonHTMLAttributes, forwardRef, useCallback } from 'react'
+import { motion } from 'framer-motion'
+import { flowCore } from '@/design/core'
 import { LucideIcon } from 'lucide-react'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -32,6 +32,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean
   /** Enable motion animation */
   animated?: boolean
+  /** Enable sound feedback (click sound) */
+  withSound?: boolean
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -89,20 +91,49 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       fullWidth = false,
       isLoading = false,
       animated = true,
+      withSound = true,
       className = '',
       children,
       disabled,
+      onClick,
       ...props
     },
     ref
   ) => {
     const sizeConfig = sizeStyles[size]
 
+    // Sound feedback using FlowCore
+    const handleClick = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (withSound && !disabled && !isLoading) {
+          // Play click sound from FlowCore
+          const sound = flowCore.sound.ui.click
+          if (typeof window !== 'undefined') {
+            const audioContext = new AudioContext()
+            const oscillator = audioContext.createOscillator()
+            const gainNode = audioContext.createGain()
+
+            oscillator.type = sound.type
+            oscillator.frequency.value = sound.frequency
+            gainNode.gain.value = sound.volume
+
+            oscillator.connect(gainNode)
+            gainNode.connect(audioContext.destination)
+
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + sound.duration / 1000)
+          }
+        }
+        onClick?.(e)
+      },
+      [withSound, disabled, isLoading, onClick]
+    )
+
     const baseClasses = `
       inline-flex items-center justify-center gap-2
       ${sizeConfig.padding} ${sizeConfig.fontSize}
       rounded-lg font-medium
-      transition-all duration-${tokens.motion.duration.fast}
+      transition-all duration-[120ms]
       focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2
       disabled:opacity-50 disabled:cursor-not-allowed
       ${variantStyles[variant]}
@@ -128,9 +159,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ref={ref}
           className={baseClasses}
           disabled={disabled || isLoading}
+          onClick={handleClick}
           whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
           whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
-          transition={{ duration: 0.15 }}
+          transition={flowCore.motion.transitions.micro}
           {...props}
         >
           {content}
@@ -139,7 +171,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return (
-      <button ref={ref} className={baseClasses} disabled={disabled || isLoading} {...props}>
+      <button
+        ref={ref}
+        className={baseClasses}
+        disabled={disabled || isLoading}
+        onClick={handleClick}
+        {...props}
+      >
         {content}
       </button>
     )

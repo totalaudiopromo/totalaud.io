@@ -56,16 +56,51 @@ export interface ThemeFlowCore extends FlowCore {
 
 /**
  * Hook for accessing theme-aware FlowCore
- * To be implemented with ThemeContext integration
+ * Integrates with ThemeContext to provide theme-specific overrides
+ *
+ * Usage:
+ * ```tsx
+ * import { useFlowCore } from '@/design/core'
+ *
+ * function MyComponent() {
+ *   const { motion, sound, typography, texture, theme } = useFlowCore()
+ *
+ *   return (
+ *     <motion.div
+ *       transition={motion.transitions.smooth}
+ *       onClick={() => sound.ui.click.play()}
+ *     >
+ *       <h1 style={typography.textStyles.hero}>Hello {theme.name}</h1>
+ *     </motion.div>
+ *   )
+ * }
+ * ```
  */
 export function useFlowCore(): ThemeFlowCore {
-  // Placeholder - will integrate with ThemeContext
+  // Check if running in browser (SSR guard)
+  if (typeof window === 'undefined') {
+    return {
+      ...flowCore,
+      theme: {
+        id: 'operator',
+        name: 'Operator',
+        personality: 'Minimal terminal aesthetics',
+      },
+    }
+  }
+
+  // Dynamic import to avoid SSR issues
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { useTheme } = require('@/contexts/ThemeContext')
+  const { theme, themeConfig } = useTheme()
+
+  // Return FlowCore with theme context
   return {
     ...flowCore,
     theme: {
-      id: 'operator',
-      name: 'Operator',
-      personality: 'Minimal terminal aesthetics',
+      id: theme,
+      name: themeConfig.name,
+      personality: themeConfig.tagline || themeConfig.description,
     },
   }
 }
