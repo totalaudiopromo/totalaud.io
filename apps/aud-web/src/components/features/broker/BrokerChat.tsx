@@ -283,10 +283,10 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
   const getPrefix = () => {
     const prefixes: Record<OSTheme, string> = {
       operator: '⟩',
-      xp: '►',
-      aqua: '•',
-      daw: '●',
-      analogue: '✦',
+      guide: '►',
+      map: '•',
+      timeline: '●',
+      tape: '✦',
     }
     return prefixes[selectedMode] || '›'
   }

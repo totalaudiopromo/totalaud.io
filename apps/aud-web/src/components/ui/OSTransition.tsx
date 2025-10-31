@@ -16,27 +16,27 @@ interface OSTransitionProps {
 }
 
 const BOOT_MESSAGES: Record<OSTheme, string[]> = {
-  ascii: [
+  operator: [
     'INITIALIZING AGENT INTERFACE…',
     'LOADING SKILLS_ENGINE.DLL',
     'SYNCHRONIZING RESEARCH CONTACTS…',
     'CONNECTING TO SUPABASE::OK',
     'SYSTEM READY_',
   ],
-  xp: [
+  guide: [
     'Loading VST plugins...',
     'Rendering GUI assets...',
     'Initializing creative workspace...',
     'Ready.',
   ],
-  aqua: [
+  map: [
     'Mounting volumes...',
     'Connecting iChat Agent...',
     'Initializing Aqua interface...',
     'Welcome to your studio.',
   ],
-  daw: ['INIT: MIDI ROUTES', 'LOAD: SESSION CLIPS', 'SYNC: AGENT SEQUENCER', 'PLAYBACK READY…'],
-  analogue: [
+  timeline: ['INIT: MIDI ROUTES', 'LOAD: SESSION CLIPS', 'SYNC: AGENT SEQUENCER', 'PLAYBACK READY…'],
+  tape: [
     'Warming up the signal…',
     'Loading tape emulation…',
     'Adjusting gain staging…',
@@ -209,7 +209,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
 │  TOTALAUD.IO BOOT SEQUENCE v1.0.0  │
 └────────────────────────────────────┘`}
                   </pre>
-                  {BOOT_MESSAGES.ascii.slice(0, visibleLines).map((line, i) => (
+                  {BOOT_MESSAGES.operator.slice(0, visibleLines).map((line, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -10 }}
@@ -249,7 +249,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                     </h2>
                   </div>
 
-                  {BOOT_MESSAGES.xp.slice(0, visibleLines).map((line, i) => (
+                  {BOOT_MESSAGES.guide.slice(0, visibleLines).map((line, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0 }}
@@ -309,7 +309,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                   </div>
 
                   <div className="space-y-3">
-                    {BOOT_MESSAGES.aqua.slice(0, visibleLines).map((line, i) => (
+                    {BOOT_MESSAGES.map.slice(0, visibleLines).map((line, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 10 }}
@@ -349,7 +349,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                   </div>
 
                   <div className="font-mono space-y-2">
-                    {BOOT_MESSAGES.daw.slice(0, visibleLines).map((line, i) => (
+                    {BOOT_MESSAGES.timeline.slice(0, visibleLines).map((line, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: -20 }}
@@ -411,7 +411,7 @@ export default function OSTransition({ selectedMode, onComplete }: OSTransitionP
                   </div>
 
                   <div className="space-y-3 font-mono">
-                    {BOOT_MESSAGES.analogue.slice(0, visibleLines).map((line, i) => (
+                    {BOOT_MESSAGES.tape.slice(0, visibleLines).map((line, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: Math.random() > 0.5 ? -20 : 20 }}
