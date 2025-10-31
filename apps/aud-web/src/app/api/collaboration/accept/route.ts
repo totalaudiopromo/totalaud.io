@@ -46,10 +46,7 @@ export async function POST(req: NextRequest) {
     const { invite_token } = body
 
     if (!invite_token) {
-      return NextResponse.json(
-        { error: 'Missing required field: invite_token' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required field: invite_token' }, { status: 400 })
     }
 
     // Find invite by token
@@ -60,10 +57,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (inviteError || !invite) {
-      return NextResponse.json(
-        { error: 'Invalid or expired invite token' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Invalid or expired invite token' }, { status: 404 })
     }
 
     // Check if invite has expired
@@ -79,10 +73,7 @@ export async function POST(req: NextRequest) {
 
     // Check if invite has already been accepted
     if (invite.accepted_at) {
-      return NextResponse.json(
-        { error: 'Invite has already been accepted' },
-        { status: 409 }
-      )
+      return NextResponse.json({ error: 'Invite has already been accepted' }, { status: 409 })
     }
 
     // Verify user's email matches invited email
@@ -127,21 +118,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Add user as collaborator
-    const { error: collabError } = await supabase
-      .from('campaign_collaborators')
-      .insert({
-        campaign_id: invite.campaign_id,
-        user_id: user.id,
-        role: invite.role,
-        invited_by: invite.invited_by,
-      })
+    const { error: collabError } = await supabase.from('campaign_collaborators').insert({
+      campaign_id: invite.campaign_id,
+      user_id: user.id,
+      role: invite.role,
+      invited_by: invite.invited_by,
+    })
 
     if (collabError) {
       console.error('[Accept API] Error adding collaborator:', collabError)
-      return NextResponse.json(
-        { error: 'Failed to add collaborator' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to add collaborator' }, { status: 500 })
     }
 
     // Mark invite as accepted
@@ -173,9 +159,6 @@ export async function POST(req: NextRequest) {
     )
   } catch (error) {
     console.error('[Accept API] Unexpected error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

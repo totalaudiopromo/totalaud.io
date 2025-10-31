@@ -78,9 +78,7 @@ export function OperatorCommandPalette({ isOpen, onClose }: OperatorCommandPalet
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault()
-          setSelectedIndex((prev) =>
-            prev < filteredCommands.length - 1 ? prev + 1 : prev
-          )
+          setSelectedIndex((prev) => (prev < filteredCommands.length - 1 ? prev + 1 : prev))
           break
 
         case 'ArrowUp':
@@ -288,9 +286,7 @@ export function OperatorCommandPalette({ isOpen, onClose }: OperatorCommandPalet
                   {feedback.type === 'success' && (
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                   )}
-                  {feedback.type === 'error' && (
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  )}
+                  {feedback.type === 'error' && <AlertCircle className="w-4 h-4 flex-shrink-0" />}
                   <span className="text-sm font-medium">{feedback.message}</span>
                 </motion.div>
               )}
@@ -309,9 +305,7 @@ export function OperatorCommandPalette({ isOpen, onClose }: OperatorCommandPalet
                   <kbd className="px-1.5 py-0.5 rounded bg-border/50 font-mono">Esc</kbd> Close
                 </span>
               </div>
-              {context.campaignId && (
-                <span className="text-accent">Campaign active ✓</span>
-              )}
+              {context.campaignId && <span className="text-accent">Campaign active ✓</span>}
             </div>
           </motion.div>
         </motion.div>
@@ -335,9 +329,7 @@ export function OperatorCommandPaletteTrigger({ onClick }: { onClick: () => void
     >
       <CommandIcon className="w-4 h-4 text-accent" />
       <span className="text-sm text-foreground font-medium">Operator</span>
-      <kbd className="px-1.5 py-0.5 rounded bg-border/50 font-mono text-xs text-muted">
-        ⌘K
-      </kbd>
+      <kbd className="px-1.5 py-0.5 rounded bg-border/50 font-mono text-xs text-muted">⌘K</kbd>
     </motion.button>
   )
 }

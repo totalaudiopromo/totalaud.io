@@ -22,11 +22,14 @@ export function MissionStack() {
 
   const handleClick = (phaseId: MissionView) => {
     setMissionView(phaseId)
-    setActivePane('mission')  // Ensure center pane shows ContextPane
+    setActivePane('mission') // Ensure center pane shows ContextPane
   }
 
   return (
-    <div data-testid="mission-stack" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+    <div
+      data-testid="mission-stack"
+      style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}
+    >
       {MISSION_PHASES.map((phase) => {
         const isActive = missionView === phase.id
 
@@ -37,12 +40,8 @@ export function MissionStack() {
             onClick={() => handleClick(phase.id)}
             style={{
               padding: 'var(--space-3)',
-              backgroundColor: isActive
-                ? 'var(--surface)'
-                : 'transparent',
-              border: `1px solid ${
-                isActive ? 'var(--accent)' : 'var(--border)'
-              }`,
+              backgroundColor: isActive ? 'var(--surface)' : 'transparent',
+              border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`,
               borderRadius: '6px',
               color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
               cursor: 'pointer',

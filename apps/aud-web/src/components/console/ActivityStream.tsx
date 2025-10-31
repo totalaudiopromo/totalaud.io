@@ -18,7 +18,15 @@ import type { Collaborator } from '@/lib/realtimePresence'
 interface ActivityEvent {
   id: string
   timestamp: Date
-  type: 'pitch_sent' | 'pitch_opened' | 'pitch_replied' | 'workflow_started' | 'release_planned' | 'agent' | 'workflow' | 'error'
+  type:
+    | 'pitch_sent'
+    | 'pitch_opened'
+    | 'pitch_replied'
+    | 'workflow_started'
+    | 'release_planned'
+    | 'agent'
+    | 'workflow'
+    | 'error'
   target?: string
   message: string
   user_id?: string // ID of user who triggered this event
@@ -26,10 +34,10 @@ interface ActivityEvent {
 
 // Theme colors for collaborator borders (matching PresenceAvatars)
 const themeColors: Record<string, string> = {
-  ascii: '#3AA9BE',    // Slate Cyan (updated)
-  xp: '#0078D7',       // Blue
-  aqua: '#007AFF',     // Blue
-  daw: '#FF6B35',      // Orange
+  ascii: '#3AA9BE', // Slate Cyan (updated)
+  xp: '#0078D7', // Blue
+  aqua: '#007AFF', // Blue
+  daw: '#FF6B35', // Orange
   analogue: '#D4A574', // Warm brown
 }
 
@@ -41,7 +49,13 @@ interface ActivityStreamProps {
 }
 
 export function ActivityStream({ collaborators = [], currentUserId }: ActivityStreamProps = {}) {
-  const { activityFilter, timeRange, activeCampaignId, events: realtimeEvents, addEvent } = useConsoleStore()
+  const {
+    activityFilter,
+    timeRange,
+    activeCampaignId,
+    events: realtimeEvents,
+    addEvent,
+  } = useConsoleStore()
   const [events, setEvents] = useState<ActivityEvent[]>([])
   const [pendingEvents, setPendingEvents] = useState<ActivityEvent[]>([])
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -184,16 +198,19 @@ export function ActivityStream({ collaborators = [], currentUserId }: ActivitySt
         damping: 30,
         mass: 0.8,
         duration: 0.24,
-      }
+      },
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.15 }
-    }
+      transition: { duration: 0.15 },
+    },
   }
 
   return (
-    <div data-testid="activity-stream" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', height: '100%' }}>
+    <div
+      data-testid="activity-stream"
+      style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', height: '100%' }}
+    >
       {/* Filter Bar */}
       <div
         data-testid="activity-filter-bar"
@@ -208,12 +225,8 @@ export function ActivityStream({ collaborators = [], currentUserId }: ActivitySt
         <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
           Filter: {activityFilter}
         </span>
-        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-          •
-        </span>
-        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-          Range: {timeRange}
-        </span>
+        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>•</span>
+        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Range: {timeRange}</span>
       </div>
 
       {/* Event List with Spring Motion */}
@@ -264,7 +277,13 @@ export function ActivityStream({ collaborators = [], currentUserId }: ActivitySt
                     cursor: tooltip ? 'help' : 'default',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '4px',
+                    }}
+                  >
                     <span
                       style={{
                         color: getEventColor(event.type),

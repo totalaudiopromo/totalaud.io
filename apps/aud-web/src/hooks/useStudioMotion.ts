@@ -7,34 +7,34 @@
  * Phase 6.5: Motion Choreographer - Named Curves & Unified System
  */
 
-import { useMemo } from 'react';
-import { studioMotion, getTransition, type Transition } from '@aud-web/lib/motion';
+import { useMemo } from 'react'
+import { studioMotion, getTransition, type Transition } from '@aud-web/lib/motion'
 
-export type TransitionSpeed = 'instant' | 'fast' | 'medium' | 'slow' | 'drift';
+export type TransitionSpeed = 'instant' | 'fast' | 'medium' | 'slow' | 'drift'
 
 export interface StudioMotion {
   /** Animation name */
-  name: string;
+  name: string
 
   /** Animation duration in seconds (Framer Motion format) */
-  duration: number;
+  duration: number
 
   /** CSS easing function */
-  easing: string;
+  easing: string
 
   /** Framer Motion spring config (optional) */
   spring?: {
-    type: 'spring';
-    stiffness: number;
-    damping: number;
-    mass: number;
-  };
+    type: 'spring'
+    stiffness: number
+    damping: number
+    mass: number
+  }
 
   /** Human-readable description */
-  description: string;
+  description: string
 
   /** Semantic speed label for backwards compatibility */
-  transitionSpeed: TransitionSpeed;
+  transitionSpeed: TransitionSpeed
 }
 
 // Map Studio motion configs to hook interface
@@ -59,17 +59,17 @@ const MOTION_CONFIGS: Record<string, StudioMotion> = {
     ...studioMotion.analogue,
     transitionSpeed: 'drift',
   },
-};
+}
 
 /**
  * Get the motion configuration for a specific Studio theme
  */
 export function useStudioMotion(theme: string): StudioMotion {
   const motion = useMemo(() => {
-    return MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-  }, [theme]);
+    return MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii
+  }, [theme])
 
-  return motion;
+  return motion
 }
 
 /**
@@ -83,16 +83,16 @@ export function getFramerTransition(theme: string): Transition {
     aqua: 'dissolve',
     daw: 'pulse',
     analogue: 'drift',
-  };
+  }
 
-  const curveName = curves[theme] || 'snap';
-  return getTransition(curveName);
+  const curveName = curves[theme] || 'snap'
+  return getTransition(curveName)
 }
 
 /**
  * Get CSS transition string for a theme
  */
 export function getCSSTransition(theme: string, property = 'all'): string {
-  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii;
-  return `${property} ${config.duration}s ${config.easing}`;
+  const config = MOTION_CONFIGS[theme] || MOTION_CONFIGS.ascii
+  return `${property} ${config.duration}s ${config.easing}`
 }

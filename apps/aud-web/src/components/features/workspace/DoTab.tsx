@@ -104,34 +104,35 @@ export function DoTab() {
           />
         ) : (
           <div className="space-y-3">
-            {runs.slice().reverse().slice(0, 10).map((run) => (
-              <div
-                key={run.id}
-                className="run-card p-4 border border-border rounded-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium capitalize">
-                      {run.workflow_type.replace('_', ' ')}
-                    </h3>
-                    <p className="text-sm text-muted">
-                      Started: {new Date(run.started_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <span
-                    className={`
+            {runs
+              .slice()
+              .reverse()
+              .slice(0, 10)
+              .map((run) => (
+                <div key={run.id} className="run-card p-4 border border-border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium capitalize">
+                        {run.workflow_type.replace('_', ' ')}
+                      </h3>
+                      <p className="text-sm text-muted">
+                        Started: {new Date(run.started_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <span
+                      className={`
                       px-3 py-1 rounded-full text-xs font-medium
                       ${run.status === 'complete' ? 'bg-green-500/20 text-green-600' : ''}
                       ${run.status === 'running' ? 'bg-blue-500/20 text-blue-600' : ''}
                       ${run.status === 'failed' ? 'bg-red-500/20 text-red-600' : ''}
                       ${run.status === 'pending' ? 'bg-gray-500/20 text-gray-600' : ''}
                     `}
-                  >
-                    {run.status}
-                  </span>
+                    >
+                      {run.status}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </section>

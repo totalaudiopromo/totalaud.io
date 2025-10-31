@@ -15,10 +15,7 @@ const TEST_TIMEOUT = 30000 // 30 seconds
 /**
  * Helper: Create authenticated page
  */
-async function createAuthenticatedPage(
-  context: BrowserContext,
-  userEmail: string
-): Promise<Page> {
+async function createAuthenticatedPage(context: BrowserContext, userEmail: string): Promise<Page> {
   const page = await context.newPage()
 
   // Login as test user
@@ -322,10 +319,7 @@ test.describe('Multi-User Collaboration', () => {
     console.log('Collaborator visual accent: ✓')
 
     // Verify tooltip shows Alice's name
-    const tooltip = await pageBob.getAttribute(
-      '[data-testid="activity-event-agent"]',
-      'title'
-    )
+    const tooltip = await pageBob.getAttribute('[data-testid="activity-event-agent"]', 'title')
     expect(tooltip).toContain('alice')
     expect(tooltip).toContain('triggered this action')
     console.log('Collaborator tooltip: ✓')
@@ -517,7 +511,9 @@ test.describe('Performance & Accessibility', () => {
 
     // Check keyboard navigation
     await pageBob.keyboard.press('Tab')
-    const focusedElement = await pageBob.evaluate(() => document.activeElement?.getAttribute('data-testid'))
+    const focusedElement = await pageBob.evaluate(() =>
+      document.activeElement?.getAttribute('data-testid')
+    )
     expect(focusedElement).toContain('presence-avatar')
     console.log('Keyboard navigation: ✓')
 

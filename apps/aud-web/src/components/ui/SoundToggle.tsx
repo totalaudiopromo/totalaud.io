@@ -92,7 +92,9 @@ export function SoundToggle({ position = 'bottom-left', showLabel = false }: Sou
       whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.95 }}
       aria-label={localEnabled ? 'Mute sounds' : 'Unmute sounds'}
-      title={localEnabled ? 'Mute ambient sound and UI effects' : 'Enable ambient sound and UI effects'}
+      title={
+        localEnabled ? 'Mute ambient sound and UI effects' : 'Enable ambient sound and UI effects'
+      }
     >
       {localEnabled ? (
         <Volume2 className="w-4 h-4 text-accent transition-colors group-hover:text-accent/80" />

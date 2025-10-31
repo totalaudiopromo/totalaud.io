@@ -62,10 +62,7 @@ export function ThemeSlider() {
       >
         Five creative environments
       </h2>
-      <p
-        className="text-sm text-neutral-500 mb-8"
-        style={{ fontFamily: 'var(--font-geist-mono)' }}
-      >
+      <p className="text-sm text-neutral-500 mb-8" style={{ fontFamily: 'var(--font-geist-mono)' }}>
         {currentTheme.tagline}
       </p>
 
@@ -100,7 +97,10 @@ export function ThemeSlider() {
                 >
                   {currentTheme.name}
                 </div>
-                <p className="text-neutral-500 text-sm" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+                <p
+                  className="text-neutral-500 text-sm"
+                  style={{ fontFamily: 'var(--font-geist-mono)' }}
+                >
                   {currentTheme.tagline}
                 </p>
                 <p className="text-neutral-600 text-xs mt-4">
@@ -129,9 +129,7 @@ export function ThemeSlider() {
               key={i}
               onClick={() => setIndex(i)}
               className={`w-2 h-2 rounded-full transition-all ${
-                i === index
-                  ? 'bg-[#3AA9BE] w-8'
-                  : 'bg-neutral-600 hover:bg-neutral-500'
+                i === index ? 'bg-[#3AA9BE] w-8' : 'bg-neutral-600 hover:bg-neutral-500'
               }`}
               aria-label={`Go to ${themes[i].name} theme`}
             />

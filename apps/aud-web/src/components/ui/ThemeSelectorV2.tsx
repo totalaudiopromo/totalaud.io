@@ -1,7 +1,14 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { motion, useSpring, useTransform, useMotionValue, AnimatePresence, useReducedMotion } from 'framer-motion'
+import {
+  motion,
+  useSpring,
+  useTransform,
+  useMotionValue,
+  AnimatePresence,
+  useReducedMotion,
+} from 'framer-motion'
 import { THEME_CONFIGS, type OSTheme } from '@aud-web/types/themes'
 import { springPresets, motionTokens, extendedMotionTokens } from '@aud-web/tokens/motion'
 import { semanticColours, withOpacity } from '@aud-web/tokens/colors'
@@ -45,9 +52,7 @@ export function ThemeSelectorV2({
   muted = false,
   onAnalytics,
 }: ThemeSelectorV2Props) {
-  const [activeIndex, setActiveIndex] = useState(() =>
-    THEMES.indexOf(initialTheme)
-  )
+  const [activeIndex, setActiveIndex] = useState(() => THEMES.indexOf(initialTheme))
   const [isConfirmed, setIsConfirmed] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -181,16 +186,19 @@ export function ThemeSelectorV2({
   }
 
   // Cursor magnetism tracking
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current || prefersReducedMotion) return
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!containerRef.current || prefersReducedMotion) return
 
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+      const rect = containerRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
 
-    cursorX.set(x)
-    cursorY.set(y)
-  }, [cursorX, cursorY, prefersReducedMotion])
+      cursorX.set(x)
+      cursorY.set(y)
+    },
+    [cursorX, cursorY, prefersReducedMotion]
+  )
 
   return (
     <div className="theme-selector-v2">
@@ -265,11 +273,7 @@ export function ThemeSelectorV2({
                     opacity: 1,
                     x: 0,
                     // Back-spring overshoot: 1.03 → settle to 1.0
-                    scale: isActive || isHovered
-                      ? prefersReducedMotion
-                        ? 1.01
-                        : 1.03
-                      : 1,
+                    scale: isActive || isHovered ? (prefersReducedMotion ? 1.01 : 1.03) : 1,
                   }}
                   transition={{
                     ...springPresets.fast,
@@ -301,7 +305,7 @@ export function ThemeSelectorV2({
                       exit={{ opacity: 0, scale: 1.2 }}
                       transition={{
                         duration: motionTokens.slow.duration / 1000, // Convert ms to seconds
-                        ease: 'easeInOut'
+                        ease: 'easeInOut',
                       }}
                       style={{
                         position: 'absolute',
@@ -313,9 +317,7 @@ export function ThemeSelectorV2({
                   )}
 
                   <div className="theme-selector-v2__option-content">
-                    <div className="theme-selector-v2__option-name">
-                      {config.displayName}
-                    </div>
+                    <div className="theme-selector-v2__option-name">{config.displayName}</div>
                     <motion.div
                       className="theme-selector-v2__option-tagline"
                       animate={{

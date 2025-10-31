@@ -87,7 +87,8 @@ export class CommandService {
     if (command.requiresCampaign && !context.campaignId) {
       return {
         success: false,
-        message: 'This command requires an active campaign. Please select or create a campaign first.',
+        message:
+          'This command requires an active campaign. Please select or create a campaign first.',
         error: 'NO_ACTIVE_CAMPAIGN',
       }
     }
@@ -193,7 +194,10 @@ export class CommandService {
   /**
    * Dry-run command validation without execution
    */
-  static canExecute(commandId: string, context?: CommandExecutionContext): {
+  static canExecute(
+    commandId: string,
+    context?: CommandExecutionContext
+  ): {
     canExecute: boolean
     reason?: string
   } {
