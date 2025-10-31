@@ -4,14 +4,14 @@
  * Reusable button component with variant system and FlowCore design tokens.
  * Provides consistent styling, states, and interaction patterns.
  *
- * Phase 12.3: FlowCore Integration - Unified design system with sound feedback
+ * Phase 12.4: Theme Fusion - Theme-aware motion and sound feedback
  */
 
 'use client'
 
 import { ButtonHTMLAttributes, forwardRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { flowCore } from '@/design/core'
+import { useFlowTheme } from '@/hooks/useFlowTheme'
 import { LucideIcon } from 'lucide-react'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -102,31 +102,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const sizeConfig = sizeStyles[size]
 
-    // Sound feedback using FlowCore
+    // Get theme-aware design tokens
+    const { motion, sound: themeSound } = useFlowTheme()
+
+    // Theme-aware sound feedback
     const handleClick = useCallback(
       (e: React.MouseEvent<HTMLButtonElement>) => {
         if (withSound && !disabled && !isLoading) {
-          // Play click sound from FlowCore
-          const sound = flowCore.sound.ui.click
-          if (typeof window !== 'undefined') {
-            const audioContext = new AudioContext()
-            const oscillator = audioContext.createOscillator()
-            const gainNode = audioContext.createGain()
-
-            oscillator.type = sound.type
-            oscillator.frequency.value = sound.frequency
-            gainNode.gain.value = sound.volume
-
-            oscillator.connect(gainNode)
-            gainNode.connect(audioContext.destination)
-
-            oscillator.start(audioContext.currentTime)
-            oscillator.stop(audioContext.currentTime + sound.duration / 1000)
-          }
+          // Play theme-specific click sound
+          themeSound.playClick()
         }
         onClick?.(e)
       },
-      [withSound, disabled, isLoading, onClick]
+      [withSound, disabled, isLoading, onClick, themeSound]
     )
 
     const baseClasses = `
@@ -162,7 +150,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           onClick={handleClick}
           whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
           whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
-          transition={flowCore.motion.transitions.micro}
+          transition={motion.transition}
           {...props}
         >
           {content}

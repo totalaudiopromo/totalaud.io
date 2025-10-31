@@ -69,3 +69,12 @@ export {
   toBorder,
   type TextureCore,
 } from './textures'
+export {
+  themePersonalities,
+  getThemePersonality,
+  getAllThemeIds,
+  type ThemeId,
+  type ThemePersonality,
+  type MotionType,
+  type TextureType,
+} from './themes'
