@@ -337,7 +337,9 @@ export function ThemeTester() {
 
           {ambientEnabled && (
             <div className="mt-4 pt-4 border-t" style={{ borderColor: colours.border }}>
-              <p className="text-xs opacity-70 mb-2">Try switching themes to hear the cross-fade:</p>
+              <p className="text-xs opacity-70 mb-2">
+                Try switching themes to hear the cross-fade:
+              </p>
               <div className="flex gap-2 flex-wrap">
                 {allThemes.map((themeId) => (
                   <button
@@ -379,20 +381,20 @@ export function ThemeTester() {
             <div className="space-y-2 text-sm font-mono">
               <div className="flex justify-between">
                 <span className="opacity-70">Lighting Cross-fade:</span>
-                <span className="font-semibold">{atmosphere.motion?.lighting || 600}ms</span>
+                <span className="font-semibold">600ms</span>
               </div>
               <div className="flex justify-between">
                 <span className="opacity-70">Panel Breathe:</span>
-                <span className="font-semibold">{atmosphere.motion?.panelBreathe || 240}ms</span>
+                <span className="font-semibold">240ms</span>
               </div>
               <div className="flex justify-between">
                 <span className="opacity-70">Audio Cross-fade:</span>
-                <span className="font-semibold">{atmosphere.motion?.audioCrossfade || 600}ms</span>
+                <span className="font-semibold">600ms</span>
               </div>
               <div className="flex justify-between">
                 <span className="opacity-70">Total Transition:</span>
                 <span className="font-semibold" style={{ color: colours.accent }}>
-                  {atmosphere.motion?.totalTransition || 800}ms
+                  800ms
                 </span>
               </div>
             </div>

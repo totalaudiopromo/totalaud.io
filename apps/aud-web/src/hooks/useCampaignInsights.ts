@@ -19,13 +19,13 @@ import { getSupabaseClient } from '@/lib/supabaseClient'
 
 export interface CampaignMetrics {
   activeAgents: number
-  activeAgentsTrend: 'up' | 'down' | 'stable'
+  activeAgentsTrend: 'up' | 'down' | 'neutral'
   tasksCompleted: number
-  tasksCompletedTrend: 'up' | 'down' | 'stable'
+  tasksCompletedTrend: 'up' | 'down' | 'neutral'
   contactsEnriched: number
-  contactsEnrichedTrend: 'up' | 'down' | 'stable'
+  contactsEnrichedTrend: 'up' | 'down' | 'neutral'
   openRate: number
-  openRateTrend: 'up' | 'down' | 'stable'
+  openRateTrend: 'up' | 'down' | 'neutral'
 }
 
 export interface CampaignGoal {
@@ -68,13 +68,13 @@ export function useCampaignInsights(
 
   const [metrics, setMetrics] = useState<CampaignMetrics>({
     activeAgents: 0,
-    activeAgentsTrend: 'stable',
+    activeAgentsTrend: 'neutral',
     tasksCompleted: 0,
-    tasksCompletedTrend: 'stable',
+    tasksCompletedTrend: 'neutral',
     contactsEnriched: 0,
-    contactsEnrichedTrend: 'stable',
+    contactsEnrichedTrend: 'neutral',
     openRate: 0,
-    openRateTrend: 'stable',
+    openRateTrend: 'neutral',
   })
 
   const [goals, setGoals] = useState<CampaignGoal[]>([])
@@ -91,7 +91,7 @@ export function useCampaignInsights(
         tasksCompleted: 12,
         tasksCompletedTrend: 'up',
         contactsEnriched: 47,
-        contactsEnrichedTrend: 'stable',
+        contactsEnrichedTrend: 'neutral',
         openRate: 24,
         openRateTrend: 'up',
       })
@@ -174,7 +174,7 @@ export function useCampaignInsights(
         tasksCompleted: tasks?.length || 0,
         tasksCompletedTrend: 'up',
         contactsEnriched: contacts?.length || 0,
-        contactsEnrichedTrend: 'stable',
+        contactsEnrichedTrend: 'neutral',
         openRate,
         openRateTrend: 'up',
       })
