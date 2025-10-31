@@ -18,7 +18,15 @@ import { getAllThemeIds, type ThemeId } from '@/design/core/themes'
 import { Volume2, VolumeX, Play } from 'lucide-react'
 
 export function ThemeTester() {
-  const { personality, colours, motion: themeMotion, sound, texture, activeTheme, setTheme } = useFlowTheme()
+  const {
+    personality,
+    colours,
+    motion: themeMotion,
+    sound,
+    texture,
+    activeTheme,
+    setTheme,
+  } = useFlowTheme()
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [animationKey, setAnimationKey] = useState(0)
 

@@ -15,7 +15,7 @@ export const tapeAtmosphere: Atmosphere = {
       'radial-gradient(ellipse at 30% 40%, rgba(60, 45, 35, 0.15) 0%, #0F1113 50%, rgba(40, 30, 25, 0.1) 100%)',
     animated: true, // Gentle breathing
     grainOverlay: {
-      src: '/assets/textures/film-grain.jpg',
+      src: '/assets/textures/film-grain.svg',
       opacity: 0.05,
       blendMode: 'soft-light',
     },

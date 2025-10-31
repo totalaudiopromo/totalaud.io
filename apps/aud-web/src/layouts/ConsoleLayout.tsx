@@ -33,8 +33,14 @@ export function ConsoleLayout() {
   const { currentTheme } = useTheme()
   const motion_config = useStudioMotion(currentTheme)
 
-  const { campaignName, setCampaignName, activePane, activeMode, showOperatorPalette, toggleOperatorPalette } =
-    useConsoleStore()
+  const {
+    campaignName,
+    setCampaignName,
+    activePane,
+    activeMode,
+    showOperatorPalette,
+    toggleOperatorPalette,
+  } = useConsoleStore()
 
   // Share modal state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)

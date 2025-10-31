@@ -2,11 +2,14 @@
  * Insight Panel - Right Pane
  *
  * Metrics, goals, and AI recommendations
- * Phase 1: Placeholder metrics
- * Stage 8.5: Migrated to CSS variable system (Slate Cyan)
+ * Phase 12.3.5: Live data integration with useCampaignInsights
+ * Phase 13.0: FlowCore Studio Aesthetics
  */
 
 'use client'
+
+import { useCampaignInsights } from '@/hooks/useCampaignInsights'
+import { useConsoleStore } from '@aud-web/stores/consoleStore'
 
 interface MetricCardProps {
   label: string
@@ -59,6 +62,12 @@ function MetricCard({ label, value, trend = 'neutral' }: MetricCardProps) {
 }
 
 export function InsightPanel() {
+  const { activeCampaignId } = useConsoleStore()
+  const { metrics, goals, recommendations, isLoading, error } = useCampaignInsights(
+    activeCampaignId,
+    30000 // 30s refresh
+  )
+
   return (
     <div
       data-testid="insight-panel"
@@ -76,12 +85,34 @@ export function InsightPanel() {
         >
           Campaign Metrics
         </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <MetricCard label="Active Agents" value="3" trend="up" />
-          <MetricCard label="Tasks Completed" value="12" trend="up" />
-          <MetricCard label="Contacts Enriched" value="47" trend="neutral" />
-          <MetricCard label="Open Rate" value="24%" trend="up" />
-        </div>
+        {isLoading ? (
+          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>loading metrics...</div>
+        ) : error ? (
+          <div style={{ color: 'var(--error)', fontSize: '14px' }}>Error: {error}</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <MetricCard
+              label="Active Agents"
+              value={String(metrics.activeAgents)}
+              trend={metrics.activeAgentsTrend}
+            />
+            <MetricCard
+              label="Tasks Completed"
+              value={String(metrics.tasksCompleted)}
+              trend={metrics.tasksCompletedTrend}
+            />
+            <MetricCard
+              label="Contacts Enriched"
+              value={String(metrics.contactsEnriched)}
+              trend={metrics.contactsEnrichedTrend}
+            />
+            <MetricCard
+              label="Open Rate"
+              value={`${metrics.openRate}%`}
+              trend={metrics.openRateTrend}
+            />
+          </div>
+        )}
       </section>
 
       {/* Goals Section */}
@@ -106,9 +137,24 @@ export function InsightPanel() {
             color: 'var(--text-secondary)',
           }}
         >
-          <div style={{ marginBottom: 'var(--space-2)' }}>• Enrich 100 radio contacts</div>
-          <div style={{ marginBottom: 'var(--space-2)' }}>• Send 50 personalized pitches</div>
-          <div>• Achieve 30% open rate</div>
+          {goals.length === 0 ? (
+            <div style={{ fontStyle: 'italic', color: 'var(--text-tertiary)' }}>
+              no goals set yet
+            </div>
+          ) : (
+            goals.map((goal) => (
+              <div
+                key={goal.id}
+                style={{
+                  marginBottom: goals.length > 1 ? 'var(--space-2)' : 0,
+                  textDecoration: goal.completed ? 'line-through' : 'none',
+                  opacity: goal.completed ? 0.6 : 1,
+                }}
+              >
+                {goal.completed ? '✓' : '•'} {goal.description}
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -124,18 +170,38 @@ export function InsightPanel() {
         >
           AI Recommendations
         </h3>
-        <div
-          style={{
-            padding: 'var(--space-3)',
-            backgroundColor: 'var(--surface)',
-            border: '1px solid var(--accent)',
-            borderRadius: '6px',
-            fontSize: '14px',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Focus on BBC Radio contacts for highest engagement potential based on your track genre.
-        </div>
+        {recommendations.length === 0 ? (
+          <div
+            style={{
+              padding: 'var(--space-3)',
+              backgroundColor: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              fontSize: '14px',
+              color: 'var(--text-tertiary)',
+              fontStyle: 'italic',
+            }}
+          >
+            no recommendations yet — run insight analysis
+          </div>
+        ) : (
+          recommendations.map((rec) => (
+            <div
+              key={rec.id}
+              style={{
+                padding: 'var(--space-3)',
+                backgroundColor: 'var(--surface)',
+                border: `1px solid ${rec.priority === 'high' ? 'var(--accent)' : 'var(--border)'}`,
+                borderRadius: '6px',
+                fontSize: '14px',
+                color: 'var(--text-primary)',
+                marginBottom: recommendations.length > 1 ? 'var(--space-2)' : 0,
+              }}
+            >
+              {rec.text}
+            </div>
+          ))
+        )}
       </section>
     </div>
   )
