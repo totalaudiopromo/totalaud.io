@@ -27,7 +27,7 @@ export function Toast({
   isVisible,
   onClose,
   duration = 3000,
-  useThemeTone = false
+  useThemeTone = false,
 }: ToastProps) {
   const { colours, activeTheme } = useFlowTheme()
 
@@ -45,11 +45,8 @@ export function Toast({
     }
   }, [isVisible, duration, onClose])
 
-  const bgColor = type === 'success'
-    ? colours.accent
-    : type === 'error'
-    ? 'var(--error)'
-    : colours.border
+  const bgColor =
+    type === 'success' ? colours.accent : type === 'error' ? 'var(--error)' : colours.border
 
   return (
     <AnimatePresence>

@@ -4,5 +4,5 @@
  * Components for the Broker chat system and interactions.
  */
 
-export { BrokerChat } from './BrokerChat'
-export { BrokerIntro } from './BrokerIntro'
+export { default as BrokerChat } from './BrokerChat'
+export { default as BrokerIntro } from './BrokerIntro'

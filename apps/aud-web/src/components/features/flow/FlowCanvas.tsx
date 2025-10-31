@@ -938,8 +938,8 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
                       <div>
                         <div className="font-semibold text-sm mb-1">left-click to place node</div>
                         <div className="text-xs text-cyan-100">
-                          move your cursor to position the node, then click to place it. press Esc to
-                          cancel placement.
+                          move your cursor to position the node, then click to place it. press Esc
+                          to cancel placement.
                         </div>
                       </div>
                     </div>
