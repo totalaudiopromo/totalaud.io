@@ -35,7 +35,12 @@ const BOOT_MESSAGES: Record<OSTheme, string[]> = {
     'Initializing Aqua interface...',
     'Welcome to your studio.',
   ],
-  timeline: ['INIT: MIDI ROUTES', 'LOAD: SESSION CLIPS', 'SYNC: AGENT SEQUENCER', 'PLAYBACK READY…'],
+  timeline: [
+    'INIT: MIDI ROUTES',
+    'LOAD: SESSION CLIPS',
+    'SYNC: AGENT SEQUENCER',
+    'PLAYBACK READY…',
+  ],
   tape: [
     'Warming up the signal…',
     'Loading tape emulation…',

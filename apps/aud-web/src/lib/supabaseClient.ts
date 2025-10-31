@@ -56,6 +56,10 @@ export interface UserPrefs {
   comfort_mode: boolean
   calm_mode: boolean
   sound_muted: boolean
+  mute_sounds: boolean
+  reduced_motion: boolean
+  show_onboarding_overlay: boolean
+  preferred_view: 'console' | 'flow' | 'workspace'
   tone: 'minimal' | 'balanced' | 'verbose'
   created_at: string
   updated_at: string
