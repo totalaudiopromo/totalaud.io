@@ -64,7 +64,8 @@ export const gradients = {
   accent: 'linear-gradient(180deg, rgba(58, 169, 190, 0.1) 0%, rgba(58, 169, 190, 0) 100%)',
 
   /** Radial spotlight */
-  spotlight: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%)',
+  spotlight:
+    'radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%)',
 
   /** Dark vignette */
   vignette: 'radial-gradient(circle at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%)',

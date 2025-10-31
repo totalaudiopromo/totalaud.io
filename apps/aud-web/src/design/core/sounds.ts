@@ -253,14 +253,8 @@ export function playSound(config: SoundConfig, context?: AudioContext): void {
 
     gainNode.gain.setValueAtTime(0, now)
     gainNode.gain.linearRampToValueAtTime(config.volume, now + attack / 1000)
-    gainNode.gain.linearRampToValueAtTime(
-      config.volume * sustain,
-      now + (attack + decay) / 1000
-    )
-    gainNode.gain.setValueAtTime(
-      config.volume * sustain,
-      now + (config.duration - release) / 1000
-    )
+    gainNode.gain.linearRampToValueAtTime(config.volume * sustain, now + (attack + decay) / 1000)
+    gainNode.gain.setValueAtTime(config.volume * sustain, now + (config.duration - release) / 1000)
     gainNode.gain.linearRampToValueAtTime(0, now + config.duration / 1000)
   } else {
     gainNode.gain.value = config.volume
