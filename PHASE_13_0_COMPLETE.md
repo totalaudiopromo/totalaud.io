@@ -1,9 +1,9 @@
 # Phase 13.0 Complete – FlowCore Studio Aesthetics
 
-**Status**: ✅ 85% Complete - Core Features Delivered
+**Status**: ✅ 90% Complete - Core Features + Optional Enhancements Delivered
 **Date**: October 31, 2025
 **Branch**: `feature/phase-13-0-flowcore-studio-aesthetics`
-**Commits**: 3 (foundation, UX polish, studio animation)
+**Commits**: 5 (foundation, UX polish, studio animation, command palette, canvas affordance)
 
 ---
 
@@ -13,7 +13,7 @@ Successfully transformed the five themes from simple colour presets into **cinem
 
 ---
 
-## ✅ Completed Features (85%)
+## ✅ Completed Features (90%)
 
 ### 1. Atmosphere System (Foundation)
 **Files Created**: 7 atmosphere files + types
@@ -136,15 +136,69 @@ Lower-case tone variations for toasts/hints:
 - Pointer-events: none on overlay (no interaction blocking)
 - Cleanup timers on unmount
 
+### 8. Command Palette FlowCore Atmosphere Integration ⭐
+**File Modified**: `apps/aud-web/src/components/ui/CommandPalette.tsx` (~330 lines)
+**File Modified**: `apps/aud-web/src/components/ui/GlobalCommandPalette.tsx`
+
+**Features**:
+- Integrated `useFlowTheme()` hook for dynamic theme-aware colours
+- Per-theme 2px accent line on selected commands
+- Typography tweaks from atmosphere (font-family, weight, letter-spacing)
+- Canvas placement helper text for all studio commands
+- FlowCore colour system replaces hardcoded palette
+
+**Per-Theme Styling**:
+- **Operator**: Mono font, tight tracking (0.02em), precise feel
+- **Guide**: Sans font, warm accent, friendly spacing
+- **Map**: Clean typography, cyan accent line
+- **Timeline**: Tempo-synced feel with purple accent
+- **Tape**: Warm copper accent, relaxed spacing
+
+**Visual Impact**:
+- Command Palette now feels integrated with active theme personality
+- Accent colours match theme identity
+- Typography reinforces theme character
+
+### 9. Canvas Placement Affordance ⭐
+**File Modified**: `apps/aud-web/src/components/features/flow/FlowCanvas.tsx`
+
+**Features**:
+- Ghost node preview that follows cursor when skill selected
+- Cyan crosshair indicator (#3AA9BE Slate Cyan brand colour)
+- Dashed border preview showing exact placement position
+- One-time tooltip explaining placement interaction
+- Esc key to cancel placement mode
+- Crosshair cursor for precise positioning
+
+**User Flow**:
+1. Select skill from palette
+2. See placement tooltip (first time only)
+3. Move cursor with cyan crosshair + ghost node preview
+4. Left-click to place node at cursor position
+5. Press Esc to cancel placement
+
+**UX Improvements**:
+- Clear visual feedback before placing nodes
+- Prevents accidental misplacement
+- Intuitive cursor-follows interaction
+- Non-intrusive one-time tutorial
+- localStorage persistence for tooltip state
+
+**Visual Design**:
+- 40px crosshair with 1px cyan lines (60% opacity)
+- 4px center dot for precision
+- Ghost node at 40% opacity with dashed border
+- Smooth 200ms scale animation on ghost node
+
 ---
 
 ## 📊 Code Metrics
 
 **Total Deliverables**:
 - **Files Created**: 16
-- **Files Modified**: 12
-- **Total Lines**: ~1,395
-- **Commits**: 3
+- **Files Modified**: 15
+- **Total Lines**: ~1,650
+- **Commits**: 5
 
 **Breakdown by Feature**:
 - Atmosphere system: ~400 lines
@@ -154,6 +208,8 @@ Lower-case tone variations for toasts/hints:
 - Theme tone: ~70 lines
 - InsightPanel integration: ~100 lines
 - ConsoleLayout integration: ~50 lines
+- Command Palette integration: ~120 lines
+- Canvas placement affordance: ~135 lines
 - Integration/imports: ~300 lines
 
 ---
@@ -191,27 +247,28 @@ Lower-case tone variations for toasts/hints:
 
 ---
 
-## 🚧 Remaining Work (15%)
+## 🚧 Remaining Work (10%)
 
 ### Optional Enhancements (Not Critical)
 
-1. **Command Palette Restyle** (5%)
-   - Apply FlowCore atmosphere theming
-   - Per-theme accent line (2px left edge)
-   - Typography tweaks from atmosphere
-   - Canvas placement helper text
+1. ✅ **Command Palette Restyle** - COMPLETE
+   - ✅ Applied FlowCore atmosphere theming
+   - ✅ Per-theme accent line (2px left edge)
+   - ✅ Typography tweaks from atmosphere
+   - ✅ Canvas placement helper text
 
-2. **Canvas Placement Affordance** (5%)
-   - Ghost node follows cursor
-   - Cyan crosshair indicator
-   - One-time tooltip
+2. ✅ **Canvas Placement Affordance** - COMPLETE
+   - ✅ Ghost node follows cursor
+   - ✅ Cyan crosshair indicator
+   - ✅ One-time tooltip
+   - ✅ Esc key cancellation
 
-3. **Save/Share Button Toast Feedback** (3%)
+3. **Save/Share Button Toast Feedback** (5%)
    - Wire Save button (persist canvas scene)
    - Wire Share button (copy link)
    - Toast with theme microcopy
 
-4. **Theme Playground Enhancement** (2%)
+4. **Theme Playground Enhancement** (5%)
    - Ambient toggle in `/dev/theme`
    - Live cross-fade showcase
    - Motion timing display
@@ -430,8 +487,8 @@ Phase 13.0 successfully transformed totalaud.io's theme system from simple colou
 
 The **dynamic studio switch animation** provides a cinematic, professional feel that elevates the entire console experience. Combined with **real-time campaign metrics** and **harmonized brand colours**, the console now feels purposeful, tactile, and valuable.
 
-**Status**: 85% complete - Core features delivered
-**Remaining**: Optional polish enhancements (15%)
+**Status**: 90% complete - Core features + optional enhancements delivered
+**Remaining**: Save/Share buttons + Theme playground (10%)
 **Quality**: Production-ready with excellent performance and accessibility
 
 ---
