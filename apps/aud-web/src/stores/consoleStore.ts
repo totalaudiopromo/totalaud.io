@@ -56,6 +56,7 @@ interface ConsoleState {
 
   // Actions
   setActiveCampaign: (id: string | null, name: string | null) => void
+  setCampaignName: (name: string) => void
   setActivePane: (pane: ConsolePaneView) => void
   setMissionView: (view: MissionView) => void
   setActiveMode: (mode: ActiveMode) => void
@@ -109,6 +110,8 @@ export const useConsoleStore = create<ConsoleState>((set) => ({
 
   // Actions
   setActiveCampaign: (id, name) => set({ activeCampaignId: id, campaignName: name }),
+
+  setCampaignName: (name) => set({ campaignName: name }),
 
   setActivePane: (pane) => set({ activePane: pane }),
 

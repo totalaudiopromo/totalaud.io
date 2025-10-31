@@ -30,7 +30,8 @@ export const brandColours = {
   borderFocus: 'rgba(58, 169, 190, 0.4)', // Slate Cyan with transparency
 
   // Feedback states
-  success: '#63C69C', // Subtle mint (matches cyan family)
+  success: '#89DFF3', // Ice Cyan (harmonises with Slate Cyan brand)
+  successCyan: '#89DFF3', // Alias for clarity
   error: '#FF6B6B',
   warning: '#FFC857',
 

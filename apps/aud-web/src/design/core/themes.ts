@@ -10,6 +10,7 @@
 import { easingCurves, durations, transitions } from './motion'
 import { uiSounds, ambientSounds, type SoundConfig } from './sounds'
 import { shadows, glows, borders, borderRadius, backdrops } from './textures'
+import { getAtmosphere, type Atmosphere } from './themes/atmospheres'
 
 /**
  * Theme IDs matching existing OSTheme types
@@ -19,12 +20,22 @@ export type ThemeId = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 /**
  * Motion Personality Types
  */
-export type MotionType = 'fast-linear' | 'smooth-easeInOut' | 'snappy-inOut' | 'elastic' | 'slow-spring'
+export type MotionType =
+  | 'fast-linear'
+  | 'smooth-easeInOut'
+  | 'snappy-inOut'
+  | 'elastic'
+  | 'slow-spring'
 
 /**
  * Texture Personality Types
  */
-export type TextureType = 'matte-grain' | 'paper-grain' | 'grid-texture' | 'film-grain' | 'noise-texture'
+export type TextureType =
+  | 'matte-grain'
+  | 'paper-grain'
+  | 'grid-texture'
+  | 'film-grain'
+  | 'noise-texture'
 
 /**
  * Theme Personality Configuration
@@ -73,6 +84,9 @@ export interface ThemePersonality {
     radius: string
     backdrop: string
   }
+
+  /** Atmosphere configuration */
+  atmosphere: Atmosphere
 }
 
 /**
@@ -128,6 +142,8 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
       radius: borderRadius.none,
       backdrop: backdrops.none,
     },
+
+    atmosphere: getAtmosphere('operator'),
   },
 
   /**
@@ -179,6 +195,8 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
       radius: borderRadius.md,
       backdrop: backdrops.subtle,
     },
+
+    atmosphere: getAtmosphere('guide'),
   },
 
   /**
@@ -230,6 +248,8 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
       radius: borderRadius.lg,
       backdrop: backdrops.frosted,
     },
+
+    atmosphere: getAtmosphere('map'),
   },
 
   /**
@@ -281,6 +301,8 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
       radius: borderRadius.sm,
       backdrop: backdrops.normal,
     },
+
+    atmosphere: getAtmosphere('timeline'),
   },
 
   /**
@@ -332,6 +354,8 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
       radius: borderRadius.xl,
       backdrop: backdrops.subtle,
     },
+
+    atmosphere: getAtmosphere('tape'),
   },
 }
 

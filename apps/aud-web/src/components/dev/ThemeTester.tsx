@@ -18,7 +18,7 @@ import { getAllThemeIds, type ThemeId } from '@/design/core/themes'
 import { Volume2, VolumeX, Play } from 'lucide-react'
 
 export function ThemeTester() {
-  const { personality, colours, motion, sound, texture, activeTheme, setTheme } = useFlowTheme()
+  const { personality, colours, motion: themeMotion, sound, texture, activeTheme, setTheme } = useFlowTheme()
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [animationKey, setAnimationKey] = useState(0)
 
@@ -79,7 +79,7 @@ export function ThemeTester() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              transition={motion.transition}
+              transition={themeMotion.transition}
             >
               {themeId}
             </motion.button>
@@ -99,7 +99,7 @@ export function ThemeTester() {
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={motion.transition}
+        transition={themeMotion.transition}
       >
         <h2 className="text-3xl font-bold mb-2" style={{ color: colours.accent }}>
           {personality.name}
@@ -116,8 +116,8 @@ export function ThemeTester() {
             <h3 className="font-semibold mb-2" style={{ color: colours.accent }}>
               Motion
             </h3>
-            <p className="text-sm opacity-70">Type: {motion.type}</p>
-            <p className="text-sm opacity-70">Duration: {motion.duration}ms</p>
+            <p className="text-sm opacity-70">Type: {themeMotion.type}</p>
+            <p className="text-sm opacity-70">Duration: {themeMotion.duration}ms</p>
           </div>
 
           {/* Sound */}
@@ -205,19 +205,19 @@ export function ThemeTester() {
               rotate: [0, 5, 0],
             }}
             transition={{
-              ...motion.transition,
+              ...themeMotion.transition,
               repeat: Infinity,
               repeatDelay: 1,
             }}
           >
-            {motion.type}
+            {themeMotion.type}
           </motion.div>
           <div className="flex-1">
             <p className="text-sm opacity-70 mb-2">
-              This box animates using the <strong>{motion.type}</strong> motion profile.
+              This box animates using the <strong>{themeMotion.type}</strong> motion profile.
             </p>
             <p className="text-sm opacity-70">
-              Duration: <strong>{motion.duration}ms</strong>
+              Duration: <strong>{themeMotion.duration}ms</strong>
             </p>
           </div>
         </div>
@@ -257,8 +257,8 @@ export function ThemeTester() {
           {JSON.stringify(
             {
               id: personality.id,
-              motion: motion.type,
-              duration: motion.duration,
+              motion: themeMotion.type,
+              duration: themeMotion.duration,
               sound: {
                 ui: `${sound.ui.type} wave @ ${sound.ui.frequency}Hz`,
                 ambient: `${sound.ambient.type} wave @ ${sound.ambient.frequency}Hz`,

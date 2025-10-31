@@ -61,6 +61,9 @@ export interface FlowTheme {
   /** Theme-specific texture */
   texture: ThemePersonality['texture']
 
+  /** Theme-specific atmosphere */
+  atmosphere: ThemePersonality['atmosphere']
+
   /** Base FlowCore (all tokens) */
   core: typeof flowCore
 
@@ -101,6 +104,7 @@ export function useFlowTheme(): FlowTheme {
       playAmbient,
     },
     texture: personality.texture,
+    atmosphere: personality.atmosphere,
     core: flowCore,
     activeTheme: themeId,
     setTheme: (newTheme: ThemeId) => setTheme(newTheme as any),

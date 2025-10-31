@@ -24,6 +24,7 @@ import { ContextPane } from '@aud-web/components/console/ContextPane'
 import { AccessibilityToggle } from '@aud-web/components/ui/AccessibilityToggle'
 import { PresenceAvatars } from '@aud-web/components/ui/PresenceAvatars'
 import { ShareCampaignModal } from '@aud-web/components/ui/ShareCampaignModal'
+import { EditableTitle } from '@aud-web/components/console/EditableTitle'
 import { usePresence } from '@aud-web/hooks/usePresence'
 import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
 import { useState, useCallback, useEffect } from 'react'
@@ -32,7 +33,7 @@ export function ConsoleLayout() {
   const { currentTheme } = useTheme()
   const motion_config = useStudioMotion(currentTheme)
 
-  const { campaignName, activePane, activeMode, showOperatorPalette, toggleOperatorPalette } =
+  const { campaignName, setCampaignName, activePane, activeMode, showOperatorPalette, toggleOperatorPalette } =
     useConsoleStore()
 
   // Share modal state
@@ -169,16 +170,15 @@ export function ConsoleLayout() {
           totalaud.io
         </div>
 
-        {/* Campaign Name */}
-        <div
-          style={{
-            fontSize: '16px',
-            color: 'var(--text-secondary)',
-            letterSpacing: '0',
-          }}
-        >
-          {campaignName || 'Untitled Campaign'}
-        </div>
+        {/* Campaign Name - Editable */}
+        <EditableTitle
+          value={campaignName || 'Untitled Campaign'}
+          onChange={(newName) => setCampaignName(newName)}
+          placeholder="Untitled Campaign"
+          fontSize="16px"
+          fontWeight={400}
+          maxLength={80}
+        />
 
         {/* Right Side Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

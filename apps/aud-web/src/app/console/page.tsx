@@ -8,7 +8,7 @@
 import { ConsoleLayout } from '@aud-web/layouts/ConsoleLayout'
 
 export const metadata = {
-  title: 'Console | aud',
+  title: 'totalaud.io console',
   description: 'Campaign command center',
 }
 
