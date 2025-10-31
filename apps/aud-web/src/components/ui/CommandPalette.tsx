@@ -64,7 +64,7 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   // Get FlowCore atmosphere theming
-  const { atmosphere, colours, motion } = useFlowTheme()
+  const { atmosphere, colours, motion: themeMotion } = useFlowTheme()
 
   const filteredCommands = useMemo(() => {
     if (!search.trim()) return commands

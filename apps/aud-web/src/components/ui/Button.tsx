@@ -103,7 +103,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const sizeConfig = sizeStyles[size]
 
     // Get theme-aware design tokens
-    const { motion, sound: themeSound } = useFlowTheme()
+    const { motion: themeMotion, sound: themeSound } = useFlowTheme()
 
     // Theme-aware sound feedback
     const handleClick = useCallback(
@@ -150,7 +150,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           onClick={handleClick}
           whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
           whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
-          transition={motion.transition}
+          transition={themeMotion.transition}
           {...props}
         >
           {content}

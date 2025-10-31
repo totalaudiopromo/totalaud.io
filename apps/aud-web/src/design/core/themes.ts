@@ -58,6 +58,7 @@ export interface ThemePersonality {
     background: string
     foreground: string
     border: string
+    textSecondary?: string
   }
 
   /** Motion characteristics */
