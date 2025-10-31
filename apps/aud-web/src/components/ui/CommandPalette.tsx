@@ -2,7 +2,7 @@
  * CommandPalette Component
  *
  * Global command launcher with keyboard navigation.
- * Flow State Design System - Matches moodboard brief.
+ * Phase 13.0: FlowCore atmosphere integration
  */
 
 'use client'
@@ -21,6 +21,7 @@ import {
   Volume2,
   Command,
 } from 'lucide-react'
+import { useFlowTheme } from '@/hooks/useFlowTheme'
 
 export interface CommandAction {
   id: string
@@ -56,11 +57,14 @@ function fuzzyMatch(search: string, text: string): boolean {
 }
 
 /**
- * CommandPalette Component (Flow State Design)
+ * CommandPalette Component (FlowCore Atmosphere Integration)
  */
 export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: CommandPaletteProps) {
   const [search, setSearch] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
+
+  // Get FlowCore atmosphere theming
+  const { atmosphere, colours, motion } = useFlowTheme()
 
   const filteredCommands = useMemo(() => {
     if (!search.trim()) return commands
@@ -123,13 +127,14 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, filteredCommands, executeCommand, onClose])
 
+  // Theme-aware colours from FlowCore atmosphere
   const colors = {
-    bg: '#0a0d10',
-    bgSecondary: '#14171b',
-    border: '#2a2d30',
-    accent: '#0ea271',
-    text: '#ffffff',
-    textSecondary: '#a0a4a8',
+    bg: colours.surface,
+    bgSecondary: colours.background,
+    border: colours.border,
+    accent: colours.accent,
+    text: colours.foreground,
+    textSecondary: colours.textSecondary || 'rgba(255, 255, 255, 0.6)',
   }
 
   return (
@@ -215,9 +220,13 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
                         className="w-full flex items-center gap-3 p-4 transition-colors text-left"
                         style={{
                           backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
-                          borderLeft: isSelected
-                            ? `3px solid ${colors.accent}`
-                            : '3px solid transparent',
+                          borderLeft: `2px solid ${isSelected ? colors.accent : 'transparent'}`,
+                          fontFamily:
+                            atmosphere.typographyTweak?.family === 'mono'
+                              ? 'var(--font-mono)'
+                              : 'var(--font-sans)',
+                          fontWeight: atmosphere.typographyTweak?.weight || 400,
+                          letterSpacing: `${(atmosphere.typographyTweak?.tracking || 0) * 100}em`,
                         }}
                       >
                         <div
@@ -231,17 +240,11 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <p
-                            className="font-mono text-sm font-semibold lowercase truncate"
-                            style={{ color: colors.text }}
-                          >
+                          <p className="text-sm font-semibold lowercase truncate" style={{ color: colors.text }}>
                             {command.label}
                           </p>
                           {command.description && (
-                            <p
-                              className="font-mono text-xs lowercase truncate"
-                              style={{ color: colors.textSecondary }}
-                            >
+                            <p className="text-xs lowercase truncate" style={{ color: colors.textSecondary }}>
                               {command.description}
                             </p>
                           )}

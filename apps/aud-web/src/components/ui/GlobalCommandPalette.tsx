@@ -321,7 +321,7 @@ export function GlobalCommandPalette() {
     {
       id: 'studio-ascii',
       label: 'open ascii studio',
-      description: 'terminal desk — type, test, repeat',
+      description: 'terminal desk — type, test, repeat • left-click canvas to place nodes',
       icon: Terminal,
       action: () => {
         router.push('/studio/ascii')
@@ -332,7 +332,7 @@ export function GlobalCommandPalette() {
     {
       id: 'studio-xp',
       label: 'open xp studio',
-      description: 'guided assistant — click, bounce, smile',
+      description: 'guided assistant — click, bounce, smile • left-click canvas to place nodes',
       icon: Sparkles,
       action: () => {
         router.push('/studio/xp')
@@ -343,7 +343,7 @@ export function GlobalCommandPalette() {
     {
       id: 'studio-aqua',
       label: 'open aqua studio',
-      description: 'visual map — craft with clarity',
+      description: 'visual map — craft with clarity • left-click canvas to place nodes',
       icon: Layers,
       action: () => {
         router.push('/studio/aqua')
@@ -354,7 +354,7 @@ export function GlobalCommandPalette() {
     {
       id: 'studio-daw',
       label: 'open daw studio',
-      description: 'timeline — sync, sequence, create',
+      description: 'timeline — sync, sequence, create • left-click canvas to place nodes',
       icon: Music,
       action: () => {
         router.push('/studio/daw')
@@ -365,7 +365,7 @@ export function GlobalCommandPalette() {
     {
       id: 'studio-analogue',
       label: 'open analogue studio',
-      description: 'journal — touch the signal',
+      description: 'journal — touch the signal • left-click canvas to place nodes',
       icon: BookOpen,
       action: () => {
         router.push('/studio/analogue')
