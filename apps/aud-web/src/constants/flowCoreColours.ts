@@ -10,22 +10,22 @@
 
 export const flowCoreColours = {
   // Primary Brand Colours
-  slateCyan: '#3AA9BE',    // Primary accent - buttons, links, highlights
-  iceCyan: '#89DFF3',      // Secondary accent - hovers, glows, success states
-  onyx: '#0F1113',         // Deep background - main canvas colour
+  slateCyan: '#3AA9BE', // Primary accent - buttons, links, highlights
+  iceCyan: '#89DFF3', // Secondary accent - hovers, glows, success states
+  onyx: '#0F1113', // Deep background - main canvas colour
 
   // Neutral Greys
-  matteBlack: '#0F1113',   // Primary background (alias of onyx)
-  darkGrey: '#1A1D1F',     // Secondary background - cards, panels
-  mediumGrey: '#2A2D2F',   // Tertiary background - hover states
-  borderGrey: '#3A3D3F',   // Borders, dividers
-  lightGrey: '#EAECEE',    // Primary text on dark backgrounds
+  matteBlack: '#0F1113', // Primary background (alias of onyx)
+  darkGrey: '#1A1D1F', // Secondary background - cards, panels
+  mediumGrey: '#2A2D2F', // Tertiary background - hover states
+  borderGrey: '#3A3D3F', // Borders, dividers
+  lightGrey: '#EAECEE', // Primary text on dark backgrounds
 
   // Semantic Colours
-  success: '#51CF66',      // Success states, positive trends
-  warning: '#FFD93D',      // Warning states, neutral trends
-  error: '#FF6B6B',        // Error states, negative trends
-  info: '#89DFF3',         // Info states (alias of iceCyan)
+  success: '#51CF66', // Success states, positive trends
+  warning: '#FFD93D', // Warning states, neutral trends
+  error: '#FF6B6B', // Error states, negative trends
+  info: '#89DFF3', // Info states (alias of iceCyan)
 
   // Text Colours (for dark theme)
   textPrimary: '#FFFFFF',
@@ -34,15 +34,15 @@ export const flowCoreColours = {
   textDisabled: 'rgba(255, 255, 255, 0.3)',
 
   // Surface Colours
-  surface: 'rgba(26, 29, 31, 0.8)',        // Cards with subtle transparency
+  surface: 'rgba(26, 29, 31, 0.8)', // Cards with subtle transparency
   surfaceElevated: 'rgba(42, 45, 47, 0.9)', // Elevated cards/modals
   surfaceOverlay: 'rgba(15, 17, 19, 0.95)', // Full-screen overlays
 
   // Accent Variations (for gradients/glows)
-  slateCyanDark: '#2A8A9E',     // Darker variant
-  slateCyanLight: '#5AC2D4',    // Lighter variant
-  iceCyanDark: '#6AC8E3',       // Darker variant
-  iceCyanLight: '#A8F0FF',      // Lighter variant
+  slateCyanDark: '#2A8A9E', // Darker variant
+  slateCyanLight: '#5AC2D4', // Lighter variant
+  iceCyanDark: '#6AC8E3', // Darker variant
+  iceCyanLight: '#A8F0FF', // Lighter variant
 } as const
 
 /**
@@ -51,15 +51,15 @@ export const flowCoreColours = {
  */
 export const flowCoreMotion = {
   // Duration (in milliseconds)
-  fast: 120,       // Micro-interactions (button hover, checkbox)
-  normal: 240,     // Component transitions (modal open, panel slide)
-  slow: 400,       // Ambient effects (background animations, page transitions)
+  fast: 120, // Micro-interactions (button hover, checkbox)
+  normal: 240, // Component transitions (modal open, panel slide)
+  slow: 400, // Ambient effects (background animations, page transitions)
 
   // Easing Functions
-  easeStandard: 'cubic-bezier(0.22, 1, 0.36, 1)',  // Default easing
-  easeIn: 'cubic-bezier(0.4, 0, 1, 1)',            // Accelerating
-  easeOut: 'cubic-bezier(0, 0, 0.2, 1)',           // Decelerating
-  easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',       // Smooth both ends
+  easeStandard: 'cubic-bezier(0.22, 1, 0.36, 1)', // Default easing
+  easeIn: 'cubic-bezier(0.4, 0, 1, 1)', // Accelerating
+  easeOut: 'cubic-bezier(0, 0, 0.2, 1)', // Decelerating
+  easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)', // Smooth both ends
 
   // Spring Animations (for Framer Motion)
   springGentle: { type: 'spring', damping: 25, stiffness: 300 },
@@ -77,12 +77,12 @@ export const flowCoreTypography = {
   fontMono: 'var(--font-mono)', // Geist Mono / IBM Plex Mono
 
   // Font Sizes (in px)
-  hero: '48px',         // h1: Landing page headlines
-  title: '32px',        // h2: Section titles
-  subtitle: '24px',     // h3: Subsection titles
-  body: '16px',         // p: Body text
-  small: '14px',        // small: Secondary text
-  tiny: '12px',         // tiny: Metadata, labels
+  hero: '48px', // h1: Landing page headlines
+  title: '32px', // h2: Section titles
+  subtitle: '24px', // h3: Subsection titles
+  body: '16px', // p: Body text
+  small: '14px', // small: Secondary text
+  tiny: '12px', // tiny: Metadata, labels
 
   // Line Heights
   heroLineHeight: '1.2',
@@ -102,11 +102,11 @@ export const flowCoreTypography = {
  * Use these values for consistent spacing throughout the application
  */
 export const flowCoreSpacing = {
-  xs: '4px',    // 0.25 × 16
-  sm: '8px',    // 0.5 × 16
-  md: '16px',   // 1 × 16 (base unit)
-  lg: '24px',   // 1.5 × 16
-  xl: '32px',   // 2 × 16
+  xs: '4px', // 0.25 × 16
+  sm: '8px', // 0.5 × 16
+  md: '16px', // 1 × 16 (base unit)
+  lg: '24px', // 1.5 × 16
+  xl: '32px', // 2 × 16
   '2xl': '48px', // 3 × 16
   '3xl': '64px', // 4 × 16
   '4xl': '96px', // 6 × 16

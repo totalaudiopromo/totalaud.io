@@ -301,7 +301,12 @@ export function ConsoleHeader({
                 <Save className="w-4 h-4" />
               </motion.div>
             ) : (
-              <motion.div key="save" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+              <motion.div
+                key="save"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+              >
                 <Save className="w-4 h-4" />
               </motion.div>
             )}
@@ -340,7 +345,12 @@ export function ConsoleHeader({
         >
           <AnimatePresence mode="wait">
             {isCopied ? (
-              <motion.div key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+              <motion.div
+                key="check"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+              >
                 <Check className="w-4 h-4" style={{ colour: flowCoreColours.success }} />
               </motion.div>
             ) : (
