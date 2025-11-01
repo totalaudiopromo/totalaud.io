@@ -158,6 +158,10 @@ export const springPresets = {
   gentle: { type: 'spring' as const, stiffness: 100, damping: 15 },
   bouncy: { type: 'spring' as const, stiffness: 300, damping: 20 },
   stiff: { type: 'spring' as const, stiffness: 400, damping: 30 },
+  // Additional presets used by useFramerMotionPresets
+  soft: { type: 'spring' as const, stiffness: 80, damping: 12 },
+  medium: { type: 'spring' as const, stiffness: 200, damping: 18 },
+  fast: { type: 'spring' as const, stiffness: 500, damping: 35 },
 } as const
 
 /**
@@ -171,6 +175,9 @@ export const framerEasing = {
   linear: easingCurves.linear,
   easeOut: easingCurves.easeOut,
   easeIn: easingCurves.easeIn,
+  // Additional easing curves used by useFramerMotionPresets
+  fast: easingCurves.sharp, // Sharp for fast easing
+  slow: easingCurves.easeOut, // Ease-out for slow easing
 } as const
 
 /**
