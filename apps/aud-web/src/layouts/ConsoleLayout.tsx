@@ -27,7 +27,11 @@ import { PresenceAvatars } from '@aud-web/components/ui/PresenceAvatars'
 import { ShareCampaignModal } from '@aud-web/components/ui/ShareCampaignModal'
 import { EditableTitle } from '@aud-web/components/console/EditableTitle'
 import { usePresence } from '@aud-web/hooks/usePresence'
-import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
+import {
+  getSupabaseClient,
+  type Campaign,
+  type CampaignCollaborator,
+} from '@aud-web/lib/supabaseClient'
 import { useState, useCallback, useEffect } from 'react'
 
 export function ConsoleLayout() {
@@ -73,22 +77,22 @@ export function ConsoleLayout() {
         })
 
         // Get user's first campaign (for now - TODO: allow campaign selection)
-        const { data: campaigns } = await supabase
+        const { data: campaigns } = (await supabase
           .from('campaigns')
           .select('id, title')
           .limit(1)
-          .single()
+          .single()) as { data: Pick<Campaign, 'id' | 'title'> | null; error: any }
 
         if (campaigns) {
           setCurrentCampaign({ id: campaigns.id, title: campaigns.title })
 
           // Get user's role for this campaign
-          const { data: collaborator } = await supabase
+          const { data: collaborator } = (await supabase
             .from('campaign_collaborators')
             .select('role')
             .eq('campaign_id', campaigns.id)
             .eq('user_id', user.id)
-            .single()
+            .single()) as { data: Pick<CampaignCollaborator, 'role'> | null; error: any }
 
           if (collaborator) {
             setUserRole(collaborator.role as 'owner' | 'editor' | 'viewer')

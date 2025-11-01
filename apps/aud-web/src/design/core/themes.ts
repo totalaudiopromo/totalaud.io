@@ -65,7 +65,11 @@ export interface ThemePersonality {
   motion: {
     type: MotionType
     transition: typeof transitions.micro | typeof transitions.smooth | typeof transitions.ambient
-    easing: typeof easingCurves.smooth | typeof easingCurves.sharp | typeof easingCurves.bounce
+    easing:
+      | typeof easingCurves.smooth
+      | typeof easingCurves.sharp
+      | typeof easingCurves.bounce
+      | typeof easingCurves.easeOut
     duration: number
   }
 
@@ -373,8 +377,3 @@ export function getThemePersonality(themeId: ThemeId): ThemePersonality {
 export function getAllThemeIds(): ThemeId[] {
   return Object.keys(themePersonalities) as ThemeId[]
 }
-
-/**
- * Type exports
- */
-export type { ThemePersonality }

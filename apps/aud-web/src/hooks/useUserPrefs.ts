@@ -73,14 +73,18 @@ export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
           comfort_mode: false,
           calm_mode: false,
           sound_muted: false,
+          mute_sounds: false,
+          reduced_motion: false,
+          show_onboarding_overlay: true,
+          preferred_view: 'console',
           tone: 'balanced',
         }
 
-        const { data: created, error: createError } = await supabase
+        const { data: created, error: createError } = (await supabase
           .from('user_prefs')
           .insert(defaultPrefs)
           .select()
-          .single()
+          .single()) as { data: UserPrefs | null; error: any }
 
         if (createError) throw createError
         setPrefs(created)
@@ -143,10 +147,10 @@ export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
       const updates = { ...pendingUpdatesRef.current }
       pendingUpdatesRef.current = {}
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = (await supabase
         .from('user_prefs')
-        .update(updates)
-        .eq('user_id', userId)
+        .update(updates as Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>)
+        .eq('user_id', userId)) as { error: any }
 
       if (updateError) throw updateError
     } catch (err) {
