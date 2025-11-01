@@ -38,7 +38,7 @@ export function AgentFooter() {
           }}
         />
         <span style={{ fontWeight: 500 }}>
-          {activeAgents} active {activeAgents === 1 ? 'agent' : 'agents'}
+          {activeAgents} active {Number(activeAgents) === 1 ? 'agent' : 'agents'}
         </span>
       </div>
 

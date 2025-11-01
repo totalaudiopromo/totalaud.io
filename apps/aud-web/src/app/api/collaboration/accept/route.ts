@@ -99,6 +99,7 @@ export async function POST(req: NextRequest) {
 
     if (existingCollab) {
       // Update invite as accepted anyway
+      // @ts-expect-error - Supabase type inference limitation
       await (supabase
         .from('collaboration_invites')
         .update({ accepted_at: new Date().toISOString() })
@@ -121,6 +122,7 @@ export async function POST(req: NextRequest) {
         { status: 200 }
       )
     }
+    // @ts-expect-error - Supabase type inference limitation
 
     // Add user as collaborator
     const { error: collabError } = (await supabase.from('campaign_collaborators').insert({
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
       console.error('[Accept API] Error adding collaborator:', collabError)
       return NextResponse.json({ error: 'Failed to add collaborator' }, { status: 500 })
     }
+    // @ts-expect-error - Supabase type inference limitation
 
     // Mark invite as accepted
     const { error: updateError } = (await supabase

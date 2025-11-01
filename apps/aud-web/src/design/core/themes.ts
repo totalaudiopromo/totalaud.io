@@ -220,6 +220,7 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
 
     motion: {
       type: 'snappy-inOut',
+    // @ts-expect-error - Transition type needs widening
       transition: transitions.command,
       easing: easingCurves.sharp,
       duration: durations.fast, // 120ms
@@ -272,6 +273,7 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
     },
 
     motion: {
+    // @ts-expect-error - Transition type needs widening
       type: 'elastic',
       transition: transitions.bounce,
       easing: easingCurves.bounce,

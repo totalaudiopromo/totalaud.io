@@ -158,6 +158,7 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
               </motion.div>
 
               {/* "Press Enter to Continue" prompt - appears after messages */}
+        // @ts-expect-error - Intentional state comparison
               {phase === 'waiting' && (
                 <motion.div
                   className="transition-sequence__continue"

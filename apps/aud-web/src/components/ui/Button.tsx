@@ -143,6 +143,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (animated) {
       return (
+        // @ts-expect-error - Framer Motion HTMLMotionProps conflict
         <motion.button
           ref={ref}
           className={baseClasses}

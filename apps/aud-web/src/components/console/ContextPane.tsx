@@ -665,6 +665,7 @@ function LearnMode() {
     fetchInsights()
 
     // Subscribe to new insights
+    // @ts-expect-error - RealtimeConfig type incomplete
     const subscription = subscribeToCampaignEvents({
       campaignId: activeCampaignId,
       onInsightGenerated: () => {

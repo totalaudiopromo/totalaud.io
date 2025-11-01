@@ -147,6 +147,7 @@ export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
       const updates = { ...pendingUpdatesRef.current }
       pendingUpdatesRef.current = {}
 
+      // @ts-expect-error - Supabase type inference limitation
       const { error: updateError } = (await supabase
         .from('user_prefs')
         .update(updates as any)

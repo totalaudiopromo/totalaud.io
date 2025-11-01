@@ -237,3 +237,14 @@ export function assert(condition: boolean, message: string) {
     throw new Error(`Assertion failed: ${message}`)
   }
 }
+
+// Test utilities
+export function createTestUser() {
+  // TODO: Implement test user creation
+  return { id: 'test-user', email: 'test@example.com' }
+}
+
+export function cleanupTestData() {
+  // TODO: Implement test data cleanup
+  return Promise.resolve()
+}
