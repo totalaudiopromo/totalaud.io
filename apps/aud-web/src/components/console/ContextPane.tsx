@@ -12,7 +12,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useConsoleStore } from '@aud-web/stores/consoleStore'
 import { consolePalette } from '@aud-web/themes/consolePalette'
 import { useState, useEffect } from 'react'
-import { getSupabaseClient, type CampaignMetrics, type CampaignEvent, type CampaignInsight } from '@/lib/supabaseClient'
+import {
+  getSupabaseClient,
+  type CampaignMetrics,
+  type CampaignEvent,
+  type CampaignInsight,
+} from '@/lib/supabaseClient'
 import { subscribeToCampaignEvents, unsubscribeFromCampaignEvents } from '@/lib/realtime'
 import { FlowPane } from './FlowPane'
 
@@ -368,11 +373,11 @@ function TrackMode() {
       const supabase = getSupabaseClient()
 
       // Fetch campaign metrics
-      const { data: metricsData, error: metricsError } = await supabase
+      const { data: metricsData, error: metricsError } = (await supabase
         .from('campaign_metrics')
         .select('*')
         .eq('campaign_id', activeCampaignId!)
-        .single() as { data: CampaignMetrics | null; error: any }
+        .single()) as { data: CampaignMetrics | null; error: any }
 
       if (metricsError) {
         console.error('[ContextPane] Failed to fetch campaign metrics', metricsError)
@@ -388,12 +393,12 @@ function TrackMode() {
       }
 
       // Fetch recent events for timeline
-      const { data: eventsData, error: eventsError } = await supabase
+      const { data: eventsData, error: eventsError } = (await supabase
         .from('campaign_events')
         .select('*')
         .eq('campaign_id', activeCampaignId!)
         .order('created_at', { ascending: false })
-        .limit(10) as { data: CampaignEvent[] | null; error: any }
+        .limit(10)) as { data: CampaignEvent[] | null; error: any }
 
       if (eventsError) {
         console.error('[ContextPane] Failed to fetch campaign events', eventsError)
@@ -635,12 +640,12 @@ function LearnMode() {
     const fetchInsights = async () => {
       const supabase = getSupabaseClient()
 
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('campaign_insights')
         .select('*')
         .eq('campaign_id', activeCampaignId!)
         .order('created_at', { ascending: false })
-        .limit(5) as { data: CampaignInsight[] | null; error: any }
+        .limit(5)) as { data: CampaignInsight[] | null; error: any }
 
       if (error) {
         console.error('[ContextPane] Failed to fetch campaign insights', error)

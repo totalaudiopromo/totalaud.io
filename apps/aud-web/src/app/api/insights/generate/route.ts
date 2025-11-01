@@ -6,7 +6,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient, type Campaign, type CampaignMetrics, type CampaignEvent } from '@/lib/supabaseClient'
+import {
+  getSupabaseClient,
+  type Campaign,
+  type CampaignMetrics,
+  type CampaignEvent,
+  type CampaignInsight,
+} from '@/lib/supabaseClient'
 import Anthropic from '@anthropic-ai/sdk'
 
 export const runtime = 'edge'
@@ -23,11 +29,11 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabaseClient()
 
     // Fetch campaign data
-    const { data: campaign, error: campaignError } = await supabase
+    const { data: campaign, error: campaignError } = (await supabase
       .from('campaigns')
       .select('*')
       .eq('id', campaignId)
-      .single() as { data: Campaign | null; error: any }
+      .single()) as { data: Campaign | null; error: any }
 
     if (campaignError || !campaign) {
       console.error('Failed to fetch campaign', campaignError)
@@ -35,24 +41,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch campaign metrics
-    const { data: metrics, error: metricsError } = await supabase
+    const { data: metrics, error: metricsError } = (await supabase
       .from('campaign_metrics')
       .select('*')
       .eq('campaign_id', campaignId)
-      .single() as { data: CampaignMetrics | null; error: any }
+      .single()) as { data: CampaignMetrics | null; error: any }
 
-    if (metricsError) {
+    if (metricsError || !metrics) {
       console.error('Failed to fetch metrics', metricsError)
       return NextResponse.json({ error: 'Metrics not found' }, { status: 404 })
     }
 
     // Fetch recent events
-    const { data: events, error: eventsError } = await supabase
+    const { data: events, error: eventsError } = (await supabase
       .from('campaign_events')
       .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
-      .limit(50) as { data: CampaignEvent[] | null; error: any }
+      .limit(50)) as { data: CampaignEvent[] | null; error: any }
 
     if (eventsError) {
       console.error('Failed to fetch events', eventsError)
@@ -132,8 +138,8 @@ Return ONLY valid JSON, no other text.`
         key: insight.key,
         value: insight.value,
         metric: insight.metric,
-        trend: insight.trend,
-      })
+        trend: insight.trend as 'up' | 'down' | 'neutral',
+      } as Omit<CampaignInsight, 'id' | 'created_at'>)
     )
 
     await Promise.all(insertPromises)
