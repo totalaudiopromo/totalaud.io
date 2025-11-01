@@ -9,6 +9,9 @@
 
 import { type Transition } from 'framer-motion'
 
+// Re-export Transition type for consumers
+export type { Transition }
+
 /**
  * Named Easing Curves
  * Based on cubic-bezier for precise control

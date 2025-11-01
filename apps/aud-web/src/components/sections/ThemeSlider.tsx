@@ -93,7 +93,7 @@ export function ThemeSlider() {
               <div className="text-center">
                 <div
                   className="text-4xl md:text-6xl font-semibold mb-4"
-                  style={{ colour: currentTheme.colour }}
+                  style={{ color: currentTheme.colour }}
                 >
                   {currentTheme.name}
                 </div>

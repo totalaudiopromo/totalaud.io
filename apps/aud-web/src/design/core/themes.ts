@@ -65,11 +65,7 @@ export interface ThemePersonality {
   motion: {
     type: MotionType
     transition: typeof transitions.micro | typeof transitions.smooth | typeof transitions.ambient
-    easing:
-      | typeof easingCurves.smooth
-      | typeof easingCurves.sharp
-      | typeof easingCurves.bounce
-      | typeof easingCurves.easeOut
+    easing: readonly [number, number, number, number] // Accept any cubic-bezier curve
     duration: number
   }
 
