@@ -80,11 +80,11 @@ export function FlowPane() {
     const loadWorkflow = async () => {
       if (!activeCampaignId) return
 
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('campaign_workflows')
         .select('nodes, edges')
         .eq('campaign_id', activeCampaignId)
-        .maybeSingle()
+        .maybeSingle()) as { data: { nodes: any; edges: any } | null; error: any }
 
       if (error) {
         console.error('Failed to load workflow:', error)
@@ -127,13 +127,13 @@ export function FlowPane() {
       } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const { error } = await supabase.from('campaign_workflows').upsert({
+      const { error } = (await supabase.from('campaign_workflows').upsert({
         campaign_id: activeCampaignId,
         user_id: user.id,
         nodes: nodes as any,
         edges: edges as any,
         name: 'Campaign Workflow',
-      })
+      } as any)) as { error: any }
 
       if (error) throw error
 
@@ -492,11 +492,9 @@ export function FlowPane() {
       >
         <Controls
           style={{
-            button: {
-              background: 'var(--surface)',
-              borderColor: 'var(--border)',
-              color: 'var(--text-primary)',
-            },
+            background: 'var(--surface)',
+            borderColor: 'var(--border)',
+            color: 'var(--text-primary)',
           }}
         />
         <MiniMap

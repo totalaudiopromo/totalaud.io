@@ -32,7 +32,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
   const personality = getBrokerPersonality(theme)
 
   const stepsByTheme: Record<OSTheme, OnboardingStep[]> = {
-    ascii: [
+    operator: [
       {
         title: 'SYSTEM ONLINE',
         message:
@@ -53,7 +53,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
         position: { x: 70, y: 70 },
       },
     ],
-    xp: [
+    guide: [
       {
         title: 'welcome to totalaud.io flow studio',
         message:
@@ -75,7 +75,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
         position: { x: 70, y: 70 },
       },
     ],
-    aqua: [
+    map: [
       {
         title: 'Welcome to Your Campaign Workspace',
         message:
@@ -97,7 +97,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
         position: { x: 70, y: 70 },
       },
     ],
-    daw: [
+    timeline: [
       {
         title: 'session loaded',
         message: 'Each block is a performer in your mix. Hit Start to begin playback.',
@@ -117,7 +117,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
         position: { x: 70, y: 70 },
       },
     ],
-    analogue: [
+    tape: [
       {
         title: 'system primed',
         message: 'Keep it simple: press Start and let the signal organise itself.',
@@ -138,7 +138,7 @@ const getOnboardingSteps = (theme: OSTheme): OnboardingStep[] => {
     ],
   }
 
-  return stepsByTheme[theme] || stepsByTheme.ascii
+  return stepsByTheme[theme] || stepsByTheme.operator
 }
 
 export function OnboardingOverlay({
@@ -176,14 +176,14 @@ export function OnboardingOverlay({
 
   // Theme-specific styling
   const themeColors = {
-    ascii: { accent: '#00ff00', bg: '#000000', text: '#00ff00' },
-    xp: { accent: '#0078d4', bg: '#001e3c', text: '#ffffff' },
-    aqua: { accent: '#5ac8fa', bg: '#001529', text: '#ffffff' },
-    daw: { accent: '#ff764d', bg: '#1a1a1a', text: '#ffffff' },
-    analogue: { accent: '#d3b98c', bg: '#1a1a18', text: '#d3b98c' },
+    operator: { accent: '#00ff00', bg: '#000000', text: '#00ff00' },
+    guide: { accent: '#0078d4', bg: '#001e3c', text: '#ffffff' },
+    map: { accent: '#5ac8fa', bg: '#001529', text: '#ffffff' },
+    timeline: { accent: '#ff764d', bg: '#1a1a1a', text: '#ffffff' },
+    tape: { accent: '#d3b98c', bg: '#1a1a18', text: '#d3b98c' },
   }
 
-  const colors = themeColors[theme] || themeColors.ascii
+  const colors = themeColors[theme] || themeColors.operator
 
   return (
     <AnimatePresence>
