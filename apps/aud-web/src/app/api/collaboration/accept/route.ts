@@ -101,7 +101,9 @@ export async function POST(req: NextRequest) {
       // Update invite as accepted anyway
       await supabase
         .from('collaboration_invites')
-        .update({ accepted_at: new Date().toISOString() })
+        .update({ accepted_at: new Date().toISOString() } as Partial<
+          Omit<CollaborationInvite, 'id' | 'created_at'>
+        >)
         .eq('id', invite.id)
 
       // Get campaign details
@@ -123,12 +125,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Add user as collaborator
-    const { error: collabError } = await supabase.from('campaign_collaborators').insert({
+    const { error: collabError } = (await supabase.from('campaign_collaborators').insert({
       campaign_id: invite.campaign_id,
       user_id: user.id,
       role: invite.role,
       invited_by: invite.invited_by,
-    })
+    } as Omit<CampaignCollaborator, 'id' | 'created_at'>)) as { error: any }
 
     if (collabError) {
       console.error('[Accept API] Error adding collaborator:', collabError)
@@ -138,7 +140,9 @@ export async function POST(req: NextRequest) {
     // Mark invite as accepted
     const { error: updateError } = await supabase
       .from('collaboration_invites')
-      .update({ accepted_at: new Date().toISOString() })
+      .update({ accepted_at: new Date().toISOString() } as Partial<
+        Omit<CollaborationInvite, 'id' | 'created_at'>
+      >)
       .eq('id', invite.id)
 
     if (updateError) {

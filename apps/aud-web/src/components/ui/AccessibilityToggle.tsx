@@ -21,7 +21,7 @@ interface AccessibilityToggleProps {
 }
 
 export function AccessibilityToggle({ className = '' }: AccessibilityToggleProps) {
-  const { prefs, updatePrefs } = useUserPrefs()
+  const { prefs, updatePrefs } = useUserPrefs(null)
   const [isOpen, setIsOpen] = useState(false)
   const [systemReducedMotion, setSystemReducedMotion] = useState(false)
 

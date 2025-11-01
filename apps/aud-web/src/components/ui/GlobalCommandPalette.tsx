@@ -40,7 +40,7 @@ const log = logger.scope('GlobalCommandPalette')
 
 export function GlobalCommandPalette() {
   const { isOpen, close } = useCommandPalette()
-  const { prefs, updatePrefs } = useUserPrefs()
+  const { prefs, updatePrefs } = useUserPrefs(null)
   const { currentTheme, setTheme } = useTheme()
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showSpawnModal, setShowSpawnModal] = useState(false)

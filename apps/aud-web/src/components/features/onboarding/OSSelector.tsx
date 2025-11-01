@@ -15,11 +15,11 @@ interface OSSelectorProps {
  * Now using ThemeSelectorV2 for cinematic premium design.
  */
 export function OSSelector({ onConfirm }: OSSelectorProps) {
-  const { updatePrefs } = useUserPrefs()
+  const { updatePrefs } = useUserPrefs(null)
 
   const handleThemeSelect = async (theme: OSTheme) => {
     // Persist theme selection to user preferences
-    await updatePrefs({ preferred_theme: theme })
+    await updatePrefs({ theme })
     onConfirm(theme)
   }
 

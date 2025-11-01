@@ -22,7 +22,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
   const oscillatorRef = useRef<OscillatorNode | null>(null)
   const gainNodeRef = useRef<GainNode | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const { prefs } = useUserPrefs()
+  const { prefs } = useUserPrefs(null)
 
   // Initialize audio context
   useEffect(() => {
@@ -37,7 +37,7 @@ export function useAmbientAudio(config: AmbientAudioConfig) {
 
   // Check if sounds are muted
   const isMuted = prefs?.mute_sounds ?? false
-  const userVolume = prefs?.audio_volume ?? 0.7
+  const userVolume = 0.7 // Default volume (audio_volume doesn't exist in UserPrefs)
 
   const play = () => {
     if (!audioContext.current || isMuted || isPlaying) return
