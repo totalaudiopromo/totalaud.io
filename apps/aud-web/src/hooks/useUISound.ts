@@ -18,35 +18,35 @@ interface ThemeSoundBank {
 
 // Per-theme sound banks with unique audio characteristics
 const THEME_SOUND_BANKS: Record<OSTheme, ThemeSoundBank> = {
-  ascii: {
+  operator: {
     start: { freq: 880, duration: 0.1, type: 'square' },
     complete: { freq: 1760, duration: 0.15, type: 'square' },
     error: { freq: 220, duration: 0.2, type: 'sawtooth' },
     click: { freq: 1320, duration: 0.05, type: 'square' },
     focus: { freq: 660, duration: 0.12, type: 'sine' },
   },
-  xp: {
+  guide: {
     start: { freq: 800, duration: 0.15, type: 'sine' },
     complete: { freq: 1200, duration: 0.2, type: 'sine' },
     error: { freq: 400, duration: 0.25, type: 'sine' },
     click: { freq: 1000, duration: 0.08, type: 'sine' },
     focus: { freq: 600, duration: 0.15, type: 'sine' },
   },
-  aqua: {
+  map: {
     start: { freq: 900, duration: 0.14, type: 'triangle' },
     complete: { freq: 1400, duration: 0.18, type: 'triangle' },
     error: { freq: 350, duration: 0.22, type: 'triangle' },
     click: { freq: 1100, duration: 0.07, type: 'triangle' },
     focus: { freq: 700, duration: 0.13, type: 'sine' },
   },
-  daw: {
+  timeline: {
     start: { freq: 440, duration: 0.12, type: 'sawtooth' },
     complete: { freq: 880, duration: 0.16, type: 'sawtooth' },
     error: { freq: 110, duration: 0.24, type: 'sawtooth' },
     click: { freq: 660, duration: 0.06, type: 'square' },
     focus: { freq: 330, duration: 0.14, type: 'triangle' },
   },
-  analogue: {
+  tape: {
     start: { freq: 280, duration: 0.4, type: 'sine' },
     complete: { freq: 120, duration: 0.6, type: 'sine' },
     error: { freq: 260, duration: 0.5, type: 'sine' },
@@ -201,11 +201,11 @@ export function useUISound() {
     // Theme-specific boot sounds
     boot: async (theme: string) => {
       const soundMap: Record<string, string> = {
-        ascii: '/sounds/ascii/beep-sequence.mp3',
-        xp: '/sounds/xp/xp-startup.mp3',
-        aqua: '/sounds/aqua/mac-chime.mp3',
-        ableton: '/sounds/ableton/sequencer-start.mp3',
-        punk: '/sounds/punk/tape-start.mp3',
+        operator: '/sounds/operator/beep-sequence.mp3',
+        guide: '/sounds/guide/xp-startup.mp3',
+        map: '/sounds/map/mac-chime.mp3',
+        timeline: '/sounds/timeline/sequencer-start.mp3',
+        tape: '/sounds/tape/tape-start.mp3',
       }
 
       const soundFile = soundMap[theme]
@@ -222,10 +222,10 @@ export function useUISound() {
     // Theme ambient loops
     playAmbient: async (theme: string) => {
       const ambientMap: Record<string, string> = {
-        ascii: '/sounds/ascii/typing-soft.mp3',
-        aqua: '/sounds/aqua/vinyl-hiss.mp3',
-        ableton: '/sounds/ableton/synth-pad.mp3',
-        punk: '/sounds/punk/tape-hiss.mp3',
+        operator: '/sounds/operator/typing-soft.mp3',
+        map: '/sounds/map/vinyl-hiss.mp3',
+        timeline: '/sounds/timeline/synth-pad.mp3',
+        tape: '/sounds/tape/tape-hiss.mp3',
       }
 
       const soundFile = ambientMap[theme]
@@ -237,11 +237,11 @@ export function useUISound() {
     // Theme-specific click sounds
     themeClick: async (theme: string) => {
       const clickMap: Record<string, string> = {
-        ascii: '/sounds/ascii/mechanical-key.mp3',
-        xp: '/sounds/xp/xp-click.mp3',
-        aqua: '/sounds/aqua/aqua-pop.mp3',
-        ableton: '/sounds/ableton/clip-trigger.mp3',
-        punk: '/sounds/punk/stamp-press.mp3',
+        operator: '/sounds/operator/mechanical-key.mp3',
+        guide: '/sounds/guide/xp-click.mp3',
+        map: '/sounds/map/aqua-pop.mp3',
+        timeline: '/sounds/timeline/clip-trigger.mp3',
+        tape: '/sounds/tape/stamp-press.mp3',
       }
 
       const soundFile = clickMap[theme]
