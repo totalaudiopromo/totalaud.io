@@ -30,6 +30,7 @@ export interface CommandAction {
   icon: React.ElementType
   action: () => void
   keywords?: string[]
+  disabled?: boolean
 }
 
 interface CommandPaletteProps {

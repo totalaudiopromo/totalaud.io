@@ -239,12 +239,32 @@ export function assert(condition: boolean, message: string) {
 }
 
 // Test utilities
-export function createTestUser() {
-  // TODO: Implement test user creation
-  return { id: 'test-user', email: 'test@example.com' }
+export async function createTestUser(email: string, password: string) {
+  const supabase = createTestSupabaseClient()
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name: email.split('@')[0] },
+    },
+  })
+
+  if (error) throw error
+  if (!data.user) throw new Error('No user returned from sign up')
+
+  return data.user
 }
 
-export function cleanupTestData() {
-  // TODO: Implement test data cleanup
-  return Promise.resolve()
+export async function cleanupTestData(userId: string, campaignId?: string) {
+  const supabase = createAdminSupabaseClient()
+
+  if (campaignId) {
+    await supabase.from('campaigns').delete().eq('id', campaignId)
+  }
+
+  if (userId) {
+    await supabase.from('campaigns').delete().eq('user_id', userId)
+    await supabase.auth.admin.deleteUser(userId)
+  }
 }

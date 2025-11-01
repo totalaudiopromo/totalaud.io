@@ -253,7 +253,7 @@ export default function BrokerChat({ selectedMode, sessionId }: BrokerChatProps)
 
         // Get all saved data
         const memoryData = memory.getAll()
-    // @ts-expect-error - BrokerMemoryData missing index signature
+        // @ts-expect-error - BrokerMemoryData missing index signature
         log.info('Onboarding complete', memoryData)
 
         // Generate flow template based on user's goal

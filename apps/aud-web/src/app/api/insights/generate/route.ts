@@ -132,8 +132,8 @@ Return ONLY valid JSON, no other text.`
     const insights = JSON.parse(content.text)
 
     // Save insights to database
-    // @ts-expect-error - Supabase type inference limitation
     const insertPromises = insights.map((insight: any) =>
+      // @ts-expect-error - Supabase type inference limitation
       supabase.from('campaign_insights').insert({
         campaign_id: campaignId,
         key: insight.key,

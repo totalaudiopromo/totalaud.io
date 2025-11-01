@@ -146,7 +146,6 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
               >
                 operator&gt; signal online.
               </motion.div>
-
               {/* Signal message - remains visible */}
               <motion.div
                 className="transition-sequence__message transition-sequence__message--signal"
@@ -156,9 +155,8 @@ export function TransitionSequence({ theme, onComplete }: TransitionSequenceProp
               >
                 signal&gt; hello. ready when you are.
               </motion.div>
-
               {/* "Press Enter to Continue" prompt - appears after messages */}
-        // @ts-expect-error - Intentional state comparison
+              {/* @ts-expect-error - Phase updates asynchronously via setTimeout, type narrowing is incorrect here */}
               {phase === 'waiting' && (
                 <motion.div
                   className="transition-sequence__continue"

@@ -39,7 +39,7 @@ export async function POST(
 
     log.info('Skill executed successfully', {
       skillName: resolvedParams.name,
-    // @ts-expect-error - SkillExecutionResult type incomplete
+      // @ts-expect-error - SkillExecutionResult type incomplete
       success: result.success,
     })
 

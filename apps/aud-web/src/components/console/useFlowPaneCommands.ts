@@ -73,7 +73,6 @@ export function useFlowPaneCommands({
       icon: Play,
       action: executeWorkflow,
       keywords: ['workflow', 'run', 'execute', 'start'],
-      // @ts-expect-error - CommandAction type incomplete
       disabled: isExecuting,
     },
     {
@@ -82,7 +81,6 @@ export function useFlowPaneCommands({
       description: 'Save current workflow to database',
       icon: Save,
       action: saveWorkflow,
-      // @ts-expect-error - CommandAction type incomplete
       keywords: ['workflow', 'save', 'persist'],
       disabled: isSaving,
     },

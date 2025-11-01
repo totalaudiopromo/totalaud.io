@@ -64,7 +64,11 @@ export interface ThemePersonality {
   /** Motion characteristics */
   motion: {
     type: MotionType
-    transition: typeof transitions.micro | typeof transitions.smooth | typeof transitions.ambient
+    transition:
+      | typeof transitions.micro
+      | typeof transitions.smooth
+      | typeof transitions.ambient
+      | typeof transitions.bounce
     easing: readonly [number, number, number, number] // Accept any cubic-bezier curve
     duration: number
   }
@@ -220,7 +224,7 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
 
     motion: {
       type: 'snappy-inOut',
-    // @ts-expect-error - Transition type needs widening
+      // @ts-expect-error - Transition type needs widening
       transition: transitions.command,
       easing: easingCurves.sharp,
       duration: durations.fast, // 120ms
@@ -273,7 +277,6 @@ export const themePersonalities: Record<ThemeId, ThemePersonality> = {
     },
 
     motion: {
-    // @ts-expect-error - Transition type needs widening
       type: 'elastic',
       transition: transitions.bounce,
       easing: easingCurves.bounce,

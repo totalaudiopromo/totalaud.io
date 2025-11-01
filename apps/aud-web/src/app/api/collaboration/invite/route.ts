@@ -145,7 +145,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // @ts-expect-error - Supabase type inference limitation
     // Generate invite token
     const invite_token = generateInviteToken()
     const expires_at = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
@@ -153,6 +152,7 @@ export async function POST(req: NextRequest) {
     // Create invite record
     const { data: invite, error: inviteError } = (await supabase
       .from('collaboration_invites')
+      // @ts-expect-error - Supabase type inference limitation
       .insert({
         campaign_id,
         invited_email,

@@ -112,7 +112,7 @@ export function PlanTab() {
               variant="primary"
               icon={Plus}
               onClick={() => {
-      // @ts-expect-error - Campaign type mismatch
+                // @ts-expect-error - Campaign type mismatch
                 addCampaign({
                   release_id: activeReleaseId,
                   name: 'New Campaign',
