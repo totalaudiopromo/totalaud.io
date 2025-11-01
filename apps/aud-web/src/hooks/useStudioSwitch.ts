@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { getAmbientPlayer } from '@/design/core/sounds/ambient'
 import { getAtmosphere } from '@/design/core/themes/atmospheres'
-import type { ThemeId } from '@/design/core/themes/themes'
+import type { ThemeId } from '@/design/core/themes'
 
 export interface StudioSwitchState {
   /** Is transition in progress */

@@ -10,7 +10,7 @@
 
 import { useCallback, useMemo } from 'react'
 import { useReducedMotion, type Transition, type TargetAndTransition } from 'framer-motion'
-import { springPresets, framerEasing, extendedMotionTokens } from '@/tokens/motion'
+import { springPresets, framerEasing, extendedMotionTokens } from '@/design/core/motion'
 import type { OSTheme } from '@/components/themes/types'
 
 /**

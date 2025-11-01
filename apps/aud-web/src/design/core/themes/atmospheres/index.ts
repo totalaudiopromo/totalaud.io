@@ -5,7 +5,7 @@
  * Provides type-safe access to atmosphere configurations.
  */
 
-import type { ThemeId } from '../themes'
+import type { ThemeId } from '../../themes'
 import type { Atmosphere } from './types'
 
 import { operatorAtmosphere } from './operator.atmosphere'

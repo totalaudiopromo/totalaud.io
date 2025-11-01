@@ -7,7 +7,7 @@
  * Phase 13.0: FlowCore Studio Aesthetics
  */
 
-import type { ThemeId } from './themes'
+import type { ThemeId } from '../themes'
 
 /**
  * Microcopy Tone Configuration

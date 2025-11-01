@@ -10,7 +10,7 @@
 
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
 import { useEffect, useState, type ReactNode } from 'react'
-import { extendedMotionTokens } from '@/tokens/motion'
+import { extendedMotionTokens } from '@/design/core/motion'
 import type { OSTheme } from '@/components/themes/types'
 
 interface FramerThemeLayerProps {

@@ -7,7 +7,7 @@
  * Phase 13.0: FlowCore Studio Aesthetics
  */
 
-import type { ThemeId } from '../themes/themes'
+import type { ThemeId } from '../themes'
 
 /**
  * Ambient Audio Configuration
