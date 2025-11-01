@@ -9,7 +9,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient, type CollaborationInvite, type CampaignCollaborator, type Campaign } from '@/lib/supabaseClient'
+import {
+  getSupabaseClient,
+  type CollaborationInvite,
+  type CampaignCollaborator,
+  type Campaign,
+} from '@/lib/supabaseClient'
 
 /**
  * POST /api/collaboration/accept
@@ -50,11 +55,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Find invite by token
-    const { data: invite, error: inviteError } = await supabase
+    const { data: invite, error: inviteError } = (await supabase
       .from('collaboration_invites')
       .select('*')
       .eq('invite_token', invite_token)
-      .single() as { data: CollaborationInvite | null; error: any }
+      .single()) as { data: CollaborationInvite | null; error: any }
 
     if (inviteError || !invite) {
       return NextResponse.json({ error: 'Invalid or expired invite token' }, { status: 404 })
@@ -85,12 +90,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user is already a collaborator
-    const { data: existingCollab } = await supabase
+    const { data: existingCollab } = (await supabase
       .from('campaign_collaborators')
       .select('id, role')
       .eq('campaign_id', invite.campaign_id)
       .eq('user_id', user.id)
-      .maybeSingle() as { data: Pick<CampaignCollaborator, 'id' | 'role'> | null; error: any }
+      .maybeSingle()) as { data: Pick<CampaignCollaborator, 'id' | 'role'> | null; error: any }
 
     if (existingCollab) {
       // Update invite as accepted anyway
@@ -100,11 +105,11 @@ export async function POST(req: NextRequest) {
         .eq('id', invite.id)
 
       // Get campaign details
-      const { data: campaign } = await supabase
+      const { data: campaign } = (await supabase
         .from('campaigns')
         .select('title')
         .eq('id', invite.campaign_id)
-        .single() as { data: Pick<Campaign, 'title'> | null; error: any }
+        .single()) as { data: Pick<Campaign, 'title'> | null; error: any }
 
       return NextResponse.json(
         {
@@ -142,11 +147,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Get campaign details
-    const { data: campaign } = await supabase
+    const { data: campaign } = (await supabase
       .from('campaigns')
       .select('title')
       .eq('id', invite.campaign_id)
-      .single() as { data: Pick<Campaign, 'title'> | null; error: any }
+      .single()) as { data: Pick<Campaign, 'title'> | null; error: any }
 
     return NextResponse.json(
       {

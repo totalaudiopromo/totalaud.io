@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useConsoleStore } from '@aud-web/stores/consoleStore'
 import { consolePalette } from '@aud-web/themes/consolePalette'
 import { useState, useEffect } from 'react'
-import { getSupabaseClient } from '@/lib/supabaseClient'
+import { getSupabaseClient, type CampaignMetrics, type CampaignEvent, type CampaignInsight } from '@/lib/supabaseClient'
 import { subscribeToCampaignEvents, unsubscribeFromCampaignEvents } from '@/lib/realtime'
 import { FlowPane } from './FlowPane'
 
@@ -372,7 +372,7 @@ function TrackMode() {
         .from('campaign_metrics')
         .select('*')
         .eq('campaign_id', activeCampaignId!)
-        .single()
+        .single() as { data: CampaignMetrics | null; error: any }
 
       if (metricsError) {
         console.error('[ContextPane] Failed to fetch campaign metrics', metricsError)
@@ -393,7 +393,7 @@ function TrackMode() {
         .select('*')
         .eq('campaign_id', activeCampaignId!)
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(10) as { data: CampaignEvent[] | null; error: any }
 
       if (eventsError) {
         console.error('[ContextPane] Failed to fetch campaign events', eventsError)
@@ -640,7 +640,7 @@ function LearnMode() {
         .select('*')
         .eq('campaign_id', activeCampaignId!)
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(5) as { data: CampaignInsight[] | null; error: any }
 
       if (error) {
         console.error('[ContextPane] Failed to fetch campaign insights', error)

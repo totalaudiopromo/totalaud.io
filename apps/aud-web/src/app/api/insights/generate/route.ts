@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@/lib/supabaseClient'
+import { getSupabaseClient, type Campaign, type CampaignMetrics, type CampaignEvent } from '@/lib/supabaseClient'
 import Anthropic from '@anthropic-ai/sdk'
 
 export const runtime = 'edge'
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       .from('campaigns')
       .select('*')
       .eq('id', campaignId)
-      .single()
+      .single() as { data: Campaign | null; error: any }
 
     if (campaignError || !campaign) {
       console.error('Failed to fetch campaign', campaignError)
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       .from('campaign_metrics')
       .select('*')
       .eq('campaign_id', campaignId)
-      .single()
+      .single() as { data: CampaignMetrics | null; error: any }
 
     if (metricsError) {
       console.error('Failed to fetch metrics', metricsError)
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
-      .limit(50)
+      .limit(50) as { data: CampaignEvent[] | null; error: any }
 
     if (eventsError) {
       console.error('Failed to fetch events', eventsError)

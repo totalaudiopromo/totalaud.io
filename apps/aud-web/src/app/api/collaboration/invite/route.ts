@@ -10,7 +10,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient, type CampaignCollaborator, type Campaign, type CollaborationInvite } from '@/lib/supabaseClient'
+import {
+  getSupabaseClient,
+  type CampaignCollaborator,
+  type Campaign,
+  type CollaborationInvite,
+} from '@/lib/supabaseClient'
 import { randomBytes } from 'crypto'
 
 /**
@@ -83,12 +88,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user is campaign owner
-    const { data: collaborator, error: collabError } = await supabase
+    const { data: collaborator, error: collabError } = (await supabase
       .from('campaign_collaborators')
       .select('role')
       .eq('campaign_id', campaign_id)
       .eq('user_id', user.id)
-      .single() as { data: Pick<CampaignCollaborator, 'role'> | null; error: any }
+      .single()) as { data: Pick<CampaignCollaborator, 'role'> | null; error: any }
 
     if (collabError || !collaborator || collaborator.role !== 'owner') {
       return NextResponse.json(
@@ -98,23 +103,23 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if campaign exists
-    const { data: campaign, error: campaignError } = await supabase
+    const { data: campaign, error: campaignError } = (await supabase
       .from('campaigns')
       .select('id, title')
       .eq('id', campaign_id)
-      .single() as { data: Pick<Campaign, 'id' | 'title'> | null; error: any }
+      .single()) as { data: Pick<Campaign, 'id' | 'title'> | null; error: any }
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
     // Check if user is already a collaborator
-    const { data: existingCollab } = await supabase
+    const { data: existingCollab } = (await supabase
       .from('campaign_collaborators')
       .select('id')
       .eq('campaign_id', campaign_id)
       .eq('user_id', user.id)
-      .maybeSingle() as { data: Pick<CampaignCollaborator, 'id'> | null; error: any }
+      .maybeSingle()) as { data: Pick<CampaignCollaborator, 'id'> | null; error: any }
 
     if (existingCollab) {
       return NextResponse.json(
@@ -124,14 +129,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if there's already a pending invite for this email
-    const { data: existingInvite } = await supabase
+    const { data: existingInvite } = (await supabase
       .from('collaboration_invites')
       .select('id, expires_at')
       .eq('campaign_id', campaign_id)
       .eq('invited_email', invited_email)
       .is('accepted_at', null)
       .gte('expires_at', new Date().toISOString())
-      .maybeSingle() as { data: Pick<CollaborationInvite, 'id' | 'expires_at'> | null; error: any }
+      .maybeSingle()) as { data: Pick<CollaborationInvite, 'id' | 'expires_at'> | null; error: any }
 
     if (existingInvite) {
       return NextResponse.json(
@@ -145,7 +150,7 @@ export async function POST(req: NextRequest) {
     const expires_at = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
     // Create invite record
-    const { data: invite, error: inviteError } = await supabase
+    const { data: invite, error: inviteError } = (await supabase
       .from('collaboration_invites')
       .insert({
         campaign_id,
@@ -156,7 +161,7 @@ export async function POST(req: NextRequest) {
         expires_at: expires_at.toISOString(),
       })
       .select()
-      .single() as { data: CollaborationInvite | null; error: any }
+      .single()) as { data: CollaborationInvite | null; error: any }
 
     if (inviteError) {
       console.error('[Invite API] Error creating invite:', inviteError)
