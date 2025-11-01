@@ -82,7 +82,7 @@ export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
 
         const { data: created, error: createError } = (await supabase
           .from('user_prefs')
-          .insert(defaultPrefs)
+          .insert(defaultPrefs as any)
           .select()
           .single()) as { data: UserPrefs | null; error: any }
 
@@ -149,7 +149,7 @@ export function useUserPrefs(userId: string | null): UseUserPrefsReturn {
 
       const { error: updateError } = (await supabase
         .from('user_prefs')
-        .update(updates as Partial<Omit<UserPrefs, 'user_id' | 'created_at' | 'updated_at'>>)
+        .update(updates as any)
         .eq('user_id', userId)) as { error: any }
 
       if (updateError) throw updateError

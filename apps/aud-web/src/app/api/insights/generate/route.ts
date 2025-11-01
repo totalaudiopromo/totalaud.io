@@ -139,7 +139,7 @@ Return ONLY valid JSON, no other text.`
         value: insight.value,
         metric: insight.metric,
         trend: insight.trend as 'up' | 'down' | 'neutral',
-      } as Omit<CampaignInsight, 'id' | 'created_at'>)
+      })
     )
 
     await Promise.all(insertPromises)
