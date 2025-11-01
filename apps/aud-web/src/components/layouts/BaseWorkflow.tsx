@@ -130,28 +130,30 @@ function BaseWorkflowInternal({
       const templateNodes: Node[] = []
       const templateEdges: Edge[] = []
 
-      // Add template nodes
-      template.nodes?.forEach((node, index) => {
+      // Add template steps as nodes
+      template.steps?.forEach((step, index) => {
         templateNodes.push({
-          id: node.id || `node-${index}`,
-          type: 'skill',
-          position: { x: index * 250, y: 100 },
+          id: step.id || `node-${index}`,
+          type: step.type || 'skill',
+          position: step.position || { x: index * 250, y: 100 },
           data: {
-            label: node.name,
+            label: step.label,
             color: '#6366f1',
             status: 'idle',
           },
         })
       })
 
-      // Add template edges
-      template.edges?.forEach((edge, index) => {
-        templateEdges.push({
-          id: `edge-${index}`,
-          source: edge.source,
-          target: edge.target,
-          animated: true,
-        })
+      // Connect steps sequentially as edges
+      template.steps?.forEach((step, index) => {
+        if (index < template.steps!.length - 1) {
+          templateEdges.push({
+            id: `edge-${index}`,
+            source: step.id || `node-${index}`,
+            target: template.steps![index + 1].id || `node-${index + 1}`,
+            animated: true,
+          })
+        }
       })
 
       setNodes(templateNodes)
@@ -195,8 +197,8 @@ function BaseWorkflowInternal({
 
     setNodes(updatedNodes)
 
-    // Play execution sound
-    playAgentSound(currentTheme, 'activate')
+    // TODO: Add UI sound for execution start
+    // playAgentSound expects agent IDs, not theme names
   }, [nodes, setNodes, currentTheme])
 
   // Stop execution
@@ -238,7 +240,7 @@ function BaseWorkflowInternal({
       }
 
       setNodes((nds) => [...nds, newNode])
-      playAgentSound(currentTheme, 'spawn')
+      // TODO: Add UI sound for node spawn
     },
     [setNodes, currentTheme]
   )
@@ -248,7 +250,7 @@ function BaseWorkflowInternal({
     (nodeId: string) => {
       setNodes((nds) => nds.filter((n) => n.id !== nodeId))
       setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId))
-      playAgentSound(currentTheme, 'dismiss')
+      // TODO: Add UI sound for node deletion
     },
     [setNodes, setEdges, currentTheme]
   )
