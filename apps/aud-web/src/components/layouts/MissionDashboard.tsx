@@ -132,14 +132,14 @@ export function MissionDashboard({
 
   // Theme colors
   const themeColors = {
-    ascii: { accent: '#00ff00', text: '#00ff00', bg: '#000000', card: '#001a00' },
-    xp: { accent: '#0078d4', text: '#ffffff', bg: '#000814', card: '#001e3c' },
-    aqua: { accent: '#5ac8fa', text: '#ffffff', bg: '#000a14', card: '#001529' },
-    daw: { accent: '#ff764d', text: '#ffffff', bg: '#0a0a0a', card: '#1a1a1a' },
-    analogue: { accent: '#d3b98c', text: '#d3b98c', bg: '#1a1a18', card: '#2a2a28' },
+    operator: { accent: '#00ff00', text: '#00ff00', bg: '#000000', card: '#001a00' },
+    guide: { accent: '#0078d4', text: '#ffffff', bg: '#000814', card: '#001e3c' },
+    map: { accent: '#5ac8fa', text: '#ffffff', bg: '#000a14', card: '#001529' },
+    timeline: { accent: '#ff764d', text: '#ffffff', bg: '#0a0a0a', card: '#1a1a1a' },
+    tape: { accent: '#d3b98c', text: '#d3b98c', bg: '#1a1a18', card: '#2a2a28' },
   }
 
-  const colors = themeColors[theme] || themeColors.ascii
+  const colors = themeColors[theme] || themeColors.operator
 
   // Agent color mapping
   const agentColors: Record<string, string> = {
