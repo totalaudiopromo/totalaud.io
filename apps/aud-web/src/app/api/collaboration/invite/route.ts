@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@/lib/supabaseClient'
+import { getSupabaseClient, type CampaignCollaborator, type Campaign, type CollaborationInvite } from '@/lib/supabaseClient'
 import { randomBytes } from 'crypto'
 
 /**
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       .select('role')
       .eq('campaign_id', campaign_id)
       .eq('user_id', user.id)
-      .single()
+      .single() as { data: Pick<CampaignCollaborator, 'role'> | null; error: any }
 
     if (collabError || !collaborator || collaborator.role !== 'owner') {
       return NextResponse.json(
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       .from('campaigns')
       .select('id, title')
       .eq('id', campaign_id)
-      .single()
+      .single() as { data: Pick<Campaign, 'id' | 'title'> | null; error: any }
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       .select('id')
       .eq('campaign_id', campaign_id)
       .eq('user_id', user.id)
-      .maybeSingle()
+      .maybeSingle() as { data: Pick<CampaignCollaborator, 'id'> | null; error: any }
 
     if (existingCollab) {
       return NextResponse.json(
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
       .eq('invited_email', invited_email)
       .is('accepted_at', null)
       .gte('expires_at', new Date().toISOString())
-      .maybeSingle()
+      .maybeSingle() as { data: Pick<CollaborationInvite, 'id' | 'expires_at'> | null; error: any }
 
     if (existingInvite) {
       return NextResponse.json(
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         expires_at: expires_at.toISOString(),
       })
       .select()
-      .single()
+      .single() as { data: CollaborationInvite | null; error: any }
 
     if (inviteError) {
       console.error('[Invite API] Error creating invite:', inviteError)

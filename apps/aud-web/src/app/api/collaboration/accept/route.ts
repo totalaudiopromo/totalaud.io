@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@/lib/supabaseClient'
+import { getSupabaseClient, type CollaborationInvite, type CampaignCollaborator, type Campaign } from '@/lib/supabaseClient'
 
 /**
  * POST /api/collaboration/accept
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       .from('collaboration_invites')
       .select('*')
       .eq('invite_token', invite_token)
-      .single()
+      .single() as { data: CollaborationInvite | null; error: any }
 
     if (inviteError || !invite) {
       return NextResponse.json({ error: 'Invalid or expired invite token' }, { status: 404 })
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       .select('id, role')
       .eq('campaign_id', invite.campaign_id)
       .eq('user_id', user.id)
-      .maybeSingle()
+      .maybeSingle() as { data: Pick<CampaignCollaborator, 'id' | 'role'> | null; error: any }
 
     if (existingCollab) {
       // Update invite as accepted anyway
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         .from('campaigns')
         .select('title')
         .eq('id', invite.campaign_id)
-        .single()
+        .single() as { data: Pick<Campaign, 'title'> | null; error: any }
 
       return NextResponse.json(
         {
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       .from('campaigns')
       .select('title')
       .eq('id', invite.campaign_id)
-      .single()
+      .single() as { data: Pick<Campaign, 'title'> | null; error: any }
 
     return NextResponse.json(
       {
