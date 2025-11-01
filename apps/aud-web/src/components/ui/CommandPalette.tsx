@@ -159,7 +159,7 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             className="fixed top-[20vh] left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4"
           >
             <div
@@ -221,7 +221,7 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
                         className="w-full flex items-center gap-3 p-4 transition-colors text-left"
                         style={{
                           backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
-                          borderLeft: `2px solid ${isSelected ? colors.accent : 'transparent'}`,
+                          borderLeft: `3px solid ${isSelected ? colors.accent : 'transparent'}`,
                           fontFamily:
                             atmosphere.typographyTweak?.family === 'mono'
                               ? 'var(--font-mono)'

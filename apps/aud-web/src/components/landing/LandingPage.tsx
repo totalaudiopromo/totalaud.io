@@ -13,7 +13,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@/constants/flowCoreColours'
+import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@aud-web/constants/flowCoreColours'
 import { ArrowRight, Sparkles } from 'lucide-react'
 
 export function LandingPage() {
@@ -22,7 +22,7 @@ export function LandingPage() {
       style={{
         minHeight: '100vh',
         backgroundColor: flowCoreColours.matteBlack,
-        colour: flowCoreColours.textPrimary,
+        color: flowCoreColours.textPrimary,
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -45,7 +45,7 @@ export function LandingPage() {
             position: 'absolute',
             inset: 0,
             backgroundImage:
-              'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
             opacity: 0.03,
             pointerEvents: 'none',
           }}
@@ -88,7 +88,7 @@ export function LandingPage() {
               borderRadius: '999px',
               fontSize: flowCoreTypography.tiny,
               fontWeight: 600,
-              colour: flowCoreColours.iceCyan,
+              color: flowCoreColours.iceCyan,
               marginBottom: '32px',
               fontFamily: 'var(--font-mono)',
               textTransform: 'lowercase',
@@ -108,13 +108,13 @@ export function LandingPage() {
               fontWeight: 700,
               lineHeight: flowCoreTypography.heroLineHeight,
               letterSpacing: flowCoreTypography.heroTracking,
-              colour: flowCoreColours.textPrimary,
+              color: flowCoreColours.textPrimary,
               marginBottom: '24px',
               fontFamily: 'var(--font-sans)',
             }}
           >
             The Campaign OS for{' '}
-            <span style={{ colour: flowCoreColours.slateCyan }}>Indie Artists</span> & Music PRs
+            <span style={{ color: flowCoreColours.slateCyan }}>Indie Artists</span> & Music PRs
           </motion.h1>
 
           {/* Subtext */}
@@ -125,7 +125,7 @@ export function LandingPage() {
             style={{
               fontSize: flowCoreTypography.body,
               lineHeight: flowCoreTypography.bodyLineHeight,
-              colour: flowCoreColours.textSecondary,
+              color: flowCoreColours.textSecondary,
               marginBottom: '48px',
               maxWidth: '600px',
               margin: '0 auto 48px',
@@ -153,7 +153,7 @@ export function LandingPage() {
                   gap: '12px',
                   padding: '16px 32px',
                   backgroundColor: flowCoreColours.slateCyan,
-                  colour: flowCoreColours.matteBlack,
+                  color: flowCoreColours.matteBlack,
                   borderRadius: '8px',
                   fontSize: flowCoreTypography.body,
                   fontWeight: 600,
@@ -178,7 +178,7 @@ export function LandingPage() {
             style={{
               marginTop: '32px',
               fontSize: flowCoreTypography.small,
-              colour: flowCoreColours.textTertiary,
+              color: flowCoreColours.textTertiary,
               fontFamily: 'var(--font-mono)',
               textTransform: 'lowercase',
             }}
@@ -221,7 +221,7 @@ export function LandingPage() {
                 style={{
                   fontSize: flowCoreTypography.body,
                   fontWeight: 600,
-                  colour: flowCoreColours.slateCyan,
+                  color: flowCoreColours.slateCyan,
                   fontFamily: 'var(--font-mono)',
                   textTransform: 'lowercase',
                   marginBottom: '4px',
@@ -232,7 +232,7 @@ export function LandingPage() {
               <div
                 style={{
                   fontSize: flowCoreTypography.small,
-                  colour: flowCoreColours.textTertiary,
+                  color: flowCoreColours.textTertiary,
                   fontFamily: 'var(--font-sans)',
                 }}
               >
@@ -242,7 +242,7 @@ export function LandingPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    colour: flowCoreColours.iceCyan,
+                    color: flowCoreColours.iceCyan,
                     textDecoration: 'none',
                   }}
                 >
@@ -257,17 +257,17 @@ export function LandingPage() {
                 href="/console"
                 style={{
                   fontSize: flowCoreTypography.small,
-                  colour: flowCoreColours.textSecondary,
+                  color: flowCoreColours.textSecondary,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono)',
                   textTransform: 'lowercase',
-                  transition: `colour ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
+                  transition: `color ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.colour = flowCoreColours.slateCyan
+                  e.currentTarget.style.color = flowCoreColours.slateCyan
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.colour = flowCoreColours.textSecondary
+                  e.currentTarget.style.color = flowCoreColours.textSecondary
                 }}
               >
                 console
@@ -278,17 +278,17 @@ export function LandingPage() {
                 rel="noopener noreferrer"
                 style={{
                   fontSize: flowCoreTypography.small,
-                  colour: flowCoreColours.textSecondary,
+                  color: flowCoreColours.textSecondary,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono)',
                   textTransform: 'lowercase',
-                  transition: `colour ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
+                  transition: `color ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.colour = flowCoreColours.slateCyan
+                  e.currentTarget.style.color = flowCoreColours.slateCyan
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.colour = flowCoreColours.textSecondary
+                  e.currentTarget.style.color = flowCoreColours.textSecondary
                 }}
               >
                 github
@@ -300,7 +300,7 @@ export function LandingPage() {
           <div
             style={{
               fontSize: flowCoreTypography.tiny,
-              colour: flowCoreColours.textTertiary,
+              color: flowCoreColours.textTertiary,
               textAlign: 'center',
               fontFamily: 'var(--font-mono)',
               paddingTop: '16px',

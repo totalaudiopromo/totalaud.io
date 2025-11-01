@@ -14,7 +14,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Save, Share2, Check, Copy } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { flowCoreColours, flowCoreMotion } from '@/constants/flowCoreColours'
+import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
 import { toast } from 'react-hot-toast'
 
 interface ConsoleHeaderProps {
@@ -60,9 +60,9 @@ export function ConsoleHeader({
           duration: 2000,
           style: {
             background: flowCoreColours.darkGrey,
-            colour: flowCoreColours.textPrimary,
+            color: flowCoreColours.textPrimary,
             border: `1px solid ${flowCoreColours.slateCyan}`,
-            fontFamily: flowCoreColours.fontMono || 'monospace',
+            fontFamily: 'var(--font-mono)',
             textTransform: 'lowercase',
           },
         })
@@ -72,9 +72,9 @@ export function ConsoleHeader({
           duration: 3000,
           style: {
             background: flowCoreColours.darkGrey,
-            colour: flowCoreColours.error,
+            color: flowCoreColours.error,
             border: `1px solid ${flowCoreColours.error}`,
-            fontFamily: flowCoreColours.fontMono || 'monospace',
+            fontFamily: 'var(--font-mono)',
             textTransform: 'lowercase',
           },
         })
@@ -109,9 +109,9 @@ export function ConsoleHeader({
         icon: '✓',
         style: {
           background: flowCoreColours.darkGrey,
-          colour: flowCoreColours.success,
+          color: flowCoreColours.success,
           border: `1px solid ${flowCoreColours.success}`,
-          fontFamily: flowCoreColours.fontMono || 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'lowercase',
         },
       })
@@ -121,9 +121,9 @@ export function ConsoleHeader({
         duration: 3000,
         style: {
           background: flowCoreColours.darkGrey,
-          colour: flowCoreColours.error,
+          color: flowCoreColours.error,
           border: `1px solid ${flowCoreColours.error}`,
-          fontFamily: flowCoreColours.fontMono || 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'lowercase',
         },
       })
@@ -139,9 +139,9 @@ export function ConsoleHeader({
         duration: 2000,
         style: {
           background: flowCoreColours.darkGrey,
-          colour: flowCoreColours.warning,
+          color: flowCoreColours.warning,
           border: `1px solid ${flowCoreColours.warning}`,
-          fontFamily: flowCoreColours.fontMono || 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'lowercase',
         },
       })
@@ -158,9 +158,9 @@ export function ConsoleHeader({
         icon: '✓',
         style: {
           background: flowCoreColours.darkGrey,
-          colour: flowCoreColours.iceCyan,
+          color: flowCoreColours.iceCyan,
           border: `1px solid ${flowCoreColours.iceCyan}`,
-          fontFamily: flowCoreColours.fontMono || 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'lowercase',
         },
       })
@@ -175,9 +175,9 @@ export function ConsoleHeader({
         duration: 3000,
         style: {
           background: flowCoreColours.darkGrey,
-          colour: flowCoreColours.error,
+          color: flowCoreColours.error,
           border: `1px solid ${flowCoreColours.error}`,
-          fontFamily: flowCoreColours.fontMono || 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'lowercase',
         },
       })
@@ -208,7 +208,7 @@ export function ConsoleHeader({
             style={{
               fontSize: '20px',
               fontWeight: 600,
-              colour: flowCoreColours.slateCyan,
+              color: flowCoreColours.slateCyan,
               backgroundColor: flowCoreColours.darkGrey,
               border: `2px solid ${flowCoreColours.slateCyan}`,
               borderRadius: '6px',
@@ -229,7 +229,7 @@ export function ConsoleHeader({
             style={{
               fontSize: '20px',
               fontWeight: 600,
-              colour: flowCoreColours.slateCyan,
+              color: flowCoreColours.slateCyan,
               background: 'transparent',
               border: '2px solid transparent',
               borderRadius: '6px',
@@ -237,7 +237,7 @@ export function ConsoleHeader({
               cursor: 'pointer',
               fontFamily: 'var(--font-mono)',
               textTransform: 'lowercase',
-              transition: `border-colour ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
+              transition: `border-color ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = flowCoreColours.borderGrey
@@ -253,7 +253,7 @@ export function ConsoleHeader({
         <span
           style={{
             fontSize: '12px',
-            colour: flowCoreColours.textTertiary,
+            color: flowCoreColours.textTertiary,
             fontFamily: 'var(--font-mono)',
             textTransform: 'lowercase',
           }}
@@ -277,7 +277,7 @@ export function ConsoleHeader({
             gap: '8px',
             padding: '10px 16px',
             backgroundColor: flowCoreColours.slateCyan,
-            colour: flowCoreColours.matteBlack,
+            color: flowCoreColours.matteBlack,
             border: 'none',
             borderRadius: '6px',
             fontSize: '14px',
@@ -326,7 +326,7 @@ export function ConsoleHeader({
             gap: '8px',
             padding: '10px 16px',
             backgroundColor: flowCoreColours.darkGrey,
-            colour: flowCoreColours.textPrimary,
+            color: flowCoreColours.textPrimary,
             border: `1px solid ${flowCoreColours.borderGrey}`,
             borderRadius: '6px',
             fontSize: '14px',
@@ -334,7 +334,7 @@ export function ConsoleHeader({
             fontFamily: 'var(--font-mono)',
             textTransform: 'lowercase',
             cursor: 'pointer',
-            transition: `border-colour ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
+            transition: `border-color ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.iceCyan
@@ -351,7 +351,7 @@ export function ConsoleHeader({
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
               >
-                <Check className="w-4 h-4" style={{ colour: flowCoreColours.success }} />
+                <Check className="w-4 h-4" style={{ color: flowCoreColours.success }} />
               </motion.div>
             ) : (
               <motion.div key="copy" initial={{ scale: 1 }} exit={{ scale: 0 }}>

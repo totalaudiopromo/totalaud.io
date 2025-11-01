@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@/constants/flowCoreColours'
+import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@aud-web/constants/flowCoreColours'
 import { Mail, Check, AlertCircle } from 'lucide-react'
 
 interface ConvertKitFormProps {
@@ -107,7 +107,7 @@ export function ConvertKitForm({
                   left: '12px',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  colour: flowCoreColours.textTertiary,
+                  color: flowCoreColours.textTertiary,
                   pointerEvents: 'none',
                 }}
               />
@@ -124,11 +124,11 @@ export function ConvertKitForm({
                   border: `1px solid ${status === 'error' ? flowCoreColours.error : flowCoreColours.borderGrey}`,
                   borderRadius: '6px',
                   fontSize: flowCoreTypography.small,
-                  colour: flowCoreColours.textPrimary,
+                  color: flowCoreColours.textPrimary,
                   fontFamily: 'var(--font-mono)',
                   textTransform: 'lowercase',
                   outline: 'none',
-                  transition: `border-colour ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
+                  transition: `border-color ${flowCoreMotion.fast}ms ${flowCoreMotion.easeStandard}`,
                 }}
                 onFocus={(e) => {
                   if (status !== 'error') {
@@ -147,16 +147,8 @@ export function ConvertKitForm({
             <motion.button
               type="submit"
               disabled={status === 'loading' || status === 'success'}
-              whileHover={
-                status === 'idle' || status === 'error'
-                  ? { scale: 1.05 }
-                  : {}
-              }
-              whileTap={
-                status === 'idle' || status === 'error'
-                  ? { scale: 0.95 }
-                  : {}
-              }
+              whileHover={status === 'idle' || status === 'error' ? { scale: 1.05 } : {}}
+              whileTap={status === 'idle' || status === 'error' ? { scale: 0.95 } : {}}
               transition={{ duration: flowCoreMotion.fast / 1000 }}
               style={{
                 display: 'flex',
@@ -169,7 +161,7 @@ export function ConvertKitForm({
                     : status === 'error'
                       ? flowCoreColours.error
                       : flowCoreColours.slateCyan,
-                colour: flowCoreColours.matteBlack,
+                color: flowCoreColours.matteBlack,
                 border: 'none',
                 borderRadius: '6px',
                 fontSize: flowCoreTypography.small,
@@ -214,7 +206,7 @@ export function ConvertKitForm({
               exit={{ opacity: 0, height: 0 }}
               style={{
                 fontSize: flowCoreTypography.tiny,
-                colour: flowCoreColours.error,
+                color: flowCoreColours.error,
                 fontFamily: 'var(--font-mono)',
                 paddingLeft: '4px',
               }}
@@ -231,7 +223,7 @@ export function ConvertKitForm({
               exit={{ opacity: 0, height: 0 }}
               style={{
                 fontSize: flowCoreTypography.tiny,
-                colour: flowCoreColours.success,
+                color: flowCoreColours.success,
                 fontFamily: 'var(--font-mono)',
                 paddingLeft: '4px',
               }}
@@ -247,7 +239,7 @@ export function ConvertKitForm({
         style={{
           marginTop: '12px',
           fontSize: flowCoreTypography.tiny,
-          colour: flowCoreColours.textTertiary,
+          color: flowCoreColours.textTertiary,
           fontFamily: 'var(--font-mono)',
           textAlign: 'center',
         }}
