@@ -44,7 +44,7 @@ interface ThemeResolverProps {
 }
 
 export function ThemeResolver({ children, defaultTheme = 'operator' }: ThemeResolverProps) {
-  const { prefs, updatePrefs, loading: prefsLoading } = useUserPrefs()
+  const { prefs, updatePrefs, isLoading: prefsLoading } = useUserPrefs(null)
   const [currentTheme, setCurrentTheme] = useState<OSTheme>(defaultTheme)
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(THEME_REGISTRY[defaultTheme])
   const [activityMonitor] = useState(() => new ActivityMonitor())
@@ -56,14 +56,14 @@ export function ThemeResolver({ children, defaultTheme = 'operator' }: ThemeReso
 
   // Sync with user preferences
   useEffect(() => {
-    if (prefs?.preferred_theme) {
-      const theme = prefs.preferred_theme as OSTheme
+    if (prefs?.theme) {
+      const theme = prefs.theme as OSTheme
       if (THEME_REGISTRY[theme]) {
         setCurrentTheme(theme)
         setThemeConfig(THEME_REGISTRY[theme])
       }
     }
-  }, [prefs?.preferred_theme])
+  }, [prefs?.theme])
 
   // Update theme and persist to preferences
   const setTheme = async (theme: OSTheme, playTransitionSound: boolean = true) => {
@@ -86,7 +86,7 @@ export function ThemeResolver({ children, defaultTheme = 'operator' }: ThemeReso
     applyPalette(theme)
 
     // Persist to user preferences
-    await updatePrefs({ preferred_theme: theme })
+    await updatePrefs({ theme })
   }
 
   // Monitor time of day changes
