@@ -602,7 +602,9 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
     return (
       <OnboardingOverlay
         theme={currentTheme}
-        onDismiss={dismissOnboarding}
+        onDismiss={async () => {
+          await updatePrefs({ show_onboarding_overlay: false })
+        }}
         reducedMotion={prefs.reduced_motion}
       />
     )
@@ -651,7 +653,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
         </motion.div>
 
         {/* Conditional View Rendering */}
-        {currentView === 'dashboard' ? (
+        {currentView === 'console' ? (
           <MissionDashboard
             sessionId={sessionId}
             campaignName="Radio Airplay Campaign"

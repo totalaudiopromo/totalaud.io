@@ -35,7 +35,7 @@ interface AgentStatus {
 interface MissionPanelProps {
   campaignName: string
   agentStatuses: Record<string, AgentStatus>
-  view: 'flow' | 'dashboard'
+  view: 'flow' | 'console' | 'workspace'
   onToggleView: () => void
   reducedMotion?: boolean
   opacity?: number
