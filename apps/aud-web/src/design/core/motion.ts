@@ -121,6 +121,59 @@ export const springs = {
 } as const
 
 /**
+ * Extended Motion Tokens
+ * Additional motion values for cinematic effects (Phase 9.5)
+ */
+export const extendedMotionTokens = {
+  /** Parallax range for scroll effects */
+  parallaxRange: {
+    min: 0,
+    max: 50,
+  },
+  /** Long drift timing for ambient motion (ms) */
+  longDrift: 300,
+  /** Velocity blur threshold */
+  velocityBlurThreshold: 20,
+  /** Magnetic interaction range (px) */
+  magneticRange: 30,
+  /** Fade duration for transitions (seconds) */
+  fadeDuration: 0.3,
+  /** Subtle scale transforms */
+  scaleSubtle: {
+    from: 0.98,
+    to: 1,
+  },
+  /** Hover scale transforms */
+  scaleHover: {
+    from: 1,
+    to: 1.05,
+  },
+} as const
+
+/**
+ * Spring Presets for Framer Motion
+ * Physics-based animation configurations
+ */
+export const springPresets = {
+  gentle: { type: 'spring' as const, stiffness: 100, damping: 15 },
+  bouncy: { type: 'spring' as const, stiffness: 300, damping: 20 },
+  stiff: { type: 'spring' as const, stiffness: 400, damping: 30 },
+} as const
+
+/**
+ * Framer Easing Configurations
+ * Easing curves formatted for Framer Motion ease property
+ */
+export const framerEasing = {
+  smooth: easingCurves.smooth,
+  sharp: easingCurves.sharp,
+  bounce: easingCurves.bounce,
+  linear: easingCurves.linear,
+  easeOut: easingCurves.easeOut,
+  easeIn: easingCurves.easeIn,
+} as const
+
+/**
  * Motion Core Export
  * Central access point for all motion tokens
  */
