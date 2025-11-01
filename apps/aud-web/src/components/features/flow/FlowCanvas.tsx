@@ -109,8 +109,8 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
   const [sessionCreated, setSessionCreated] = useState(false)
 
   // User preferences (view state, onboarding, accessibility)
-  const { prefs, loading: prefsLoading, dismissOnboarding, updatePrefs } = useUserPrefs()
-  const [currentView, setCurrentView] = useState<'flow' | 'dashboard'>('flow')
+  const { prefs, isLoading: prefsLoading, updatePrefs } = useUserPrefs(null)
+  const [currentView, setCurrentView] = useState<'flow' | 'console' | 'workspace'>('flow')
 
   // Theme configuration
   const { themeConfig, currentTheme } = useTheme()
@@ -210,7 +210,7 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
 
   // Toggle view and persist preference
   const toggleView = useCallback(async () => {
-    const newView = currentView === 'flow' ? 'dashboard' : 'flow'
+    const newView = currentView === 'flow' ? 'console' : 'flow'
     setCurrentView(newView)
     await updatePrefs({ preferred_view: newView })
   }, [currentView, updatePrefs])
@@ -635,11 +635,11 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
             </button>
             <button
               onClick={() => {
-                setCurrentView('dashboard')
-                updatePrefs({ preferred_view: 'dashboard' })
+                setCurrentView('console')
+                updatePrefs({ preferred_view: 'console' })
               }}
               className={`px-4 py-2 rounded-r-xl text-sm font-mono font-semibold flex items-center gap-2 transition-all ${
-                currentView === 'dashboard'
+                currentView === 'console'
                   ? 'bg-blue-500 text-white'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700'
               }`}
