@@ -40,6 +40,9 @@ import { useShareSignal } from '@/hooks/useShareSignal'
 import { useConsoleActivity } from '@/hooks/useConsoleActivity'
 import { useAdaptiveHints } from '@/hooks/useAdaptiveHints'
 import { HintBubble } from '@/components/console/HintBubble'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { toast } from 'sonner'
+import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
 import { Save, Link } from 'lucide-react'
 
 export function ConsoleLayout() {
@@ -152,6 +155,39 @@ export function ConsoleLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [toggleHints])
 
+  // Track tab changes (Phase 14.7)
+  useEffect(() => {
+    if (activeMode) {
+      emitActivity('tabChange', activeMode)
+    }
+  }, [activeMode, emitActivity])
+
+  // Global hotkeys (Phase 14.7)
+  useHotkeys('mod+s', (e) => {
+    e.preventDefault()
+    handleSaveScene()
+  }, { enableOnFormTags: false })
+
+  useHotkeys('mod+shift+s', (e) => {
+    e.preventDefault()
+    handleShareScene()
+  }, { enableOnFormTags: false })
+
+  useHotkeys('mod+i', (e) => {
+    e.preventDefault()
+    // TODO: Toggle SignalPanel drawer when implemented
+    toast('signal panel toggle', {
+      style: {
+        background: flowCoreColours.darkGrey,
+        color: flowCoreColours.textSecondary,
+        border: `1px solid ${flowCoreColours.borderGrey}`,
+        fontFamily: 'var(--font-mono)',
+        fontSize: '14px',
+        textTransform: 'lowercase',
+      },
+    })
+  }, { enableOnFormTags: false })
+
   // Custom events that can be added from ContextPane forms
   const [customEvents, setCustomEvents] = useState<
     Array<{ id: string; message: string; timestamp: Date }>
@@ -166,41 +202,91 @@ export function ConsoleLayout() {
     setCustomEvents((prev) => [newEvent, ...prev])
   }, [])
 
-  // Handle save scene (Phase 14.5)
+  // Handle save scene (Phase 14.5 + 14.7)
   const handleSaveScene = useCallback(async () => {
-    // TODO: Get actual scene state from FlowCanvas when integrated
-    const mockSceneState = {
-      nodes: [],
-      edges: [],
-      viewport: { x: 0, y: 0, zoom: 1 },
+    try {
+      // TODO: Get actual scene state from FlowCanvas when integrated
+      const mockSceneState = {
+        nodes: [],
+        edges: [],
+        viewport: { x: 0, y: 0, zoom: 1 },
+      }
+
+      await save(mockSceneState, {
+        id: currentCampaign?.id,
+        title: campaignName || 'Untitled Campaign',
+        artist: undefined,
+        goal: undefined,
+      })
+
+      // Track save activity (Phase 14.6)
+      emitActivity('saveSignal')
+
+      // Toast success (Phase 14.7)
+      toast.success('signal saved', {
+        style: {
+          background: flowCoreColours.darkGrey,
+          color: flowCoreColours.textPrimary,
+          border: `1px solid ${flowCoreColours.slateCyan}`,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          textTransform: 'lowercase',
+        },
+      })
+    } catch (error) {
+      toast.error('save failed', {
+        style: {
+          background: flowCoreColours.darkGrey,
+          color: flowCoreColours.error,
+          border: `1px solid ${flowCoreColours.error}`,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          textTransform: 'lowercase',
+        },
+      })
     }
+  }, [save, campaignName, emitActivity, currentCampaign?.id])
 
-    await save(mockSceneState, {
-      id: currentCampaign?.id,
-      title: campaignName || 'Untitled Campaign',
-      artist: undefined,
-      goal: undefined,
-    })
-
-    // Track save activity (Phase 14.6)
-    emitActivity('saveSignal')
-  }, [save, campaignName, emitActivity])
-
-  // Handle share scene (Phase 14.5)
+  // Handle share scene (Phase 14.5 + 14.7)
   const handleShareScene = useCallback(async () => {
-    if (!sceneId) {
-      // No scene saved yet - save first
-      await handleSaveScene()
-      return
-    }
+    try {
+      if (!sceneId) {
+        // No scene saved yet - save first
+        await handleSaveScene()
+        return
+      }
 
-    const shareUrl = await share(sceneId)
-    if (shareUrl) {
-      await copyToClipboard(shareUrl)
-    }
+      const shareUrl = await share(sceneId)
+      if (shareUrl) {
+        await copyToClipboard(shareUrl)
 
-    // Track share activity (Phase 14.6)
-    emitActivity('shareSignal')
+        // Toast success (Phase 14.7)
+        toast.success('link copied — share your signal', {
+          style: {
+            background: flowCoreColours.darkGrey,
+            color: flowCoreColours.textPrimary,
+            border: `1px solid ${flowCoreColours.iceCyan}`,
+            fontFamily: 'var(--font-mono)',
+            fontSize: '14px',
+            textTransform: 'lowercase',
+          },
+        })
+      }
+
+      // Track share activity (Phase 14.6)
+      emitActivity('shareSignal')
+    } catch (error) {
+      toast.error('share failed', {
+        style: {
+          background: flowCoreColours.darkGrey,
+          color: flowCoreColours.error,
+          border: `1px solid ${flowCoreColours.error}`,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          textTransform: 'lowercase',
+        },
+      })
+    }
   }, [sceneId, share, copyToClipboard, handleSaveScene, emitActivity])
 
   // Motion tokens (≤ 150ms for transitions as per spec)

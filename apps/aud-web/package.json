@@ -26,6 +26,7 @@
     "@total-audio/core-theme-engine": "workspace:*",
     "@total-audio/ui": "workspace:*",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/og": "^0.8.5",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.546.0",
     "nanoid": "^5.1.6",
@@ -33,6 +34,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.6.0",
+    "react-hotkeys-hook": "^5.2.1",
     "reactflow": "^11.11.4",
     "zod": "^3.22.4",
     "zustand": "^4.5.0"

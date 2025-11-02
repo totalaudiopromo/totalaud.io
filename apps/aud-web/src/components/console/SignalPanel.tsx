@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useSignalContext } from '@/hooks/useSignalContext'
+import { toast } from 'sonner'
 import {
   User,
   Target,
@@ -62,18 +63,53 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
       .slice(0, 2)
   }
 
-  // Handle action button clicks
+  // Handle action button clicks (Phase 14.7)
   const handleAction = async (action: string) => {
     setIsRunningAction(action)
-    
+    const startTime = Date.now()
+
     try {
-      // TODO: Wire to actual agent triggers
-      await new Promise((resolve) => setTimeout(resolve, 1500)) // Simulate API call
-      
-      // Success toast would go here
-      console.log(`Action completed: ${action}`)
+      // TODO: Wire to actual agent execution APIs
+      // For now, simulate agent execution
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
+      const duration = Date.now() - startTime
+
+      // Success toasts with FlowCore styling (Phase 14.7)
+      const toastMessages = {
+        enrich: `intel finished in ${duration} ms`,
+        pitch: 'pitch ready — check drafts',
+        sync: 'tracker synced ✅',
+        insights: 'insights updated',
+      }
+
+      toast.success(toastMessages[action as keyof typeof toastMessages] || `${action} completed`, {
+        style: {
+          background: flowCoreColours.darkGrey,
+          color: flowCoreColours.textPrimary,
+          border: `1px solid ${flowCoreColours.iceCyan}`, // Ice Cyan on success
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          textTransform: 'lowercase',
+        },
+      })
+
+      // Refresh signal context after agent completes
+      refetch()
+
+      // TODO: Emit agentRun event via useConsoleActivity
+      // emitActivity('agentRun', action)
     } catch (err) {
-      // Error toast would go here
+      toast.error(`${action} failed`, {
+        style: {
+          background: flowCoreColours.darkGrey,
+          color: flowCoreColours.error,
+          border: `1px solid ${flowCoreColours.error}`,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          textTransform: 'lowercase',
+        },
+      })
       console.error(`Action failed: ${action}`, err)
     } finally {
       setIsRunningAction(null)
@@ -91,11 +127,20 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
         }}
       >
         <div className="text-center space-y-4">
-          <AlertCircle size={48} style={{ color: flowCoreColours.textTertiary, margin: '0 auto' }} />
-          <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textSecondary }}>
+          <AlertCircle
+            size={48}
+            style={{ color: flowCoreColours.textTertiary, margin: '0 auto' }}
+          />
+          <p
+            className="font-mono text-sm lowercase"
+            style={{ color: flowCoreColours.textSecondary }}
+          >
             no signal locked
           </p>
-          <p className="font-mono text-xs lowercase" style={{ color: flowCoreColours.textTertiary }}>
+          <p
+            className="font-mono text-xs lowercase"
+            style={{ color: flowCoreColours.textTertiary }}
+          >
             run operator to set your artist
           </p>
         </div>
@@ -114,8 +159,15 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
         }}
       >
         <div className="text-center space-y-4">
-          <Loader2 size={48} className="animate-spin" style={{ color: flowCoreColours.slateCyan, margin: '0 auto' }} />
-          <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textSecondary }}>
+          <Loader2
+            size={48}
+            className="animate-spin"
+            style={{ color: flowCoreColours.slateCyan, margin: '0 auto' }}
+          />
+          <p
+            className="font-mono text-sm lowercase"
+            style={{ color: flowCoreColours.textSecondary }}
+          >
             loading signal...
           </p>
         </div>
@@ -135,7 +187,10 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
       >
         <div className="text-center space-y-4">
           <AlertCircle size={48} style={{ color: flowCoreColours.error, margin: '0 auto' }} />
-          <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textSecondary }}>
+          <p
+            className="font-mono text-sm lowercase"
+            style={{ color: flowCoreColours.textSecondary }}
+          >
             couldn't load context
           </p>
           <button
@@ -215,15 +270,23 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
                 {context?.artist || 'unknown artist'}
               </p>
               {context?.genre && (
-                <p className="font-mono text-xs lowercase truncate" style={{ color: flowCoreColours.textSecondary }}>
+                <p
+                  className="font-mono text-xs lowercase truncate"
+                  style={{ color: flowCoreColours.textSecondary }}
+                >
                   {context.genre}
                 </p>
               )}
-              {context?.followers !== null && context?.followers !== undefined && context.followers > 0 && (
-                <p className="font-mono text-xs lowercase" style={{ color: flowCoreColours.textTertiary }}>
-                  {context.followers.toLocaleString()} listeners
-                </p>
-              )}
+              {context?.followers !== null &&
+                context?.followers !== undefined &&
+                context.followers > 0 && (
+                  <p
+                    className="font-mono text-xs lowercase"
+                    style={{ color: flowCoreColours.textTertiary }}
+                  >
+                    {context.followers.toLocaleString()} listeners
+                  </p>
+                )}
             </div>
           </div>
         </section>
@@ -257,7 +320,10 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
             {context?.horizon !== undefined && (
               <div className="flex items-center gap-2">
                 <Calendar size={16} style={{ color: flowCoreColours.textTertiary }} />
-                <span className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textSecondary }}>
+                <span
+                  className="font-mono text-sm lowercase"
+                  style={{ color: flowCoreColours.textSecondary }}
+                >
                   {context.horizon} days horizon
                 </span>
               </div>
@@ -292,12 +358,18 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
                     >
                       {result.agent}
                     </span>
-                    <span className="font-mono text-xs" style={{ color: flowCoreColours.textTertiary }}>
+                    <span
+                      className="font-mono text-xs"
+                      style={{ color: flowCoreColours.textTertiary }}
+                    >
                       {result.tookMs}ms
                     </span>
                   </div>
                   {result.summary && (
-                    <p className="font-mono text-xs lowercase" style={{ color: flowCoreColours.textSecondary }}>
+                    <p
+                      className="font-mono text-xs lowercase"
+                      style={{ color: flowCoreColours.textSecondary }}
+                    >
                       {result.summary}
                     </p>
                   )}
@@ -305,7 +377,10 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
               ))}
             </div>
           ) : (
-            <p className="font-mono text-xs lowercase" style={{ color: flowCoreColours.textTertiary }}>
+            <p
+              className="font-mono text-xs lowercase"
+              style={{ color: flowCoreColours.textTertiary }}
+            >
               no agent runs yet
             </p>
           )}
@@ -337,18 +412,16 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
                   disabled={isRunning}
                   className="px-4 py-3 font-mono text-sm lowercase font-medium rounded transition-all flex items-center gap-2 justify-center"
                   style={{
-                    backgroundColor: isRunning ? flowCoreColours.mediumGrey : flowCoreColours.darkGrey,
+                    backgroundColor: isRunning
+                      ? flowCoreColours.mediumGrey
+                      : flowCoreColours.darkGrey,
                     border: `1px solid ${flowCoreColours.borderGrey}`,
                     color: isRunning ? flowCoreColours.textTertiary : flowCoreColours.textPrimary,
                     cursor: isRunning ? 'not-allowed' : 'pointer',
                     opacity: isRunning ? 0.6 : 1,
                   }}
                 >
-                  {isRunning ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <Icon size={16} />
-                  )}
+                  {isRunning ? <Loader2 size={16} className="animate-spin" /> : <Icon size={16} />}
                   {action.label}
                 </button>
               )
