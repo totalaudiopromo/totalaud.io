@@ -13,7 +13,11 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@aud-web/constants/flowCoreColours'
+import {
+  flowCoreColours,
+  flowCoreMotion,
+  flowCoreTypography,
+} from '@aud-web/constants/flowCoreColours'
 import { ArrowRight, Sparkles } from 'lucide-react'
 
 export function LandingPage() {

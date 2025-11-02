@@ -9,7 +9,11 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@aud-web/constants/flowCoreColours'
+import {
+  flowCoreColours,
+  flowCoreMotion,
+  flowCoreTypography,
+} from '@aud-web/constants/flowCoreColours'
 import { Mail, Check, AlertCircle } from 'lucide-react'
 
 interface ConvertKitFormProps {

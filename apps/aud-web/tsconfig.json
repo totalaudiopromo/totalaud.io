@@ -19,7 +19,8 @@
       "@/hooks/*": ["./src/hooks/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/design/*": ["./src/design/*"],
-      "@/contexts/*": ["./src/contexts/*"]
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/constants/*": ["./src/constants/*"]
     },
     "isolatedModules": true
   },

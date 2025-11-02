@@ -33,6 +33,7 @@ import {
   type CampaignCollaborator,
 } from '@aud-web/lib/supabaseClient'
 import { useState, useCallback, useEffect } from 'react'
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
 
 export function ConsoleLayout() {
   const { currentTheme } = useTheme()
@@ -206,14 +207,16 @@ export function ConsoleLayout() {
           </div>
 
           {/* Campaign Name - Editable */}
-          <EditableTitle
-            value={campaignName || 'Untitled Campaign'}
-            onChange={(newName) => setCampaignName(newName)}
-            placeholder="Untitled Campaign"
-            fontSize="16px"
-            fontWeight={400}
-            maxLength={80}
-          />
+          <div data-onboarding="campaign-title">
+            <EditableTitle
+              value={campaignName || 'Untitled Campaign'}
+              onChange={(newName) => setCampaignName(newName)}
+              placeholder="Untitled Campaign"
+              fontSize="16px"
+              fontWeight={400}
+              maxLength={80}
+            />
+          </div>
 
           {/* Right Side Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -428,6 +431,7 @@ export function ConsoleLayout() {
               opacity: activePane === 'insight' ? 1 : 0.6,
               transition: `opacity ${transitionSpeed}s ease`,
             }}
+            data-onboarding="insight-panel"
           >
             <h2
               style={{
@@ -475,6 +479,9 @@ export function ConsoleLayout() {
           />
         )}
       </div>
+
+      {/* Onboarding Tour */}
+      <OnboardingTour />
     </div>
   )
 }

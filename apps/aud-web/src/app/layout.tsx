@@ -12,6 +12,7 @@ import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
 import { GlobalCommandPalette } from '@aud-web/components/ui'
 import { Analytics } from '@vercel/analytics/react'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
+import { OnboardingProvider } from '@/contexts/OnboardingContext'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -82,12 +83,14 @@ export default function RootLayout({
         <meta name="theme-color" content={flowCoreColours.matteBlack} />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-        <ThemeResolver>
-          {children}
-          <Suspense fallback={null}>
-            <GlobalCommandPalette />
-          </Suspense>
-        </ThemeResolver>
+        <OnboardingProvider>
+          <ThemeResolver>
+            {children}
+            <Suspense fallback={null}>
+              <GlobalCommandPalette />
+            </Suspense>
+          </ThemeResolver>
+        </OnboardingProvider>
         <Toaster
           position="top-right"
           toastOptions={{

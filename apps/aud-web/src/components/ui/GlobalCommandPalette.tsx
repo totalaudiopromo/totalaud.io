@@ -35,6 +35,8 @@ import { useAgentSpawner, type AgentRole } from '@aud-web/hooks/useAgentSpawner'
 import { useStudioSound, STUDIO_SOUND_PROFILES } from '@aud-web/hooks/useStudioSound'
 import { useConsoleStore } from '@aud-web/stores/consoleStore'
 import { logger } from '@total-audio/core-logger'
+import { useOnboarding } from '@/contexts/OnboardingContext'
+import { RefreshCw } from 'lucide-react'
 
 const log = logger.scope('GlobalCommandPalette')
 
@@ -47,6 +49,7 @@ export function GlobalCommandPalette() {
   const [spawnRole, setSpawnRole] = useState<AgentRole>('scout')
   const { list: listAgents, remove: removeAgent } = useAgentSpawner()
   const { setMissionView, setActivePane } = useConsoleStore()
+  const { startOnboarding } = useOnboarding()
   const router = useRouter()
 
   // Sound system integration
@@ -394,6 +397,19 @@ export function GlobalCommandPalette() {
         await updatePrefs({ mute_sounds: !prefs?.mute_sounds })
       },
       keywords: ['audio', 'sound', 'mute', 'volume'],
+    },
+    {
+      id: 'restart-onboarding',
+      label: 'restart onboarding',
+      description: 'replay the guided tour',
+      icon: RefreshCw,
+      action: () => {
+        playCommandSound('interact')
+        log.debug('Command: Restart onboarding')
+        startOnboarding()
+        close()
+      },
+      keywords: ['onboarding', 'tutorial', 'tour', 'help', 'guide', 'restart'],
     },
   ]
 
