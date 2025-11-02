@@ -37,6 +37,9 @@ import { useState, useCallback, useEffect } from 'react'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
 import { useSaveSignal } from '@/hooks/useSaveSignal'
 import { useShareSignal } from '@/hooks/useShareSignal'
+import { useConsoleActivity } from '@/hooks/useConsoleActivity'
+import { useAdaptiveHints } from '@/hooks/useAdaptiveHints'
+import { HintBubble } from '@/components/console/HintBubble'
 import { Save, Link } from 'lucide-react'
 
 export function ConsoleLayout() {
@@ -132,6 +135,23 @@ export function ConsoleLayout() {
   })
   const { share, isSharing, copyToClipboard } = useShareSignal()
 
+  // Adaptive Hints System (Phase 14.6)
+  const { metrics, emit: emitActivity } = useConsoleActivity()
+  const { currentHint, prefersReducedMotion, toggleHints } = useAdaptiveHints(metrics)
+
+  // Keyboard shortcut: ⌘/ toggles hints (Phase 14.6)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+        e.preventDefault()
+        toggleHints()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [toggleHints])
+
   // Custom events that can be added from ContextPane forms
   const [customEvents, setCustomEvents] = useState<
     Array<{ id: string; message: string; timestamp: Date }>
@@ -161,7 +181,10 @@ export function ConsoleLayout() {
       artist: undefined,
       goal: undefined,
     })
-  }, [save, campaignName])
+
+    // Track save activity (Phase 14.6)
+    emitActivity('saveSignal')
+  }, [save, campaignName, emitActivity])
 
   // Handle share scene (Phase 14.5)
   const handleShareScene = useCallback(async () => {
@@ -175,7 +198,10 @@ export function ConsoleLayout() {
     if (shareUrl) {
       await copyToClipboard(shareUrl)
     }
-  }, [sceneId, share, copyToClipboard, handleSaveScene])
+
+    // Track share activity (Phase 14.6)
+    emitActivity('shareSignal')
+  }, [sceneId, share, copyToClipboard, handleSaveScene, emitActivity])
 
   // Motion tokens (≤ 150ms for transitions as per spec)
   const transitionSpeed = Math.min(motion_config.duration, 0.15)
@@ -320,7 +346,11 @@ export function ConsoleLayout() {
                   e.currentTarget.style.color = 'var(--text-secondary)'
                 }
               }}
-              title={lastSavedAt ? `Last saved: ${lastSavedAt.toLocaleTimeString()}` : 'Store this moment'}
+              title={
+                lastSavedAt
+                  ? `Last saved: ${lastSavedAt.toLocaleTimeString()}`
+                  : 'Store this moment'
+              }
             >
               <Save size={16} />
               {isSaving ? 'saving...' : 'save'}
@@ -581,6 +611,9 @@ export function ConsoleLayout() {
 
       {/* Onboarding Tour */}
       <OnboardingTour />
+
+      {/* Adaptive Hints Bubble (Phase 14.6) */}
+      <HintBubble hint={currentHint} prefersReducedMotion={prefersReducedMotion} muted={false} />
     </div>
   )
 }
