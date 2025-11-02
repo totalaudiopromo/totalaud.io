@@ -10,14 +10,14 @@
 'use client'
 
 import { ThemeTester } from '@/components/dev/ThemeTester'
-import { ThemeProvider } from '@/contexts/ThemeContext'
+import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
 
 export default function ThemeTestPage() {
   return (
-    <ThemeProvider>
+    <ThemeResolver>
       <div className="min-h-screen bg-background p-8">
         <ThemeTester />
       </div>
-    </ThemeProvider>
+    </ThemeResolver>
   )
 }

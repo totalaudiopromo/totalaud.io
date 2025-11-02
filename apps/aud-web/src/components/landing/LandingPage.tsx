@@ -90,7 +90,7 @@ export function LandingPage() {
               backgroundColor: flowCoreColours.darkGrey,
               border: `1px solid ${flowCoreColours.borderGrey}`,
               borderRadius: '999px',
-              fontSize: flowCoreTypography.tiny,
+              fontSize: flowCoreTypography.fontSize.tiny,
               fontWeight: 600,
               color: flowCoreColours.iceCyan,
               marginBottom: '32px',
@@ -108,10 +108,10 @@ export function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: flowCoreMotion.normal / 1000, delay: 0.1 }}
             style={{
-              fontSize: flowCoreTypography.hero,
+              fontSize: flowCoreTypography.fontSize.hero,
               fontWeight: 700,
-              lineHeight: flowCoreTypography.heroLineHeight,
-              letterSpacing: flowCoreTypography.heroTracking,
+              lineHeight: flowCoreTypography.lineHeight.heroLineHeight,
+              letterSpacing: flowCoreTypography.letterSpacing.heroTracking,
               color: flowCoreColours.textPrimary,
               marginBottom: '24px',
               fontFamily: 'var(--font-sans)',
@@ -127,8 +127,8 @@ export function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: flowCoreMotion.normal / 1000, delay: 0.2 }}
             style={{
-              fontSize: flowCoreTypography.body,
-              lineHeight: flowCoreTypography.bodyLineHeight,
+              fontSize: flowCoreTypography.fontSize.body,
+              lineHeight: flowCoreTypography.lineHeight.bodyLineHeight,
               color: flowCoreColours.textSecondary,
               marginBottom: '48px',
               maxWidth: '600px',
@@ -159,7 +159,7 @@ export function LandingPage() {
                   backgroundColor: flowCoreColours.slateCyan,
                   color: flowCoreColours.matteBlack,
                   borderRadius: '8px',
-                  fontSize: flowCoreTypography.body,
+                  fontSize: flowCoreTypography.fontSize.body,
                   fontWeight: 600,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono)',
@@ -181,7 +181,7 @@ export function LandingPage() {
             transition={{ duration: flowCoreMotion.normal / 1000, delay: 0.4 }}
             style={{
               marginTop: '32px',
-              fontSize: flowCoreTypography.small,
+              fontSize: flowCoreTypography.fontSize.small,
               color: flowCoreColours.textTertiary,
               fontFamily: 'var(--font-mono)',
               textTransform: 'lowercase',
@@ -223,7 +223,7 @@ export function LandingPage() {
             <div>
               <div
                 style={{
-                  fontSize: flowCoreTypography.body,
+                  fontSize: flowCoreTypography.fontSize.body,
                   fontWeight: 600,
                   color: flowCoreColours.slateCyan,
                   fontFamily: 'var(--font-mono)',
@@ -235,7 +235,7 @@ export function LandingPage() {
               </div>
               <div
                 style={{
-                  fontSize: flowCoreTypography.small,
+                  fontSize: flowCoreTypography.fontSize.small,
                   color: flowCoreColours.textTertiary,
                   fontFamily: 'var(--font-sans)',
                 }}
@@ -260,7 +260,7 @@ export function LandingPage() {
               <Link
                 href="/console"
                 style={{
-                  fontSize: flowCoreTypography.small,
+                  fontSize: flowCoreTypography.fontSize.small,
                   color: flowCoreColours.textSecondary,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono)',
@@ -281,7 +281,7 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  fontSize: flowCoreTypography.small,
+                  fontSize: flowCoreTypography.fontSize.small,
                   color: flowCoreColours.textSecondary,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono)',
@@ -303,7 +303,7 @@ export function LandingPage() {
           {/* Copyright */}
           <div
             style={{
-              fontSize: flowCoreTypography.tiny,
+              fontSize: flowCoreTypography.fontSize.tiny,
               color: flowCoreColours.textTertiary,
               textAlign: 'center',
               fontFamily: 'var(--font-mono)',

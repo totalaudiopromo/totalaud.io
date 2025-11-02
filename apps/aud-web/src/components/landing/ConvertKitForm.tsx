@@ -127,7 +127,7 @@ export function ConvertKitForm({
                   backgroundColor: flowCoreColours.darkGrey,
                   border: `1px solid ${status === 'error' ? flowCoreColours.error : flowCoreColours.borderGrey}`,
                   borderRadius: '6px',
-                  fontSize: flowCoreTypography.small,
+                  fontSize: flowCoreTypography.fontSize.small,
                   color: flowCoreColours.textPrimary,
                   fontFamily: 'var(--font-mono)',
                   textTransform: 'lowercase',
@@ -168,7 +168,7 @@ export function ConvertKitForm({
                 color: flowCoreColours.matteBlack,
                 border: 'none',
                 borderRadius: '6px',
-                fontSize: flowCoreTypography.small,
+                fontSize: flowCoreTypography.fontSize.small,
                 fontWeight: 600,
                 fontFamily: 'var(--font-mono)',
                 textTransform: 'lowercase',
@@ -209,7 +209,7 @@ export function ConvertKitForm({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               style={{
-                fontSize: flowCoreTypography.tiny,
+                fontSize: flowCoreTypography.fontSize.tiny,
                 color: flowCoreColours.error,
                 fontFamily: 'var(--font-mono)',
                 paddingLeft: '4px',
@@ -226,7 +226,7 @@ export function ConvertKitForm({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               style={{
-                fontSize: flowCoreTypography.tiny,
+                fontSize: flowCoreTypography.fontSize.tiny,
                 color: flowCoreColours.success,
                 fontFamily: 'var(--font-mono)',
                 paddingLeft: '4px',
@@ -242,7 +242,7 @@ export function ConvertKitForm({
       <div
         style={{
           marginTop: '12px',
-          fontSize: flowCoreTypography.tiny,
+          fontSize: flowCoreTypography.fontSize.tiny,
           color: flowCoreColours.textTertiary,
           fontFamily: 'var(--font-mono)',
           textAlign: 'center',

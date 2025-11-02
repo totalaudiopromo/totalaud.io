@@ -14,7 +14,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '@aud-web/components/themes/ThemeResolver'
 import { getAmbientPlayer } from '@/design/core/sounds/ambient'
 import { getAtmosphere } from '@/design/core/themes/atmospheres'
 import type { ThemeId } from '@/design/core/themes'
@@ -46,7 +46,7 @@ export interface StudioSwitchState {
  * ```
  */
 export function useStudioSwitch(): StudioSwitchState {
-  const { theme } = useTheme()
+  const { currentTheme: theme } = useTheme()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [lightingOpacity, setLightingOpacity] = useState(0)
   const [panelScale, setPanelScale] = useState(1.0)

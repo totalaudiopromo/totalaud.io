@@ -21,7 +21,7 @@ import {
   Volume2,
   Command,
 } from 'lucide-react'
-import { useFlowTheme } from '@/hooks/useFlowTheme'
+import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
 
 export interface CommandAction {
   id: string
@@ -63,9 +63,6 @@ function fuzzyMatch(search: string, text: string): boolean {
 export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: CommandPaletteProps) {
   const [search, setSearch] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
-
-  // Get FlowCore atmosphere theming
-  const { atmosphere, colours, motion: themeMotion } = useFlowTheme()
 
   const filteredCommands = useMemo(() => {
     if (!search.trim()) return commands
@@ -128,14 +125,14 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, filteredCommands, executeCommand, onClose])
 
-  // Theme-aware colours from FlowCore atmosphere
+  // Use FlowCore colours directly for reliable styling
   const colors = {
-    bg: colours.surface,
-    bgSecondary: colours.background,
-    border: colours.border,
-    accent: colours.accent,
-    text: colours.foreground,
-    textSecondary: colours.textSecondary || 'rgba(255, 255, 255, 0.6)',
+    bg: flowCoreColours.darkGrey, // Solid background for modal
+    bgSecondary: flowCoreColours.mediumGrey,
+    border: flowCoreColours.borderGrey,
+    accent: flowCoreColours.slateCyan,
+    text: flowCoreColours.textPrimary,
+    textSecondary: flowCoreColours.textSecondary,
   }
 
   return (
@@ -218,16 +215,10 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
                           executeCommand()
                         }}
                         onMouseEnter={() => setSelectedIndex(index)}
-                        className="w-full flex items-center gap-3 p-4 transition-colors text-left"
+                        className="w-full flex items-center gap-3 p-4 transition-colors text-left font-mono"
                         style={{
                           backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
                           borderLeft: `3px solid ${isSelected ? colors.accent : 'transparent'}`,
-                          fontFamily:
-                            atmosphere.typographyTweak?.family === 'mono'
-                              ? 'var(--font-mono)'
-                              : 'var(--font-sans)',
-                          fontWeight: atmosphere.typographyTweak?.weight || 400,
-                          letterSpacing: `${(atmosphere.typographyTweak?.tracking || 0) * 100}em`,
                         }}
                       >
                         <div

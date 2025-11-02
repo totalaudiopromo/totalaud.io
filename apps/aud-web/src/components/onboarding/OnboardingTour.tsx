@@ -23,7 +23,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
 
 export function OnboardingTour() {
-  const { isOnboardingActive, endOnboarding, currentStep, setCurrentStep, totalSteps } = useOnboarding()
+  const { isOnboardingActive, endOnboarding, currentStep, setCurrentStep, totalSteps } =
+    useOnboarding()
   const prefersReducedMotion = useReducedMotion()
 
   const currentStepData = onboardingCopy[currentStep]
@@ -101,7 +102,14 @@ export function OnboardingTour() {
       playTransitionSound()
       setCurrentStep(currentStep + 1)
     }
-  }, [currentStep, isLastStep, setCurrentStep, endOnboarding, playTransitionSound, playSuccessSound])
+  }, [
+    currentStep,
+    isLastStep,
+    setCurrentStep,
+    endOnboarding,
+    playTransitionSound,
+    playSuccessSound,
+  ])
 
   const handlePrevious = useCallback(() => {
     if (!isFirstStep) {

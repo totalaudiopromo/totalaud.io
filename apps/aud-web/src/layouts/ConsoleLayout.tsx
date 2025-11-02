@@ -20,6 +20,7 @@ import { useStudioSwitch } from '@/hooks/useStudioSwitch'
 import { MissionStack } from '@aud-web/components/console/MissionStack'
 import { ActivityStream } from '@aud-web/components/console/ActivityStream'
 import { InsightPanel } from '@aud-web/components/console/InsightPanel'
+import { SignalPanel } from '@aud-web/components/console/SignalPanel'
 import { AgentFooter } from '@aud-web/components/console/AgentFooter'
 import { ContextPane } from '@aud-web/components/console/ContextPane'
 import { AccessibilityToggle } from '@aud-web/components/ui/AccessibilityToggle'
@@ -34,6 +35,9 @@ import {
 } from '@aud-web/lib/supabaseClient'
 import { useState, useCallback, useEffect } from 'react'
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour'
+import { useSaveSignal } from '@/hooks/useSaveSignal'
+import { useShareSignal } from '@/hooks/useShareSignal'
+import { Save, Link } from 'lucide-react'
 
 export function ConsoleLayout() {
   const { currentTheme } = useTheme()
@@ -122,6 +126,12 @@ export function ConsoleLayout() {
     }
   )
 
+  // Save/Share hooks for canvas scenes (Phase 14.5)
+  const { save, isSaving, lastSavedAt, sceneId } = useSaveSignal({
+    enabled: !!currentCampaign?.id,
+  })
+  const { share, isSharing, copyToClipboard } = useShareSignal()
+
   // Custom events that can be added from ContextPane forms
   const [customEvents, setCustomEvents] = useState<
     Array<{ id: string; message: string; timestamp: Date }>
@@ -135,6 +145,37 @@ export function ConsoleLayout() {
     }
     setCustomEvents((prev) => [newEvent, ...prev])
   }, [])
+
+  // Handle save scene (Phase 14.5)
+  const handleSaveScene = useCallback(async () => {
+    // TODO: Get actual scene state from FlowCanvas when integrated
+    const mockSceneState = {
+      nodes: [],
+      edges: [],
+      viewport: { x: 0, y: 0, zoom: 1 },
+    }
+
+    await save(mockSceneState, {
+      id: currentCampaign?.id,
+      title: campaignName || 'Untitled Campaign',
+      artist: undefined,
+      goal: undefined,
+    })
+  }, [save, campaignName])
+
+  // Handle share scene (Phase 14.5)
+  const handleShareScene = useCallback(async () => {
+    if (!sceneId) {
+      // No scene saved yet - save first
+      await handleSaveScene()
+      return
+    }
+
+    const shareUrl = await share(sceneId)
+    if (shareUrl) {
+      await copyToClipboard(shareUrl)
+    }
+  }, [sceneId, share, copyToClipboard, handleSaveScene])
 
   // Motion tokens (≤ 150ms for transitions as per spec)
   const transitionSpeed = Math.min(motion_config.duration, 0.15)
@@ -248,7 +289,81 @@ export function ConsoleLayout() {
               </div>
             )}
 
-            {/* Share Button */}
+            {/* Save Scene Button (Phase 14.5) */}
+            <button
+              onClick={handleSaveScene}
+              disabled={isSaving}
+              style={{
+                padding: 'var(--space-2) var(--space-4)',
+                backgroundColor: 'transparent',
+                color: isSaving ? 'var(--text-disabled)' : 'var(--text-secondary)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 500,
+                cursor: isSaving ? 'not-allowed' : 'pointer',
+                transition: `all ${transitionSpeed}s ease`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                opacity: isSaving ? 0.6 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.borderColor = 'var(--accent)'
+                  e.currentTarget.style.color = 'var(--accent)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }
+              }}
+              title={lastSavedAt ? `Last saved: ${lastSavedAt.toLocaleTimeString()}` : 'Store this moment'}
+            >
+              <Save size={16} />
+              {isSaving ? 'saving...' : 'save'}
+            </button>
+
+            {/* Share Scene Link Button (Phase 14.5) */}
+            <button
+              onClick={handleShareScene}
+              disabled={isSharing || !sceneId}
+              style={{
+                padding: 'var(--space-2) var(--space-4)',
+                backgroundColor: 'transparent',
+                color: isSharing || !sceneId ? 'var(--text-disabled)' : 'var(--text-secondary)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 500,
+                cursor: isSharing || !sceneId ? 'not-allowed' : 'pointer',
+                transition: `all ${transitionSpeed}s ease`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                opacity: isSharing || !sceneId ? 0.6 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!isSharing && sceneId) {
+                  e.currentTarget.style.borderColor = 'var(--accent)'
+                  e.currentTarget.style.color = 'var(--accent)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSharing && sceneId) {
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                }
+              }}
+              title={sceneId ? 'Share your signal' : 'Save scene first to share'}
+            >
+              <Link size={16} />
+              {isSharing ? 'sharing...' : 'share'}
+            </button>
+
+            {/* Share Campaign Button */}
             <button
               onClick={() => setIsShareModalOpen(true)}
               style={{
@@ -287,7 +402,7 @@ export function ConsoleLayout() {
                 <polyline points="16 6 12 2 8 6" />
                 <line x1="12" y1="2" x2="12" y2="15" />
               </svg>
-              Share
+              collab
             </button>
 
             {/* Operator Toggle */}
@@ -414,36 +529,20 @@ export function ConsoleLayout() {
             </AnimatePresence>
           </motion.div>
 
-          {/* Insight Panel (Right - 3 cols) */}
+          {/* Signal Intelligence Panel (Right - 3 cols) - Phase 14.4 */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: transitionSpeed, delay: 0.25 }}
             style={{
               gridColumn: '10 / -1',
-              backgroundColor: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: '8px',
-              padding: 'var(--space-4)',
               display: 'flex',
               flexDirection: 'column',
-              overflow: 'auto',
-              opacity: activePane === 'insight' ? 1 : 0.6,
-              transition: `opacity ${transitionSpeed}s ease`,
+              overflow: 'hidden',
             }}
-            data-onboarding="insight-panel"
+            data-onboarding="signal-panel"
           >
-            <h2
-              style={{
-                fontSize: '20px',
-                fontWeight: 600,
-                marginBottom: 'var(--space-4)',
-                color: 'var(--accent)',
-              }}
-            >
-              Insight Panel
-            </h2>
-            <InsightPanel />
+            <SignalPanel campaignId={currentCampaign?.id} />
           </motion.div>
         </motion.main>
 

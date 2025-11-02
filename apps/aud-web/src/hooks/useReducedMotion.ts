@@ -1,74 +1,50 @@
 /**
  * useReducedMotion Hook
- * Phase 14: Accessibility - respects user's motion preferences
+ * Detects user's prefers-reduced-motion preference
  *
- * Returns true if user has requested reduced motion
- * Use this to disable/reduce animations for accessibility
+ * Used throughout the app to respect accessibility preferences
+ * and disable animations when requested.
  */
 
 'use client'
 
 import { useEffect, useState } from 'react'
 
+/**
+ * useReducedMotion
+ *
+ * Returns true if the user prefers reduced motion
+ * (based on prefers-reduced-motion media query)
+ */
 export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
-    // Check if window is available (client-side only)
-    if (typeof window === 'undefined') {
+    // Check for media query support
+    if (typeof window === 'undefined' || !window.matchMedia) {
       return
     }
 
-    // Create media query
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     // Set initial value
     setPrefersReducedMotion(mediaQuery.matches)
 
-    // Handler for media query changes
+    // Listen for changes
     const handleChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches)
     }
 
-    // Listen for changes
-    mediaQuery.addEventListener('change', handleChange)
-
-    // Cleanup
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange)
+    // Modern browsers
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
     }
+
+    // Legacy browsers (Safari < 14)
+    mediaQuery.addListener(handleChange)
+    return () => mediaQuery.removeListener(handleChange)
   }, [])
 
   return prefersReducedMotion
-}
-
-/**
- * Helper function to get motion duration based on reduced motion preference
- *
- * Usage:
- * ```tsx
- * const prefersReducedMotion = useReducedMotion()
- * const duration = getMotionDuration(240, prefersReducedMotion)
- * // Returns 0 if reduced motion is preferred, 240 otherwise
- * ```
- */
-export function getMotionDuration(duration: number, prefersReducedMotion: boolean): number {
-  return prefersReducedMotion ? 0 : duration
-}
-
-/**
- * Helper function to get motion variant based on reduced motion preference
- *
- * Usage:
- * ```tsx
- * const prefersReducedMotion = useReducedMotion()
- * const variant = getMotionVariant('animate', 'instant', prefersReducedMotion)
- * ```
- */
-export function getMotionVariant<T>(
-  animatedVariant: T,
-  instantVariant: T,
-  prefersReducedMotion: boolean
-): T {
-  return prefersReducedMotion ? instantVariant : animatedVariant
 }

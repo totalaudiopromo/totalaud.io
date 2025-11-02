@@ -34,7 +34,7 @@
 
 import { flowCore } from '@/design/core'
 import { getThemePersonality, type ThemeId, type ThemePersonality } from '@/design/core/themes'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '@aud-web/components/themes/ThemeResolver'
 import { playSound, createSoundPlayer } from '@/design/core/sounds'
 
 /**
@@ -82,10 +82,10 @@ export interface FlowTheme {
  */
 export function useFlowTheme(): FlowTheme {
   // Get current theme from context
-  const { theme, setTheme } = useTheme()
+  const { currentTheme, setTheme } = useTheme()
 
   // Map legacy theme IDs to FlowCore theme IDs
-  const themeId: ThemeId = (theme as ThemeId) || 'operator'
+  const themeId: ThemeId = (currentTheme as ThemeId) || 'operator'
 
   // Get theme personality
   const personality = getThemePersonality(themeId)

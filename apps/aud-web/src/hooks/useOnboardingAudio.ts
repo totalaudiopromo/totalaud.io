@@ -19,7 +19,10 @@ interface UseOnboardingAudioOptions {
   volume?: number
 }
 
-export function useOnboardingAudio({ enabled = true, volume = 0.15 }: UseOnboardingAudioOptions = {}) {
+export function useOnboardingAudio({
+  enabled = true,
+  volume = 0.15,
+}: UseOnboardingAudioOptions = {}) {
   const audioContextRef = useRef<AudioContext>()
   const oscillatorRef = useRef<OscillatorNode>()
   const gainNodeRef = useRef<GainNode>()
