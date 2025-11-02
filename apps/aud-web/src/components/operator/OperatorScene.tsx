@@ -105,15 +105,21 @@ export function OperatorScene() {
     const timing = prefersReducedMotion ? 0 : 800
 
     const timers = bootLines.map((_, index) =>
-      setTimeout(() => {
-        setBootLine(index + 1)
-      }, timing * (index + 1))
+      setTimeout(
+        () => {
+          setBootLine(index + 1)
+        },
+        timing * (index + 1)
+      )
     )
 
     // After all lines, move to artist confirmation
-    const finalTimer = setTimeout(() => {
-      setPhase('artist-confirm')
-    }, timing * (bootLines.length + 1))
+    const finalTimer = setTimeout(
+      () => {
+        setPhase('artist-confirm')
+      },
+      timing * (bootLines.length + 1)
+    )
 
     return () => {
       timers.forEach(clearTimeout)
@@ -131,7 +137,10 @@ export function OperatorScene() {
     )
     oscillatorRef.current.type = personality.soundType
 
-    log.debug('Ambient personality updated', { goal: personality.goal, freq: personality.soundFrequency })
+    log.debug('Ambient personality updated', {
+      goal: personality.goal,
+      freq: personality.soundFrequency,
+    })
   }, [personality])
 
   // Handle form submission
@@ -260,12 +269,20 @@ export function OperatorScene() {
             className="relative z-10 max-w-2xl w-full px-8"
           >
             <div className="space-y-6">
-              <p className="font-mono text-lg lowercase" style={{ color: flowCoreColours.slateCyan }}>
+              <p
+                className="font-mono text-lg lowercase"
+                style={{ color: flowCoreColours.slateCyan }}
+              >
                 we found <span className="font-semibold">{artist.name}</span>
-                {artist.followers > 0 && ` — ${artist.followers.toLocaleString()} monthly listeners`}.
+                {artist.followers > 0 &&
+                  ` — ${artist.followers.toLocaleString()} monthly listeners`}
+                .
               </p>
 
-              <p className="font-mono text-base lowercase" style={{ color: flowCoreColours.textSecondary }}>
+              <p
+                className="font-mono text-base lowercase"
+                style={{ color: flowCoreColours.textSecondary }}
+              >
                 use this context?
               </p>
 

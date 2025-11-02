@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error || !scene) {
-      return NextResponse.json(
-        { error: 'scene not found or not public' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'scene not found or not public' }, { status: 404 })
     }
 
     // Optionally fetch campaign context for artist/goal
@@ -58,9 +55,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('[Public Canvas API] Error:', error)
-    return NextResponse.json(
-      { error: 'failed to fetch scene' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'failed to fetch scene' }, { status: 500 })
   }
 }

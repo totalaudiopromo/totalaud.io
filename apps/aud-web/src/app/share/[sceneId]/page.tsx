@@ -11,7 +11,11 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { flowCoreColours, flowCoreMotion, flowCoreTypography } from '@aud-web/constants/flowCoreColours'
+import {
+  flowCoreColours,
+  flowCoreMotion,
+  flowCoreTypography,
+} from '@aud-web/constants/flowCoreColours'
 import { ArrowRight } from 'lucide-react'
 
 interface SceneData {

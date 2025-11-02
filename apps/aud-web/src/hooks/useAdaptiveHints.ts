@@ -66,10 +66,7 @@ export interface UseAdaptiveHintsOptions {
   muted?: boolean
 }
 
-export function useAdaptiveHints(
-  metrics: ActivityMetrics,
-  options: UseAdaptiveHintsOptions = {}
-) {
+export function useAdaptiveHints(metrics: ActivityMetrics, options: UseAdaptiveHintsOptions = {}) {
   const { enabled = true, muted = false } = options
 
   const [currentHint, setCurrentHint] = useState<Hint | null>(null)
@@ -119,10 +116,7 @@ export function useAdaptiveHints(
     }
 
     // Check for no save
-    if (
-      metrics.timeSinceLastSave === null ||
-      metrics.timeSinceLastSave > NO_SAVE_THRESHOLD
-    ) {
+    if (metrics.timeSinceLastSave === null || metrics.timeSinceLastSave > NO_SAVE_THRESHOLD) {
       if (metrics.timeSinceLastSave === null) {
         hints.push(HINTS.FIRST_SAVE)
       } else {

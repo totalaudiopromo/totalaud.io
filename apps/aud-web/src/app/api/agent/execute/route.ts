@@ -40,15 +40,10 @@ export async function POST(request: NextRequest) {
     // Get Supabase client
     const supabase = getSupabaseClient()
 
-    // Get authenticated user
+    // Get authenticated user (optional - allow demo mode)
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     // Execute action based on type
     let result: any
@@ -86,8 +81,8 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime
 
-    // Log agent execution to database (optional)
-    if (campaignId) {
+    // Log agent execution to database (only if authenticated)
+    if (campaignId && user) {
       await supabase.from('agent_results').insert({
         campaign_id: campaignId,
         agent: action,

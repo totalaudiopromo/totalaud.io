@@ -5,7 +5,11 @@
 
 import type { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { sceneId: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { sceneId: string }
+}): Promise<Metadata> {
   const { sceneId } = params
 
   // Fetch scene data for metadata
@@ -51,10 +55,6 @@ export async function generateMetadata({ params }: { params: { sceneId: string }
   }
 }
 
-export default function ShareLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function ShareLayout({ children }: { children: React.ReactNode }) {
   return children
 }

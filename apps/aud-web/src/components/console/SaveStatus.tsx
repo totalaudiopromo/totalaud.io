@@ -15,7 +15,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { flowCoreColours } from '@/components/themes/palettes'
+import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { SaveState } from '@/hooks/useSaveSignal'
 
 export interface SaveStatusProps {

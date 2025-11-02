@@ -108,7 +108,10 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
         {step === 1 && (
           <div className="space-y-6">
             <label className="block">
-              <p className="font-mono text-lg lowercase mb-3" style={{ color: flowCoreColours.slateCyan }}>
+              <p
+                className="font-mono text-lg lowercase mb-3"
+                style={{ color: flowCoreColours.slateCyan }}
+              >
                 what's this campaign about?
               </p>
 
@@ -133,7 +136,10 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
               />
             </label>
 
-            <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textTertiary }}>
+            <p
+              className="font-mono text-sm lowercase"
+              style={{ color: flowCoreColours.textTertiary }}
+            >
               give your campaign a memorable name
             </p>
           </div>
@@ -152,15 +158,23 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
                   onClick={() => setGoal(option.id)}
                   className="px-4 py-3 text-left border rounded transition-all"
                   style={{
-                    backgroundColor: goal === option.id ? `${personality.accentColour}15` : 'transparent',
-                    borderColor: goal === option.id ? personality.accentColour : flowCoreColours.borderGrey,
+                    backgroundColor:
+                      goal === option.id ? `${personality.accentColour}15` : 'transparent',
+                    borderColor:
+                      goal === option.id ? personality.accentColour : flowCoreColours.borderGrey,
                     borderWidth: goal === option.id ? '2px' : '1px',
                   }}
                 >
-                  <p className="font-mono text-base lowercase font-semibold" style={{ color: flowCoreColours.textPrimary }}>
+                  <p
+                    className="font-mono text-base lowercase font-semibold"
+                    style={{ color: flowCoreColours.textPrimary }}
+                  >
                     {option.label}
                   </p>
-                  <p className="font-mono text-sm lowercase mt-1" style={{ color: flowCoreColours.textSecondary }}>
+                  <p
+                    className="font-mono text-sm lowercase mt-1"
+                    style={{ color: flowCoreColours.textSecondary }}
+                  >
                     {option.description}
                   </p>
                 </button>
@@ -168,7 +182,10 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
             </div>
 
             {artist && (
-              <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textTertiary }}>
+              <p
+                className="font-mono text-sm lowercase"
+                style={{ color: flowCoreColours.textTertiary }}
+              >
                 {getPersonalityMessage(goal, artist.name)}
               </p>
             )}
@@ -195,11 +212,17 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
               />
 
               <div className="flex justify-between items-center">
-                <p className="font-mono text-2xl lowercase font-semibold" style={{ color: personality.accentColour }}>
+                <p
+                  className="font-mono text-2xl lowercase font-semibold"
+                  style={{ color: personality.accentColour }}
+                >
                   {horizon} days
                 </p>
 
-                <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textSecondary }}>
+                <p
+                  className="font-mono text-sm lowercase"
+                  style={{ color: flowCoreColours.textSecondary }}
+                >
                   {horizon < 7
                     ? 'sprint mode'
                     : horizon < 14
@@ -211,7 +234,10 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
               </div>
             </div>
 
-            <p className="font-mono text-sm lowercase" style={{ color: flowCoreColours.textTertiary }}>
+            <p
+              className="font-mono text-sm lowercase"
+              style={{ color: flowCoreColours.textTertiary }}
+            >
               we'll adapt the strategy to your timeline
             </p>
           </div>
@@ -240,8 +266,12 @@ export function OperatorForm({ artist, onSubmit, personality }: OperatorFormProp
           disabled={step === 1 && !title.trim()}
           className="px-6 py-3 font-mono text-sm lowercase font-semibold rounded transition-all"
           style={{
-            backgroundColor: step === 1 && !title.trim() ? flowCoreColours.mediumGrey : personality.accentColour,
-            color: step === 1 && !title.trim() ? flowCoreColours.textDisabled : flowCoreColours.matteBlack,
+            backgroundColor:
+              step === 1 && !title.trim() ? flowCoreColours.mediumGrey : personality.accentColour,
+            color:
+              step === 1 && !title.trim()
+                ? flowCoreColours.textDisabled
+                : flowCoreColours.matteBlack,
             cursor: step === 1 && !title.trim() ? 'not-allowed' : 'pointer',
             opacity: step === 1 && !title.trim() ? 0.5 : 1,
           }}

@@ -62,7 +62,7 @@ export function useShareSignal(): UseShareSignalResult {
   const copyToClipboard = useCallback(async (url: string) => {
     try {
       await navigator.clipboard.writeText(url)
-      
+
       toast.success('link copied — share your signal', {
         duration: 2500,
         style: {

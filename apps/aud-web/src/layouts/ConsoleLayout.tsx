@@ -138,12 +138,13 @@ export function ConsoleLayout() {
   )
 
   // Save/Share hooks for canvas scenes (Phase 14.5 + 14.8)
-  const { save, isSaving, lastSavedAt, sceneId, savingState, startAutoSave, stopAutoSave } = useSaveSignal({
-    onSaveComplete: () => {
-      // Track save completion for activity metrics
-      emitActivity('saveSignal')
-    },
-  })
+  const { save, isSaving, lastSavedAt, sceneId, savingState, startAutoSave, stopAutoSave } =
+    useSaveSignal({
+      onSaveComplete: () => {
+        // Track save completion for activity metrics
+        emitActivity('saveSignal')
+      },
+    })
   const { share, isSharing, copyToClipboard } = useShareSignal()
 
   // Adaptive Hints System (Phase 14.6)
@@ -200,20 +201,32 @@ export function ConsoleLayout() {
   }, [currentCampaign?.id, campaignName, startAutoSave, stopAutoSave])
 
   // Global hotkeys (Phase 14.7)
-  useHotkeys('mod+s', (e) => {
-    e.preventDefault()
-    handleSaveScene()
-  }, { enableOnFormTags: false })
+  useHotkeys(
+    'mod+s',
+    (e) => {
+      e.preventDefault()
+      handleSaveScene()
+    },
+    { enableOnFormTags: false }
+  )
 
-  useHotkeys('mod+shift+s', (e) => {
-    e.preventDefault()
-    handleShareScene()
-  }, { enableOnFormTags: false })
+  useHotkeys(
+    'mod+shift+s',
+    (e) => {
+      e.preventDefault()
+      handleShareScene()
+    },
+    { enableOnFormTags: false }
+  )
 
-  useHotkeys('mod+i', (e) => {
-    e.preventDefault()
-    setIsSignalDrawerOpen((prev) => !prev)
-  }, { enableOnFormTags: false })
+  useHotkeys(
+    'mod+i',
+    (e) => {
+      e.preventDefault()
+      setIsSignalDrawerOpen((prev) => !prev)
+    },
+    { enableOnFormTags: false }
+  )
 
   // Custom events that can be added from ContextPane forms
   const [customEvents, setCustomEvents] = useState<

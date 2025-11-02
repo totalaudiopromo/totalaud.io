@@ -11,10 +11,7 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { sceneId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { sceneId: string } }) {
   try {
     const { sceneId } = params
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://totalaud.io'
@@ -190,9 +187,7 @@ export async function GET(
           }}
         >
           totalaud.io
-          <div style={{ fontSize: '24px', color: '#B0BEC5', marginTop: '16px' }}>
-            shared signal
-          </div>
+          <div style={{ fontSize: '24px', color: '#B0BEC5', marginTop: '16px' }}>shared signal</div>
         </div>
       ),
       {

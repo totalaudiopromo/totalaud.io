@@ -51,7 +51,9 @@ function getDominantColour(imageUrl: string | null): string | null {
  */
 async function searchSpotifyArtist(artistName: string): Promise<ArtistData | null> {
   try {
-    const response = await fetch(`/api/spotify/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`)
+    const response = await fetch(
+      `/api/spotify/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`
+    )
 
     if (!response.ok) {
       throw new Error(`Spotify search failed: ${response.statusText}`)
@@ -134,7 +136,10 @@ export function useArtistLookup(): UseArtistLookupResult {
       const previousArtist = await getPreviousCampaignArtist()
       const artistToSearch = previousArtist || DEFAULT_ARTIST
 
-      log.info('Searching for artist', { artistToSearch, source: previousArtist ? 'campaign' : 'default' })
+      log.info('Searching for artist', {
+        artistToSearch,
+        source: previousArtist ? 'campaign' : 'default',
+      })
 
       // 3. Search Spotify
       const spotifyData = await searchSpotifyArtist(artistToSearch)
@@ -142,7 +147,10 @@ export function useArtistLookup(): UseArtistLookupResult {
       if (spotifyData) {
         setArtist(spotifyData)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(spotifyData))
-        log.info('Artist found and cached', { name: spotifyData.name, followers: spotifyData.followers })
+        log.info('Artist found and cached', {
+          name: spotifyData.name,
+          followers: spotifyData.followers,
+        })
       } else {
         // Fallback to basic data
         const fallback: ArtistData = {

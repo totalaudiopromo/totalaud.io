@@ -24,11 +24,15 @@ interface AuditResult {
 
 const results: AuditResult[] = []
 
-function audit(name: string, check: () => boolean | { pass: boolean; message?: string; details?: string }): void {
+function audit(
+  name: string,
+  check: () => boolean | { pass: boolean; message?: string; details?: string }
+): void {
   try {
     const result = check()
     const pass = typeof result === 'boolean' ? result : result.pass
-    const message = typeof result === 'object' && result.message ? result.message : pass ? 'OK' : 'Failed'
+    const message =
+      typeof result === 'object' && result.message ? result.message : pass ? 'OK' : 'Failed'
     const details = typeof result === 'object' ? result.details : undefined
 
     results.push({
@@ -54,7 +58,9 @@ function fileContains(filePath: string, searchString: string | RegExp): boolean 
   const fullPath = path.join(process.cwd(), filePath)
   if (!fs.existsSync(fullPath)) return false
   const content = fs.readFileSync(fullPath, 'utf-8')
-  return typeof searchString === 'string' ? content.includes(searchString) : searchString.test(content)
+  return typeof searchString === 'string'
+    ? content.includes(searchString)
+    : searchString.test(content)
 }
 
 // ========================================
@@ -74,23 +80,23 @@ audit('Agent execution API exists', () => fileExists('src/app/api/agent/execute/
 // ========================================
 
 audit('useSaveSignal has startAutoSave', () =>
-  fileContains('src/hooks/useSaveSignal.ts', /startAutoSave/),
+  fileContains('src/hooks/useSaveSignal.ts', /startAutoSave/)
 )
 
 audit('useSaveSignal has stopAutoSave', () =>
-  fileContains('src/hooks/useSaveSignal.ts', /stopAutoSave/),
+  fileContains('src/hooks/useSaveSignal.ts', /stopAutoSave/)
 )
 
 audit('useSaveSignal has SaveState type', () =>
-  fileContains('src/hooks/useSaveSignal.ts', /export type SaveState/),
+  fileContains('src/hooks/useSaveSignal.ts', /export type SaveState/)
 )
 
 audit('useSaveSignal has diff detection', () =>
-  fileContains('src/hooks/useSaveSignal.ts', /hashSceneState/),
+  fileContains('src/hooks/useSaveSignal.ts', /hashSceneState/)
 )
 
 audit('ConsoleLayout wires auto-save', () =>
-  fileContains('src/layouts/ConsoleLayout.tsx', /startAutoSave/),
+  fileContains('src/layouts/ConsoleLayout.tsx', /startAutoSave/)
 )
 
 // ========================================
@@ -108,15 +114,15 @@ audit('SaveStatus has all states', () => {
 })
 
 audit('SaveStatus uses FlowCore colours', () =>
-  fileContains('src/components/console/SaveStatus.tsx', /flowCoreColours/),
+  fileContains('src/components/console/SaveStatus.tsx', /flowCoreColours/)
 )
 
 audit('SaveStatus respects reduced motion', () =>
-  fileContains('src/components/console/SaveStatus.tsx', /useReducedMotion/),
+  fileContains('src/components/console/SaveStatus.tsx', /useReducedMotion/)
 )
 
 audit('ConsoleLayout renders SaveStatus', () =>
-  fileContains('src/layouts/ConsoleLayout.tsx', /<SaveStatus/),
+  fileContains('src/layouts/ConsoleLayout.tsx', /<SaveStatus/)
 )
 
 // ========================================
@@ -124,7 +130,7 @@ audit('ConsoleLayout renders SaveStatus', () =>
 // ========================================
 
 audit('Agent API has POST handler', () =>
-  fileContains('src/app/api/agent/execute/route.ts', /export async function POST/),
+  fileContains('src/app/api/agent/execute/route.ts', /export async function POST/)
 )
 
 audit('Agent API handles all actions', () => {
@@ -138,15 +144,15 @@ audit('Agent API handles all actions', () => {
 })
 
 audit('SignalPanel has executeAgent with timeout', () =>
-  fileContains('src/components/console/SignalPanel.tsx', /AbortController/),
+  fileContains('src/components/console/SignalPanel.tsx', /AbortController/)
 )
 
 audit('SignalPanel has retry logic', () =>
-  fileContains('src/components/console/SignalPanel.tsx', /retries/),
+  fileContains('src/components/console/SignalPanel.tsx', /retries/)
 )
 
 audit('SignalPanel emits activity events', () =>
-  fileContains('src/components/console/SignalPanel.tsx', /emitActivity/),
+  fileContains('src/components/console/SignalPanel.tsx', /emitActivity/)
 )
 
 // ========================================
@@ -159,19 +165,17 @@ audit('SignalDrawer has keyboard shortcuts', () => {
 })
 
 audit('SignalDrawer has backdrop', () =>
-  fileContains('src/components/console/SignalDrawer.tsx', /backdrop/i),
+  fileContains('src/components/console/SignalDrawer.tsx', /backdrop/i)
 )
 
 audit('SignalDrawer uses 240ms animation', () =>
-  fileContains('src/components/console/SignalDrawer.tsx', /0\.24/),
+  fileContains('src/components/console/SignalDrawer.tsx', /0\.24/)
 )
 
-audit('ConsoleLayout has ⌘I toggle', () =>
-  fileContains('src/layouts/ConsoleLayout.tsx', /mod\+i/),
-)
+audit('ConsoleLayout has ⌘I toggle', () => fileContains('src/layouts/ConsoleLayout.tsx', /mod\+i/))
 
 audit('ConsoleLayout renders SignalDrawer', () =>
-  fileContains('src/layouts/ConsoleLayout.tsx', /<SignalDrawer/),
+  fileContains('src/layouts/ConsoleLayout.tsx', /<SignalDrawer/)
 )
 
 // ========================================
@@ -179,15 +183,15 @@ audit('ConsoleLayout renders SignalDrawer', () =>
 // ========================================
 
 audit('FlowCanvas has palette edge glow', () =>
-  fileContains('src/components/features/flow/FlowCanvas.tsx', /Palette Edge Glow/),
+  fileContains('src/components/features/flow/FlowCanvas.tsx', /Palette Edge Glow/)
 )
 
 audit('Edge glow uses Slate Cyan', () =>
-  fileContains('src/components/features/flow/FlowCanvas.tsx', /58, 169, 190/),
+  fileContains('src/components/features/flow/FlowCanvas.tsx', /58, 169, 190/)
 )
 
 audit('Edge glow conditional on selectedSkill', () =>
-  fileContains('src/components/features/flow/FlowCanvas.tsx', /{selectedSkill &&/),
+  fileContains('src/components/features/flow/FlowCanvas.tsx', /{selectedSkill &&/)
 )
 
 // ========================================
@@ -227,10 +231,7 @@ audit('All new files use British English', () => {
 })
 
 audit('FlowCore design tokens used', () => {
-  const files = [
-    'src/components/console/SaveStatus.tsx',
-    'src/components/console/SignalDrawer.tsx',
-  ]
+  const files = ['src/components/console/SaveStatus.tsx', 'src/components/console/SignalDrawer.tsx']
 
   for (const file of files) {
     if (!fileExists(file)) continue

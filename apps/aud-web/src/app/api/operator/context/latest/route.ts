@@ -81,9 +81,6 @@ export async function GET() {
     })
   } catch (error) {
     log.error('Latest context API error', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
