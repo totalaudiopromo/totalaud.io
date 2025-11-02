@@ -775,6 +775,23 @@ export function FlowCanvas({ initialTemplate }: FlowCanvasProps) {
               </motion.div>
             )}
 
+            {/* Palette Edge Glow (Phase 14.8) */}
+            {selectedSkill && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  pointerEvents: 'none',
+                  zIndex: 10,
+                  boxShadow: 'inset 0 0 60px 20px rgba(58, 169, 190, 0.15)', // Slate Cyan glow
+                  borderRadius: '8px',
+                  opacity: 0.8,
+                  transition: 'opacity 240ms ease-in-out',
+                }}
+                aria-hidden="true"
+              />
+            )}
+
             {/* React Flow Canvas */}
             <ReactFlow
               nodes={nodes}

@@ -40,6 +40,8 @@ import { useShareSignal } from '@/hooks/useShareSignal'
 import { useConsoleActivity } from '@/hooks/useConsoleActivity'
 import { useAdaptiveHints } from '@/hooks/useAdaptiveHints'
 import { HintBubble } from '@/components/console/HintBubble'
+import { SaveStatus } from '@/components/console/SaveStatus'
+import { SignalDrawer } from '@/components/console/SignalDrawer'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { toast } from 'sonner'
 import { flowCoreColours, flowCoreMotion } from '@aud-web/constants/flowCoreColours'
@@ -61,6 +63,9 @@ export function ConsoleLayout() {
 
   // Share modal state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+
+  // Signal drawer state (Phase 14.8)
+  const [isSignalDrawerOpen, setIsSignalDrawerOpen] = useState(false)
 
   // Auth state
   const supabase = getSupabaseClient()
@@ -132,9 +137,12 @@ export function ConsoleLayout() {
     }
   )
 
-  // Save/Share hooks for canvas scenes (Phase 14.5)
-  const { save, isSaving, lastSavedAt, sceneId } = useSaveSignal({
-    enabled: !!currentCampaign?.id,
+  // Save/Share hooks for canvas scenes (Phase 14.5 + 14.8)
+  const { save, isSaving, lastSavedAt, sceneId, savingState, startAutoSave, stopAutoSave } = useSaveSignal({
+    onSaveComplete: () => {
+      // Track save completion for activity metrics
+      emitActivity('saveSignal')
+    },
   })
   const { share, isSharing, copyToClipboard } = useShareSignal()
 
@@ -162,6 +170,35 @@ export function ConsoleLayout() {
     }
   }, [activeMode, emitActivity])
 
+  // Auto-save lifecycle (Phase 14.8)
+  useEffect(() => {
+    if (!currentCampaign?.id) return
+
+    // Start auto-save with 60s interval
+    startAutoSave({
+      getSceneState: () => {
+        // TODO: Get actual scene state from FlowCanvas when integrated
+        return {
+          nodes: [],
+          edges: [],
+          viewport: { x: 0, y: 0, zoom: 1 },
+        }
+      },
+      getCampaignContext: () => ({
+        id: currentCampaign?.id,
+        title: campaignName || 'Untitled Campaign',
+        artist: undefined,
+        goal: undefined,
+      }),
+      intervalMs: 60000, // 60 seconds
+    })
+
+    // Stop auto-save on unmount or campaign change
+    return () => {
+      stopAutoSave()
+    }
+  }, [currentCampaign?.id, campaignName, startAutoSave, stopAutoSave])
+
   // Global hotkeys (Phase 14.7)
   useHotkeys('mod+s', (e) => {
     e.preventDefault()
@@ -175,17 +212,7 @@ export function ConsoleLayout() {
 
   useHotkeys('mod+i', (e) => {
     e.preventDefault()
-    // TODO: Toggle SignalPanel drawer when implemented
-    toast('signal panel toggle', {
-      style: {
-        background: flowCoreColours.darkGrey,
-        color: flowCoreColours.textSecondary,
-        border: `1px solid ${flowCoreColours.borderGrey}`,
-        fontFamily: 'var(--font-mono)',
-        fontSize: '14px',
-        textTransform: 'lowercase',
-      },
-    })
+    setIsSignalDrawerOpen((prev) => !prev)
   }, { enableOnFormTags: false })
 
   // Custom events that can be added from ContextPane forms
@@ -218,9 +245,6 @@ export function ConsoleLayout() {
         artist: undefined,
         goal: undefined,
       })
-
-      // Track save activity (Phase 14.6)
-      emitActivity('saveSignal')
 
       // Toast success (Phase 14.7)
       toast.success('signal saved', {
@@ -658,7 +682,7 @@ export function ConsoleLayout() {
             }}
             data-onboarding="signal-panel"
           >
-            <SignalPanel campaignId={currentCampaign?.id} />
+            <SignalPanel campaignId={currentCampaign?.id} emitActivity={emitActivity} />
           </motion.div>
         </motion.main>
 
@@ -700,6 +724,17 @@ export function ConsoleLayout() {
 
       {/* Adaptive Hints Bubble (Phase 14.6) */}
       <HintBubble hint={currentHint} prefersReducedMotion={prefersReducedMotion} muted={false} />
+
+      {/* Save Status Indicator (Phase 14.8) */}
+      <SaveStatus state={savingState} muted={false} />
+
+      {/* Signal Drawer for Mobile (Phase 14.8) */}
+      <SignalDrawer
+        isOpen={isSignalDrawerOpen}
+        onClose={() => setIsSignalDrawerOpen(false)}
+        campaignId={currentCampaign?.id}
+        emitActivity={emitActivity}
+      />
     </div>
   )
 }

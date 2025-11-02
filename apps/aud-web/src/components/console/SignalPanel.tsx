@@ -36,6 +36,7 @@ interface SignalPanelProps {
   campaignId?: string
   isDrawerMode?: boolean
   onClose?: () => void
+  emitActivity?: (event: string, metadata?: string) => void
 }
 
 const GOAL_ICONS = {
@@ -46,7 +47,12 @@ const GOAL_ICONS = {
   experiment: Sparkles,
 } as const
 
-export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: SignalPanelProps) {
+export function SignalPanel({
+  campaignId,
+  isDrawerMode = false,
+  onClose,
+  emitActivity,
+}: SignalPanelProps) {
   const prefersReducedMotion = useReducedMotion()
   const { context, agentResults, isLoading, error, refetch } = useSignalContext(campaignId)
   const [isRunningAction, setIsRunningAction] = useState<string | null>(null)
@@ -63,24 +69,79 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
       .slice(0, 2)
   }
 
-  // Handle action button clicks (Phase 14.7)
+  // Execute agent with timeout and retries (Phase 14.8)
+  const executeAgent = async (
+    action: string,
+    retries = 2,
+    timeoutMs = 10000
+  ): Promise<{ success: boolean; duration: number; summary?: string }> => {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+      try {
+        const startTime = Date.now()
+
+        const response = await fetch('/api/agent/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action,
+            campaignId,
+            context: {
+              artist: context?.artist,
+              goal: context?.goal,
+            },
+          }),
+          signal: controller.signal,
+        })
+
+        clearTimeout(timeoutId)
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        const duration = Date.now() - startTime
+
+        return {
+          success: true,
+          duration,
+          summary: data.summary,
+        }
+      } catch (err) {
+        clearTimeout(timeoutId)
+
+        // If this was the last retry, throw the error
+        if (attempt === retries) {
+          throw err
+        }
+
+        // Exponential backoff: 500ms, 1000ms
+        const backoffMs = 500 * Math.pow(2, attempt)
+        await new Promise((resolve) => setTimeout(resolve, backoffMs))
+      }
+    }
+
+    // Should never reach here, but TypeScript needs this
+    throw new Error('Max retries exceeded')
+  }
+
+  // Handle action button clicks (Phase 14.7 + 14.8)
   const handleAction = async (action: string) => {
     setIsRunningAction(action)
-    const startTime = Date.now()
 
     try {
-      // TODO: Wire to actual agent execution APIs
-      // For now, simulate agent execution
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Execute agent with timeout and retries
+      const { duration, summary } = await executeAgent(action)
 
-      const duration = Date.now() - startTime
-
-      // Success toasts with FlowCore styling (Phase 14.7)
+      // Success toasts with FlowCore styling
       const toastMessages = {
-        enrich: `intel finished in ${duration} ms`,
-        pitch: 'pitch ready — check drafts',
-        sync: 'tracker synced ✅',
-        insights: 'insights updated',
+        enrich: summary || `intel finished in ${duration} ms`,
+        pitch: summary || 'pitch ready — check drafts',
+        sync: summary || 'tracker synced ✅',
+        insights: summary || 'insights updated',
       }
 
       toast.success(toastMessages[action as keyof typeof toastMessages] || `${action} completed`, {
@@ -97,10 +158,15 @@ export function SignalPanel({ campaignId, isDrawerMode = false, onClose }: Signa
       // Refresh signal context after agent completes
       refetch()
 
-      // TODO: Emit agentRun event via useConsoleActivity
-      // emitActivity('agentRun', action)
+      // Emit agentRun event (Phase 14.8)
+      emitActivity?.('agentRun', action)
     } catch (err) {
-      toast.error(`${action} failed`, {
+      const errorMessage =
+        err instanceof Error && err.name === 'AbortError'
+          ? `${action} timed out`
+          : `${action} failed`
+
+      toast.error(errorMessage, {
         style: {
           background: flowCoreColours.darkGrey,
           color: flowCoreColours.error,
