@@ -28,8 +28,7 @@ let audioContext: AudioContext | null = null
  */
 function getAudioContext(): AudioContext {
   if (!audioContext) {
-    audioContext = new (window.AudioContext ||
-      (window as any).webkitAudioContext)()
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
   }
   return audioContext
 }
@@ -56,7 +55,7 @@ export function playAssetAttachSound(): void {
 
     // Configure gain (volume envelope)
     gainNode.gain.setValueAtTime(0, ctx.currentTime)
-    gainNode.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 0.02) // Attack
+    gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02) // Attack
     gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.12) // Release
 
     // Play
@@ -125,9 +124,9 @@ export function playAssetErrorSound(): void {
 
     // Configure gain (pulse envelope)
     gainNode.gain.setValueAtTime(0, ctx.currentTime)
-    gainNode.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 0.02) // Attack
-    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.10) // First pulse
-    gainNode.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 0.14) // Second pulse
+    gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02) // Attack
+    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1) // First pulse
+    gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.14) // Second pulse
     gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.24) // Release
 
     // Play
@@ -150,7 +149,7 @@ export function playAssetUploadCompleteSound(): void {
     const ctx = getAudioContext()
 
     // Create three oscillators for the chord
-    const frequencies = [261.63, 329.63, 392.00] // C4, E4, G4
+    const frequencies = [261.63, 329.63, 392.0] // C4, E4, G4
     const gainNode = ctx.createGain()
 
     // Connect gain to destination
@@ -159,8 +158,8 @@ export function playAssetUploadCompleteSound(): void {
     // Configure gain (volume envelope)
     gainNode.gain.setValueAtTime(0, ctx.currentTime)
     gainNode.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.05) // Attack
-    gainNode.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.20) // Sustain
-    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.40) // Release
+    gainNode.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.2) // Sustain
+    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4) // Release
 
     // Create and play each note
     frequencies.forEach((freq, index) => {
@@ -176,7 +175,7 @@ export function playAssetUploadCompleteSound(): void {
       // Slightly stagger the notes (arpeggio effect)
       const startTime = ctx.currentTime + index * 0.03
       osc.start(startTime)
-      osc.stop(startTime + 0.40)
+      osc.stop(startTime + 0.4)
     })
 
     log.debug('Asset upload complete sound played')

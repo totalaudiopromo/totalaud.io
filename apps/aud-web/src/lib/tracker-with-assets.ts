@@ -234,8 +234,6 @@ export class TrackerWithAssets {
 /**
  * Helper function to create TrackerWithAssets instance
  */
-export function createTrackerWithAssets(
-  options: TrackerWithAssetsOptions
-): TrackerWithAssets {
+export function createTrackerWithAssets(options: TrackerWithAssetsOptions): TrackerWithAssets {
   return new TrackerWithAssets(options)
 }

@@ -155,10 +155,7 @@ export function useAssetFilters(): UseAssetFiltersReturn {
    * Check if any filters are active
    */
   const hasActiveFilters =
-    searchQuery !== '' ||
-    selectedKind !== null ||
-    selectedTag !== null ||
-    selectedCampaign !== null
+    searchQuery !== '' || selectedKind !== null || selectedTag !== null || selectedCampaign !== null
 
   /**
    * Persist filters to localStorage on change

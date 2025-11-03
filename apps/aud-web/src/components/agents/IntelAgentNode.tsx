@@ -134,7 +134,9 @@ export function IntelAgentNode({
         },
       })
 
-      toast.success(`intel ready — enhanced with ${data.assetsUsed} document${data.assetsUsed === 1 ? '' : 's'}`)
+      toast.success(
+        `intel ready — enhanced with ${data.assetsUsed} document${data.assetsUsed === 1 ? '' : 's'}`
+      )
 
       if (onIntelGenerated) {
         onIntelGenerated(data.research, selectedDocs)
@@ -340,9 +342,7 @@ export function IntelAgentNode({
                       style={{
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: isSelected
-                          ? flowCoreColours.iceCyan
-                          : flowCoreColours.textPrimary,
+                        color: isSelected ? flowCoreColours.iceCyan : flowCoreColours.textPrimary,
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -401,7 +401,9 @@ export function IntelAgentNode({
           }
         }}
       >
-        {loading ? 'running intel...' : `run intel ${selectedDocIds.size > 0 ? `with ${selectedDocIds.size} doc${selectedDocIds.size === 1 ? '' : 's'}` : ''}`}
+        {loading
+          ? 'running intel...'
+          : `run intel ${selectedDocIds.size > 0 ? `with ${selectedDocIds.size} doc${selectedDocIds.size === 1 ? '' : 's'}` : ''}`}
       </button>
 
       {/* Generated Research Output */}

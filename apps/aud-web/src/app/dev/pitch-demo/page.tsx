@@ -444,9 +444,7 @@ export default function PitchDemoPage() {
                 }}
               >
                 <div style={{ fontSize: '64px', marginBottom: '16px' }}>📝</div>
-                <div style={{ fontSize: '14px' }}>
-                  enter a goal and generate your pitch
-                </div>
+                <div style={{ fontSize: '14px' }}>enter a goal and generate your pitch</div>
               </div>
             )}
 

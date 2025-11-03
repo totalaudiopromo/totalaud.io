@@ -101,14 +101,11 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
   /**
    * Remove attachment chip
    */
-  const handleRemoveAttachment = useCallback(
-    (assetId: string) => {
-      setSelectedAttachments((prev) => prev.filter((a) => a.id !== assetId))
-      playAssetDetachSound()
-      log.debug('Asset detached from pitch', { assetId })
-    },
-    []
-  )
+  const handleRemoveAttachment = useCallback((assetId: string) => {
+    setSelectedAttachments((prev) => prev.filter((a) => a.id !== assetId))
+    playAssetDetachSound()
+    log.debug('Asset detached from pitch', { assetId })
+  }, [])
 
   /**
    * Generate pitch
@@ -499,9 +496,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
         }}
       >
         {loading ? 'generating pitch...' : 'generate pitch'}
-        {!loading && goal.trim() && (
-          <span style={{ opacity: 0.7, marginLeft: '8px' }}>⌘↵</span>
-        )}
+        {!loading && goal.trim() && <span style={{ opacity: 0.7, marginLeft: '8px' }}>⌘↵</span>}
       </button>
 
       {/* Generated Pitch Output */}

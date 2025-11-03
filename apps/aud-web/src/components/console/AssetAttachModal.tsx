@@ -50,9 +50,7 @@ export function AssetAttachModal({
   allowedKinds,
 }: AssetAttachModalProps) {
   const { assets, loading, error } = useAssets()
-  const [localSelectedIds, setLocalSelectedIds] = useState<Set<string>>(
-    new Set(selectedAssetIds)
-  )
+  const [localSelectedIds, setLocalSelectedIds] = useState<Set<string>>(new Set(selectedAssetIds))
 
   /**
    * Filter assets based on privacy and kind restrictions
@@ -279,8 +277,7 @@ export function AssetAttachModal({
                 {publicOnly && <div>🔓 showing public assets only</div>}
                 {allowedKinds && allowedKinds.length > 0 && (
                   <div>
-                    📎 allowed types:{' '}
-                    {allowedKinds.map((kind) => getKindIcon(kind)).join(' ')}
+                    📎 allowed types: {allowedKinds.map((kind) => getKindIcon(kind)).join(' ')}
                   </div>
                 )}
               </div>
@@ -397,13 +394,9 @@ export function AssetAttachModal({
                               height: '18px',
                               borderRadius: '4px',
                               border: `2px solid ${
-                                isSelected
-                                  ? flowCoreColours.iceCyan
-                                  : flowCoreColours.borderGrey
+                                isSelected ? flowCoreColours.iceCyan : flowCoreColours.borderGrey
                               }`,
-                              backgroundColor: isSelected
-                                ? flowCoreColours.iceCyan
-                                : 'transparent',
+                              backgroundColor: isSelected ? flowCoreColours.iceCyan : 'transparent',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',

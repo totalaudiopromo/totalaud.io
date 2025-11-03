@@ -304,7 +304,10 @@ function auditPhase15_2B() {
       fail('Assets page missing telemetry hook')
     }
 
-    if (fileContains(assetsPagePath, 'asset_view') || fileContains(assetsPagePath, "action: 'asset_view'")) {
+    if (
+      fileContains(assetsPagePath, 'asset_view') ||
+      fileContains(assetsPagePath, "action: 'asset_view'")
+    ) {
       pass('asset_view telemetry event implemented')
     } else {
       fail('asset_view telemetry event missing')

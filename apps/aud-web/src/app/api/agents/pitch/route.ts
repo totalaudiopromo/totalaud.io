@@ -100,9 +100,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           goal,
           attachmentCount: publicAttachments.length,
-          filteredPrivateCount: attachments
-            ? attachments.length - publicAttachments.length
-            : 0,
+          filteredPrivateCount: attachments ? attachments.length - publicAttachments.length : 0,
         },
       },
       { status: 200 }
@@ -141,7 +139,11 @@ async function generatePitch(
   context: string,
   attachments: AssetAttachment[]
 ): Promise<string> {
-  log.debug('Generating pitch', { goal, contextLength: context.length, attachmentCount: attachments.length })
+  log.debug('Generating pitch', {
+    goal,
+    contextLength: context.length,
+    attachmentCount: attachments.length,
+  })
 
   // Simulate LLM processing delay
   await new Promise((resolve) => setTimeout(resolve, 500))

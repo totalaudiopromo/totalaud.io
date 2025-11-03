@@ -100,7 +100,7 @@ function auditPhase15_2A() {
     pass('Migration file exists: 20251118000000_create_assets.sql')
 
     // Check migration contents
-    if (fileContains(migrationPath, "insert into storage.buckets (id, name, public)")) {
+    if (fileContains(migrationPath, 'insert into storage.buckets (id, name, public)')) {
       pass('Migration creates storage bucket')
     } else {
       fail('Migration missing storage bucket creation')
@@ -141,7 +141,7 @@ function auditPhase15_2A() {
   if (fileExists(signApiPath)) {
     pass('/api/assets/sign endpoint exists')
 
-    if (fileContains(signApiPath, 'export const runtime = \'edge\'')) {
+    if (fileContains(signApiPath, "export const runtime = 'edge'")) {
       pass('Sign API uses edge runtime')
     } else {
       warn('Sign API not using edge runtime')
@@ -159,7 +159,7 @@ function auditPhase15_2A() {
   if (fileExists(listApiPath)) {
     pass('/api/assets/list endpoint exists')
 
-    if (fileContains(listApiPath, 'export const runtime = \'edge\'')) {
+    if (fileContains(listApiPath, "export const runtime = 'edge'")) {
       pass('List API uses edge runtime')
     } else {
       warn('List API not using edge runtime')
@@ -183,7 +183,7 @@ function auditPhase15_2A() {
       fail('Delete API missing soft delete')
     }
 
-    if (fileContains(deleteApiPath, 'supabase.storage.from(\'assets\').remove')) {
+    if (fileContains(deleteApiPath, "supabase.storage.from('assets').remove")) {
       pass('Delete API removes storage objects')
     } else {
       fail('Delete API missing storage removal')

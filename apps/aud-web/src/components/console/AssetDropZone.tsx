@@ -244,9 +244,7 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
         style={{
           position: 'relative',
           padding: '48px 24px',
-          backgroundColor: isDragging
-            ? 'rgba(58, 169, 190, 0.1)'
-            : flowCoreColours.darkGrey,
+          backgroundColor: isDragging ? 'rgba(58, 169, 190, 0.1)' : flowCoreColours.darkGrey,
           border: `2px dashed ${isDragging ? flowCoreColours.slateCyan : flowCoreColours.borderGrey}`,
           borderRadius: '8px',
           cursor: isUploading ? 'not-allowed' : 'pointer',

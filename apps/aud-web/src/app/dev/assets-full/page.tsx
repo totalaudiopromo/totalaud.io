@@ -84,12 +84,9 @@ export default function AssetsFullPage() {
   /**
    * Handle copy link
    */
-  const handleCopyLink = useCallback(
-    (publicShareId: string) => {
-      log.debug('Link copied', { publicShareId })
-    },
-    []
-  )
+  const handleCopyLink = useCallback((publicShareId: string) => {
+    log.debug('Link copied', { publicShareId })
+  }, [])
 
   /**
    * Handle view asset
@@ -392,8 +389,7 @@ export default function AssetsFullPage() {
                 }}
               >
                 <strong style={{ color: flowCoreColours.textSecondary }}>supported files:</strong>{' '}
-                audio (mp3, wav, flac), images (jpg, png, svg), documents (pdf, txt), archives
-                (zip)
+                audio (mp3, wav, flac), images (jpg, png, svg), documents (pdf, txt), archives (zip)
               </div>
             </motion.div>
           </>

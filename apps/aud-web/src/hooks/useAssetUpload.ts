@@ -122,57 +122,58 @@ export function useAssetUpload(): UseAssetUploadReturn {
   /**
    * Upload file to Supabase Storage using signed URL with progress tracking
    */
-  const uploadFile = useCallback(
-    async (file: File, signedUrl: string): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        abortControllerRef.current = new AbortController()
+  const uploadFile = useCallback(async (file: File, signedUrl: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      abortControllerRef.current = new AbortController()
 
-        // Track upload progress
-        xhr.upload.addEventListener('progress', (e) => {
-          if (e.lengthComputable) {
-            const percentComplete = Math.round((e.loaded / e.total) * 100)
-            setProgress(percentComplete)
-            log.debug('Upload progress', { percent: percentComplete, loaded: e.loaded, total: e.total })
-          }
-        })
-
-        // Handle completion
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            log.info('Upload completed successfully', { status: xhr.status })
-            resolve()
-          } else {
-            log.error('Upload failed', new Error(`HTTP ${xhr.status}`), { status: xhr.status })
-            reject(new Error(`Upload failed with status ${xhr.status}`))
-          }
-        })
-
-        // Handle errors
-        xhr.addEventListener('error', () => {
-          log.error('Upload network error', new Error('Network error'))
-          reject(new Error('Network error during upload'))
-        })
-
-        // Handle abort
-        xhr.addEventListener('abort', () => {
-          log.warn('Upload aborted')
-          reject(new Error('Upload cancelled'))
-        })
-
-        // Listen for abort signal
-        abortControllerRef.current.signal.addEventListener('abort', () => {
-          xhr.abort()
-        })
-
-        // Send request
-        xhr.open('PUT', signedUrl)
-        xhr.setRequestHeader('Content-Type', file.type)
-        xhr.send(file)
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100)
+          setProgress(percentComplete)
+          log.debug('Upload progress', {
+            percent: percentComplete,
+            loaded: e.loaded,
+            total: e.total,
+          })
+        }
       })
-    },
-    []
-  )
+
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          log.info('Upload completed successfully', { status: xhr.status })
+          resolve()
+        } else {
+          log.error('Upload failed', new Error(`HTTP ${xhr.status}`), { status: xhr.status })
+          reject(new Error(`Upload failed with status ${xhr.status}`))
+        }
+      })
+
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        log.error('Upload network error', new Error('Network error'))
+        reject(new Error('Network error during upload'))
+      })
+
+      // Handle abort
+      xhr.addEventListener('abort', () => {
+        log.warn('Upload aborted')
+        reject(new Error('Upload cancelled'))
+      })
+
+      // Listen for abort signal
+      abortControllerRef.current.signal.addEventListener('abort', () => {
+        xhr.abort()
+      })
+
+      // Send request
+      xhr.open('PUT', signedUrl)
+      xhr.setRequestHeader('Content-Type', file.type)
+      xhr.send(file)
+    })
+  }, [])
 
   /**
    * Main upload function with retries

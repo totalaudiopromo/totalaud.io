@@ -59,7 +59,8 @@ function detectKind(mimeType: string): string {
   )
     return 'document'
   if (mimeType === 'text/plain') return 'document'
-  if (mimeType === 'application/zip' || mimeType === 'application/x-zip-compressed') return 'archive'
+  if (mimeType === 'application/zip' || mimeType === 'application/x-zip-compressed')
+    return 'archive'
   return 'other'
 }
 

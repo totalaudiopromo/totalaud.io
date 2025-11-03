@@ -79,10 +79,7 @@ function auditPhase15_2C() {
   // ============================================
   info('[1/10] Checking Shared Types...')
 
-  const assetAttachmentTypesPath = path.join(
-    process.cwd(),
-    'src/types/asset-attachment.ts'
-  )
+  const assetAttachmentTypesPath = path.join(process.cwd(), 'src/types/asset-attachment.ts')
 
   if (fileExists(assetAttachmentTypesPath)) {
     pass('AssetAttachment types file exists')
@@ -175,10 +172,7 @@ function auditPhase15_2C() {
   // ============================================
   info('[3/10] Checking PitchAgent API...')
 
-  const pitchAgentAPIPath = path.join(
-    process.cwd(),
-    'src/app/api/agents/pitch/route.ts'
-  )
+  const pitchAgentAPIPath = path.join(process.cwd(), 'src/app/api/agents/pitch/route.ts')
 
   if (fileExists(pitchAgentAPIPath)) {
     pass('PitchAgent API route exists')
@@ -195,7 +189,10 @@ function auditPhase15_2C() {
       fail('PitchAgent API missing privacy filtering')
     }
 
-    if (fileContains(pitchAgentAPIPath, 'asset_attach_to_pitch') || fileContains(pitchAgentAPIPath, "action: 'asset_attach_to_pitch'")) {
+    if (
+      fileContains(pitchAgentAPIPath, 'asset_attach_to_pitch') ||
+      fileContains(pitchAgentAPIPath, "action: 'asset_attach_to_pitch'")
+    ) {
       pass('PitchAgent API logs asset_attach_to_pitch telemetry')
     } else {
       fail('PitchAgent API missing telemetry logging')
@@ -250,10 +247,7 @@ function auditPhase15_2C() {
   // ============================================
   info('[5/10] Checking IntelAgent API...')
 
-  const intelAgentAPIPath = path.join(
-    process.cwd(),
-    'src/app/api/agents/intel/route.ts'
-  )
+  const intelAgentAPIPath = path.join(process.cwd(), 'src/app/api/agents/intel/route.ts')
 
   if (fileExists(intelAgentAPIPath)) {
     pass('IntelAgent API route exists')
@@ -270,7 +264,10 @@ function auditPhase15_2C() {
       fail('IntelAgent API missing document asset fetching')
     }
 
-    if (fileContains(intelAgentAPIPath, 'asset_used_for_intel') || fileContains(intelAgentAPIPath, "action: 'asset_used_for_intel'")) {
+    if (
+      fileContains(intelAgentAPIPath, 'asset_used_for_intel') ||
+      fileContains(intelAgentAPIPath, "action: 'asset_used_for_intel'")
+    ) {
       pass('IntelAgent API logs asset_used_for_intel telemetry')
     } else {
       fail('IntelAgent API missing telemetry logging')
@@ -286,10 +283,7 @@ function auditPhase15_2C() {
   // ============================================
   info('[6/10] Checking TrackerAgent with Assets...')
 
-  const trackerWithAssetsPath = path.join(
-    process.cwd(),
-    'src/lib/tracker-with-assets.ts'
-  )
+  const trackerWithAssetsPath = path.join(process.cwd(), 'src/lib/tracker-with-assets.ts')
 
   if (fileExists(trackerWithAssetsPath)) {
     pass('TrackerWithAssets module exists')
@@ -318,7 +312,10 @@ function auditPhase15_2C() {
       fail('TrackerWithAssets missing getAssetForView method')
     }
 
-    if (fileContains(trackerWithAssetsPath, 'asset_view_from_tracker') || fileContains(trackerWithAssetsPath, "action: 'asset_view_from_tracker'")) {
+    if (
+      fileContains(trackerWithAssetsPath, 'asset_view_from_tracker') ||
+      fileContains(trackerWithAssetsPath, "action: 'asset_view_from_tracker'")
+    ) {
       pass('TrackerWithAssets logs asset_view_from_tracker telemetry')
     } else {
       fail('TrackerWithAssets missing telemetry logging')
@@ -402,7 +399,11 @@ function auditPhase15_2C() {
       fail('playAssetErrorSound function missing')
     }
 
-    if (fileContains(assetSoundsPath, '0.10') || fileContains(assetSoundsPath, '0.08') || fileContains(assetSoundsPath, '0.12')) {
+    if (
+      fileContains(assetSoundsPath, '0.10') ||
+      fileContains(assetSoundsPath, '0.08') ||
+      fileContains(assetSoundsPath, '0.12')
+    ) {
       pass('Sound volumes in acceptable range (0.08-0.12)')
     } else {
       warn('Sound volumes may not be in FlowCore range')

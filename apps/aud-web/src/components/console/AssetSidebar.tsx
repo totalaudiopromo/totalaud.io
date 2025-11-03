@@ -185,9 +185,7 @@ export function AssetSidebar({
                 gap: '8px',
                 padding: '8px 12px',
                 backgroundColor:
-                  selectedKind === option.value
-                    ? 'rgba(58, 169, 190, 0.1)'
-                    : 'transparent',
+                  selectedKind === option.value ? 'rgba(58, 169, 190, 0.1)' : 'transparent',
                 border: `1px solid ${
                   selectedKind === option.value
                     ? flowCoreColours.slateCyan

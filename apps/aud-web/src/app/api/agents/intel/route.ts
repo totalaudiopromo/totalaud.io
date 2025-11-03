@@ -131,10 +131,7 @@ async function fetchRelevantDocumentAssets(userId: string): Promise<AssetAttachm
  * Generate intel research with asset context
  * Placeholder - would call Claude/GPT in real implementation
  */
-async function generateIntelResearch(
-  query: string,
-  assets: AssetAttachment[]
-): Promise<string> {
+async function generateIntelResearch(query: string, assets: AssetAttachment[]): Promise<string> {
   log.debug('Generating intel research', {
     query,
     assetCount: assets.length,
