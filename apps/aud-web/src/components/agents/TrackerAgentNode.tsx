@@ -87,6 +87,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
         body: JSON.stringify({
           sessionId: campaignId || 'tracker-demo',
           userId: userId || 'demo-user',
+          campaignId: campaignId || 'demo-campaign',
         }),
       })
 
@@ -97,6 +98,11 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
       const data = await response.json()
       setLogs(data.logs || [])
       log.info('Outreach logs fetched', { count: data.logs?.length || 0 })
+
+      // Show demo mode toast if applicable
+      if (data.demo) {
+        // Toast already shown by console page, don't duplicate
+      }
     } catch (error) {
       log.error('Failed to fetch outreach logs', error)
       setLogs([])
@@ -519,7 +525,8 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
               {logs.length} outreach log{logs.length === 1 ? '' : 's'}
             </span>
             <span>
-              {logs.filter((l) => l.asset_id).length} with asset{logs.filter((l) => l.asset_id).length === 1 ? '' : 's'}
+              {logs.filter((l) => l.asset_id).length} with asset
+              {logs.filter((l) => l.asset_id).length === 1 ? '' : 's'}
             </span>
           </div>
         )}

@@ -15,31 +15,64 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { OutreachLog } from '@/lib/tracker-with-assets'
+import { cookies } from 'next/headers'
 
 const log = logger.scope('TrackerAgentAPI')
 
 const trackerRequestSchema = z.object({
   sessionId: z.string(),
   userId: z.string().optional(),
+  campaignId: z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
   try {
     // Parse and validate request body
     const body = await req.json()
-    const { sessionId, userId } = trackerRequestSchema.parse(body)
+    const { sessionId, userId, campaignId } = trackerRequestSchema.parse(body)
 
-    log.info('Tracker request received', { sessionId, userId })
+    log.info('Tracker request received', { sessionId, userId, campaignId })
 
-    // Fetch outreach logs (mock data for demo)
-    const logs = await fetchOutreachLogs(sessionId, userId)
+    // Check authentication
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    let isAuthenticated = false
+
+    if (supabaseUrl && supabaseAnonKey) {
+      const cookieStore = await cookies()
+      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storageKey: 'supabase-auth-token',
+        },
+      })
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        isAuthenticated = true
+      }
+    }
+
+    // Fetch outreach logs
+    const logs = await fetchOutreachLogs(
+      sessionId,
+      userId,
+      campaignId,
+      isAuthenticated,
+      supabaseUrl,
+      supabaseAnonKey
+    )
 
     return NextResponse.json(
       {
         success: true,
         logs,
+        demo: !isAuthenticated,
         metadata: {
           sessionId,
           logCount: logs.length,
@@ -75,70 +108,69 @@ export async function POST(req: NextRequest) {
 
 /**
  * Fetch outreach logs from database
- * In real implementation, this would query campaign_outreach_logs table
+ * Queries campaign_outreach_logs table and joins with artist_assets
  */
-async function fetchOutreachLogs(sessionId: string, userId?: string): Promise<OutreachLog[]> {
-  log.debug('Fetching outreach logs', { sessionId, userId })
+async function fetchOutreachLogs(
+  sessionId: string,
+  userId?: string,
+  campaignId?: string,
+  isAuthenticated?: boolean,
+  supabaseUrl?: string,
+  supabaseAnonKey?: string
+): Promise<OutreachLog[]> {
+  log.debug('Fetching outreach logs', { sessionId, userId, campaignId, isAuthenticated })
 
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  // If not authenticated or missing env vars, return empty array (not mock data)
+  if (!isAuthenticated || !supabaseUrl || !supabaseAnonKey || !userId || !campaignId) {
+    log.info('Unauthenticated or missing params, returning empty logs')
+    return []
+  }
 
-  // Mock outreach logs for demo
-  const mockLogs: OutreachLog[] = [
-    {
-      id: `log-${Date.now()}-1`,
-      session_id: sessionId,
-      user_id: userId || 'demo-user',
-      contact_id: 'contact-bbc-radio1',
-      contact_name: 'BBC Radio 1 Introducing',
-      message: 'Hi! I\'m reaching out to share my latest single "Night Drive" for your consideration...',
-      asset_id: 'asset-demo-audio-1',
-      asset_title: 'Night Drive - Final Master.mp3',
-      asset_kind: 'audio',
-      sent_at: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hours ago
-      status: 'sent',
-      created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-    },
-    {
-      id: `log-${Date.now()}-2`,
-      session_id: sessionId,
-      user_id: userId || 'demo-user',
-      contact_id: 'contact-spotify-uk',
-      contact_name: 'Spotify UK Editorial',
-      message: 'Sharing my new release for potential playlist consideration. Press kit attached...',
-      asset_id: 'asset-demo-doc-1',
-      asset_title: 'Artist Press Kit 2025.pdf',
-      asset_kind: 'document',
-      sent_at: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
-      status: 'replied',
-      created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-    },
-    {
-      id: `log-${Date.now()}-3`,
-      session_id: sessionId,
-      user_id: userId || 'demo-user',
-      contact_id: 'contact-nme-reviews',
-      contact_name: 'NME Reviews Team',
-      message: 'Would love to have "Night Drive" considered for review. Bio and press photos attached.',
-      asset_id: 'asset-demo-image-1',
-      asset_title: 'Press Photos 2025.zip',
-      asset_kind: 'archive',
-      sent_at: new Date(Date.now() - 3600000 * 48).toISOString(), // 2 days ago
-      status: 'sent',
-      created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-    },
-    {
-      id: `log-${Date.now()}-4`,
-      session_id: sessionId,
-      user_id: userId || 'demo-user',
-      contact_id: 'contact-amazing-radio',
-      contact_name: 'Amazing Radio',
-      message: 'Quick follow-up on my submission from last week. Still keen to hear your thoughts!',
-      sent_at: new Date(Date.now() - 3600000 * 72).toISOString(), // 3 days ago
-      status: 'pending',
-      created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
-    },
-  ]
+  try {
+    const cookieStore = await cookies()
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storageKey: 'supabase-auth-token',
+      },
+    })
 
-  return mockLogs
+    // Query outreach logs for this campaign
+    const { data: logs, error } = await supabase
+      .from('campaign_outreach_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('campaign_id', campaignId)
+      .order('sent_at', { ascending: false })
+      .limit(50)
+
+    if (error) {
+      log.warn('Failed to fetch outreach logs from database', error)
+      return []
+    }
+
+    if (!logs || logs.length === 0) {
+      return []
+    }
+
+    // Map database records to OutreachLog type
+    const mappedLogs: OutreachLog[] = logs.map((dbLog) => ({
+      id: dbLog.id,
+      session_id: sessionId,
+      user_id: userId,
+      contact_id: dbLog.contact_id || undefined,
+      contact_name: dbLog.contact_name,
+      message: dbLog.message_preview,
+      asset_id: dbLog.asset_ids?.[0], // Use first asset for display
+      asset_title: undefined, // Would need to join with artist_assets table
+      asset_kind: undefined, // Would need to join with artist_assets table
+      sent_at: dbLog.sent_at,
+      status: dbLog.status as 'sent' | 'replied' | 'bounced' | 'pending',
+      created_at: dbLog.created_at,
+    }))
+
+    return mappedLogs
+  } catch (error) {
+    log.warn('Failed to fetch outreach logs', error)
+    return []
+  }
 }

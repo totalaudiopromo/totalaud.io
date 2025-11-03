@@ -17,8 +17,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
+import { cookies } from 'next/headers'
 
 const log = logger.scope('PitchAgentAPI')
 
@@ -38,20 +40,49 @@ const pitchRequestSchema = z.object({
   context: z.string().optional(),
   attachments: z.array(assetAttachmentSchema).optional(),
   sessionId: z.string().optional(),
+  contactName: z.string().optional(),
+  campaignId: z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
   try {
     // Parse and validate request body
     const body = await req.json()
-    const { goal, context, attachments, sessionId } = pitchRequestSchema.parse(body)
+    const { goal, context, attachments, sessionId, contactName, campaignId } =
+      pitchRequestSchema.parse(body)
 
     log.info('Pitch request received', {
       goal,
       hasContext: !!context,
       attachmentCount: attachments?.length || 0,
       sessionId,
+      contactName,
+      campaignId,
     })
+
+    // Check authentication
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    let isAuthenticated = false
+    let authenticatedUserId: string | null = null
+
+    if (supabaseUrl && supabaseAnonKey) {
+      const cookieStore = await cookies()
+      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storageKey: 'supabase-auth-token',
+        },
+      })
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        isAuthenticated = true
+        authenticatedUserId = session.user.id
+      }
+    }
 
     // Filter out private attachments for external shares
     const publicAttachments = attachments?.filter((a) => a.is_public) || []
@@ -82,6 +113,43 @@ export async function POST(req: NextRequest) {
     // Generate pitch (placeholder - would call LLM in real implementation)
     const pitch = await generatePitch(goal, fullContext, publicAttachments)
 
+    // Write outreach log to database if authenticated
+    if (isAuthenticated && authenticatedUserId && campaignId && contactName) {
+      try {
+        const cookieStore = await cookies()
+        const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
+          auth: {
+            storageKey: 'supabase-auth-token',
+          },
+        })
+
+        // Create outreach log entry
+        const { error: insertError } = await supabase.from('campaign_outreach_logs').insert({
+          user_id: authenticatedUserId,
+          campaign_id: campaignId,
+          contact_name: contactName,
+          message_preview: pitch.substring(0, 200), // First 200 chars
+          asset_ids: publicAttachments.map((a) => a.id),
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+        })
+
+        if (insertError) {
+          log.warn('Failed to write outreach log', insertError)
+        } else {
+          log.info('Outreach log saved', {
+            campaignId,
+            contactName,
+            assetCount: publicAttachments.length,
+          })
+        }
+      } catch (dbError) {
+        log.warn('Failed to save outreach log to database', dbError)
+        // Don't fail the request if DB write fails
+      }
+    }
+
     // Log telemetry event for asset attachments
     if (publicAttachments.length > 0) {
       // In real implementation, this would go to flow_telemetry table
@@ -97,6 +165,7 @@ export async function POST(req: NextRequest) {
         success: true,
         pitch,
         attachments: publicAttachments,
+        demo: !isAuthenticated,
         metadata: {
           goal,
           attachmentCount: publicAttachments.length,

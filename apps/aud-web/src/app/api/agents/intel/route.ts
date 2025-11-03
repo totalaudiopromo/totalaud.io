@@ -17,8 +17,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
+import { cookies } from 'next/headers'
 
 const log = logger.scope('IntelAgentAPI')
 
@@ -42,11 +44,35 @@ export async function POST(req: NextRequest) {
       sessionId,
     })
 
+    // Check authentication for write operations (saving results)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    let isAuthenticated = false
+    let authenticatedUserId: string | null = null
+
+    if (supabaseUrl && supabaseAnonKey) {
+      const cookieStore = await cookies()
+      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storageKey: 'supabase-auth-token',
+        },
+      })
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        isAuthenticated = true
+        authenticatedUserId = session.user.id
+      }
+    }
+
     let relevantAssets: AssetAttachment[] = []
 
     // Fetch relevant document assets if requested
-    if (includeAssetContext && userId) {
-      relevantAssets = await fetchRelevantDocumentAssets(userId)
+    if (includeAssetContext && userId && isAuthenticated) {
+      relevantAssets = await fetchRelevantDocumentAssets(userId, supabaseUrl!, supabaseAnonKey!)
 
       log.info('Relevant assets found', {
         count: relevantAssets.length,
@@ -56,6 +82,36 @@ export async function POST(req: NextRequest) {
 
     // Generate enriched research with asset context
     const research = await generateIntelResearch(query, relevantAssets)
+
+    // Save results to database if authenticated
+    if (isAuthenticated && authenticatedUserId && sessionId) {
+      try {
+        const cookieStore = await cookies()
+        const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
+          auth: {
+            storageKey: 'supabase-auth-token',
+          },
+        })
+
+        await supabase.from('agent_results').insert({
+          user_id: authenticatedUserId,
+          session_id: sessionId,
+          agent_type: 'intel',
+          result_data: {
+            query,
+            research,
+            assetsUsed: relevantAssets.length,
+            assetIds: relevantAssets.map((a) => a.id),
+          },
+          created_at: new Date().toISOString(),
+        })
+
+        log.info('Intel results saved to database', { sessionId, userId: authenticatedUserId })
+      } catch (dbError) {
+        log.warn('Failed to save intel results to database', dbError)
+        // Don't fail the request if DB write fails
+      }
+    }
 
     // Log telemetry event for asset usage
     if (relevantAssets.length > 0) {
@@ -72,6 +128,7 @@ export async function POST(req: NextRequest) {
         research,
         assetsUsed: relevantAssets.length,
         assets: relevantAssets,
+        demo: !isAuthenticated,
         metadata: {
           query,
           contextEnhanced: relevantAssets.length > 0,
@@ -108,19 +165,50 @@ export async function POST(req: NextRequest) {
  * Fetch relevant document assets for intel enrichment
  * Looks for: press releases, bios, one-sheets
  */
-async function fetchRelevantDocumentAssets(userId: string): Promise<AssetAttachment[]> {
+async function fetchRelevantDocumentAssets(
+  userId: string,
+  supabaseUrl: string,
+  supabaseAnonKey: string
+): Promise<AssetAttachment[]> {
   try {
-    // In real implementation, this would query Supabase asset_uploads table
-    // For demo, we'll return mock data
     log.debug('Fetching document assets for user', { userId })
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    const cookieStore = await cookies()
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storageKey: 'supabase-auth-token',
+      },
+    })
 
-    // Mock relevant documents (would be from database in real implementation)
-    const mockAssets: AssetAttachment[] = []
+    // Query artist_assets table for document types
+    const { data: assets, error } = await supabase
+      .from('artist_assets')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('kind', 'document')
+      .order('created_at', { ascending: false })
+      .limit(10)
 
-    return mockAssets
+    if (error) {
+      log.warn('Failed to fetch document assets from database', error)
+      return []
+    }
+
+    if (!assets || assets.length === 0) {
+      return []
+    }
+
+    // Map database records to AssetAttachment type
+    const mappedAssets: AssetAttachment[] = assets.map((asset) => ({
+      id: asset.id,
+      kind: asset.kind as 'document',
+      title: asset.title || 'Untitled Document',
+      url: asset.url,
+      size_bytes: asset.size_bytes || undefined,
+      created_at: asset.created_at,
+    }))
+
+    return mappedAssets
   } catch (error) {
     log.warn('Failed to fetch document assets', error)
     return []
