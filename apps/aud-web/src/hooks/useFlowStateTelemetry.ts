@@ -54,7 +54,10 @@ interface UseFlowStateTelemetryOptions {
 }
 
 interface UseFlowStateTelemetryReturn {
-  trackEvent: (eventType: TelemetryEventType, options?: { duration?: number; metadata?: Record<string, any> }) => void
+  trackEvent: (
+    eventType: TelemetryEventType,
+    options?: { duration?: number; metadata?: Record<string, any> }
+  ) => void
   flushEvents: () => Promise<void>
   clearBuffer: () => void
   isEnabled: boolean
@@ -123,7 +126,10 @@ export function useFlowStateTelemetry(
       }
 
       const data = await response.json()
-      log.debug('Telemetry batch submitted', { inserted: data.inserted, count: eventsToSend.length })
+      log.debug('Telemetry batch submitted', {
+        inserted: data.inserted,
+        count: eventsToSend.length,
+      })
     } catch (error) {
       log.warn('Failed to submit telemetry batch', error)
 

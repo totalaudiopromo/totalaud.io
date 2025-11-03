@@ -93,11 +93,17 @@ audit('AnalyticsSettings component exists', () =>
 // ========================================
 
 audit('Migration has flow_telemetry table', () =>
-  fileContains('supabase/migrations/20251115000000_create_flow_telemetry.sql', /create table.*flow_telemetry/)
+  fileContains(
+    'supabase/migrations/20251115000000_create_flow_telemetry.sql',
+    /create table.*flow_telemetry/
+  )
 )
 
 audit('Migration has RLS enabled', () =>
-  fileContains('supabase/migrations/20251115000000_create_flow_telemetry.sql', /enable row level security/)
+  fileContains(
+    'supabase/migrations/20251115000000_create_flow_telemetry.sql',
+    /enable row level security/
+  )
 )
 
 audit('Migration has indexes', () =>

@@ -66,9 +66,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'All events must have event_type' }, { status: 400 })
       }
 
-      const validEventTypes = ['save', 'share', 'agentRun', 'tabChange', 'idle', 'sessionStart', 'sessionEnd']
+      const validEventTypes = [
+        'save',
+        'share',
+        'agentRun',
+        'tabChange',
+        'idle',
+        'sessionStart',
+        'sessionEnd',
+      ]
       if (!validEventTypes.includes(event.event_type)) {
-        return NextResponse.json({ error: `Invalid event_type: ${event.event_type}` }, { status: 400 })
+        return NextResponse.json(
+          { error: `Invalid event_type: ${event.event_type}` },
+          { status: 400 }
+        )
       }
     }
 
@@ -83,7 +94,9 @@ export async function POST(request: NextRequest) {
     // If no user, return success but don't write to DB (demo mode)
     if (!user) {
       const duration = Date.now() - startTime
-      log.debug('Demo mode: telemetry batch accepted but not persisted', { eventCount: events.length })
+      log.debug('Demo mode: telemetry batch accepted but not persisted', {
+        eventCount: events.length,
+      })
 
       const response: BatchResponse = {
         success: true,
@@ -106,7 +119,10 @@ export async function POST(request: NextRequest) {
     }))
 
     // Batch insert to Supabase
-    const { data, error } = await supabase.from('flow_telemetry').insert(eventsToInsert).select('id')
+    const { data, error } = await supabase
+      .from('flow_telemetry')
+      .insert(eventsToInsert)
+      .select('id')
 
     if (error) {
       log.error('Supabase insert failed', error, { eventCount: events.length })

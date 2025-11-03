@@ -116,15 +116,34 @@ function Sparkline({ data, colour }: { data: SparklineData[]; colour: string }) 
       aria-hidden="true"
     >
       {/* Background grid (optional) */}
-      <line x1="0" y1={height} x2={width} y2={height} stroke={flowCoreColours.borderGrey} strokeWidth="1" />
+      <line
+        x1="0"
+        y1={height}
+        x2={width}
+        y2={height}
+        stroke={flowCoreColours.borderGrey}
+        strokeWidth="1"
+      />
 
       {/* Sparkline path */}
-      <path d={pathData} fill="none" stroke={colour} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={pathData}
+        fill="none"
+        stroke={colour}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
 
-export function SignalAnalytics({ campaignId, isOpen, onClose, period = '7d' }: SignalAnalyticsProps) {
+export function SignalAnalytics({
+  campaignId,
+  isOpen,
+  onClose,
+  period = '7d',
+}: SignalAnalyticsProps) {
   const prefersReducedMotion = useReducedMotion()
 
   const [summary, setSummary] = useState<TelemetrySummary | null>(null)
@@ -439,7 +458,10 @@ export function SignalAnalytics({ campaignId, isOpen, onClose, period = '7d' }: 
                           >
                             {formatDuration(summary.totalTimeInFlowMs)}
                           </div>
-                          <Sparkline data={sparklines.timeInFlow} colour={flowCoreColours.slateCyan} />
+                          <Sparkline
+                            data={sparklines.timeInFlow}
+                            colour={flowCoreColours.slateCyan}
+                          />
                         </div>
                       </div>
 

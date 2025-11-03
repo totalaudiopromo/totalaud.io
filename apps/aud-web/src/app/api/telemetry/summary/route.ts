@@ -168,7 +168,9 @@ export async function GET(request: NextRequest) {
     const saveEvents = events.filter((e) => e.event_type === 'save')
     const shareEvents = events.filter((e) => e.event_type === 'share')
     const agentRunEvents = events.filter((e) => e.event_type === 'agentRun')
-    const sessionEvents = events.filter((e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd')
+    const sessionEvents = events.filter(
+      (e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd'
+    )
 
     const summary: TelemetrySummary = {
       totalSaves: saveEvents.length,
@@ -187,7 +189,9 @@ export async function GET(request: NextRequest) {
         const currTime = new Date(saveEvents[i].created_at).getTime()
         intervals.push(currTime - prevTime)
       }
-      summary.avgSaveIntervalMs = Math.floor(intervals.reduce((a, b) => a + b, 0) / intervals.length)
+      summary.avgSaveIntervalMs = Math.floor(
+        intervals.reduce((a, b) => a + b, 0) / intervals.length
+      )
     }
 
     // Calculate total time in flow (session durations)
@@ -231,7 +235,9 @@ export async function GET(request: NextRequest) {
 
       // Calculate day's flow time
       let dayFlowTime = 0
-      const daySessions = dayEvents.filter((e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd')
+      const daySessions = dayEvents.filter(
+        (e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd'
+      )
       for (let j = 0; j < daySessions.length; j++) {
         const session = daySessions[j]
         if (session.event_type === 'sessionStart') {

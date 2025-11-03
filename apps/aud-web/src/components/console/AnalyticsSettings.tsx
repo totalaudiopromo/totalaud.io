@@ -230,7 +230,9 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                     lineHeight: 1.5,
                   }}
                 >
-                  {analyticsEnabled ? 'tracking flow state metrics' : 'local-only mode (no data sent)'}
+                  {analyticsEnabled
+                    ? 'tracking flow state metrics'
+                    : 'local-only mode (no data sent)'}
                 </div>
               </div>
 
@@ -244,7 +246,9 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                   height: '32px',
                   borderRadius: '16px',
                   border: 'none',
-                  backgroundColor: analyticsEnabled ? flowCoreColours.slateCyan : flowCoreColours.borderGrey,
+                  backgroundColor: analyticsEnabled
+                    ? flowCoreColours.slateCyan
+                    : flowCoreColours.borderGrey,
                   position: 'relative',
                   cursor: 'pointer',
                   transition: 'background-color 0.24s ease',
@@ -290,23 +294,33 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                 }}
               >
                 <li style={{ paddingLeft: '16px', position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>•</span>
+                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>
+                    •
+                  </span>
                   save frequency and timing
                 </li>
                 <li style={{ paddingLeft: '16px', position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>•</span>
+                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>
+                    •
+                  </span>
                   agent execution counts
                 </li>
                 <li style={{ paddingLeft: '16px', position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>•</span>
+                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>
+                    •
+                  </span>
                   share actions
                 </li>
                 <li style={{ paddingLeft: '16px', position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>•</span>
+                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>
+                    •
+                  </span>
                   time in flow state
                 </li>
                 <li style={{ paddingLeft: '16px', position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>•</span>
+                  <span style={{ position: 'absolute', left: 0, color: flowCoreColours.slateCyan }}>
+                    •
+                  </span>
                   tab navigation patterns
                 </li>
               </ul>
@@ -331,7 +345,9 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                   lineHeight: 1.6,
                 }}
               >
-                <strong style={{ color: flowCoreColours.textPrimary }}>privacy-first design:</strong>
+                <strong style={{ color: flowCoreColours.textPrimary }}>
+                  privacy-first design:
+                </strong>
                 <br />
                 {analyticsEnabled
                   ? 'Analytics help improve your workflow with adaptive insights. Data is stored securely and never shared with third parties.'
