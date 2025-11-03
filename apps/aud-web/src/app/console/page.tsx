@@ -14,7 +14,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
+import { flowCoreColours } from '@/constants/flowCoreColours'
 import { ConsoleLayout } from '@/layouts/ConsoleLayout'
 import { ConsoleHeader } from '@/components/console/ConsoleHeader'
 import { FlowCanvas } from '@/components/features/flow/FlowCanvas'
