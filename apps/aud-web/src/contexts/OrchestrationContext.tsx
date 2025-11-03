@@ -10,14 +10,7 @@
 
 'use client'
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  type ReactNode,
-  useEffect,
-} from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from 'react'
 import type {
   OrchestrationIntelPayload,
   OrchestrationPitchSeed,
@@ -167,13 +160,16 @@ export function OrchestrationProvider({ children, campaignId }: OrchestrationPro
   useEffect(() => {
     if (!intelPayload) return
 
-    const timer = setTimeout(() => {
-      log.info('Intel payload expired (5 minutes)')
-      setIntelPayloadState(null)
-      toast.info('intel seed expired', {
-        description: 'run intel again to generate new findings',
-      })
-    }, 5 * 60 * 1000) // 5 minutes
+    const timer = setTimeout(
+      () => {
+        log.info('Intel payload expired (5 minutes)')
+        setIntelPayloadState(null)
+        toast.info('intel seed expired', {
+          description: 'run intel again to generate new findings',
+        })
+      },
+      5 * 60 * 1000
+    ) // 5 minutes
 
     return () => clearTimeout(timer)
   }, [intelPayload])

@@ -85,11 +85,7 @@ audit(
   fileContains('src/types/console.ts', 'interface OrchestrationPitchSeed')
 )
 
-audit(
-  'Types',
-  'OutreachLog defined',
-  fileContains('src/types/console.ts', 'interface OutreachLog')
-)
+audit('Types', 'OutreachLog defined', fileContains('src/types/console.ts', 'interface OutreachLog'))
 
 // ========================================
 // 3. Node Registry

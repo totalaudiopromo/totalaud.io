@@ -39,17 +39,9 @@ console.log('\n🔍 Phase 15.2-D Audit: Full Agent UI Integration + EPK Showcase
 // 1. Component Files Exist
 // ========================================
 
-audit(
-  'Components',
-  'PitchAgentNode exists',
-  fileExists('src/components/agents/PitchAgentNode.tsx')
-)
+audit('Components', 'PitchAgentNode exists', fileExists('src/components/agents/PitchAgentNode.tsx'))
 
-audit(
-  'Components',
-  'IntelAgentNode exists',
-  fileExists('src/components/agents/IntelAgentNode.tsx')
-)
+audit('Components', 'IntelAgentNode exists', fileExists('src/components/agents/IntelAgentNode.tsx'))
 
 audit(
   'Components',
@@ -71,11 +63,7 @@ audit('API Routes', 'Pitch agent route exists', fileExists('src/app/api/agents/p
 
 audit('API Routes', 'Intel agent route exists', fileExists('src/app/api/agents/intel/route.ts'))
 
-audit(
-  'API Routes',
-  'Tracker agent route exists',
-  fileExists('src/app/api/agents/tracker/route.ts')
-)
+audit('API Routes', 'Tracker agent route exists', fileExists('src/app/api/agents/tracker/route.ts'))
 
 audit('API Routes', 'Get asset route exists', fileExists('src/app/api/assets/get/route.ts'))
 
@@ -307,7 +295,11 @@ audit(
   fileContains('src/app/epk/[campaignId]/EPKClient.tsx', 'contact')
 )
 
-audit('EPK', 'Has telemetry tracking', fileContains('src/app/epk/[campaignId]/EPKClient.tsx', 'asset_epk_view'))
+audit(
+  'EPK',
+  'Has telemetry tracking',
+  fileContains('src/app/epk/[campaignId]/EPKClient.tsx', 'asset_epk_view')
+)
 
 // ========================================
 // 10. OG Image Route Features

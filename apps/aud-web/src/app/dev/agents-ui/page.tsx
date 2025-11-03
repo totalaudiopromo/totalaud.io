@@ -78,7 +78,9 @@ export default function AgentsUITestPage() {
                 backgroundColor: activeTab === tab ? flowCoreColours.darkGrey : 'transparent',
                 border: 'none',
                 borderBottom:
-                  activeTab === tab ? `2px solid ${flowCoreColours.slateCyan}` : '2px solid transparent',
+                  activeTab === tab
+                    ? `2px solid ${flowCoreColours.slateCyan}`
+                    : '2px solid transparent',
                 color: activeTab === tab ? flowCoreColours.iceCyan : flowCoreColours.textSecondary,
                 fontSize: '14px',
                 fontWeight: activeTab === tab ? 600 : 500,

@@ -470,7 +470,9 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       }}
                     >
                       <div style={{ color: flowCoreColours.textTertiary }}>asset id:</div>
-                      <div style={{ color: flowCoreColours.textSecondary, fontFamily: 'monospace' }}>
+                      <div
+                        style={{ color: flowCoreColours.textSecondary, fontFamily: 'monospace' }}
+                      >
                         {asset.id}
                       </div>
 
@@ -489,7 +491,9 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       {asset.mime_type && (
                         <>
                           <div style={{ color: flowCoreColours.textTertiary }}>mime type:</div>
-                          <div style={{ color: flowCoreColours.textSecondary }}>{asset.mime_type}</div>
+                          <div style={{ color: flowCoreColours.textSecondary }}>
+                            {asset.mime_type}
+                          </div>
                         </>
                       )}
 
