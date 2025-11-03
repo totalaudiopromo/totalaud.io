@@ -24,6 +24,7 @@ import type { OutreachLog } from '@/lib/tracker-with-assets'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { AssetViewModal } from '@/components/console/AssetViewModal'
+import { useOrchestration } from '@/contexts/OrchestrationContext'
 
 const log = logger.scope('TrackerAgentNode')
 
@@ -35,11 +36,37 @@ export interface TrackerAgentNodeProps {
 export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) {
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
+  const { recentLogs } = useOrchestration()
 
   const [logs, setLogs] = useState<OutreachLog[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [viewModalOpen, setViewModalOpen] = useState(false)
+
+  /**
+   * Merge API logs with recent orchestration logs
+   */
+  useEffect(() => {
+    if (recentLogs.length > 0) {
+      // Convert OrchestrationContext OutreachLog to TrackerAgentNode OutreachLog format
+      const convertedLogs = recentLogs.map((orchLog) => ({
+        ...orchLog,
+        contact_name: orchLog.contact_name || 'Unknown',
+        message: orchLog.message_preview,
+        sent_at: orchLog.timestamp,
+        asset_id: orchLog.asset_ids[0], // Use first asset for display
+        asset_kind: 'audio', // Default kind, would need enrichment in real implementation
+        asset_title: undefined,
+      }))
+
+      // Prepend recent logs to existing logs (avoid duplicates by ID)
+      setLogs((prevLogs) => {
+        const existingIds = new Set(prevLogs.map((l) => l.id))
+        const newLogs = convertedLogs.filter((l) => !existingIds.has(l.id))
+        return [...newLogs, ...prevLogs]
+      })
+    }
+  }, [recentLogs])
 
   /**
    * Fetch outreach logs on mount

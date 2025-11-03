@@ -25,6 +25,7 @@ import type { AssetAttachment } from '@/types/asset-attachment'
 import { toast } from 'sonner'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { useAssets } from '@/hooks/useAssets'
+import { useOrchestration } from '@/contexts/OrchestrationContext'
 
 const log = logger.scope('IntelAgentNode')
 
@@ -44,6 +45,7 @@ export function IntelAgentNode({
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
   const { assets: allAssets, loading: loadingAssets } = useAssets({ kind: 'document' })
+  const { setIntelPayload } = useOrchestration()
 
   const [query, setQuery] = useState(initialQuery)
   const [selectedDocIds, setSelectedDocIds] = useState<Set<string>>(new Set())
@@ -137,6 +139,15 @@ export function IntelAgentNode({
       toast.success(
         `intel ready — enhanced with ${data.assetsUsed} document${data.assetsUsed === 1 ? '' : 's'}`
       )
+
+      // Seed orchestration payload for pitch agent
+      setIntelPayload({
+        summary: data.research,
+        keyContacts: [], // Would be extracted from research in real implementation
+        keywords: [query], // Simple keyword extraction from query
+        campaignId,
+        timestamp: new Date().toISOString(),
+      })
 
       if (onIntelGenerated) {
         onIntelGenerated(data.research, selectedDocs)

@@ -25,6 +25,7 @@ import type { AssetAttachment } from '@/types/asset-attachment'
 import { toast } from 'sonner'
 import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
+import { useOrchestration } from '@/contexts/OrchestrationContext'
 
 const log = logger.scope('PitchAgentNode')
 
@@ -38,6 +39,7 @@ export interface PitchAgentNodeProps {
 export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeProps) {
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
+  const { consumeIntelPayload, logOutreach } = useOrchestration()
 
   const [goal, setGoal] = useState('')
   const [context, setContext] = useState('')
@@ -47,6 +49,20 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
   const [generatedPitch, setGeneratedPitch] = useState<string | null>(null)
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  /**
+   * Consume intel payload on mount to prefill context
+   */
+  useEffect(() => {
+    const intelSeed = consumeIntelPayload()
+    if (intelSeed) {
+      setContext(intelSeed.prefill)
+      log.info('Intel seed consumed and prefilled', {
+        keywords: intelSeed.keywords,
+        recipients: intelSeed.recipients.length,
+      })
+    }
+  }, []) // Run once on mount
 
   /**
    * Auto-resize textarea
@@ -166,6 +182,15 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
       })
 
       toast.success('pitch ready — assets attached 🎧')
+
+      // Log outreach to tracker
+      await logOutreach({
+        contact_name: goal, // Using goal as placeholder for contact name
+        asset_ids: publicAttachments.map((a) => a.id),
+        message_preview: data.pitch.slice(0, 100),
+        status: 'sent',
+        campaign_id: campaignId,
+      })
 
       // Callback
       if (onPitchGenerated) {
