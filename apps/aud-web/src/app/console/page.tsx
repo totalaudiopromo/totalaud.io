@@ -22,7 +22,7 @@ import { NodePalette } from '@aud-web/components/features/flow/NodePalette'
 import { CommandPalette } from '@aud-web/components/ui/CommandPalette'
 import type { NodeKind, ConsoleTab } from '@aud-web/types/console'
 import { useFlowStateTelemetry } from '@aud-web/hooks/useFlowStateTelemetry'
-import { logger } from '@aud-web/lib/logger'
+import { logger } from '@/lib/logger'
 import { toast } from 'sonner'
 
 const log = logger.scope('ConsolePage')
