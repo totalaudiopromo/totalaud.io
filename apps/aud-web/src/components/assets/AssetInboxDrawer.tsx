@@ -11,14 +11,13 @@
 
 'use client'
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useCallback, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { useAssets } from '@/hooks/useAssets'
 import { useAssetFilters } from '@/hooks/useAssetFilters'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { toast } from 'sonner'
 import { playAssetAttachSound } from '@/lib/asset-sounds'
@@ -41,21 +40,31 @@ export function AssetInboxDrawer({
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const debouncedSearch = useDebounce(searchQuery, 300)
-
   const { assets: allAssets, loading } = useAssets({})
-  const { filters, setFilter, clearFilters, filterAssets } = useAssetFilters()
+  const {
+    searchQuery,
+    setSearchQuery,
+    debouncedSearchQuery,
+    selectedKind,
+    setSelectedKind,
+    clearFilters,
+    hasActiveFilters,
+  } = useAssetFilters()
 
   /**
    * Filter and search assets
    */
   const filteredAssets = useMemo(() => {
-    let filtered = filterAssets(allAssets)
+    let filtered = allAssets
+
+    // Apply kind filter
+    if (selectedKind) {
+      filtered = filtered.filter((asset) => asset.kind === selectedKind)
+    }
 
     // Apply search
-    if (debouncedSearch) {
-      const query = debouncedSearch.toLowerCase()
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase()
       filtered = filtered.filter(
         (asset) =>
           asset.title.toLowerCase().includes(query) ||
@@ -70,7 +79,7 @@ export function AssetInboxDrawer({
       const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
       return dateB - dateA
     })
-  }, [allAssets, debouncedSearch, filterAssets])
+  }, [allAssets, debouncedSearchQuery, selectedKind])
 
   /**
    * Count new uploads in last 24 hours
