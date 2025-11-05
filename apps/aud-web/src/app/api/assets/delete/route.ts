@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
+import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const { assetId } = deleteRequestSchema.parse(body)
 
     // Get Supabase client
-    const supabase = getSupabaseClient()
+    const supabase = createClient()
 
     // Get authenticated user
     const {

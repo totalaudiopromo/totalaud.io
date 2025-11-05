@@ -74,12 +74,12 @@ export async function GET(req: NextRequest) {
 
         return acc
       },
-      {} as Record<string, { name: string; views: number; downloads: number; shares: number }>,
+      {} as Record<string, { name: string; views: number; downloads: number; shares: number }>
     )
 
     // Convert to array and sort by total activity
     const groupedArray = Object.values(grouped || {}).sort(
-      (a, b) => b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares),
+      (a, b) => b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares)
     )
 
     // Calculate totals

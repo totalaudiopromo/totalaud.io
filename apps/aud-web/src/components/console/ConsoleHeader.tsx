@@ -28,6 +28,7 @@ export interface ConsoleHeaderProps {
   userId?: string
   currentNodeKind?: NodeKind
   onAssetAttach?: (asset: AssetAttachment) => void
+  onFlowHubOpen?: () => void
 }
 
 export function ConsoleHeader({
@@ -35,6 +36,7 @@ export function ConsoleHeader({
   userId,
   currentNodeKind,
   onAssetAttach,
+  onFlowHubOpen,
 }: ConsoleHeaderProps) {
   const [assetInboxOpen, setAssetInboxOpen] = useState(false)
   const { assets } = useAssets({})
@@ -112,7 +114,7 @@ export function ConsoleHeader({
               color: flowCoreColours.matteBlack,
             }}
           >
-            🎯
+            ▶
           </div>
           <div>
             <h1
@@ -143,6 +145,51 @@ export function ConsoleHeader({
 
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Flow Hub Button */}
+          {onFlowHubOpen && (
+            <motion.button
+              onClick={onFlowHubOpen}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              aria-label="Open Flow Hub"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 16px',
+                backgroundColor: 'rgba(58, 169, 190, 0.15)',
+                border: `1px solid ${flowCoreColours.slateCyan}`,
+                borderRadius: '6px',
+                color: flowCoreColours.iceCyan,
+                fontSize: '13px',
+                fontWeight: 600,
+                textTransform: 'lowercase',
+                cursor: 'pointer',
+                transition: 'all 0.12s ease',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.25)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.15)'
+              }}
+            >
+              <span>flow hub</span>
+              <kbd
+                style={{
+                  padding: '2px 6px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '3px',
+                  fontSize: '11px',
+                  fontFamily: 'inherit',
+                }}
+              >
+                ⌘⇧H
+              </kbd>
+            </motion.button>
+          )}
+
           {/* Current Node Indicator */}
           {currentNodeKind && (
             <div
@@ -194,7 +241,6 @@ export function ConsoleHeader({
               e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
             }}
           >
-            <span>📦</span>
             <span>asset inbox</span>
             <kbd
               style={{

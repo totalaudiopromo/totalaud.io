@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
+import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
 
 export const runtime = 'edge'
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
     const days = parsePeriod(periodParam)
 
     // Get Supabase client
-    const supabase = getSupabaseClient()
+    const supabase = createClient()
 
     // Get authenticated user (optional - allow demo mode)
     const {

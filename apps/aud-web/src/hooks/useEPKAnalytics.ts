@@ -118,7 +118,7 @@ export function useEPKAnalytics(options: UseEPKAnalyticsOptions) {
 
           // Refetch metrics when new event arrives
           fetchMetrics()
-        },
+        }
       )
       .subscribe()
 
@@ -166,7 +166,7 @@ export function useEPKAnalytics(options: UseEPKAnalyticsOptions) {
         throw err
       }
     },
-    [epkId, trackEvent],
+    [epkId, trackEvent]
   )
 
   return {

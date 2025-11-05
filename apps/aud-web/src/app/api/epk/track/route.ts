@@ -27,16 +27,13 @@ export async function POST(req: NextRequest) {
 
     // Validate request
     if (!body.epkId || !body.eventType) {
-      return NextResponse.json(
-        { error: 'epkId and eventType are required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'epkId and eventType are required' }, { status: 400 })
     }
 
     if (!['view', 'download', 'share'].includes(body.eventType)) {
       return NextResponse.json(
         { error: 'eventType must be view, download, or share' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -58,7 +55,11 @@ export async function POST(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || ''
     const device =
       body.device ||
-      (userAgent.includes('Mobile') ? 'mobile' : userAgent.includes('Tablet') ? 'tablet' : 'desktop')
+      (userAgent.includes('Mobile')
+        ? 'mobile'
+        : userAgent.includes('Tablet')
+          ? 'tablet'
+          : 'desktop')
 
     // Insert analytics event
     const { data: analyticsEvent, error: insertError } = await supabase
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
         success: true,
         event: analyticsEvent,
       },
-      { status: 200 },
+      { status: 200 }
     )
   } catch (error) {
     log.error('Unexpected error in EPK track API', error)

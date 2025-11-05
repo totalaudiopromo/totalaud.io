@@ -87,7 +87,9 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                 borderBottom: `1px solid ${flowCoreColours.borderSubtle}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
                 <h2
                   style={{
                     margin: 0,
@@ -128,7 +130,10 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                       background: activeTab === tab ? flowCoreColours.slateCyan : 'transparent',
                       border: `1px solid ${activeTab === tab ? flowCoreColours.slateCyan : flowCoreColours.borderSubtle}`,
                       borderRadius: '4px',
-                      color: activeTab === tab ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
+                      color:
+                        activeTab === tab
+                          ? flowCoreColours.matteBlack
+                          : flowCoreColours.textSecondary,
                       fontSize: '13px',
                       fontWeight: 500,
                       cursor: 'pointer',

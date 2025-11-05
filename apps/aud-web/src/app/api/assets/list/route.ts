@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '@aud-web/lib/supabaseClient'
+import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
 
 export const runtime = 'edge'
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
     const size = Math.min(parseInt(searchParams.get('size') || '50', 10), 100) // Max 100
 
     // Get Supabase client
-    const supabase = getSupabaseClient()
+    const supabase = createClient()
 
     // Get authenticated user
     const {

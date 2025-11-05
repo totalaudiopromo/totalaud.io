@@ -179,7 +179,8 @@ export function useInsightEngine(options: UseInsightEngineOptions = {}): UseInsi
             type: 'suggestion',
             category: 'share',
             title: 'share your signal',
-            message: 'You've built a great flow scene. Consider sharing it with collaborators or for feedback.',
+            message:
+              'You have built a great flow scene. Consider sharing it with collaborators or for feedback.',
             actionLabel: 'share now',
             actionHref: '#share',
             priority: 2,
@@ -214,7 +215,8 @@ export function useInsightEngine(options: UseInsightEngineOptions = {}): UseInsi
             type: 'suggestion',
             category: 'flow',
             title: 'welcome to signal analytics',
-            message: 'Start working in the console to see insights about your flow state and productivity patterns.',
+            message:
+              'Start working in the console to see insights about your flow state and productivity patterns.',
             priority: 1,
             createdAt: new Date().toISOString(),
           })

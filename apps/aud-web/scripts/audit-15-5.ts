@@ -221,7 +221,7 @@ async function checkAPIs() {
   // Check /api/dashboard/summary
   try {
     const response = await fetch(
-      `${baseUrl}/api/dashboard/summary?campaignId=test-campaign&period=7`,
+      `${baseUrl}/api/dashboard/summary?campaignId=test-campaign&period=7`
     )
 
     if (response.ok) {
@@ -291,10 +291,7 @@ async function checkAPIs() {
 async function checkHooks() {
   console.log(`\n${colours.blue}━━━ HOOK FILE CHECKS ━━━${colours.reset}\n`)
 
-  const hookFiles = [
-    'src/hooks/useCampaignDashboard.ts',
-    'src/hooks/useEPKAnalytics.ts',
-  ]
+  const hookFiles = ['src/hooks/useCampaignDashboard.ts', 'src/hooks/useEPKAnalytics.ts']
 
   for (const hookFile of hookFiles) {
     const fullPath = path.join(process.cwd(), hookFile)
@@ -387,22 +384,14 @@ async function checkComponents() {
       if (content.includes('flowCoreColours')) {
         pass('Components', `${path.basename(componentFile)} uses FlowCore design tokens`)
       } else {
-        fail(
-          'Components',
-          `${path.basename(componentFile)} FlowCore`,
-          'Not using flowCoreColours',
-        )
+        fail('Components', `${path.basename(componentFile)} FlowCore`, 'Not using flowCoreColours')
       }
 
       // Check for Framer Motion
       if (content.includes('framer-motion') && content.includes('motion.')) {
         pass('Components', `${path.basename(componentFile)} uses Framer Motion`)
       } else {
-        fail(
-          'Components',
-          `${path.basename(componentFile)} animation`,
-          'Not using Framer Motion',
-        )
+        fail('Components', `${path.basename(componentFile)} animation`, 'Not using Framer Motion')
       }
 
       // Check for British English microcopy
@@ -415,7 +404,7 @@ async function checkComponents() {
         fail(
           'Components',
           `${path.basename(componentFile)} British English`,
-          'Contains American spellings',
+          'Contains American spellings'
         )
       }
 
@@ -432,7 +421,7 @@ async function checkComponents() {
         fail(
           'Components',
           `${path.basename(componentFile)} lowercase`,
-          'UI text not consistently lowercase',
+          'UI text not consistently lowercase'
         )
       }
     } else {
@@ -550,7 +539,7 @@ async function checkAccessibility() {
         fail(
           'Accessibility',
           `${path.basename(componentFile)} aria-label`,
-          'Missing aria-label for interactive elements',
+          'Missing aria-label for interactive elements'
         )
       }
     }
@@ -560,7 +549,9 @@ async function checkAccessibility() {
 // Run all checks
 async function runAudit() {
   console.log(`${colours.blue}╔════════════════════════════════════════╗${colours.reset}`)
-  console.log(`${colours.blue}║  Phase 15.5 Audit — Campaign Dashboard + EPK Analytics  ║${colours.reset}`)
+  console.log(
+    `${colours.blue}║  Phase 15.5 Audit — Campaign Dashboard + EPK Analytics  ║${colours.reset}`
+  )
   console.log(`${colours.blue}╚════════════════════════════════════════╝${colours.reset}`)
 
   await checkDatabase()
@@ -585,11 +576,11 @@ async function runAudit() {
 
   if (passedChecks >= 50) {
     console.log(
-      `\n${colours.green}✓ AUDIT PASSED${colours.reset} — Phase 15.5 foundation is production-ready`,
+      `\n${colours.green}✓ AUDIT PASSED${colours.reset} — Phase 15.5 foundation is production-ready`
     )
   } else {
     console.log(
-      `\n${colours.red}✗ AUDIT FAILED${colours.reset} — Need ${50 - passedChecks} more passing checks`,
+      `\n${colours.red}✗ AUDIT FAILED${colours.reset} — Need ${50 - passedChecks} more passing checks`
     )
   }
 

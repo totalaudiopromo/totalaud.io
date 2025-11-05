@@ -20,8 +20,10 @@ import { ConsoleHeader } from '@aud-web/components/console/ConsoleHeader'
 import { FlowCanvas } from '@aud-web/components/features/flow/FlowCanvas'
 import { NodePalette } from '@aud-web/components/features/flow/NodePalette'
 import { CommandPalette } from '@aud-web/components/ui/CommandPalette'
+import { FlowHubDashboard } from '@aud-web/components/console/FlowHubDashboard'
 import type { NodeKind, ConsoleTab } from '@aud-web/types/console'
 import { useFlowStateTelemetry } from '@aud-web/hooks/useFlowStateTelemetry'
+import { useFlowHub } from '@aud-web/hooks/useFlowHub'
 import { logger } from '@/lib/logger'
 import { toast } from 'sonner'
 
@@ -30,6 +32,7 @@ const log = logger.scope('ConsolePage')
 export default function ConsolePage() {
   const searchParams = useSearchParams()
   const { trackEvent } = useFlowStateTelemetry()
+  const { isFlowHubOpen, openFlowHub, closeFlowHub } = useFlowHub()
 
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const [nodePaletteOpen, setNodePaletteOpen] = useState(false)
@@ -49,12 +52,14 @@ export default function ConsolePage() {
         const authResponse = await fetch('/api/auth/session')
         const authData = await authResponse.json()
 
+        // Get campaign ID from query (available for both auth and demo mode)
+        const campaignIdFromQuery = searchParams?.get('id')
+
         if (authData.authenticated) {
           setIsAuthenticated(true)
           setUserId(authData.userId)
 
           // Get or create campaign
-          const campaignIdFromQuery = searchParams?.get('id')
           if (campaignIdFromQuery) {
             setCampaignId(campaignIdFromQuery)
           } else {
@@ -186,7 +191,6 @@ export default function ConsolePage() {
               e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
             }}
           >
-            <span style={{ marginRight: '8px' }}>🎯</span>
             spawn agent
           </button>
 
@@ -290,7 +294,6 @@ export default function ConsolePage() {
               'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
           }}
         >
-          <span style={{ fontSize: '18px' }}>ℹ️</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600 }}>demo mode — sign in to save your work</div>
             <div style={{ fontSize: '11px', color: flowCoreColours.textSecondary }}>
@@ -333,6 +336,7 @@ export default function ConsolePage() {
             campaignId={campaignId || undefined}
             userId={userId || undefined}
             currentNodeKind={currentNodeKind}
+            onFlowHubOpen={openFlowHub}
           />
         }
       />
@@ -354,6 +358,9 @@ export default function ConsolePage() {
           onSpawnNode={handleNodeSpawn}
         />
       )}
+
+      {/* Flow Hub Dashboard */}
+      <FlowHubDashboard isOpen={isFlowHubOpen} onClose={closeFlowHub} />
     </div>
   )
 }
