@@ -42,8 +42,8 @@ export async function GET(req: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      log.warn('Unauthenticated request to flow hub summary')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      log.debug('Demo mode: returning fixture analytics')
+      return NextResponse.json(getDemoSummary(period), { status: 200 })
     }
 
     log.debug('Fetching flow hub summary', { userId: user.id, period })
@@ -135,5 +135,42 @@ function formatSummary(summary: any) {
     top_agents: summary.top_agents || [],
     ai_brief: summary.ai_brief || null,
     ai_brief_generated_at: summary.ai_brief_generated_at || null,
+  }
+}
+
+/**
+ * Get demo fixture summary
+ */
+function getDemoSummary(period: number) {
+  const now = new Date()
+  const start = new Date(now.getTime() - period * 24 * 60 * 60 * 1000)
+
+  return {
+    period_days: period,
+    period_start: start.toISOString(),
+    period_end: now.toISOString(),
+    total_campaigns: 3,
+    total_epks: 5,
+    total_views: 247,
+    total_downloads: 42,
+    total_shares: 18,
+    total_agent_runs: 156,
+    total_saves: 23,
+    avg_ctr: 12.45,
+    avg_engagement_score: 7.8,
+    top_epks: [
+      { epk_id: 'demo-epk-1', campaign_id: 'demo-campaign-1', views: 124 },
+      { epk_id: 'demo-epk-2', campaign_id: 'demo-campaign-2', views: 89 },
+      { epk_id: 'demo-epk-3', campaign_id: 'demo-campaign-3', views: 34 },
+    ],
+    top_agents: [
+      { agent_id: 'demo-agent-1', name: 'intel scout', runs: 67 },
+      { agent_id: 'demo-agent-2', name: 'pitch coach', runs: 52 },
+      { agent_id: 'demo-agent-3', name: 'tracker', runs: 37 },
+    ],
+    ai_brief: null,
+    ai_brief_generated_at: null,
+    cached: false,
+    demo: true,
   }
 }
