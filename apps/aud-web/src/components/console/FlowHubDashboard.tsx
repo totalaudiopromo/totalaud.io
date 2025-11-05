@@ -250,6 +250,7 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
             border: `1px solid ${flowCoreColours.borderGrey}`,
             maxHeight: '90vh',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+            zIndex: 1,
           }}
         >
           {/* Header */}
