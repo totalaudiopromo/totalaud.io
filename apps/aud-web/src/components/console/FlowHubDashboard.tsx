@@ -277,6 +277,8 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                 style={{
                   color: flowCoreColours.textTertiary,
                   textTransform: 'lowercase',
+                  fontFamily:
+                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
                 }}
               >
                 unified analytics & ai insights
@@ -298,6 +300,9 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                       backgroundColor: period === p ? flowCoreColours.slateCyan : 'transparent',
                       color:
                         period === p ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
+                      fontFamily:
+                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                      textTransform: 'lowercase',
                     }}
                   >
                     {p}d
@@ -370,7 +375,15 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
           <div className="p-6 overflow-y-auto" style={{ maxHeight: '70vh' }}>
             {loading && (
               <div className="flex items-center justify-center py-12">
-                <p style={{ color: flowCoreColours.textSecondary }}>Loading analytics...</p>
+                <p
+                  style={{
+                    color: flowCoreColours.textSecondary,
+                    fontFamily:
+                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  }}
+                >
+                  Loading analytics...
+                </p>
               </div>
             )}
 
@@ -382,7 +395,15 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                   border: `1px solid ${flowCoreColours.errorRed}`,
                 }}
               >
-                <p style={{ color: flowCoreColours.errorRed }}>{error}</p>
+                <p
+                  style={{
+                    color: flowCoreColours.errorRed,
+                    fontFamily:
+                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  }}
+                >
+                  {error}
+                </p>
               </div>
             )}
 
@@ -444,6 +465,8 @@ function PerformanceOverview({ summary }: { summary: FlowHubSummary }) {
             style={{
               color: flowCoreColours.textTertiary,
               textTransform: 'lowercase',
+              fontFamily:
+                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
             }}
           >
             {metric.label}
@@ -472,8 +495,16 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
     <div className="space-y-6">
       {/* Top EPKs */}
       <div>
-        <h3 className="text-lg font-semibold mb-4" style={{ color: flowCoreColours.textPrimary }}>
-          Top EPKs by Views
+        <h3
+          className="text-lg font-semibold mb-4"
+          style={{
+            color: flowCoreColours.textPrimary,
+            textTransform: 'lowercase',
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          }}
+        >
+          top epks by views
         </h3>
         <div className="space-y-2">
           {summary.top_epks.length > 0 ? (
@@ -489,31 +520,72 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="text-sm font-semibold"
-                    style={{ color: flowCoreColours.slateCyan }}
+                    style={{
+                      color: flowCoreColours.slateCyan,
+                      fontFamily:
+                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                    }}
                   >
                     #{index + 1}
                   </span>
-                  <span style={{ color: flowCoreColours.textPrimary }}>
-                    EPK {epk.epk_id.slice(0, 8)}...
+                  <span
+                    style={{
+                      color: flowCoreColours.textPrimary,
+                      fontFamily:
+                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                    }}
+                  >
+                    epk {epk.epk_id.slice(0, 8)}...
                   </span>
                 </div>
-                <span className="text-sm" style={{ color: flowCoreColours.textSecondary }}>
+                <span
+                  className="text-sm"
+                  style={{
+                    color: flowCoreColours.textSecondary,
+                    fontFamily:
+                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  }}
+                >
                   {epk.views} views
                 </span>
               </div>
             ))
           ) : (
-            <p style={{ color: flowCoreColours.textTertiary }}>No EPKs yet</p>
+            <p
+              style={{
+                color: flowCoreColours.textTertiary,
+                fontFamily:
+                  'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+              }}
+            >
+              no epks yet
+            </p>
           )}
         </div>
       </div>
 
       {/* Top Agents (placeholder) */}
       <div>
-        <h3 className="text-lg font-semibold mb-4" style={{ color: flowCoreColours.textPrimary }}>
-          Top Agents by Runs
+        <h3
+          className="text-lg font-semibold mb-4"
+          style={{
+            color: flowCoreColours.textPrimary,
+            textTransform: 'lowercase',
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          }}
+        >
+          top agents by runs
         </h3>
-        <p style={{ color: flowCoreColours.textTertiary }}>Agent tracking coming soon</p>
+        <p
+          style={{
+            color: flowCoreColours.textTertiary,
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          }}
+        >
+          agent tracking coming soon
+        </p>
       </div>
     </div>
   )
@@ -538,8 +610,14 @@ function AIBriefPanel({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p style={{ color: flowCoreColours.textSecondary }}>
-          Generating AI insights with Claude 3.5 Sonnet...
+        <p
+          style={{
+            color: flowCoreColours.textSecondary,
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          }}
+        >
+          generating ai insights with claude 3.5 sonnet...
         </p>
       </div>
     )
@@ -548,8 +626,15 @@ function AIBriefPanel({
   if (!brief) {
     return (
       <div className="text-center py-12">
-        <p className="mb-4" style={{ color: flowCoreColours.textSecondary }}>
-          No AI brief available yet
+        <p
+          className="mb-4"
+          style={{
+            color: flowCoreColours.textSecondary,
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          }}
+        >
+          no ai brief available yet
         </p>
         <button
           onClick={() => onRegenerate()}
@@ -557,9 +642,12 @@ function AIBriefPanel({
           style={{
             backgroundColor: flowCoreColours.slateCyan,
             color: flowCoreColours.matteBlack,
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+            textTransform: 'lowercase',
           }}
         >
-          Generate Brief
+          generate brief
         </button>
       </div>
     )
@@ -570,10 +658,25 @@ function AIBriefPanel({
       {/* Brief Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-xl font-semibold mb-2" style={{ color: flowCoreColours.textPrimary }}>
+          <h3
+            className="text-xl font-semibold mb-2"
+            style={{
+              color: flowCoreColours.textPrimary,
+              textTransform: 'lowercase',
+              fontFamily:
+                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+            }}
+          >
             {brief.title}
           </h3>
-          <p className="text-sm mb-4" style={{ color: flowCoreColours.textSecondary }}>
+          <p
+            className="text-sm mb-4"
+            style={{
+              color: flowCoreColours.textSecondary,
+              fontFamily:
+                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+            }}
+          >
             {brief.summary}
           </p>
         </div>
@@ -621,6 +724,8 @@ function AIBriefPanel({
                 style={{
                   color: flowCoreColours.textSecondary,
                   borderLeft: `2px solid ${flowCoreColours.successGreen}`,
+                  fontFamily:
+                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
                 }}
               >
                 {highlight}
@@ -650,6 +755,8 @@ function AIBriefPanel({
                 style={{
                   color: flowCoreColours.textSecondary,
                   borderLeft: `2px solid ${flowCoreColours.warningOrange}`,
+                  fontFamily:
+                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
                 }}
               >
                 {risk}
@@ -679,6 +786,8 @@ function AIBriefPanel({
                 style={{
                   color: flowCoreColours.textSecondary,
                   borderLeft: `2px solid ${flowCoreColours.slateCyan}`,
+                  fontFamily:
+                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
                 }}
               >
                 {rec}

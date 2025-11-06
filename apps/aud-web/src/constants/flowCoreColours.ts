@@ -24,6 +24,9 @@ export const flowCoreColours = {
 
   // Background colours
   cardBackground: '#1A1C1E',
+  darkGrey: '#1A1C1E',
+  hoverGrey: '#252729',
+  borderGrey: '#2A2C2E',
   borderSubtle: 'rgba(255, 255, 255, 0.08)',
   borderFocus: 'rgba(58, 169, 190, 0.4)',
 } as const
