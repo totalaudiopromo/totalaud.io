@@ -12,10 +12,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
       "@/*": ["apps/aud-web/src/*"],
       "@/types/*": ["apps/aud-web/src/types/*"],
+      "@aud-web/*": ["apps/aud-web/src/*"],
       "@total-audio/core-supabase": ["./packages/core/supabase/src"],
       "@total-audio/core-ai-provider": ["./packages/core/ai-provider/src"],
       "@total-audio/core-skills-engine": ["./packages/core/skills-engine/src"],
