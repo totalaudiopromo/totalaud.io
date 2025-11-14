@@ -13,4 +13,3 @@ const iconMap: Record<string, LucideIcon> = {
 export function getAssetKindIcon(kind: string): LucideIcon {
   return iconMap[kind] ?? Paperclip
 }
-

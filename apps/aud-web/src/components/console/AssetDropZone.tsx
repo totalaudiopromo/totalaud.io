@@ -104,7 +104,7 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
 
       log.debug('Assets loaded', { count: data.assets.length })
     } catch (error) {
-    log.error('Failed to load assets', { error })
+      log.error('Failed to load assets', { error })
       toast.error('Failed to load assets')
     } finally {
       setIsLoadingAssets(false)

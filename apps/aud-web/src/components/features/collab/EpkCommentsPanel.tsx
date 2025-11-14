@@ -166,9 +166,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
               backgroundColor: flowCoreColours.hoverGrey,
             }}
           >
-            {comment.user.fullName?.[0] ||
-              comment.user.email?.[0]?.toUpperCase() ||
-              '?'}
+            {comment.user.fullName?.[0] || comment.user.email?.[0]?.toUpperCase() || '?'}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -201,7 +199,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.color = flowCoreColours.textSecondary
                       e.currentTarget.style.backgroundColor = 'transparent'
                     }}
-                  aria-label="reply"
+                    aria-label="reply"
                   >
                     reply
                   </button>
@@ -497,7 +495,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
             {/* Comments list */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {loading && (
-              <div className="text-center text-grey-400 text-sm py-8">loading comments...</div>
+                <div className="text-center text-grey-400 text-sm py-8">loading comments...</div>
               )}
 
               {!loading && comments.length === 0 && (

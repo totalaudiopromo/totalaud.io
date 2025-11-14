@@ -125,10 +125,10 @@ export function useEpkCollaborators({
         payload.profiles.map((profile) => [profile.id, profile.artist_name ?? undefined])
       )
 
-    const origin =
-      typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL
+      const origin =
+        typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL
 
-    const accepted =
+      const accepted =
         payload.collaborators?.map<EpkCollaborator & { status: 'accepted' }>((collab) => ({
           id: collab.id,
           userId: collab.user_id,
@@ -149,12 +149,12 @@ export function useEpkCollaborators({
           status: 'pending',
           userId: undefined,
           email: invite.invited_email,
-        displayName: invite.invited_email,
+          displayName: invite.invited_email,
           invitedBy: undefined,
           invitedAt: invite.created_at,
           acceptedAt: null,
           expiresAt: invite.expires_at,
-        inviteUrl: origin ? `${origin}/invite/${invite.invite_token}` : invite.invite_token,
+          inviteUrl: origin ? `${origin}/invite/${invite.invite_token}` : invite.invite_token,
         })) ?? []
 
       const merged =
@@ -330,4 +330,3 @@ export function useEpkCollaborators({
     removeCollaborator,
   }
 }
-

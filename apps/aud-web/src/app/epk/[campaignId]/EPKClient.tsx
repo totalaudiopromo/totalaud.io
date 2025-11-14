@@ -175,9 +175,7 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                 {campaignData.genre && <span>{campaignData.genre}</span>}
                 {campaignData.genre && campaignData.releaseDate && <span>•</span>}
                 {campaignData.releaseDate && (
-                  <span>
-                    {new Date(campaignData.releaseDate).toLocaleDateString('en-GB')}
-                  </span>
+                  <span>{new Date(campaignData.releaseDate).toLocaleDateString('en-GB')}</span>
                 )}
               </div>
             )}

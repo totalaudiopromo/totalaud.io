@@ -221,7 +221,9 @@ export function useFlowStateTelemetry(
         if (eventBuffer.current.length > 0) {
           flushEvents()
         } else if (offlineQueueRef.current.length > 0) {
-          eventBuffer.current.push(...offlineQueueRef.current.splice(0, offlineQueueRef.current.length))
+          eventBuffer.current.push(
+            ...offlineQueueRef.current.splice(0, offlineQueueRef.current.length)
+          )
           flushEvents()
         }
       }

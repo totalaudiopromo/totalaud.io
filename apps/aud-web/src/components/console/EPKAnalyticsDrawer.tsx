@@ -202,7 +202,11 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {[
                           { label: 'total views', value: data.totals.views, Icon: Eye },
-                          { label: 'total downloads', value: data.totals.downloads, Icon: Download },
+                          {
+                            label: 'total downloads',
+                            value: data.totals.downloads,
+                            Icon: Download,
+                          },
                           { label: 'total shares', value: data.totals.shares, Icon: Share2 },
                         ].map((metric) => (
                           <div
@@ -220,13 +224,13 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                                 color: flowCoreColours.textTertiary,
                                 textTransform: 'lowercase',
                                 marginBottom: '8px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
                               }}
                             >
-                                <metric.Icon size={16} strokeWidth={1.6} />
-                                {metric.label}
+                              <metric.Icon size={16} strokeWidth={1.6} />
+                              {metric.label}
                             </div>
                             <div
                               style={{
@@ -298,15 +302,33 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                                   alignItems: 'center',
                                 }}
                               >
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                  }}
+                                >
                                   <Eye size={14} strokeWidth={1.6} />
                                   {group.views}
                                 </span>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                  }}
+                                >
                                   <Download size={14} strokeWidth={1.6} />
                                   {group.downloads}
                                 </span>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                  }}
+                                >
                                   <Share2 size={14} strokeWidth={1.6} />
                                   {group.shares}
                                 </span>

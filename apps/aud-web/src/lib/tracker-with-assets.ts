@@ -201,7 +201,7 @@ export class TrackerWithAssets {
 
       return null
     } catch (error) {
-    log.warn('Failed to fetch asset details', { error })
+      log.warn('Failed to fetch asset details', { error })
       return null
     }
   }

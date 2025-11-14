@@ -346,7 +346,9 @@ export function CommandPalette({
                       <div
                         style={{
                           flexShrink: 0,
-                          color: isSelected ? flowCoreColours.iceCyan : flowCoreColours.textSecondary,
+                          color: isSelected
+                            ? flowCoreColours.iceCyan
+                            : flowCoreColours.textSecondary,
                           display: 'flex',
                           alignItems: 'center',
                         }}

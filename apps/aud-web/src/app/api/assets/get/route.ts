@@ -55,7 +55,10 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       log.error('Failed to fetch asset', { error, assetId })
-      return NextResponse.json({ error: 'Asset fetch failed', details: error.message }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Asset fetch failed', details: error.message },
+        { status: 500 }
+      )
     }
 
     if (!asset) {

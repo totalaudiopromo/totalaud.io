@@ -53,9 +53,7 @@ export function PitchAgentNode({
   const [goal, setGoal] = useState(initialGoal ?? '')
   const [context, setContext] = useState('')
   const [selectedAttachments, setSelectedAttachments] = useState<AssetAttachment[]>([])
-  const [targetContact, setTargetContact] = useState<{ name: string; email?: string } | null>(
-    null
-  )
+  const [targetContact, setTargetContact] = useState<{ name: string; email?: string } | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [generatedPitch, setGeneratedPitch] = useState<string | null>(null)

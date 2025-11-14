@@ -23,10 +23,7 @@ interface InviteRow {
   created_at: string
 }
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { epkId: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const supabase = createRouteSupabaseClient()
     const {
@@ -57,9 +54,7 @@ export async function GET(
 
     const collaboratorRows = (collaboratorRowsData ?? []) as CollaboratorRow[]
 
-    const currentCollaborator = collaboratorRows.find(
-      (row) => row.user_id === session.user.id
-    )
+    const currentCollaborator = collaboratorRows.find((row) => row.user_id === session.user.id)
 
     if (!currentCollaborator) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -91,7 +86,7 @@ export async function GET(
         .eq('campaign_id', campaignId)
         .is('accepted_at', null)
 
-    if (inviteError) {
+      if (inviteError) {
         log.warn('Failed to load pending invites', { error: inviteError })
       } else if (inviteRowsData) {
         invites = inviteRowsData as InviteRow[]
@@ -113,10 +108,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { epkId: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const body = (await request.json()) as { email?: string; role?: string; message?: string }
     const { email, role = 'viewer' } = body
@@ -189,4 +181,3 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

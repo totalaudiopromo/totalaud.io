@@ -70,11 +70,7 @@ export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignDat
       .eq('is_public', true)
       .is('deleted_at', null)
       .order('created_at', { ascending: true }),
-    supabase
-      .from('campaigns')
-      .select('title, release_date')
-      .eq('id', campaignId)
-      .maybeSingle(),
+    supabase.from('campaigns').select('title, release_date').eq('id', campaignId).maybeSingle(),
   ])
 
   if (contextError) {
@@ -154,4 +150,3 @@ export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignDat
     pressMaterials: documentAssets,
   }
 }
-

@@ -206,10 +206,7 @@ export default function DemoConsolePage() {
 
         {/* FlowCanvas */}
         <div style={{ flex: 1, minHeight: 0 }}>
-          <FlowCanvas
-            campaignId="demo-campaign"
-            userId="demo-user"
-          />
+          <FlowCanvas campaignId="demo-campaign" userId="demo-user" />
         </div>
       </div>
     )

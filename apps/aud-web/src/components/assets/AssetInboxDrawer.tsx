@@ -48,9 +48,7 @@ export function AssetInboxDrawer({
   const attachableNodeKind: Exclude<NodeKind, 'intel'> | null =
     currentNodeKind && currentNodeKind !== 'intel' ? currentNodeKind : null
 
-  const { assets: allAssets, loading } = useAssets(
-    campaignId ? { campaignId } : {}
-  )
+  const { assets: allAssets, loading } = useAssets(campaignId ? { campaignId } : {})
   const {
     searchQuery,
     setSearchQuery,
@@ -354,7 +352,7 @@ export function AssetInboxDrawer({
                     fontSize: '24px',
                     cursor: 'pointer',
                     padding: '4px',
-                  transition: 'color var(--flowcore-motion-fast) ease',
+                    transition: 'color var(--flowcore-motion-fast) ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = flowCoreColours.iceCyan
@@ -504,9 +502,9 @@ export function AssetInboxDrawer({
                       marginBottom: '4px',
                     }}
                   >
-                  {searchQuery || selectedKind ? 'no assets found' : 'no assets uploaded yet'}
+                    {searchQuery || selectedKind ? 'no assets found' : 'no assets uploaded yet'}
                   </div>
-                {(searchQuery || selectedKind) && (
+                  {(searchQuery || selectedKind) && (
                     <button
                       onClick={() => {
                         setSearchQuery('')

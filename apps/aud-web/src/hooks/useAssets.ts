@@ -103,8 +103,8 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
         typeof data.total === 'number'
           ? data.total
           : typeof data.count === 'number'
-          ? data.count
-          : data.assets?.length || 0
+            ? data.count
+            : data.assets?.length || 0
       )
       setError(null)
 

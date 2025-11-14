@@ -298,23 +298,23 @@ export function SignalAnalytics({
                 signal analytics
               </h2>
 
-            <button
-              onClick={onClose}
-              aria-label="Close analytics panel"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: flowCoreColours.textSecondary,
-                fontSize: '24px',
-                cursor: 'pointer',
-                padding: '4px',
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <X size={18} strokeWidth={1.6} />
-            </button>
+              <button
+                onClick={onClose}
+                aria-label="Close analytics panel"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: flowCoreColours.textSecondary,
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <X size={18} strokeWidth={1.6} />
+              </button>
             </div>
 
             {/* Content */}

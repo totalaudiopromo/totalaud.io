@@ -111,10 +111,7 @@ export async function POST(req: NextRequest) {
 
     if (!apiKey) {
       log.error('ANTHROPIC_API_KEY not configured')
-      return NextResponse.json(
-        { error: 'Anthropic API key not configured' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Anthropic API key not configured' }, { status: 500 })
     }
 
     const anthropic = new Anthropic({ apiKey })

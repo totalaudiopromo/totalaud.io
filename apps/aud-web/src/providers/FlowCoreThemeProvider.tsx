@@ -55,10 +55,11 @@ export function FlowCoreThemeProvider({ children, bodyClassName }: FlowCoreTheme
             var(--flowcore-colour-accent) 26%,
             var(--flowcore-colour-bg) 74%
           );
-          --flowcore-font-body: '${flowCore.font.body}', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-            sans-serif;
-          --flowcore-font-mono: '${flowCore.font.mono}', ui-monospace, SFMono-Regular, Menlo, Monaco,
-            Consolas, 'Liberation Mono', 'Courier New', monospace;
+          --flowcore-font-body:
+            '${flowCore.font.body}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          --flowcore-font-mono:
+            '${flowCore.font.mono}', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+            'Liberation Mono', 'Courier New', monospace;
           --flowcore-motion-fast: ${flowCore.motion.fast}ms;
           --flowcore-motion-normal: ${flowCore.motion.normal}ms;
           --flowcore-motion-slow: ${flowCore.motion.slow}ms;
@@ -95,4 +96,3 @@ export function FlowCoreThemeProvider({ children, bodyClassName }: FlowCoreTheme
     </body>
   )
 }
-

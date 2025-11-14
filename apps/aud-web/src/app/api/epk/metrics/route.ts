@@ -59,10 +59,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch analytics data
-    const {
-      data: analytics,
-      error: analyticsError,
-    } = await supabase
+    const { data: analytics, error: analyticsError } = await supabase
       .from('epk_analytics')
       .select('*')
       .eq('epk_id', epkId)
@@ -102,8 +99,7 @@ export async function GET(req: NextRequest) {
 
     // Convert to array and sort by total activity
     const groupedArray = Object.values(groupedMap).sort(
-      (a, b) =>
-        b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares)
+      (a, b) => b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares)
     )
 
     // Calculate totals

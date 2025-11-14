@@ -145,7 +145,7 @@ export function OrchestrationProvider({ children, campaignId }: OrchestrationPro
           description: `${newLog.contact_name || 'Contact'} — ${newLog.asset_ids.length} asset${newLog.asset_ids.length === 1 ? '' : 's'}`,
         })
       } catch (error) {
-      log.error('Failed to log outreach', { error })
+        log.error('Failed to log outreach', { error })
         toast.error('failed to log outreach')
         throw error
       }

@@ -418,9 +418,9 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                         textAlign: 'center',
                       }}
                     >
-                  <div style={{ marginBottom: '12px', color: flowCoreColours.slateCyan }}>
-                    <FileText size={44} strokeWidth={1.4} />
-                  </div>
+                      <div style={{ marginBottom: '12px', color: flowCoreColours.slateCyan }}>
+                        <FileText size={44} strokeWidth={1.4} />
+                      </div>
                       <div
                         style={{
                           fontSize: '13px',

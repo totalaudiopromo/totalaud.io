@@ -290,9 +290,18 @@ export function AssetAttachModal({
                   </div>
                 )}
                 {allowedKinds && allowedKinds.length > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}
+                  >
                     <Paperclip size={16} strokeWidth={1.5} />
-                    <span style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span
+                      style={{
+                        display: 'flex',
+                        gap: '6px',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}
+                    >
                       allowed types:
                       {allowedKinds.map((kind) => {
                         const Icon = getKindIcon(kind)
@@ -343,9 +352,9 @@ export function AssetAttachModal({
                     textAlign: 'center',
                   }}
                 >
-                <div style={{ marginBottom: '16px', color: flowCoreColours.slateCyan }}>
-                  <Archive size={48} strokeWidth={1.4} />
-                </div>
+                  <div style={{ marginBottom: '16px', color: flowCoreColours.slateCyan }}>
+                    <Archive size={48} strokeWidth={1.4} />
+                  </div>
                   <div
                     style={{
                       fontSize: '16px',
@@ -458,12 +467,12 @@ export function AssetAttachModal({
                             color: flowCoreColours.textTertiary,
                           }}
                         >
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          {(() => {
-                            const Icon = getKindIcon(asset.kind)
-                            return <Icon size={14} strokeWidth={1.5} />
-                          })()}
-                        </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            {(() => {
+                              const Icon = getKindIcon(asset.kind)
+                              return <Icon size={14} strokeWidth={1.5} />
+                            })()}
+                          </span>
                           <span>{asset.kind}</span>
                           {asset.byte_size && (
                             <>

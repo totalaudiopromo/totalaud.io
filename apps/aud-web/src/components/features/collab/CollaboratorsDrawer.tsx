@@ -119,7 +119,9 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
   /**
    * Handle remove collaborator
    */
-  const handleRemove = async (collaborator: EpkCollaborator & { status: 'accepted' | 'pending' }) => {
+  const handleRemove = async (
+    collaborator: EpkCollaborator & { status: 'accepted' | 'pending' }
+  ) => {
     const confirmed = window.confirm('Remove this collaborator?')
     if (!confirmed) return
 
@@ -182,7 +184,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
               }}
             >
               <div>
-        <h2 className="text-lg font-semibold text-white">collaborators</h2>
+                <h2 className="text-lg font-semibold text-white">collaborators</h2>
                 <p className="text-xs text-grey-400">
                   Your role: <span style={{ color: flowCoreColours.slateCyan }}>{userRole}</span>
                 </p>
@@ -463,7 +465,10 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                           {/* Name/Email */}
                           <div>
                             <p className="text-sm font-medium text-white">
-                              {collab.displayName ?? collab.email ?? collab.userId ?? 'collaborator'}
+                              {collab.displayName ??
+                                collab.email ??
+                                collab.userId ??
+                                'collaborator'}
                             </p>
                             {collab.displayName && collab.email && (
                               <p className="text-xs text-grey-400">{collab.email}</p>

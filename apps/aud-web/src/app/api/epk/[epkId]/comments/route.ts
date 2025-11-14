@@ -14,10 +14,7 @@ interface CommentRow {
   updated_at?: string | null
 }
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { epkId: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const supabase = createRouteSupabaseClient()
     const {
@@ -105,10 +102,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { epkId: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const body = (await request.json()) as { body?: string; parentId?: string | null }
     if (!body.body || !body.body.trim()) {
@@ -173,4 +167,3 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

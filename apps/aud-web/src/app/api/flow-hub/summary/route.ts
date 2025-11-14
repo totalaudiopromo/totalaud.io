@@ -46,10 +46,7 @@ export async function GET(req: NextRequest) {
     const periodStart = new Date(now)
     periodStart.setDate(periodStart.getDate() - period)
 
-    const {
-      data: cachedSummary,
-      error: cacheError,
-    } = await supabase
+    const { data: cachedSummary, error: cacheError } = await supabase
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -73,10 +70,7 @@ export async function GET(req: NextRequest) {
 
       if (refreshError) {
         log.error('Failed to refresh Flow Hub summary', refreshError)
-        return NextResponse.json(
-          { error: 'Failed to refresh analytics summary' },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
       }
 
       const refreshed = await supabase

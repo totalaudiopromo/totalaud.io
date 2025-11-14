@@ -142,4 +142,3 @@ export interface TelemetryEvent<T extends TelemetryEventType = TelemetryEventTyp
   duration_ms?: number
   created_at?: string
 }
-

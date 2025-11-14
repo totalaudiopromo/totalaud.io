@@ -231,7 +231,7 @@ export function useInsightEngine(options: UseInsightEngineOptions = {}): UseInsi
 
       log.debug('Insights generated', { count: limitedInsights.length, summary })
     } catch (error) {
-    log.error('Failed to analyze patterns', { error })
+      log.error('Failed to analyze patterns', { error })
     } finally {
       setIsAnalyzing(false)
     }
