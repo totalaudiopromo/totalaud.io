@@ -7,10 +7,25 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabaseClient'
 import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('EPKMetricsAPI')
+
+type EpkAnalyticsEventType = 'view' | 'download' | 'share'
+
+interface EpkAnalyticsRow {
+  id: string
+  user_id: string
+  epk_id: string
+  event_type: EpkAnalyticsEventType
+  region: string | null
+  device: string | null
+  timestamp: string
+  downloads?: number | null
+  shares?: number | null
+  views?: number | null
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -26,25 +41,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'groupBy must be region or device' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createRouteSupabaseClient()
 
-    // Check authentication
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    }
+
+    if (!session) {
       log.warn('Unauthenticated request to EPK metrics')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
     // Fetch analytics data
-    const { data: analytics, error: analyticsError } = await supabase
+    const {
+      data: analytics,
+      error: analyticsError,
+    } = await supabase
       .from('epk_analytics')
       .select('*')
       .eq('epk_id', epkId)
-      .eq('user_id', user.id)
+      .eq('user_id', session.user.id)
       .order('timestamp', { ascending: false })
       .limit(1000) // Limit to recent 1000 events
 
@@ -53,48 +75,54 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
     }
 
+    const analyticsRows = (analytics ?? []) as EpkAnalyticsRow[]
+
     // Group analytics by specified dimension
-    const grouped = analytics?.reduce(
-      (acc, event) => {
-        const key = groupBy === 'region' ? event.region : event.device
-        if (!key) return acc
+    const groupedMap = analyticsRows.reduce<
+      Record<string, { name: string; views: number; downloads: number; shares: number }>
+    >((acc, event) => {
+      const key = groupBy === 'region' ? event.region : event.device
+      if (!key) return acc
 
-        if (!acc[key]) {
-          acc[key] = {
-            name: key,
-            views: 0,
-            downloads: 0,
-            shares: 0,
-          }
+      if (!acc[key]) {
+        acc[key] = {
+          name: key,
+          views: 0,
+          downloads: 0,
+          shares: 0,
         }
+      }
 
-        if (event.event_type === 'view') acc[key].views += 1
-        if (event.event_type === 'download') acc[key].downloads += 1
-        if (event.event_type === 'share') acc[key].shares += 1
+      if (event.event_type === 'view') acc[key].views += 1
+      if (event.event_type === 'download') acc[key].downloads += 1
+      if (event.event_type === 'share') acc[key].shares += 1
 
-        return acc
-      },
-      {} as Record<string, { name: string; views: number; downloads: number; shares: number }>
-    )
+      return acc
+    }, {})
 
     // Convert to array and sort by total activity
-    const groupedArray = Object.values(grouped || {}).sort(
-      (a, b) => b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares)
+    const groupedArray = Object.values(groupedMap).sort(
+      (a, b) =>
+        b.views + b.downloads + b.shares - (a.views + a.downloads + a.shares)
     )
 
     // Calculate totals
-    const totals = {
-      views: analytics?.filter((e) => e.event_type === 'view').length || 0,
-      downloads: analytics?.filter((e) => e.event_type === 'download').length || 0,
-      shares: analytics?.filter((e) => e.event_type === 'share').length || 0,
-    }
+    const totals = analyticsRows.reduce(
+      (acc, event) => {
+        if (event.event_type === 'view') acc.views += 1
+        if (event.event_type === 'download') acc.downloads += 1
+        if (event.event_type === 'share') acc.shares += 1
+        return acc
+      },
+      { views: 0, downloads: 0, shares: 0 }
+    )
 
     const response = {
       epkId,
       groupBy,
       totals,
       grouped: groupedArray,
-      eventCount: analytics?.length || 0,
+      eventCount: analyticsRows.length,
     }
 
     log.info('EPK metrics fetched', {

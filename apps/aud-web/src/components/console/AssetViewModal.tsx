@@ -27,6 +27,8 @@ import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { toast } from 'sonner'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
+import { Clipboard, FileText, Lock, X } from 'lucide-react'
 
 const log = logger.scope('AssetViewModal')
 
@@ -75,7 +77,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
         setAsset(data.asset)
         log.info('Asset fetched for view', { assetId })
       } catch (error) {
-        log.error('Failed to fetch asset', error)
+        log.error('Failed to fetch asset', { error })
         toast.error('failed to load asset')
         setAsset(null)
       } finally {
@@ -177,22 +179,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
   /**
    * Get kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    switch (kind) {
-      case 'audio':
-        return '🎵'
-      case 'image':
-        return '🖼️'
-      case 'document':
-        return '📄'
-      case 'archive':
-        return '📦'
-      case 'link':
-        return '🔗'
-      default:
-        return '📎'
-    }
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   if (!open) return null
 
@@ -274,7 +261,20 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                         gap: '8px',
                       }}
                     >
-                      <span>{getKindIcon(asset.kind)}</span>
+                      {(() => {
+                        const Icon = getKindIcon(asset.kind)
+                        return (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              color: flowCoreColours.slateCyan,
+                            }}
+                          >
+                            <Icon size={18} strokeWidth={1.5} />
+                          </span>
+                        )
+                      })()}
                       <span>{asset.title}</span>
                       {!asset.is_public && (
                         <span
@@ -284,9 +284,13 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                             backgroundColor: 'rgba(255, 165, 0, 0.1)',
                             color: flowCoreColours.warningOrange,
                             borderRadius: '4px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          🔒 private
+                          <Lock size={12} strokeWidth={1.5} />
+                          private
                         </span>
                       )}
                     </div>
@@ -297,7 +301,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       }}
                     >
                       {asset.mime_type}
-                      {asset.size_bytes && ` • ${formatSize(asset.size_bytes)}`}
+                      {asset.byte_size && ` • ${formatSize(asset.byte_size)}`}
                     </div>
                   </>
                 ) : (
@@ -324,7 +328,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                   fontSize: '24px',
                   cursor: 'pointer',
                   padding: '4px',
-                  transition: 'color 0.12s ease',
+                  transition: 'color var(--flowcore-motion-fast) ease',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = flowCoreColours.iceCyan
@@ -333,7 +337,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                   e.currentTarget.style.color = flowCoreColours.textSecondary
                 }}
               >
-                ×
+                <X size={18} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -414,7 +418,9 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                         textAlign: 'center',
                       }}
                     >
-                      <div style={{ fontSize: '48px', marginBottom: '12px' }}>📄</div>
+                  <div style={{ marginBottom: '12px', color: flowCoreColours.slateCyan }}>
+                    <FileText size={44} strokeWidth={1.4} />
+                  </div>
                       <div
                         style={{
                           fontSize: '13px',
@@ -438,7 +444,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                           fontWeight: 600,
                           textDecoration: 'none',
                           textTransform: 'lowercase',
-                          transition: 'background-color 0.12s ease',
+                          transition: 'background-color var(--flowcore-motion-fast) ease',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -479,11 +485,11 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       <div style={{ color: flowCoreColours.textTertiary }}>kind:</div>
                       <div style={{ color: flowCoreColours.textSecondary }}>{asset.kind}</div>
 
-                      {asset.size_bytes && (
+                      {asset.byte_size && (
                         <>
                           <div style={{ color: flowCoreColours.textTertiary }}>size:</div>
                           <div style={{ color: flowCoreColours.textSecondary }}>
-                            {formatSize(asset.size_bytes)}
+                            {formatSize(asset.byte_size)}
                           </div>
                         </>
                       )}
@@ -529,7 +535,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       fontWeight: 500,
                       cursor: 'pointer',
                       textTransform: 'lowercase',
-                      transition: 'all 0.12s ease',
+                      transition: 'all var(--flowcore-motion-fast) ease',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -540,7 +546,17 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                       e.currentTarget.style.color = flowCoreColours.textSecondary
                     }}
                   >
-                    📋 copy asset link
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Clipboard size={16} strokeWidth={1.6} />
+                      copy asset link
+                    </span>
                   </button>
                 </>
               )}
@@ -568,7 +584,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                     color: flowCoreColours.textSecondary,
                     fontSize: '13px',
                     cursor: 'pointer',
-                    transition: 'all 0.12s ease',
+                    transition: 'all var(--flowcore-motion-fast) ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -602,7 +618,7 @@ export function AssetViewModal({ assetId, open, onClose, gallery }: AssetViewMod
                     color: flowCoreColours.textSecondary,
                     fontSize: '13px',
                     cursor: 'pointer',
-                    transition: 'all 0.12s ease',
+                    transition: 'all var(--flowcore-motion-fast) ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = flowCoreColours.slateCyan

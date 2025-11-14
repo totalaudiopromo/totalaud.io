@@ -7,8 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabaseClient'
 import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('DashboardSummaryAPI')
 
@@ -26,17 +26,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'period must be 7 or 30' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createRouteSupabaseClient()
 
-    // Check authentication
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    }
+
+    if (!session) {
       log.warn('Unauthenticated request to dashboard summary')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
     // Calculate period boundaries
@@ -49,7 +53,7 @@ export async function GET(req: NextRequest) {
       .from('campaign_dashboard_metrics')
       .select('*')
       .eq('campaign_id', campaignId)
-      .eq('user_id', user.id)
+      .eq('user_id', session.user.id)
       .gte('period_start', periodStart.toISOString())
       .lte('period_end', periodEnd.toISOString())
       .order('created_at', { ascending: false })
@@ -84,7 +88,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(summary, { status: 200 })
   } catch (error) {
-    log.error('Unexpected error in dashboard summary API', error)
+    log.error('Unexpected error in dashboard summary API', { error })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -22,7 +22,7 @@ export interface AssetAttachment {
   kind: AssetKind
   url: string
   is_public: boolean
-  size_bytes?: number
+  byte_size?: number
   mime_type?: string
   created_at?: string
 }

@@ -19,6 +19,7 @@ import { logger } from '@/lib/logger'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import type { NodeKind } from '@/types/console'
 import { getNodeDefs, isNodeKind } from '@/features/flow/node-registry'
+import type { LucideIcon } from 'lucide-react'
 
 const log = logger.scope('CommandPalette')
 
@@ -27,7 +28,7 @@ export interface Command {
   label: string
   description: string
   keywords: string[]
-  icon?: string
+  icon?: LucideIcon
   hotkey?: string
   action: () => void
 }
@@ -327,7 +328,7 @@ export function CommandPalette({
                       borderRadius: '6px',
                       cursor: 'pointer',
                       textAlign: 'left',
-                      transition: 'all 0.12s ease',
+                      transition: 'all var(--flowcore-motion-fast) ease',
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected) {
@@ -344,11 +345,13 @@ export function CommandPalette({
                     {command.icon && (
                       <div
                         style={{
-                          fontSize: '24px',
                           flexShrink: 0,
+                          color: isSelected ? flowCoreColours.iceCyan : flowCoreColours.textSecondary,
+                          display: 'flex',
+                          alignItems: 'center',
                         }}
                       >
-                        {command.icon}
+                        <command.icon size={22} strokeWidth={1.6} />
                       </div>
                     )}
 

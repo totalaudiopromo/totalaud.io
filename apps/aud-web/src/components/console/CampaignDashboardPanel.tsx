@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { useCampaignDashboard } from '@aud-web/hooks/useCampaignDashboard'
 import { logger } from '@/lib/logger'
+import { BarChart2, Download, Eye, Share2, Zap } from 'lucide-react'
 
 const log = logger.scope('CampaignDashboardPanel')
 
@@ -91,7 +92,7 @@ export function CampaignDashboardPanel({
                 fontWeight: 500,
                 cursor: 'pointer',
                 textTransform: 'lowercase',
-                transition: 'all 0.12s ease',
+                transition: 'all var(--flowcore-motion-fast) ease',
               }}
             >
               {p}d
@@ -148,14 +149,14 @@ export function CampaignDashboardPanel({
             >
               {/* Metrics cards */}
               {[
-                { label: 'views', value: data.metrics.views, icon: '👁' },
-                { label: 'downloads', value: data.metrics.downloads, icon: '⬇' },
-                { label: 'shares', value: data.metrics.shares, icon: '↗' },
+                { label: 'views', value: data.metrics.views, icon: Eye },
+                { label: 'downloads', value: data.metrics.downloads, icon: Download },
+                { label: 'shares', value: data.metrics.shares, icon: Share2 },
                 {
                   label: 'engagement',
                   value: data.metrics.engagementScore.toFixed(1),
                   suffix: '%',
-                  icon: '⚡',
+                  icon: Zap,
                 },
               ].map((metric) => (
                 <div
@@ -173,9 +174,13 @@ export function CampaignDashboardPanel({
                       color: flowCoreColours.textTertiary,
                       textTransform: 'lowercase',
                       marginBottom: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
                     }}
                   >
-                    {metric.icon} {metric.label}
+                    <metric.icon size={14} strokeWidth={1.6} />
+                    {metric.label}
                   </div>
                   <div
                     style={{
@@ -210,7 +215,7 @@ export function CampaignDashboardPanel({
                     fontWeight: 600,
                     cursor: 'pointer',
                     textTransform: 'lowercase',
-                    transition: 'all 0.12s ease',
+                    transition: 'all var(--flowcore-motion-fast) ease',
                     marginTop: '8px',
                   }}
                   onMouseEnter={(e) => {
@@ -220,7 +225,10 @@ export function CampaignDashboardPanel({
                     e.currentTarget.style.background = flowCoreColours.slateCyan
                   }}
                 >
-                  📊 open epk analytics
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <BarChart2 size={16} strokeWidth={1.6} />
+                    open epk analytics
+                  </span>
                 </button>
               )}
 

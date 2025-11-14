@@ -9,14 +9,12 @@
  * - Aggregate telemetry data for SignalAnalytics component
  * - Generate sparkline data for visual charts (last 7 days by default)
  * - Calculate key metrics: saves, shares, agent runs, time in flow
- * - Support demo mode for unauthenticated users (mock data)
+ * - Requires authenticated session (no demo fallbacks)
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
-
-export const runtime = 'edge'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('TelemetrySummaryAPI')
 
@@ -67,46 +65,6 @@ function parsePeriod(period?: string): number {
   return 7
 }
 
-/**
- * Generate demo data for unauthenticated users
- */
-function generateDemoData(days: number): SummaryResponse {
-  const now = new Date()
-  const summary: TelemetrySummary = {
-    totalSaves: 0,
-    totalShares: 0,
-    totalAgentRuns: 0,
-    totalTimeInFlowMs: 0,
-    avgSaveIntervalMs: null,
-    lastActivityAt: null,
-  }
-
-  const sparklines: Sparklines = {
-    saves: [],
-    agentRuns: [],
-    timeInFlow: [],
-  }
-
-  // Generate empty sparkline data points
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    date.setHours(0, 0, 0, 0)
-
-    sparklines.saves.push({ timestamp: date.toISOString(), value: 0 })
-    sparklines.agentRuns.push({ timestamp: date.toISOString(), value: 0 })
-    sparklines.timeInFlow.push({ timestamp: date.toISOString(), value: 0 })
-  }
-
-  return {
-    success: true,
-    summary,
-    sparklines,
-    duration: 0,
-    message: 'Demo mode: showing empty analytics',
-  }
-}
-
 export async function GET(request: NextRequest) {
   const startTime = Date.now()
 
@@ -116,19 +74,22 @@ export async function GET(request: NextRequest) {
     const periodParam = searchParams.get('period') || '7d'
     const days = parsePeriod(periodParam)
 
-    // Get Supabase client
-    const supabase = createClient()
-
-    // Get authenticated user (optional - allow demo mode)
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    // If no user, return demo data
-    if (!user) {
-      log.debug('Demo mode: returning empty analytics', { days })
-      return NextResponse.json(generateDemoData(days))
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
 
     // Calculate date range
     const endDate = new Date()
@@ -139,7 +100,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('flow_telemetry')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .gte('created_at', startDate.toISOString())
       .lte('created_at', endDate.toISOString())
       .order('created_at', { ascending: true })

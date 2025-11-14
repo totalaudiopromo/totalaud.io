@@ -17,6 +17,7 @@ import { logger } from '@/lib/logger'
 import { AssetViewModal } from '@/components/console/AssetViewModal'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
+import { FileText, Music2 } from 'lucide-react'
 
 const log = logger.scope('EPKClient')
 
@@ -25,15 +26,15 @@ interface EPKClientProps {
     id: string
     name: string
     artistName: string
-    tagline: string
-    description: string
-    releaseDate: string
-    genre: string
+    tagline?: string | null
+    description?: string | null
+    releaseDate?: string | null
+    genre?: string | null
     contact: {
-      email: string
-      website: string
+      email?: string | null
+      website?: string | null
     }
-    featuredTrack: AssetAttachment
+    featuredTrack?: AssetAttachment | null
     gallery: AssetAttachment[]
     pressMaterials: AssetAttachment[]
   }
@@ -150,91 +151,105 @@ export function EPKClient({ campaignData }: EPKClientProps) {
             >
               {campaignData.artistName}
             </div>
-            <div
-              style={{
-                fontSize: '16px',
-                color: flowCoreColours.textTertiary,
-                marginBottom: '32px',
-                fontStyle: 'italic',
-              }}
-            >
-              {campaignData.tagline}
-            </div>
-            <div
-              style={{
-                display: 'inline-flex',
-                gap: '16px',
-                fontSize: '14px',
-                color: flowCoreColours.textSecondary,
-              }}
-            >
-              <span>{campaignData.genre}</span>
-              <span>•</span>
-              <span>{new Date(campaignData.releaseDate).toLocaleDateString('en-GB')}</span>
-            </div>
+            {campaignData.tagline && (
+              <div
+                style={{
+                  fontSize: '16px',
+                  color: flowCoreColours.textTertiary,
+                  marginBottom: '32px',
+                  fontStyle: 'italic',
+                }}
+              >
+                {campaignData.tagline}
+              </div>
+            )}
+            {(campaignData.genre || campaignData.releaseDate) && (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  gap: '16px',
+                  fontSize: '14px',
+                  color: flowCoreColours.textSecondary,
+                }}
+              >
+                {campaignData.genre && <span>{campaignData.genre}</span>}
+                {campaignData.genre && campaignData.releaseDate && <span>•</span>}
+                {campaignData.releaseDate && (
+                  <span>
+                    {new Date(campaignData.releaseDate).toLocaleDateString('en-GB')}
+                  </span>
+                )}
+              </div>
+            )}
           </motion.div>
         </section>
 
         {/* Featured Track Section */}
-        <section
-          style={{
-            padding: '40px 24px',
-            maxWidth: '800px',
-            margin: '0 auto',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: prefersReducedMotion ? 0 : 0.4,
-              delay: prefersReducedMotion ? 0 : 0.1,
+        {campaignData.featuredTrack && (
+          <section
+            style={{
+              padding: '40px 24px',
+              maxWidth: '800px',
+              margin: '0 auto',
             }}
           >
-            <h2
-              style={{
-                fontSize: '20px',
-                fontWeight: 600,
-                color: flowCoreColours.slateCyan,
-                marginBottom: '24px',
-                textTransform: 'lowercase',
-                letterSpacing: '0.05em',
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: prefersReducedMotion ? 0 : 0.4,
+                delay: prefersReducedMotion ? 0 : 0.1,
               }}
             >
-              featured track
-            </h2>
-            <div
-              style={{
-                backgroundColor: flowCoreColours.darkGrey,
-                border: `1px solid ${flowCoreColours.borderGrey}`,
-                borderRadius: '12px',
-                padding: '32px',
-              }}
-            >
+              <h2
+                style={{
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  color: flowCoreColours.slateCyan,
+                  marginBottom: '24px',
+                  textTransform: 'lowercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                featured track
+              </h2>
               <div
                 style={{
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: flowCoreColours.textPrimary,
-                  marginBottom: '16px',
+                  backgroundColor: flowCoreColours.darkGrey,
+                  border: `1px solid ${flowCoreColours.borderGrey}`,
+                  borderRadius: '12px',
+                  padding: '32px',
                 }}
               >
-                🎵 {campaignData.featuredTrack.title}
+                <div
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    color: flowCoreColours.textPrimary,
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Music2 size={20} strokeWidth={1.6} />
+                  {campaignData.featuredTrack.title}
+                </div>
+                <audio
+                  controls
+                  style={{
+                    width: '100%',
+                    backgroundColor: flowCoreColours.matteBlack,
+                    borderRadius: '8px',
+                  }}
+                  src={campaignData.featuredTrack.url}
+                >
+                  Your browser does not support audio playback.
+                </audio>
               </div>
-              <audio
-                controls
-                style={{
-                  width: '100%',
-                  backgroundColor: flowCoreColours.matteBlack,
-                  borderRadius: '8px',
-                }}
-                src={campaignData.featuredTrack.url}
-              >
-                Your browser does not support audio playback.
-              </audio>
-            </div>
-          </motion.div>
-        </section>
+            </motion.div>
+          </section>
+        )}
 
         {/* About Section */}
         <section
@@ -271,7 +286,7 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                 color: flowCoreColours.textSecondary,
               }}
             >
-              {campaignData.description}
+              {campaignData.description ?? 'press notes coming soon.'}
             </div>
           </motion.div>
         </section>
@@ -337,7 +352,7 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                   >
                     <img
                       src={image.url}
-                      alt={image.title}
+                      alt={image.title || 'press asset'}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -357,7 +372,7 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                         fontWeight: 500,
                       }}
                     >
-                      {image.title}
+                      {image.title || 'press asset'}
                     </div>
                   </motion.button>
                 ))}
@@ -428,18 +443,22 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                           fontWeight: 500,
                           color: flowCoreColours.textPrimary,
                           marginBottom: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
                         }}
                       >
-                        📄 {doc.title}
+                        <FileText size={16} strokeWidth={1.4} />
+                        {doc.title || 'press document'}
                       </div>
-                      {doc.size_bytes && (
+                      {doc.byte_size && (
                         <div
                           style={{
                             fontSize: '12px',
                             color: flowCoreColours.textTertiary,
                           }}
                         >
-                          {formatSize(doc.size_bytes)}
+                          {formatSize(doc.byte_size)}
                         </div>
                       )}
                     </div>
@@ -455,7 +474,7 @@ export function EPKClient({ campaignData }: EPKClientProps) {
                         fontWeight: 600,
                         cursor: 'pointer',
                         textTransform: 'lowercase',
-                        transition: 'background-color 0.12s ease',
+                        transition: 'background-color var(--flowcore-motion-fast) ease',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -474,82 +493,88 @@ export function EPKClient({ campaignData }: EPKClientProps) {
         )}
 
         {/* Contact Section */}
-        <section
-          style={{
-            padding: '60px 24px 80px',
-            maxWidth: '800px',
-            margin: '0 auto',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: prefersReducedMotion ? 0 : 0.4,
-              delay: prefersReducedMotion ? 0 : 0.5,
-            }}
+        {(campaignData.contact?.email || campaignData.contact?.website) && (
+          <section
             style={{
-              textAlign: 'center',
+              padding: '60px 24px 80px',
+              maxWidth: '800px',
+              margin: '0 auto',
             }}
           >
-            <h2
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: prefersReducedMotion ? 0 : 0.4,
+                delay: prefersReducedMotion ? 0 : 0.5,
+              }}
               style={{
-                fontSize: '20px',
-                fontWeight: 600,
-                color: flowCoreColours.slateCyan,
-                marginBottom: '24px',
-                textTransform: 'lowercase',
-                letterSpacing: '0.05em',
+                textAlign: 'center',
               }}
             >
-              contact
-            </h2>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                fontSize: '14px',
-                color: flowCoreColours.textSecondary,
-              }}
-            >
-              <a
-                href={`mailto:${campaignData.contact.email}`}
+              <h2
                 style={{
-                  color: flowCoreColours.iceCyan,
-                  textDecoration: 'none',
-                  transition: 'color 0.12s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = flowCoreColours.slateCyan
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = flowCoreColours.iceCyan
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  color: flowCoreColours.slateCyan,
+                  marginBottom: '24px',
+                  textTransform: 'lowercase',
+                  letterSpacing: '0.05em',
                 }}
               >
-                {campaignData.contact.email}
-              </a>
-              <a
-                href={campaignData.contact.website}
-                target="_blank"
-                rel="noopener noreferrer"
+                contact
+              </h2>
+              <div
                 style={{
-                  color: flowCoreColours.iceCyan,
-                  textDecoration: 'none',
-                  transition: 'color 0.12s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = flowCoreColours.slateCyan
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = flowCoreColours.iceCyan
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  fontSize: '14px',
+                  color: flowCoreColours.textSecondary,
                 }}
               >
-                {campaignData.contact.website}
-              </a>
-            </div>
-          </motion.div>
-        </section>
+                {campaignData.contact?.email && (
+                  <a
+                    href={`mailto:${campaignData.contact.email}`}
+                    style={{
+                      color: flowCoreColours.iceCyan,
+                      textDecoration: 'none',
+                      transition: 'color var(--flowcore-motion-fast) ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = flowCoreColours.slateCyan
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = flowCoreColours.iceCyan
+                    }}
+                  >
+                    {campaignData.contact.email}
+                  </a>
+                )}
+                {campaignData.contact?.website && (
+                  <a
+                    href={campaignData.contact.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: flowCoreColours.iceCyan,
+                      textDecoration: 'none',
+                      transition: 'color var(--flowcore-motion-fast) ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = flowCoreColours.slateCyan
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = flowCoreColours.iceCyan
+                    }}
+                  >
+                    {campaignData.contact.website}
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          </section>
+        )}
 
         {/* Footer */}
         <footer

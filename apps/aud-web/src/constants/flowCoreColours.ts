@@ -8,27 +8,35 @@
 
 export const flowCoreColours = {
   // Core brand colours
-  matteBlack: '#0F1113',
-  slateCyan: '#3AA9BE',
-  iceCyan: '#5CCFE6',
+  matteBlack: 'var(--flowcore-colour-bg)',
+  slateCyan: 'var(--flowcore-colour-accent)',
+  iceCyan: 'var(--flowcore-colour-accent-hover)',
 
   // Text colours
-  textPrimary: '#E5E7EB',
-  textSecondary: '#9CA3AF',
-  textTertiary: '#6B7280',
+  textPrimary: 'var(--flowcore-colour-fg)',
+  textSecondary: 'rgba(236, 239, 241, 0.72)',
+  textTertiary: 'rgba(236, 239, 241, 0.48)',
 
   // Semantic colours
-  warningOrange: '#FB923C',
-  errorRed: '#E57373',
-  successGreen: '#4ADE80',
+  warningOrange: 'var(--flowcore-colour-warning)',
+  errorRed: 'var(--flowcore-colour-error)',
+  successGreen: 'var(--flowcore-colour-success)',
 
   // Background colours
-  cardBackground: '#1A1C1E',
-  darkGrey: '#1A1C1E',
-  hoverGrey: '#252729',
-  borderGrey: '#2A2C2E',
-  borderSubtle: 'rgba(255, 255, 255, 0.08)',
-  borderFocus: 'rgba(58, 169, 190, 0.4)',
+  cardBackground: 'color-mix(in srgb, var(--flowcore-colour-bg) 92%, #ffffff 8%)',
+  darkGrey: 'color-mix(in srgb, var(--flowcore-colour-bg) 86%, #ffffff 14%)',
+  hoverGrey: 'color-mix(in srgb, var(--flowcore-colour-bg) 80%, #ffffff 20%)',
+  borderGrey: 'var(--flowcore-colour-border)',
+  borderSubtle: 'rgba(236, 239, 241, 0.12)',
+  borderFocus: 'rgba(58, 169, 190, 0.45)',
+  overlayStrong: 'var(--flowcore-overlay-strong)',
+  overlaySoft: 'var(--flowcore-overlay-soft)',
+  overlayAccent: 'var(--flowcore-overlay-accent)',
+  purple: '#a855f7',
+  amber: '#f59e0b',
+  grey: 'rgba(236, 239, 241, 0.5)',
+  slateCyanHover: 'var(--flowcore-colour-accent-hover)',
+  hoverDarkGrey: 'color-mix(in srgb, var(--flowcore-colour-bg) 70%, #ffffff 30%)',
 } as const
 
 export type FlowCoreColour = keyof typeof flowCoreColours

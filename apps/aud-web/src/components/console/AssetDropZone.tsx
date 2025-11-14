@@ -104,7 +104,7 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
 
       log.debug('Assets loaded', { count: data.assets.length })
     } catch (error) {
-      log.error('Failed to load assets', error)
+    log.error('Failed to load assets', { error })
       toast.error('Failed to load assets')
     } finally {
       setIsLoadingAssets(false)
@@ -218,7 +218,7 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
         toast.success('Asset deleted')
         await fetchAssets()
       } catch (error) {
-        log.error('Failed to delete asset', error)
+        log.error('Failed to delete asset', { error })
         toast.error('Failed to delete asset')
       }
     },
@@ -248,7 +248,7 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
           border: `2px dashed ${isDragging ? flowCoreColours.slateCyan : flowCoreColours.borderGrey}`,
           borderRadius: '8px',
           cursor: isUploading ? 'not-allowed' : 'pointer',
-          transition: 'all 0.24s ease',
+          transition: 'all var(--flowcore-motion-normal) ease',
           textAlign: 'center',
         }}
       >
@@ -450,13 +450,13 @@ export function AssetDropZone({ campaignId }: AssetDropZoneProps) {
                       color: flowCoreColours.textSecondary,
                       fontSize: '12px',
                       cursor: 'pointer',
-                      transition: 'all 0.24s ease',
+                      transition: 'all var(--flowcore-motion-normal) ease',
                       marginLeft: '12px',
                       textTransform: 'lowercase',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#E57373'
-                      e.currentTarget.style.color = '#E57373'
+                      e.currentTarget.style.borderColor = flowCoreColours.errorRed
+                      e.currentTarget.style.color = flowCoreColours.errorRed
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = flowCoreColours.borderGrey

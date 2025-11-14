@@ -62,7 +62,7 @@ function isTelemetryEnabled(): boolean {
     const setting = localStorage.getItem('analytics_enabled')
     return setting !== 'false'
   } catch (error) {
-    log.warn('Could not access localStorage for analytics setting', error)
+    log.warn('Could not access localStorage for analytics setting', { error })
     return true
   }
 }
@@ -77,7 +77,7 @@ function getDismissedInsights(): Set<string> {
     const dismissed = localStorage.getItem('dismissed_insights')
     return dismissed ? new Set(JSON.parse(dismissed)) : new Set()
   } catch (error) {
-    log.warn('Could not load dismissed insights', error)
+    log.warn('Could not load dismissed insights', { error })
     return new Set()
   }
 }
@@ -91,7 +91,7 @@ function saveDismissedInsights(dismissed: Set<string>): void {
   try {
     localStorage.setItem('dismissed_insights', JSON.stringify(Array.from(dismissed)))
   } catch (error) {
-    log.warn('Could not save dismissed insights', error)
+    log.warn('Could not save dismissed insights', { error })
   }
 }
 
@@ -231,7 +231,7 @@ export function useInsightEngine(options: UseInsightEngineOptions = {}): UseInsi
 
       log.debug('Insights generated', { count: limitedInsights.length, summary })
     } catch (error) {
-      log.error('Failed to analyze patterns', error)
+    log.error('Failed to analyze patterns', { error })
     } finally {
       setIsAnalyzing(false)
     }

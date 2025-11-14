@@ -9,30 +9,15 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
-import { cookies } from 'next/headers'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('CampaignsLastUsedAPI')
 
 export async function POST(req: NextRequest) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const supabase = createRouteSupabaseClient()
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      log.error('Supabase env vars missing')
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
-    }
-
-    const cookieStore = await cookies()
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: 'supabase-auth-token',
-      },
-    })
-
-    // Get authenticated user
     const {
       data: { session },
       error: authError,
@@ -107,7 +92,7 @@ export async function POST(req: NextRequest) {
       created: true,
     })
   } catch (error) {
-    log.error('Campaigns last-used API error', error)
+    log.error('Campaigns last-used API error', { error })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

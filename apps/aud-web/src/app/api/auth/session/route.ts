@@ -9,64 +9,42 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
-import { cookies } from 'next/headers'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('AuthSessionAPI')
 
 export async function GET() {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      log.warn('Supabase env vars missing, returning unauthenticated')
-      return NextResponse.json({
-        authenticated: false,
-        userId: null,
-      })
-    }
-
-    const cookieStore = await cookies()
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: 'supabase-auth-token',
-      },
-    })
-
-    // Get session from Supabase
+    const supabase = createRouteSupabaseClient()
     const {
       data: { session },
       error,
     } = await supabase.auth.getSession()
 
     if (error) {
-      log.error('Failed to get session', error)
-      return NextResponse.json({
-        authenticated: false,
-        userId: null,
-      })
+      log.error('Failed to retrieve session', error)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
 
-    if (session?.user) {
-      log.info('User authenticated', { userId: session.user.id })
-      return NextResponse.json({
-        authenticated: true,
-        userId: session.user.id,
-      })
+    if (!session) {
+      log.info('Unauthenticated session request')
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
     return NextResponse.json({
-      authenticated: false,
-      userId: null,
+      authenticated: true,
+      user: {
+        id: session.user.id,
+        email: session.user.email,
+        metadata: session.user.user_metadata,
+      },
+      expiresAt: session.expires_at,
     })
   } catch (error) {
     log.error('Session check failed', error)
     return NextResponse.json(
       {
-        authenticated: false,
-        userId: null,
         error: 'Session check failed',
       },
       { status: 500 }

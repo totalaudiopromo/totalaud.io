@@ -31,13 +31,13 @@ create table if not exists public.artist_assets (
   title text,
   description text,
   tags text[] default '{}',
-  path text,                -- storage path for files (null for kind='link')
-  url text,                 -- external link when kind='link'
+  path text,
+  url text,
   mime_type text,
   byte_size bigint check (byte_size >= 0),
   is_public boolean default false,
   public_share_id uuid unique default gen_random_uuid(),
-  checksum text,            -- sha256 for de-dup
+  checksum text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -89,31 +89,26 @@ create trigger set_artist_assets_updated
 
 alter table public.artist_assets enable row level security;
 
--- Users can view their own non-deleted assets
 create policy "owner can select"
   on public.artist_assets
   for select
   using (auth.uid() = user_id and deleted_at is null);
 
--- Users can insert their own assets
 create policy "owner can insert"
   on public.artist_assets
   for insert
   with check (auth.uid() = user_id);
 
--- Users can update their own assets
 create policy "owner can update"
   on public.artist_assets
   for update
   using (auth.uid() = user_id);
 
--- Users can delete their own assets (soft delete via deleted_at)
 create policy "owner can delete"
   on public.artist_assets
   for delete
   using (auth.uid() = user_id);
 
--- Public read for assets with is_public=true via public_share_id
 create policy "public read by share id"
   on public.artist_assets
   for select
@@ -123,10 +118,6 @@ create policy "public read by share id"
 -- STORAGE POLICIES
 -- ========================================
 
--- NOTE: Keep bucket private; use signed URLs for private files
--- Path format: assets/{user_id}/...
-
--- Users can upload to their own folder
 create policy "owners can upload to assets"
   on storage.objects
   for insert
@@ -136,7 +127,6 @@ create policy "owners can upload to assets"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- Users can read from their own folder
 create policy "owners can read their assets"
   on storage.objects
   for select
@@ -146,7 +136,6 @@ create policy "owners can read their assets"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- Users can update their own files
 create policy "owners can update their assets"
   on storage.objects
   for update
@@ -160,7 +149,6 @@ create policy "owners can update their assets"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- Users can delete their own files
 create policy "owners can delete their assets"
   on storage.objects
   for delete
@@ -182,3 +170,4 @@ comment on column public.artist_assets.checksum is 'SHA-256 hash for de-duplicat
 comment on column public.artist_assets.is_public is 'Whether asset is publicly accessible via public_share_id';
 comment on column public.artist_assets.public_share_id is 'Unique ID for public sharing (EPK, etc.)';
 comment on column public.artist_assets.deleted_at is 'Soft delete timestamp';
+

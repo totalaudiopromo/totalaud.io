@@ -16,6 +16,8 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AssetAttachModal } from '@/components/console/AssetAttachModal'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
+import { FileText, Lock } from 'lucide-react'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { toast } from 'sonner'
@@ -36,7 +38,7 @@ export default function PitchDemoPage() {
   const handleAttach = useCallback((attachments: AssetAttachment[]) => {
     setSelectedAttachments(attachments)
     log.info('Assets attached to pitch', { count: attachments.length })
-    toast.success(`${attachments.length} asset${attachments.length === 1 ? '' : 's'} attached 🎧`)
+    toast.success(`${attachments.length} asset${attachments.length === 1 ? '' : 's'} attached`)
   }, [])
 
   /**
@@ -76,7 +78,7 @@ export default function PitchDemoPage() {
         filteredPrivateCount: data.metadata.filteredPrivateCount,
       })
 
-      toast.success('pitch ready — assets attached 🎧')
+      toast.success('pitch ready — assets attached')
 
       // Log warning if private assets were filtered
       if (data.metadata.filteredPrivateCount > 0) {
@@ -85,7 +87,7 @@ export default function PitchDemoPage() {
         )
       }
     } catch (error) {
-      log.error('Pitch generation failed', error)
+      log.error('Pitch generation failed', { error })
       toast.error(error instanceof Error ? error.message : 'pitch generation failed')
     } finally {
       setLoading(false)
@@ -95,17 +97,7 @@ export default function PitchDemoPage() {
   /**
    * Get kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    const icons: Record<string, string> = {
-      audio: '🎵',
-      image: '🖼️',
-      document: '📄',
-      archive: '📦',
-      link: '🔗',
-      other: '📁',
-    }
-    return icons[kind] || '📁'
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   return (
     <div
@@ -211,7 +203,7 @@ export default function PitchDemoPage() {
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
-                  transition: 'border-color 0.24s ease',
+                  transition: 'border-color var(--flowcore-motion-normal) ease',
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -253,7 +245,7 @@ export default function PitchDemoPage() {
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
-                  transition: 'border-color 0.24s ease',
+                  transition: 'border-color var(--flowcore-motion-normal) ease',
                   resize: 'vertical',
                 }}
                 onFocus={(e) => {
@@ -297,7 +289,7 @@ export default function PitchDemoPage() {
                     fontWeight: 600,
                     cursor: 'pointer',
                     textTransform: 'lowercase',
-                    transition: 'all 0.24s ease',
+                    transition: 'all var(--flowcore-motion-normal) ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -346,9 +338,23 @@ export default function PitchDemoPage() {
                         fontSize: '12px',
                       }}
                     >
-                      <span>{getKindIcon(asset.kind)}</span>
                       <span
                         style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          color: flowCoreColours.slateCyan,
+                        }}
+                      >
+                        {(() => {
+                          const Icon = getKindIcon(asset.kind)
+                          return <Icon size={14} strokeWidth={1.4} />
+                        })()}
+                      </span>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
                           flex: 1,
                           color: flowCoreColours.textPrimary,
                           overflow: 'hidden',
@@ -356,16 +362,24 @@ export default function PitchDemoPage() {
                           whiteSpace: 'nowrap',
                         }}
                       >
+                        {(() => {
+                          const Icon = getKindIcon(asset.kind)
+                          return <Icon size={14} strokeWidth={1.4} />
+                        })()}
                         {asset.title}
                       </span>
                       {!asset.is_public && (
                         <span
                           style={{
                             fontSize: '11px',
-                            color: flowCoreColours.textTertiary,
+                            color: flowCoreColours.warningOrange,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
                           }}
                         >
-                          🔒 private
+                          <Lock size={12} strokeWidth={1.5} />
+                          private
                         </span>
                       )}
                     </div>
@@ -393,7 +407,7 @@ export default function PitchDemoPage() {
                 fontWeight: 600,
                 cursor: loading || !goal.trim() ? 'not-allowed' : 'pointer',
                 textTransform: 'lowercase',
-                transition: 'all 0.24s ease',
+                transition: 'all var(--flowcore-motion-normal) ease',
                 opacity: loading || !goal.trim() ? 0.5 : 1,
               }}
               onMouseEnter={(e) => {
@@ -443,7 +457,15 @@ export default function PitchDemoPage() {
                   color: flowCoreColours.textTertiary,
                 }}
               >
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>📝</div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <FileText size={64} strokeWidth={1.5} />
+                </div>
                 <div style={{ fontSize: '14px' }}>enter a goal and generate your pitch</div>
               </div>
             )}

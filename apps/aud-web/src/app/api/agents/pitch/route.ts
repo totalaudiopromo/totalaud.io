@@ -17,10 +17,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
-import { cookies } from 'next/headers'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('PitchAgentAPI')
 
@@ -30,7 +29,7 @@ const assetAttachmentSchema = z.object({
   kind: z.enum(['audio', 'image', 'document', 'archive', 'link', 'other']),
   url: z.string(),
   is_public: z.boolean(),
-  size_bytes: z.number().optional(),
+  byte_size: z.number().optional(),
   mime_type: z.string().optional(),
   created_at: z.string().optional(),
 })
@@ -60,29 +59,22 @@ export async function POST(req: NextRequest) {
       campaignId,
     })
 
-    // Check authentication
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    let isAuthenticated = false
-    let authenticatedUserId: string | null = null
+    const supabase = createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (supabaseUrl && supabaseAnonKey) {
-      const cookieStore = await cookies()
-      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          storageKey: 'supabase-auth-token',
-        },
-      })
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.user) {
-        isAuthenticated = true
-        authenticatedUserId = session.user.id
-      }
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const authenticatedUserId = session.user.id
 
     // Filter out private attachments for external shares
     const publicAttachments = attachments?.filter((a) => a.is_public) || []
@@ -103,7 +95,7 @@ export async function POST(req: NextRequest) {
         ? `\n\nAttached Assets (${publicAttachments.length}):\n${publicAttachments
             .map(
               (a) =>
-                `- ${a.title} (${a.kind})${a.size_bytes ? ` - ${formatBytes(a.size_bytes)}` : ''}`
+                `- ${a.title} (${a.kind})${a.byte_size ? ` - ${formatBytes(a.byte_size)}` : ''}`
             )
             .join('\n')}`
         : ''
@@ -114,15 +106,8 @@ export async function POST(req: NextRequest) {
     const pitch = await generatePitch(goal, fullContext, publicAttachments)
 
     // Write outreach log to database if authenticated
-    if (isAuthenticated && authenticatedUserId && campaignId && contactName) {
+    if (campaignId && contactName) {
       try {
-        const cookieStore = await cookies()
-        const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
-          auth: {
-            storageKey: 'supabase-auth-token',
-          },
-        })
-
         // Create outreach log entry
         const { error: insertError } = await supabase.from('campaign_outreach_logs').insert({
           user_id: authenticatedUserId,
@@ -136,7 +121,7 @@ export async function POST(req: NextRequest) {
         })
 
         if (insertError) {
-          log.warn('Failed to write outreach log', insertError)
+          log.warn('Failed to write outreach log', { error: insertError })
         } else {
           log.info('Outreach log saved', {
             campaignId,
@@ -145,7 +130,7 @@ export async function POST(req: NextRequest) {
           })
         }
       } catch (dbError) {
-        log.warn('Failed to save outreach log to database', dbError)
+        log.warn('Failed to save outreach log to database', { error: dbError })
         // Don't fail the request if DB write fails
       }
     }
@@ -165,7 +150,6 @@ export async function POST(req: NextRequest) {
         success: true,
         pitch,
         attachments: publicAttachments,
-        demo: !isAuthenticated,
         metadata: {
           goal,
           attachmentCount: publicAttachments.length,

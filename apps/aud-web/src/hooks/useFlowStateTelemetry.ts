@@ -27,24 +27,10 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { logger } from '@/lib/logger'
+import type { TelemetryEvent, TelemetryEventType, TelemetryMetadata } from '@/types/telemetry'
 
 const log = logger.scope('FlowStateTelemetry')
-
-export type TelemetryEventType =
-  | 'save'
-  | 'share'
-  | 'agentRun'
-  | 'tabChange'
-  | 'idle'
-  | 'sessionStart'
-  | 'sessionEnd'
-
-export interface TelemetryEvent {
-  event_type: TelemetryEventType
-  duration_ms?: number
-  metadata?: Record<string, any>
-  created_at?: string // ISO timestamp
-}
+const TELEMETRY_STORAGE_KEY = 'flowTelemetry'
 
 interface UseFlowStateTelemetryOptions {
   campaignId?: string
@@ -64,20 +50,15 @@ interface UseFlowStateTelemetryReturn {
   pendingEventCount: number
 }
 
-/**
- * Check if telemetry is enabled via localStorage
- * Default: true (opt-out, not opt-in)
- */
 function isTelemetryEnabled(): boolean {
   if (typeof window === 'undefined') return false
 
   try {
-    const setting = localStorage.getItem('analytics_enabled')
-    // Default to true if not explicitly set to false
-    return setting !== 'false'
+    const setting = localStorage.getItem(TELEMETRY_STORAGE_KEY)
+    return setting === 'true'
   } catch (error) {
-    log.warn('Could not access localStorage for analytics setting', error)
-    return true // Default to enabled
+    log.warn('Could not access localStorage for telemetry setting', { error })
+    return false
   }
 }
 
@@ -94,6 +75,7 @@ export function useFlowStateTelemetry(
   const flushTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isMountedRef = useRef(true)
   const isEnabledRef = useRef(isTelemetryEnabled() && enabled)
+  const offlineQueueRef = useRef<TelemetryEvent[]>([])
 
   /**
    * Flush buffered events to API
@@ -131,11 +113,11 @@ export function useFlowStateTelemetry(
         count: eventsToSend.length,
       })
     } catch (error) {
-      log.warn('Failed to submit telemetry batch', error)
+      log.warn('Failed to submit telemetry batch', { error })
 
-      // Re-add events to buffer on failure (up to max size)
       if (isMountedRef.current) {
-        eventBuffer.current = [...eventsToSend, ...eventBuffer.current].slice(0, maxBatchSize)
+        const remaining = [...eventsToSend, ...eventBuffer.current].slice(0, maxBatchSize)
+        eventBuffer.current = remaining
       }
     }
   }, [campaignId, maxBatchSize])
@@ -145,20 +127,31 @@ export function useFlowStateTelemetry(
    * Adds to buffer and schedules flush if needed
    */
   const trackEvent = useCallback(
-    (
-      eventType: TelemetryEventType,
-      options?: { duration?: number; metadata?: Record<string, any> }
+    <T extends TelemetryEventType>(
+      eventType: T,
+      options?: { duration?: number; metadata?: TelemetryMetadata<T> }
     ) => {
       if (!isEnabledRef.current) {
         log.debug('Telemetry disabled, skipping event', { eventType })
         return
       }
 
-      const event: TelemetryEvent = {
+      const event: TelemetryEvent<T> = {
         event_type: eventType,
         duration_ms: options?.duration,
         metadata: options?.metadata,
         created_at: new Date().toISOString(),
+      }
+
+      const isOnline = typeof navigator === 'undefined' ? true : navigator.onLine
+
+      if (!isOnline) {
+        offlineQueueRef.current.push(event)
+        log.debug('Telemetry queued offline', {
+          eventType,
+          offlineCount: offlineQueueRef.current.length,
+        })
+        return
       }
 
       eventBuffer.current.push(event)
@@ -188,6 +181,7 @@ export function useFlowStateTelemetry(
    */
   const clearBuffer = useCallback(() => {
     eventBuffer.current = []
+    offlineQueueRef.current = []
     log.debug('Event buffer cleared')
   }, [])
 
@@ -205,6 +199,17 @@ export function useFlowStateTelemetry(
       log.debug('Telemetry initialized', { campaignId, batchIntervalMs })
     }
 
+    const handleOnline = () => {
+      if (offlineQueueRef.current.length === 0) return
+      eventBuffer.current.push(...offlineQueueRef.current.splice(0, offlineQueueRef.current.length))
+      log.debug('Flushing offline telemetry events', { count: eventBuffer.current.length })
+      void flushEvents()
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', handleOnline)
+    }
+
     return () => {
       isMountedRef.current = false
 
@@ -215,12 +220,19 @@ export function useFlowStateTelemetry(
         // Flush immediately on unmount
         if (eventBuffer.current.length > 0) {
           flushEvents()
+        } else if (offlineQueueRef.current.length > 0) {
+          eventBuffer.current.push(...offlineQueueRef.current.splice(0, offlineQueueRef.current.length))
+          flushEvents()
         }
       }
 
       // Clear flush timer
       if (flushTimerRef.current) {
         clearTimeout(flushTimerRef.current)
+      }
+
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('online', handleOnline)
       }
     }
   }, [campaignId, enabled, batchIntervalMs, trackEvent, flushEvents])

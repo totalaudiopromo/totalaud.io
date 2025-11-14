@@ -15,10 +15,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { OutreachLog } from '@/lib/tracker-with-assets'
-import { cookies } from 'next/headers'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('TrackerAgentAPI')
 
@@ -36,43 +35,39 @@ export async function POST(req: NextRequest) {
 
     log.info('Tracker request received', { sessionId, userId, campaignId })
 
-    // Check authentication
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    let isAuthenticated = false
+    const supabase = createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (supabaseUrl && supabaseAnonKey) {
-      const cookieStore = await cookies()
-      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          storageKey: 'supabase-auth-token',
-        },
-      })
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.user) {
-        isAuthenticated = true
-      }
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
 
-    // Fetch outreach logs
-    const logs = await fetchOutreachLogs(
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    if (userId && userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    if (!campaignId) {
+      return NextResponse.json({ error: 'campaignId is required' }, { status: 400 })
+    }
+
+    const logs = await fetchOutreachLogs(supabase, {
       sessionId,
-      userId,
+      userId: session.user.id,
       campaignId,
-      isAuthenticated,
-      supabaseUrl,
-      supabaseAnonKey
-    )
+    })
 
     return NextResponse.json(
       {
         success: true,
         logs,
-        demo: !isAuthenticated,
         metadata: {
           sessionId,
           logCount: logs.length,
@@ -111,29 +106,13 @@ export async function POST(req: NextRequest) {
  * Queries campaign_outreach_logs table and joins with artist_assets
  */
 async function fetchOutreachLogs(
-  sessionId: string,
-  userId?: string,
-  campaignId?: string,
-  isAuthenticated?: boolean,
-  supabaseUrl?: string,
-  supabaseAnonKey?: string
+  supabase: ReturnType<typeof createRouteSupabaseClient>,
+  params: { sessionId: string; userId: string; campaignId: string }
 ): Promise<OutreachLog[]> {
-  log.debug('Fetching outreach logs', { sessionId, userId, campaignId, isAuthenticated })
-
-  // If not authenticated or missing env vars, return empty array (not mock data)
-  if (!isAuthenticated || !supabaseUrl || !supabaseAnonKey || !userId || !campaignId) {
-    log.info('Unauthenticated or missing params, returning empty logs')
-    return []
-  }
+  const { sessionId, userId, campaignId } = params
+  log.debug('Fetching outreach logs', { sessionId, userId, campaignId })
 
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: 'supabase-auth-token',
-      },
-    })
-
     // Query outreach logs for this campaign
     const { data: logs, error } = await supabase
       .from('campaign_outreach_logs')
@@ -144,7 +123,7 @@ async function fetchOutreachLogs(
       .limit(50)
 
     if (error) {
-      log.warn('Failed to fetch outreach logs from database', error)
+      log.warn('Failed to fetch outreach logs from database', { error })
       return []
     }
 
@@ -170,7 +149,7 @@ async function fetchOutreachLogs(
 
     return mappedLogs
   } catch (error) {
-    log.warn('Failed to fetch outreach logs', error)
+    log.warn('Failed to fetch outreach logs', { error })
     return []
   }
 }

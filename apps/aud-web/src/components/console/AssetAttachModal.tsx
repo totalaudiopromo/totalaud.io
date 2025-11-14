@@ -22,11 +22,14 @@
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAssets } from '@/hooks/useAssets'
+import type { Asset } from '@/hooks/useAssets'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { toast } from 'sonner'
+import { Archive, Lock, LockOpen, Paperclip, X } from 'lucide-react'
 import { playAssetAttachSound, playAssetDetachSound, playAssetErrorSound } from '@/lib/asset-sounds'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
 
 const log = logger.scope('AssetAttachModal')
 
@@ -74,17 +77,7 @@ export function AssetAttachModal({
   /**
    * Get kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    const icons: Record<string, string> = {
-      audio: '🎵',
-      image: '🖼️',
-      document: '📄',
-      archive: '📦',
-      link: '🔗',
-      other: '📁',
-    }
-    return icons[kind] || '📁'
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   /**
    * Toggle asset selection
@@ -127,27 +120,43 @@ export function AssetAttachModal({
     [localSelectedIds, maxAttachments, publicOnly]
   )
 
+  const assetToAttachment = useCallback((asset: Asset): AssetAttachment | null => {
+    if (!asset.url) {
+      return null
+    }
+
+    return {
+      id: asset.id,
+      title: asset.title,
+      kind: asset.kind,
+      url: asset.url,
+      is_public: asset.is_public,
+      byte_size: asset.byte_size ?? undefined,
+      mime_type: asset.mime_type ?? undefined,
+      created_at: asset.created_at ?? undefined,
+    }
+  }, [])
+
   /**
    * Handle attach button click
    */
   const handleAttachClick = useCallback(() => {
-    const selectedAssets = filteredAssets
+    const selectedAttachments = filteredAssets
       .filter((asset) => localSelectedIds.has(asset.id))
-      .map((asset) => ({
-        id: asset.id,
-        title: asset.title,
-        kind: asset.kind,
-        url: asset.url,
-        is_public: asset.is_public,
-        size_bytes: asset.size_bytes,
-        mime_type: asset.mime_type,
-        created_at: asset.created_at,
-      }))
+      .map(assetToAttachment)
+      .filter((attachment): attachment is AssetAttachment => attachment !== null)
 
-    log.info('Assets attached', { count: selectedAssets.length })
-    onAttach(selectedAssets)
+    if (selectedAttachments.length === 0) {
+      toast.error('no valid assets selected', {
+        description: 'choose assets with active URLs',
+      })
+      return
+    }
+
+    log.info('Assets attached', { count: selectedAttachments.length })
+    onAttach(selectedAttachments)
     onClose()
-  }, [filteredAssets, localSelectedIds, onAttach, onClose])
+  }, [assetToAttachment, filteredAssets, localSelectedIds, onAttach, onClose])
 
   /**
    * Handle cancel
@@ -257,7 +266,7 @@ export function AssetAttachModal({
                   lineHeight: 1,
                 }}
               >
-                ×
+                <X size={20} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -274,10 +283,22 @@ export function AssetAttachModal({
                   color: flowCoreColours.textSecondary,
                 }}
               >
-                {publicOnly && <div>🔓 showing public assets only</div>}
+                {publicOnly && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <LockOpen size={16} strokeWidth={1.5} />
+                    <span>showing public assets only</span>
+                  </div>
+                )}
                 {allowedKinds && allowedKinds.length > 0 && (
-                  <div>
-                    📎 allowed types: {allowedKinds.map((kind) => getKindIcon(kind)).join(' ')}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <Paperclip size={16} strokeWidth={1.5} />
+                    <span style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      allowed types:
+                      {allowedKinds.map((kind) => {
+                        const Icon = getKindIcon(kind)
+                        return <Icon key={kind} size={14} strokeWidth={1.5} />
+                      })}
+                    </span>
                   </div>
                 )}
               </div>
@@ -322,7 +343,9 @@ export function AssetAttachModal({
                     textAlign: 'center',
                   }}
                 >
-                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>📦</div>
+                <div style={{ marginBottom: '16px', color: flowCoreColours.slateCyan }}>
+                  <Archive size={48} strokeWidth={1.4} />
+                </div>
                   <div
                     style={{
                       fontSize: '16px',
@@ -376,7 +399,7 @@ export function AssetAttachModal({
                           }`,
                           borderRadius: '6px',
                           cursor: 'pointer',
-                          transition: 'all 0.24s ease',
+                          transition: 'all var(--flowcore-motion-normal) ease',
                         }}
                       >
                         {/* Checkbox */}
@@ -435,18 +458,33 @@ export function AssetAttachModal({
                             color: flowCoreColours.textTertiary,
                           }}
                         >
-                          <span>{getKindIcon(asset.kind)}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {(() => {
+                            const Icon = getKindIcon(asset.kind)
+                            return <Icon size={14} strokeWidth={1.5} />
+                          })()}
+                        </span>
                           <span>{asset.kind}</span>
-                          {asset.size_bytes && (
+                          {asset.byte_size && (
                             <>
                               <span>·</span>
-                              <span>{formatSize(asset.size_bytes)}</span>
+                              <span>{formatSize(asset.byte_size)}</span>
                             </>
                           )}
                           {!asset.is_public && (
                             <>
                               <span>·</span>
-                              <span>🔒 private</span>
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  color: flowCoreColours.warningOrange,
+                                }}
+                              >
+                                <Lock size={12} strokeWidth={1.5} />
+                                private
+                              </span>
                             </>
                           )}
                         </div>
@@ -477,7 +515,7 @@ export function AssetAttachModal({
                   fontWeight: 500,
                   cursor: 'pointer',
                   textTransform: 'lowercase',
-                  transition: 'all 0.24s ease',
+                  transition: 'all var(--flowcore-motion-normal) ease',
                   fontFamily: 'inherit',
                 }}
                 onMouseEnter={(e) => {
@@ -510,7 +548,7 @@ export function AssetAttachModal({
                   fontWeight: 600,
                   cursor: localSelectedIds.size === 0 ? 'not-allowed' : 'pointer',
                   textTransform: 'lowercase',
-                  transition: 'all 0.24s ease',
+                  transition: 'all var(--flowcore-motion-normal) ease',
                   fontFamily: 'inherit',
                   opacity: localSelectedIds.size === 0 ? 0.5 : 1,
                 }}

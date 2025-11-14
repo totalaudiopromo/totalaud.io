@@ -22,6 +22,7 @@ import { CommandPalette } from '@aud-web/components/ui/CommandPalette'
 import type { NodeKind, ConsoleTab } from '@aud-web/types/console'
 import { useFlowStateTelemetry } from '@aud-web/hooks/useFlowStateTelemetry'
 import { logger } from '@/lib/logger'
+import { FlaskRound, MapPin, Target } from 'lucide-react'
 import Link from 'next/link'
 
 const log = logger.scope('DemoConsolePage')
@@ -110,7 +111,7 @@ export default function DemoConsolePage() {
               'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
           }}
         >
-          <span style={{ fontSize: '18px' }}>📍</span>
+          <MapPin size={18} strokeWidth={1.6} />
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600, marginBottom: '2px' }}>
               {tab === 'plan' && 'plan mode — research & strategy'}
@@ -148,7 +149,7 @@ export default function DemoConsolePage() {
               cursor: 'pointer',
               textTransform: 'lowercase',
               fontFamily: 'inherit',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -157,8 +158,10 @@ export default function DemoConsolePage() {
               e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
             }}
           >
-            <span style={{ marginRight: '8px' }}>🎯</span>
-            spawn agent
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Target size={16} strokeWidth={1.6} />
+              spawn agent
+            </span>
           </button>
 
           <button
@@ -174,7 +177,7 @@ export default function DemoConsolePage() {
               cursor: 'pointer',
               textTransform: 'lowercase',
               fontFamily: 'inherit',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -206,7 +209,6 @@ export default function DemoConsolePage() {
           <FlowCanvas
             campaignId="demo-campaign"
             userId="demo-user"
-            onNodeSpawned={handleNodeSpawn}
           />
         </div>
       </div>
@@ -248,7 +250,7 @@ export default function DemoConsolePage() {
               'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
           }}
         >
-          <span style={{ fontSize: '18px' }}>🧪</span>
+          <FlaskRound size={18} strokeWidth={1.6} />
           <div>
             <div style={{ fontWeight: 600 }}>demo mode — no authentication required</div>
             <div style={{ fontSize: '11px', color: flowCoreColours.textSecondary }}>
@@ -270,7 +272,7 @@ export default function DemoConsolePage() {
               fontWeight: 500,
               textDecoration: 'none',
               textTransform: 'lowercase',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
               fontFamily: 'inherit',
             }}
             onMouseEnter={(e) => {
@@ -297,7 +299,7 @@ export default function DemoConsolePage() {
               fontWeight: 600,
               textDecoration: 'none',
               textTransform: 'lowercase',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
               fontFamily: 'inherit',
             }}
             onMouseEnter={(e) => {

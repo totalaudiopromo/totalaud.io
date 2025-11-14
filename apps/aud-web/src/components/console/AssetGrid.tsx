@@ -27,6 +27,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { AssetCard } from './AssetCard'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { Asset } from '@/hooks/useAssets'
+import { AlertTriangle, Archive } from 'lucide-react'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('AssetGrid')
@@ -152,11 +153,13 @@ export function AssetGrid({
       >
         <div
           style={{
-            fontSize: '48px',
             marginBottom: '16px',
+            color: flowCoreColours.warningOrange,
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
-          ⚠️
+          <AlertTriangle size={48} strokeWidth={1.4} />
         </div>
         <div
           style={{
@@ -193,11 +196,13 @@ export function AssetGrid({
       >
         <div
           style={{
-            fontSize: '64px',
             marginBottom: '16px',
+            display: 'flex',
+            justifyContent: 'center',
+            color: flowCoreColours.slateCyan,
           }}
         >
-          📦
+          <Archive size={56} strokeWidth={1.4} />
         </div>
         <div
           style={{

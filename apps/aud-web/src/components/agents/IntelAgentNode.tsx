@@ -26,6 +26,7 @@ import { toast } from 'sonner'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { useAssets } from '@/hooks/useAssets'
 import { useOrchestration } from '@/contexts/OrchestrationContext'
+import { FileText } from 'lucide-react'
 
 const log = logger.scope('IntelAgentNode')
 
@@ -87,14 +88,31 @@ export function IntelAgentNode({
     setGeneratedResearch(null)
 
     try {
-      const selectedDocs = allAssets.filter((a) => selectedDocIds.has(a.id))
+      const selectedDocs = allAssets.filter((asset) => selectedDocIds.has(asset.id))
+      const selectedAttachments = selectedDocs
+        .map<AssetAttachment | null>((asset) => {
+          if (!asset.url) {
+            return null
+          }
+          return {
+            id: asset.id,
+            kind: asset.kind,
+            title: asset.title,
+            url: asset.url,
+            is_public: asset.is_public,
+            byte_size: asset.byte_size ?? undefined,
+            mime_type: asset.mime_type ?? undefined,
+            created_at: asset.created_at ?? undefined,
+          }
+        })
+        .filter((attachment): attachment is AssetAttachment => attachment !== null)
 
       const response = await fetch('/api/agents/intel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query,
-          includeAssetContext: selectedDocs.length > 0,
+          includeAssetContext: selectedAttachments.length > 0,
           userId,
           sessionId: campaignId || `intel-${Date.now()}`,
         }),
@@ -114,7 +132,7 @@ export function IntelAgentNode({
       })
 
       // Track telemetry for each document used
-      selectedDocs.forEach((doc) => {
+      selectedAttachments.forEach((doc) => {
         trackEvent('save', {
           metadata: {
             action: 'asset_used_for_intel',
@@ -126,12 +144,12 @@ export function IntelAgentNode({
       })
 
       // Track agent run
-      trackEvent('save', {
+      trackEvent('agentRun', {
         metadata: {
-          action: 'agent_run',
           agentName: 'intel',
+          success: true,
           query,
-          assetsUsed: selectedDocs.length,
+          attachmentsUsed: selectedAttachments.length,
           campaignId,
         },
       })
@@ -150,10 +168,17 @@ export function IntelAgentNode({
       })
 
       if (onIntelGenerated) {
-        onIntelGenerated(data.research, selectedDocs)
+        onIntelGenerated(data.research, selectedAttachments)
       }
     } catch (error) {
       log.error('Intel generation failed', error)
+      trackEvent('agentRun', {
+        metadata: {
+          agentName: 'intel',
+          success: false,
+          campaignId,
+        },
+      })
       toast.error(error instanceof Error ? error.message : 'intel generation failed')
     } finally {
       setLoading(false)
@@ -238,7 +263,7 @@ export function IntelAgentNode({
             fontSize: '13px',
             fontFamily: 'inherit',
             outline: 'none',
-            transition: 'border-color 0.24s ease',
+            transition: 'border-color var(--flowcore-motion-normal) ease',
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -322,7 +347,7 @@ export function IntelAgentNode({
                     borderRadius: '6px',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    transition: 'all 0.24s ease',
+                    transition: 'all var(--flowcore-motion-normal) ease',
                   }}
                   aria-pressed={isSelected}
                 >
@@ -358,9 +383,13 @@ export function IntelAgentNode({
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                         marginBottom: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
                       }}
                     >
-                      📄 {doc.title}
+                      <FileText size={15} strokeWidth={1.4} />
+                      {doc.title}
                     </div>
                     <div
                       style={{
@@ -368,8 +397,8 @@ export function IntelAgentNode({
                         color: flowCoreColours.textTertiary,
                       }}
                     >
-                      {doc.size_bytes && formatSize(doc.size_bytes)}
-                      {doc.size_bytes && doc.created_at && ' · '}
+                      {doc.byte_size && formatSize(doc.byte_size)}
+                      {doc.byte_size && doc.created_at && ' · '}
                       {doc.created_at && `updated ${formatDate(doc.created_at)}`}
                     </div>
                   </div>
@@ -398,7 +427,7 @@ export function IntelAgentNode({
           fontWeight: 600,
           cursor: loading || !query.trim() ? 'not-allowed' : 'pointer',
           textTransform: 'lowercase',
-          transition: 'all 0.24s ease',
+          transition: 'all var(--flowcore-motion-normal) ease',
           opacity: loading || !query.trim() ? 0.5 : 1,
         }}
         onMouseEnter={(e) => {

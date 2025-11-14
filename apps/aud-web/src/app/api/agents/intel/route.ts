@@ -17,10 +17,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
-import { cookies } from 'next/headers'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('IntelAgentAPI')
 
@@ -44,35 +43,31 @@ export async function POST(req: NextRequest) {
       sessionId,
     })
 
-    // Check authentication for write operations (saving results)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    let isAuthenticated = false
-    let authenticatedUserId: string | null = null
+    const supabase = createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (supabaseUrl && supabaseAnonKey) {
-      const cookieStore = await cookies()
-      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          storageKey: 'supabase-auth-token',
-        },
-      })
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.user) {
-        isAuthenticated = true
-        authenticatedUserId = session.user.id
-      }
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
 
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    if (userId && userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const resolvedUserId = session.user.id
     let relevantAssets: AssetAttachment[] = []
 
     // Fetch relevant document assets if requested
-    if (includeAssetContext && userId && isAuthenticated) {
-      relevantAssets = await fetchRelevantDocumentAssets(userId, supabaseUrl!, supabaseAnonKey!)
+    if (includeAssetContext) {
+      relevantAssets = await fetchRelevantDocumentAssets(supabase, resolvedUserId)
 
       log.info('Relevant assets found', {
         count: relevantAssets.length,
@@ -84,17 +79,10 @@ export async function POST(req: NextRequest) {
     const research = await generateIntelResearch(query, relevantAssets)
 
     // Save results to database if authenticated
-    if (isAuthenticated && authenticatedUserId && sessionId) {
+    if (session && sessionId) {
       try {
-        const cookieStore = await cookies()
-        const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
-          auth: {
-            storageKey: 'supabase-auth-token',
-          },
-        })
-
         await supabase.from('agent_results').insert({
-          user_id: authenticatedUserId,
+          user_id: resolvedUserId,
           session_id: sessionId,
           agent_type: 'intel',
           result_data: {
@@ -106,9 +94,9 @@ export async function POST(req: NextRequest) {
           created_at: new Date().toISOString(),
         })
 
-        log.info('Intel results saved to database', { sessionId, userId: authenticatedUserId })
+        log.info('Intel results saved to database', { sessionId, userId: resolvedUserId })
       } catch (dbError) {
-        log.warn('Failed to save intel results to database', dbError)
+        log.warn('Failed to save intel results to database', { error: dbError })
         // Don't fail the request if DB write fails
       }
     }
@@ -128,7 +116,6 @@ export async function POST(req: NextRequest) {
         research,
         assetsUsed: relevantAssets.length,
         assets: relevantAssets,
-        demo: !isAuthenticated,
         metadata: {
           query,
           contextEnhanced: relevantAssets.length > 0,
@@ -166,21 +153,12 @@ export async function POST(req: NextRequest) {
  * Looks for: press releases, bios, one-sheets
  */
 async function fetchRelevantDocumentAssets(
-  userId: string,
-  supabaseUrl: string,
-  supabaseAnonKey: string
+  supabase: ReturnType<typeof createRouteSupabaseClient>,
+  userId: string
 ): Promise<AssetAttachment[]> {
   try {
     log.debug('Fetching document assets for user', { userId })
 
-    const cookieStore = await cookies()
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: 'supabase-auth-token',
-      },
-    })
-
-    // Query artist_assets table for document types
     const { data: assets, error } = await supabase
       .from('artist_assets')
       .select('*')
@@ -190,7 +168,7 @@ async function fetchRelevantDocumentAssets(
       .limit(10)
 
     if (error) {
-      log.warn('Failed to fetch document assets from database', error)
+      log.warn('Failed to fetch document assets from database', { error })
       return []
     }
 
@@ -199,18 +177,22 @@ async function fetchRelevantDocumentAssets(
     }
 
     // Map database records to AssetAttachment type
-    const mappedAssets: AssetAttachment[] = assets.map((asset) => ({
-      id: asset.id,
-      kind: asset.kind as 'document',
-      title: asset.title || 'Untitled Document',
-      url: asset.url,
-      size_bytes: asset.size_bytes || undefined,
-      created_at: asset.created_at,
-    }))
+    const mappedAssets: AssetAttachment[] = assets
+      .filter((asset) => typeof asset.url === 'string' && asset.url.length > 0)
+      .map((asset) => ({
+        id: String(asset.id),
+        kind: (asset.kind as AssetAttachment['kind']) ?? 'document',
+        title: asset.title ?? 'Untitled Document',
+        url: String(asset.url),
+        is_public: Boolean(asset.is_public),
+        byte_size: asset.byte_size ?? undefined,
+        mime_type: asset.mime_type ?? undefined,
+        created_at: asset.created_at ?? undefined,
+      }))
 
     return mappedAssets
   } catch (error) {
-    log.warn('Failed to fetch document assets', error)
+    log.warn('Failed to fetch document assets', { error })
     return []
   }
 }

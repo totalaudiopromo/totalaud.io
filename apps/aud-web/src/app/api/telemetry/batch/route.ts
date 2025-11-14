@@ -10,21 +10,19 @@
  * - Batch insert telemetry events from useFlowStateTelemetry hook
  * - Supports up to 50 events per request
  * - Auto-adds user_id from authenticated session
- * - Falls back to demo mode for unauthenticated users (no DB write)
+ * - Rejects unauthenticated requests with 401
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
-
-export const runtime = 'edge'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('TelemetryBatchAPI')
 
 interface TelemetryEvent {
   event_type: 'save' | 'share' | 'agentRun' | 'tabChange' | 'idle' | 'sessionStart' | 'sessionEnd'
   duration_ms?: number
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   created_at?: string // ISO timestamp
 }
 
@@ -83,34 +81,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get Supabase client
-    const supabase = createClient()
-
-    // Get authenticated user (optional - allow demo mode)
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    // If no user, return success but don't write to DB (demo mode)
-    if (!user) {
-      const duration = Date.now() - startTime
-      log.debug('Demo mode: telemetry batch accepted but not persisted', {
-        eventCount: events.length,
-      })
-
-      const response: BatchResponse = {
-        success: true,
-        inserted: 0,
-        duration,
-        message: 'Demo mode: events not persisted',
-      }
-
-      return NextResponse.json(response)
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
 
     // Prepare events for insertion
     const eventsToInsert = events.map((event) => ({
-      user_id: user.id,
+      user_id: userId,
       campaign_id: campaignId || null,
       event_type: event.event_type,
       duration_ms: event.duration_ms || null,

@@ -29,6 +29,16 @@ import { useRef, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { AssetKind } from '@/hooks/useAssetFilters'
+import type { LucideIcon } from 'lucide-react'
+import {
+  FileArchive,
+  FileAudio2,
+  FileText,
+  Folder,
+  Image as ImageIcon,
+  Link2,
+  Paperclip,
+} from 'lucide-react'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('AssetSidebar')
@@ -46,14 +56,14 @@ export interface AssetSidebarProps {
   hasActiveFilters: boolean
 }
 
-const KIND_OPTIONS: Array<{ value: AssetKind; label: string; icon: string }> = [
-  { value: null, label: 'all', icon: '📁' },
-  { value: 'audio', label: 'audio', icon: '🎵' },
-  { value: 'image', label: 'images', icon: '🖼️' },
-  { value: 'document', label: 'docs', icon: '📄' },
-  { value: 'archive', label: 'archives', icon: '📦' },
-  { value: 'link', label: 'links', icon: '🔗' },
-  { value: 'other', label: 'other', icon: '📎' },
+const KIND_OPTIONS: Array<{ value: AssetKind; label: string; Icon: LucideIcon }> = [
+  { value: null, label: 'all', Icon: Folder },
+  { value: 'audio', label: 'audio', Icon: FileAudio2 },
+  { value: 'image', label: 'images', Icon: ImageIcon },
+  { value: 'document', label: 'docs', Icon: FileText },
+  { value: 'archive', label: 'archives', Icon: FileArchive },
+  { value: 'link', label: 'links', Icon: Link2 },
+  { value: 'other', label: 'other', Icon: Paperclip },
 ]
 
 export function AssetSidebar({
@@ -144,7 +154,7 @@ export function AssetSidebar({
             fontSize: '13px',
             fontFamily: 'inherit',
             outline: 'none',
-            transition: 'border-color 0.24s ease',
+            transition: 'border-color var(--flowcore-motion-normal) ease',
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -200,7 +210,7 @@ export function AssetSidebar({
                 fontWeight: selectedKind === option.value ? 600 : 400,
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'all 0.24s ease',
+                transition: 'all var(--flowcore-motion-normal) ease',
                 fontFamily: 'inherit',
               }}
               onMouseEnter={(e) => {
@@ -216,7 +226,18 @@ export function AssetSidebar({
                 }
               }}
             >
-              <span>{option.icon}</span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  color:
+                    selectedKind === option.value
+                      ? flowCoreColours.iceCyan
+                      : flowCoreColours.textSecondary,
+                }}
+              >
+                <option.Icon size={16} strokeWidth={1.5} />
+              </span>
               <span>{option.label}</span>
             </button>
           ))}
@@ -256,9 +277,6 @@ export function AssetSidebar({
           }}
         >
           <option value="">all campaigns</option>
-          {/* TODO: Load campaigns from API */}
-          <option value="demo-campaign-1">demo campaign 1</option>
-          <option value="demo-campaign-2">demo campaign 2</option>
         </select>
       </div>
 
@@ -293,7 +311,7 @@ export function AssetSidebar({
             fontSize: '13px',
             fontFamily: 'inherit',
             outline: 'none',
-            transition: 'border-color 0.24s ease',
+            transition: 'border-color var(--flowcore-motion-normal) ease',
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -321,7 +339,7 @@ export function AssetSidebar({
             fontWeight: 500,
             cursor: 'pointer',
             textTransform: 'lowercase',
-            transition: 'all 0.24s ease',
+            transition: 'all var(--flowcore-motion-normal) ease',
             fontFamily: 'inherit',
           }}
           onMouseEnter={(e) => {

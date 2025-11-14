@@ -27,6 +27,8 @@ import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { Asset } from '@/hooks/useAssets'
 import { logger } from '@/lib/logger'
 import { toast } from 'sonner'
+import { Lock, LockOpen } from 'lucide-react'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
 
 const log = logger.scope('AssetCard')
 
@@ -68,26 +70,6 @@ function formatRelativeTime(dateString: string): string {
 
   const diffDays = Math.floor(diffHours / 24)
   return `${diffDays}d ago`
-}
-
-/**
- * Get icon for asset kind
- */
-function getKindIcon(kind: Asset['kind']): string {
-  switch (kind) {
-    case 'audio':
-      return '🎵'
-    case 'image':
-      return '🖼️'
-    case 'document':
-      return '📄'
-    case 'archive':
-      return '📦'
-    case 'link':
-      return '🔗'
-    default:
-      return '📁'
-  }
 }
 
 export function AssetCard({
@@ -162,7 +144,7 @@ export function AssetCard({
         borderRadius: '8px',
         overflow: 'hidden',
         cursor: 'pointer',
-        transition: 'all 0.24s ease',
+        transition: 'all var(--flowcore-motion-normal) ease',
         fontFamily:
           'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
       }}
@@ -187,10 +169,13 @@ export function AssetCard({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '48px',
+            color: flowCoreColours.slateCyan,
           }}
         >
-          {getKindIcon(asset.kind)}
+          {(() => {
+            const Icon = getAssetKindIcon(asset.kind)
+            return <Icon size={44} strokeWidth={1.2} />
+          })()}
         </div>
 
         {/* Public badge */}
@@ -311,7 +296,7 @@ export function AssetCard({
             color: flowCoreColours.textSecondary,
             fontSize: '11px',
             cursor: 'pointer',
-            transition: 'all 0.24s ease',
+            transition: 'all var(--flowcore-motion-normal) ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -331,7 +316,6 @@ export function AssetCard({
             e.stopPropagation()
             onTogglePublic()
           }}
-          aria-label={asset.is_public ? 'Make private' : 'Make public'}
           title={asset.is_public ? 'Make private' : 'Make public'}
           style={{
             padding: '6px 10px',
@@ -341,7 +325,7 @@ export function AssetCard({
             color: flowCoreColours.textSecondary,
             fontSize: '11px',
             cursor: 'pointer',
-            transition: 'all 0.24s ease',
+            transition: 'all var(--flowcore-motion-normal) ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -352,7 +336,11 @@ export function AssetCard({
             e.currentTarget.style.color = flowCoreColours.textSecondary
           }}
         >
-          {asset.is_public ? '🔓' : '🔒'}
+          {asset.is_public ? (
+            <LockOpen size={14} strokeWidth={1.5} />
+          ) : (
+            <Lock size={14} strokeWidth={1.5} />
+          )}
         </button>
 
         {/* Delete */}
@@ -371,11 +359,11 @@ export function AssetCard({
             color: flowCoreColours.textSecondary,
             fontSize: '11px',
             cursor: 'pointer',
-            transition: 'all 0.24s ease',
+            transition: 'all var(--flowcore-motion-normal) ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#E57373'
-            e.currentTarget.style.color = '#E57373'
+            e.currentTarget.style.borderColor = flowCoreColours.errorRed
+            e.currentTarget.style.color = flowCoreColours.errorRed
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.borderGrey

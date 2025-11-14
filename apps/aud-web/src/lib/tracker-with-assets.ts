@@ -135,7 +135,7 @@ export class TrackerWithAssets {
         outreachLog: insertedLog,
       }
     } catch (error) {
-      log.error('Failed to log outreach', error)
+      log.error('Failed to log outreach', { error })
 
       return {
         success: false,
@@ -157,7 +157,7 @@ export class TrackerWithAssets {
 
       return mockLogs
     } catch (error) {
-      log.error('Failed to fetch outreach logs', error)
+      log.error('Failed to fetch outreach logs', { error })
       return []
     }
   }
@@ -182,7 +182,7 @@ export class TrackerWithAssets {
 
       return asset
     } catch (error) {
-      log.error('Failed to fetch asset for view', error)
+      log.error('Failed to fetch asset for view', { error })
       return null
     }
   }
@@ -201,7 +201,7 @@ export class TrackerWithAssets {
 
       return null
     } catch (error) {
-      log.warn('Failed to fetch asset details', error)
+    log.warn('Failed to fetch asset details', { error })
       return null
     }
   }

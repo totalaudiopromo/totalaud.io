@@ -117,7 +117,7 @@ export function ConsoleLayout({
                   fontWeight: isActive ? 600 : 500,
                   textTransform: 'lowercase',
                   cursor: 'pointer',
-                  transition: 'all 0.24s ease',
+                  transition: 'all var(--flowcore-motion-normal) ease',
                   fontFamily: 'inherit',
                   outline: 'none',
                 }}

@@ -99,7 +99,13 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
       if (!isMountedRef.current) return
 
       setAssets(data.assets || [])
-      setCount(data.count || 0)
+      setCount(
+        typeof data.total === 'number'
+          ? data.total
+          : typeof data.count === 'number'
+          ? data.count
+          : data.assets?.length || 0
+      )
       setError(null)
 
       log.debug('Assets loaded', { count: data.assets.length, campaignId, kind })

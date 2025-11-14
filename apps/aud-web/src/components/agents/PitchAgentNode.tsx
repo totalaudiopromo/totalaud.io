@@ -26,6 +26,8 @@ import { toast } from 'sonner'
 import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { useOrchestration } from '@/contexts/OrchestrationContext'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
+import { Lock, X } from 'lucide-react'
 
 const log = logger.scope('PitchAgentNode')
 
@@ -33,17 +35,27 @@ const MAX_ATTACHMENTS = 8
 
 export interface PitchAgentNodeProps {
   campaignId?: string
+  userId?: string
   onPitchGenerated?: (pitch: string, attachments: AssetAttachment[]) => void
+  initialGoal?: string
 }
 
-export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeProps) {
+export function PitchAgentNode({
+  campaignId,
+  userId,
+  onPitchGenerated,
+  initialGoal,
+}: PitchAgentNodeProps) {
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
   const { consumeIntelPayload, logOutreach } = useOrchestration()
 
-  const [goal, setGoal] = useState('')
+  const [goal, setGoal] = useState(initialGoal ?? '')
   const [context, setContext] = useState('')
   const [selectedAttachments, setSelectedAttachments] = useState<AssetAttachment[]>([])
+  const [targetContact, setTargetContact] = useState<{ name: string; email?: string } | null>(
+    null
+  )
   const [modalOpen, setModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [generatedPitch, setGeneratedPitch] = useState<string | null>(null)
@@ -61,6 +73,10 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
         keywords: intelSeed.keywords,
         recipients: intelSeed.recipients.length,
       })
+
+      if (intelSeed.recipients.length > 0) {
+        setTargetContact(intelSeed.recipients[0])
+      }
     }
   }, []) // Run once on mount
 
@@ -77,17 +93,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
   /**
    * Get kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    const icons: Record<string, string> = {
-      audio: '🎵',
-      image: '🖼️',
-      document: '📄',
-      archive: '📦',
-      link: '🔗',
-      other: '📁',
-    }
-    return icons[kind] || '📁'
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   /**
    * Handle asset attachment
@@ -109,7 +115,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
         })
       })
 
-      toast.success(`${attachments.length} asset${attachments.length === 1 ? '' : 's'} attached 🎧`)
+      toast.success(`${attachments.length} asset${attachments.length === 1 ? '' : 's'} attached`)
     },
     [campaignId, trackEvent]
   )
@@ -154,6 +160,8 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
           context: context || undefined,
           attachments: publicAttachments.length > 0 ? publicAttachments : undefined,
           sessionId: campaignId || `pitch-${Date.now()}`,
+          contactName: targetContact?.name,
+          campaignId,
         }),
       })
 
@@ -171,25 +179,37 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
       })
 
       // Track telemetry
-      trackEvent('save', {
+      trackEvent('agentRun', {
         metadata: {
-          action: 'agent_run',
           agentName: 'pitch',
+          success: true,
           goal,
           attachmentCount: publicAttachments.length,
           campaignId,
         },
       })
 
-      toast.success('pitch ready — assets attached 🎧')
+      toast.success('pitch ready — assets attached')
 
       // Log outreach to tracker
-      await logOutreach({
-        contact_name: goal, // Using goal as placeholder for contact name
-        asset_ids: publicAttachments.map((a) => a.id),
-        message_preview: data.pitch.slice(0, 100),
-        status: 'sent',
-        campaign_id: campaignId,
+      const contactName = targetContact?.name?.trim() || undefined
+
+      if (campaignId) {
+        await logOutreach({
+          contact_name: contactName,
+          asset_ids: publicAttachments.map((a) => a.id),
+          message_preview: data.pitch.slice(0, 100),
+          status: 'sent',
+          campaign_id: campaignId,
+        })
+      }
+
+      trackEvent('pitch_sent', {
+        metadata: {
+          campaignId,
+          contactName,
+          assetIds: publicAttachments.map((a) => a.id),
+        },
       })
 
       // Callback
@@ -198,11 +218,18 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
       }
     } catch (error) {
       log.error('Pitch generation failed', error)
+      trackEvent('agentRun', {
+        metadata: {
+          agentName: 'pitch',
+          success: false,
+          campaignId,
+        },
+      })
       toast.error(error instanceof Error ? error.message : 'pitch generation failed')
     } finally {
       setLoading(false)
     }
-  }, [goal, context, selectedAttachments, campaignId, onPitchGenerated, trackEvent])
+  }, [goal, context, selectedAttachments, campaignId, onPitchGenerated, trackEvent, targetContact])
 
   /**
    * Keyboard shortcuts
@@ -283,7 +310,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
             fontSize: '13px',
             fontFamily: 'inherit',
             outline: 'none',
-            transition: 'border-color 0.24s ease',
+            transition: 'border-color var(--flowcore-motion-normal) ease',
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -293,6 +320,19 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
           }}
         />
       </div>
+
+      {targetContact && (
+        <div
+          style={{
+            marginBottom: '16px',
+            fontSize: '12px',
+            color: flowCoreColours.textSecondary,
+          }}
+        >
+          sending to {targetContact.name}
+          {targetContact.email ? ` (${targetContact.email})` : ''}
+        </div>
+      )}
 
       {/* Context Textarea */}
       <div style={{ marginBottom: '16px' }}>
@@ -326,7 +366,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
             fontSize: '13px',
             fontFamily: 'inherit',
             outline: 'none',
-            transition: 'border-color 0.24s ease',
+            transition: 'border-color var(--flowcore-motion-normal) ease',
             resize: 'none',
             minHeight: '80px',
           }}
@@ -379,7 +419,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
               fontWeight: 600,
               cursor: selectedAttachments.length >= MAX_ATTACHMENTS ? 'not-allowed' : 'pointer',
               textTransform: 'lowercase',
-              transition: 'all 0.24s ease',
+              transition: 'all var(--flowcore-motion-normal) ease',
               opacity: selectedAttachments.length >= MAX_ATTACHMENTS ? 0.5 : 1,
             }}
             onMouseEnter={(e) => {
@@ -442,7 +482,20 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
                     fontSize: '12px',
                   }}
                 >
-                  <span>{getKindIcon(asset.kind)}</span>
+                  {(() => {
+                    const Icon = getKindIcon(asset.kind)
+                    return (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          color: flowCoreColours.iceCyan,
+                        }}
+                      >
+                        <Icon size={16} strokeWidth={1.4} />
+                      </span>
+                    )
+                  })()}
                   <span
                     style={{
                       color: flowCoreColours.textPrimary,
@@ -459,11 +512,15 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
                     <span
                       style={{
                         fontSize: '10px',
-                        color: flowCoreColours.textTertiary,
+                        color: flowCoreColours.warningOrange,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
                       }}
                       title="Private asset - will be filtered"
                     >
-                      🔒
+                      <Lock size={10} strokeWidth={1.4} />
+                      private
                     </span>
                   )}
                   <button
@@ -477,9 +534,11 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
                       cursor: 'pointer',
                       padding: '0 4px',
                       lineHeight: 1,
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
-                    ×
+                    <X size={14} strokeWidth={1.6} />
                   </button>
                 </motion.div>
               ))}
@@ -506,7 +565,7 @@ export function PitchAgentNode({ campaignId, onPitchGenerated }: PitchAgentNodeP
           fontWeight: 600,
           cursor: loading || !goal.trim() ? 'not-allowed' : 'pointer',
           textTransform: 'lowercase',
-          transition: 'all 0.24s ease',
+          transition: 'all var(--flowcore-motion-normal) ease',
           opacity: loading || !goal.trim() ? 0.5 : 1,
         }}
         onMouseEnter={(e) => {

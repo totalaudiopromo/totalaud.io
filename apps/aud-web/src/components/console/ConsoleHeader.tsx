@@ -39,7 +39,7 @@ export function ConsoleHeader({
   onFlowHubOpen,
 }: ConsoleHeaderProps) {
   const [assetInboxOpen, setAssetInboxOpen] = useState(false)
-  const { assets } = useAssets({})
+  const { assets } = useAssets(campaignId ? { campaignId } : {})
 
   /**
    * Calculate new uploads (last 24 hours)
@@ -157,7 +157,8 @@ export function ConsoleHeader({
                 alignItems: 'center',
                 gap: '8px',
                 padding: '10px 16px',
-                backgroundColor: 'rgba(58, 169, 190, 0.15)',
+                backgroundColor:
+                  'color-mix(in srgb, var(--flowcore-colour-accent) 15%, transparent)',
                 border: `1px solid ${flowCoreColours.slateCyan}`,
                 borderRadius: '6px',
                 color: flowCoreColours.iceCyan,
@@ -165,14 +166,16 @@ export function ConsoleHeader({
                 fontWeight: 600,
                 textTransform: 'lowercase',
                 cursor: 'pointer',
-                transition: 'all 0.12s ease',
+                transition: 'all var(--flowcore-motion-fast) ease',
                 fontFamily: 'inherit',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.25)'
+                e.currentTarget.style.backgroundColor =
+                  'color-mix(in srgb, var(--flowcore-colour-accent) 25%, transparent)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.15)'
+                e.currentTarget.style.backgroundColor =
+                  'color-mix(in srgb, var(--flowcore-colour-accent) 15%, transparent)'
               }}
             >
               <span>flow hub</span>
@@ -198,7 +201,8 @@ export function ConsoleHeader({
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 12px',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
+                backgroundColor:
+                  'color-mix(in srgb, var(--flowcore-colour-accent) 10%, transparent)',
                 border: `1px solid ${flowCoreColours.slateCyan}`,
                 borderRadius: '6px',
                 fontSize: '12px',
@@ -231,7 +235,7 @@ export function ConsoleHeader({
               fontWeight: 600,
               textTransform: 'lowercase',
               cursor: 'pointer',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
               fontFamily: 'inherit',
             }}
             onMouseEnter={(e) => {
@@ -290,6 +294,7 @@ export function ConsoleHeader({
         onClose={() => setAssetInboxOpen(false)}
         onAttach={onAssetAttach}
         currentNodeKind={currentNodeKind}
+        campaignId={campaignId}
       />
     </>
   )

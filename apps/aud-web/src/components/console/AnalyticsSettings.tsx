@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
+import { Lock } from 'lucide-react'
 
 const log = logger.scope('AnalyticsSettings')
 
@@ -46,7 +47,7 @@ function getAnalyticsEnabled(): boolean {
     const setting = localStorage.getItem('analytics_enabled')
     return setting !== 'false' // Default to true
   } catch (error) {
-    log.warn('Could not access localStorage for analytics setting', error)
+    log.warn('Could not access localStorage for analytics setting', { error })
     return true
   }
 }
@@ -61,7 +62,7 @@ function setAnalyticsEnabled(enabled: boolean): void {
     localStorage.setItem('analytics_enabled', enabled ? 'true' : 'false')
     log.info('Analytics setting updated', { enabled })
   } catch (error) {
-    log.error('Could not save analytics setting', error)
+    log.error('Could not save analytics setting', { error })
   }
 }
 
@@ -251,7 +252,7 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                     : flowCoreColours.borderGrey,
                   position: 'relative',
                   cursor: 'pointer',
-                  transition: 'background-color 0.24s ease',
+                  transition: 'background-color var(--flowcore-motion-normal) ease',
                 }}
               >
                 <motion.div
@@ -331,9 +332,11 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
               style={{
                 padding: '16px',
                 backgroundColor: analyticsEnabled
-                  ? 'rgba(58, 169, 190, 0.1)' // Slate Cyan tint
-                  : 'rgba(229, 115, 115, 0.1)', // Red tint
-                border: `1px solid ${analyticsEnabled ? flowCoreColours.slateCyan : '#E57373'}`,
+                  ? 'color-mix(in srgb, var(--flowcore-colour-accent) 12%, transparent)'
+                  : 'color-mix(in srgb, var(--flowcore-colour-error) 12%, transparent)',
+                border: `1px solid ${
+                  analyticsEnabled ? flowCoreColours.slateCyan : flowCoreColours.errorRed
+                }`,
                 borderRadius: '8px',
                 marginBottom: '24px',
               }}
@@ -389,7 +392,7 @@ export function AnalyticsSettings({ isOpen, onClose }: AnalyticsSettingsProps) {
                   fontWeight: 600,
                   cursor: 'pointer',
                   textTransform: 'lowercase',
-                  transition: 'all 0.24s ease',
+                  transition: 'all var(--flowcore-motion-normal) ease',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -458,7 +461,7 @@ export function PrivacyBadge() {
       aria-label="Analytics disabled, local-only mode"
     >
       {/* Lock icon */}
-      <span style={{ fontSize: '14px' }}>🔒</span>
+      <Lock size={14} strokeWidth={1.6} />
       local only
     </motion.div>
   )

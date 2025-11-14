@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('GetAssetAPI')
 
@@ -31,9 +32,31 @@ export async function GET(req: NextRequest) {
 
     log.info('Asset fetch requested', { assetId })
 
-    // In real implementation, query Supabase asset_uploads table
-    // For demo, return mock asset
-    const asset = await fetchAsset(assetId)
+    const supabase = createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const { data: asset, error } = await supabase
+      .from('artist_assets')
+      .select('*')
+      .eq('id', assetId)
+      .maybeSingle()
+
+    if (error) {
+      log.error('Failed to fetch asset', { error, assetId })
+      return NextResponse.json({ error: 'Asset fetch failed', details: error.message }, { status: 500 })
+    }
 
     if (!asset) {
       return NextResponse.json(
@@ -48,12 +71,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        asset,
+        asset: mapAsset(asset),
       },
       { status: 200 }
     )
   } catch (error) {
-    log.error('Asset fetch failed', error)
+    log.error('Asset fetch failed', { error })
 
     return NextResponse.json(
       {
@@ -66,56 +89,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/**
- * Fetch asset from database
- * In real implementation, query Supabase
- */
-async function fetchAsset(assetId: string): Promise<AssetAttachment | null> {
-  log.debug('Fetching asset', { assetId })
-
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200))
-
-  // Mock asset data based on ID
-  if (assetId === 'asset-demo-audio-1') {
-    return {
-      id: assetId,
-      title: 'Night Drive - Final Master.mp3',
-      url: '/demo-audio.mp3',
-      kind: 'audio',
-      is_public: true,
-      size_bytes: 8450000,
-      mime_type: 'audio/mpeg',
-      created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-    }
+function mapAsset(asset: any): AssetAttachment {
+  return {
+    id: asset.id,
+    title: asset.title ?? asset.path ?? 'untitled asset',
+    url: asset.url,
+    kind: asset.kind,
+    is_public: asset.is_public,
+    byte_size: asset.byte_size ?? undefined,
+    mime_type: asset.mime_type ?? undefined,
+    created_at: asset.created_at,
   }
-
-  if (assetId === 'asset-demo-doc-1') {
-    return {
-      id: assetId,
-      title: 'Artist Press Kit 2025.pdf',
-      url: '/demo-press-kit.pdf',
-      kind: 'document',
-      is_public: true,
-      size_bytes: 2450000,
-      mime_type: 'application/pdf',
-      created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
-    }
-  }
-
-  if (assetId === 'asset-demo-image-1') {
-    return {
-      id: assetId,
-      title: 'Press Photos 2025.zip',
-      url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-      kind: 'archive',
-      is_public: true,
-      size_bytes: 15600000,
-      mime_type: 'application/zip',
-      created_at: new Date(Date.now() - 3600000 * 96).toISOString(),
-    }
-  }
-
-  // Asset not found
-  return null
 }

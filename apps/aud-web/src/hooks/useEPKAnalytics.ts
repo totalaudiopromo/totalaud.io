@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@aud-web/lib/supabaseClient'
+import { createBrowserSupabaseClient } from '@aud-web/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { useFlowStateTelemetry } from './useFlowStateTelemetry'
 
@@ -71,9 +71,11 @@ export function useEPKAnalytics(options: UseEPKAnalyticsOptions) {
 
       // Track EPK metrics viewed event
       trackEvent('epk_metrics_viewed', {
-        epk_id: epkId,
-        group_by: groupBy,
-        event_count: metrics.eventCount,
+        metadata: {
+          epkId,
+          groupBy,
+          eventCount: metrics.eventCount,
+        },
       })
 
       log.info('EPK metrics fetched', {
@@ -99,7 +101,7 @@ export function useEPKAnalytics(options: UseEPKAnalyticsOptions) {
   useEffect(() => {
     if (!enabled || !epkId || !realtime) return
 
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClient()
 
     log.debug('Subscribing to EPK analytics real-time updates', { epkId })
 
@@ -155,9 +157,11 @@ export function useEPKAnalytics(options: UseEPKAnalyticsOptions) {
         })
 
         trackEvent('epk_asset_tracked', {
-          epk_id: epkId,
-          asset_id: assetId,
-          event_type: eventType,
+          metadata: {
+            epkId,
+            assetId,
+            eventType,
+          },
         })
 
         return result

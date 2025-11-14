@@ -65,9 +65,11 @@ export function useCampaignDashboard(options: UseCampaignDashboardOptions) {
 
       // Track dashboard opened event
       trackEvent('dashboard_opened', {
-        campaign_id: campaignId,
-        period,
-        data_points: summary.dataPoints,
+        metadata: {
+          campaignId,
+          period,
+          dataPoints: summary.dataPoints,
+        },
       })
 
       log.info('Dashboard data fetched', {

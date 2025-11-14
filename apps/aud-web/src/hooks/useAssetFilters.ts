@@ -62,11 +62,11 @@ function loadFiltersFromStorage(): Partial<AssetFilters> {
     if (!stored) return {}
 
     const parsed = JSON.parse(stored)
-    log.debug('Loaded filters from localStorage', parsed)
+    log.debug('Loaded filters from localStorage', { filters: parsed })
 
     return parsed
   } catch (error) {
-    log.warn('Failed to load filters from localStorage', error)
+    log.warn('Failed to load filters from localStorage', { error })
     return {}
   }
 }
@@ -79,9 +79,9 @@ function saveFiltersToStorage(filters: AssetFilters): void {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filters))
-    log.debug('Saved filters to localStorage', filters)
+    log.debug('Saved filters to localStorage', { filters })
   } catch (error) {
-    log.warn('Failed to save filters to localStorage', error)
+    log.warn('Failed to save filters to localStorage', { error })
   }
 }
 

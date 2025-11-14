@@ -22,6 +22,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useEpkComments, type Comment } from '@/hooks/useEpkComments'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
+import { X } from 'lucide-react'
 
 const log = logger.scope('EpkCommentsPanel')
 
@@ -136,7 +137,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
    * Handle delete comment
    */
   const handleDelete = async (commentId: string) => {
-    const confirmed = window.confirm('Delete this comment?')
+    const confirmed = window.confirm('delete this comment?')
     if (!confirmed) return
 
     await deleteComment(commentId)
@@ -165,7 +166,9 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
               backgroundColor: flowCoreColours.hoverGrey,
             }}
           >
-            {comment.user.fullName?.[0] || comment.user.email?.[0].toUpperCase()}
+            {comment.user.fullName?.[0] ||
+              comment.user.email?.[0]?.toUpperCase() ||
+              '?'}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -173,7 +176,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
             <div className="flex items-center justify-between mb-1">
               <div>
                 <p className="text-sm font-medium text-white">
-                  {comment.user.fullName || comment.user.email}
+                  {comment.user.fullName || comment.user.email || 'anonymous collaborator'}
                 </p>
                 <p className="text-xs text-grey-400">
                   {new Date(comment.createdAt).toLocaleString()}
@@ -198,9 +201,9 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.color = flowCoreColours.textSecondary
                       e.currentTarget.style.backgroundColor = 'transparent'
                     }}
-                    aria-label="Reply"
+                  aria-label="reply"
                   >
-                    Reply
+                    reply
                   </button>
                 )}
                 {/* Edit/Delete own comments */}
@@ -218,9 +221,9 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                     e.currentTarget.style.color = flowCoreColours.textSecondary
                     e.currentTarget.style.backgroundColor = 'transparent'
                   }}
-                  aria-label="Edit"
+                  aria-label="edit"
                 >
-                  Edit
+                  edit
                 </button>
                 <button
                   onClick={() => handleDelete(comment.id)}
@@ -236,9 +239,9 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                     e.currentTarget.style.color = flowCoreColours.textSecondary
                     e.currentTarget.style.backgroundColor = 'transparent'
                   }}
-                  aria-label="Delete"
+                  aria-label="delete"
                 >
-                  Delete
+                  delete
                 </button>
               </div>
             </div>
@@ -279,7 +282,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
                     }}
                   >
-                    Save
+                    save
                   </button>
                   <button
                     onClick={() => {
@@ -297,7 +300,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
                     }}
                   >
-                    Cancel
+                    cancel
                   </button>
                 </div>
               </div>
@@ -319,7 +322,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Write a reply..."
+                  placeholder="write a reply..."
                   rows={3}
                   className="w-full px-3 py-2 rounded text-sm text-white resize-none focus:outline-none"
                   style={{
@@ -351,7 +354,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
                     }}
                   >
-                    Reply
+                    reply
                   </button>
                   <button
                     onClick={() => {
@@ -369,7 +372,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                       e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
                     }}
                   >
-                    Cancel
+                    cancel
                   </button>
                 </div>
               </motion.div>
@@ -434,7 +437,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                 }}
                 aria-label="Close panel"
               >
-                <span className="text-grey-400">✕</span>
+                <X size={18} strokeWidth={1.6} className="text-grey-400" />
               </button>
             </div>
 
@@ -456,7 +459,7 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
                 <textarea
                   value={newCommentText}
                   onChange={(e) => setNewCommentText(e.target.value)}
-                  placeholder="Add a comment..."
+                  placeholder="add a comment..."
                   rows={3}
                   className="w-full px-3 py-2 rounded text-sm text-white placeholder-grey-400 resize-none focus:outline-none"
                   style={{
@@ -494,12 +497,12 @@ export function EpkCommentsPanel({ epkId, isOpen, onClose, userRole }: EpkCommen
             {/* Comments list */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {loading && (
-                <div className="text-center text-grey-400 text-sm py-8">Loading comments...</div>
+              <div className="text-center text-grey-400 text-sm py-8">loading comments...</div>
               )}
 
               {!loading && comments.length === 0 && (
                 <div className="text-center text-grey-400 text-sm py-8">
-                  No comments yet. Be the first to comment!
+                  no comments yet. be the first to comment!
                 </div>
               )}
 

@@ -7,8 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabaseClient'
 import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('EPKTrackAPI')
 
@@ -37,17 +37,21 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    const supabase = createRouteSupabaseClient()
 
-    // Check authentication
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    }
+
+    if (!session) {
       log.warn('Unauthenticated request to EPK track')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
     // Detect region and device from headers if not provided
@@ -67,7 +71,7 @@ export async function POST(req: NextRequest) {
       .insert({
         epk_id: body.epkId,
         asset_id: body.assetId || null,
-        user_id: user.id,
+        user_id: session.user.id,
         event_type: body.eventType,
         views: body.eventType === 'view' ? 1 : 0,
         downloads: body.eventType === 'download' ? 1 : 0,
@@ -85,7 +89,7 @@ export async function POST(req: NextRequest) {
 
     // Also log to flow_telemetry for general analytics
     const { error: telemetryError } = await supabase.from('flow_telemetry').insert({
-      user_id: user.id,
+      user_id: session.user.id,
       event_type: `epk_${body.eventType}`,
       event_data: {
         epk_id: body.epkId,
@@ -96,7 +100,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (telemetryError) {
-      log.warn('Failed to log telemetry event', telemetryError)
+      log.warn('Failed to log telemetry event', { error: telemetryError })
       // Don't fail the request if telemetry fails
     }
 

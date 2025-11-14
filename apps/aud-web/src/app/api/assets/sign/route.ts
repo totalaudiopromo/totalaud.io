@@ -13,11 +13,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
-
-export const runtime = 'edge'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('AssetSignAPI')
 
@@ -95,34 +93,35 @@ export async function POST(request: NextRequest) {
     const validated = signRequestSchema.parse(body)
     const { filename, mimeType, byteSize, kind, campaignId, title, tags } = validated
 
-    // Get Supabase client
-    const supabase = createClient()
-
-    // Get authenticated user
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized', details: 'Authentication required' },
-        { status: 401 }
-      )
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
 
     // Detect kind if not provided
     const assetKind = kind || detectKind(mimeType)
 
     // Generate storage path
-    const path = generatePath(user.id, filename)
+    const path = generatePath(userId, filename)
     const fullPath = `${path}` // Relative to bucket root
 
     // Create metadata stub in artist_assets
     const { data: asset, error: insertError } = await supabase
       .from('artist_assets')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         campaign_id: campaignId || null,
         kind: assetKind,
         title: title || filename,

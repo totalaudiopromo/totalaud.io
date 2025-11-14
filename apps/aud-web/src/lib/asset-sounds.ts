@@ -64,7 +64,7 @@ export function playAssetAttachSound(): void {
 
     log.debug('Asset attach sound played')
   } catch (error) {
-    log.warn('Failed to play attach sound', error)
+    log.warn('Failed to play attach sound', { error })
   }
 }
 
@@ -99,7 +99,7 @@ export function playAssetDetachSound(): void {
 
     log.debug('Asset detach sound played')
   } catch (error) {
-    log.warn('Failed to play detach sound', error)
+    log.warn('Failed to play detach sound', { error })
   }
 }
 
@@ -135,7 +135,7 @@ export function playAssetErrorSound(): void {
 
     log.debug('Asset error sound played')
   } catch (error) {
-    log.warn('Failed to play error sound', error)
+    log.warn('Failed to play error sound', { error })
   }
 }
 
@@ -180,6 +180,6 @@ export function playAssetUploadCompleteSound(): void {
 
     log.debug('Asset upload complete sound played')
   } catch (error) {
-    log.warn('Failed to play upload complete sound', error)
+    log.warn('Failed to play upload complete sound', { error })
   }
 }

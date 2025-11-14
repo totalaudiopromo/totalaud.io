@@ -18,9 +18,14 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { useEpkCollaborators, type EpkRole } from '@/hooks/useEpkCollaborators'
+import {
+  useEpkCollaborators,
+  type EpkRole,
+  type EpkCollaborator,
+} from '@/hooks/useEpkCollaborators'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
+import { X } from 'lucide-react'
 
 const log = logger.scope('CollaboratorsDrawer')
 
@@ -47,12 +52,21 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
   const [inviteMessage, setInviteMessage] = useState('')
   const [inviteSuccess, setInviteSuccess] = useState<string | null>(null)
 
-  const { collaborators, userRole, loading, error, sendInvite, removeCollaborator, refetch } =
-    useEpkCollaborators({
-      epkId,
-      enabled: isOpen,
-      includeStatus: activeTab === 'pending' ? 'pending' : 'accepted',
-    })
+  const {
+    collaborators,
+    userRole,
+    loading,
+    error,
+    sendInvite,
+    removeCollaborator,
+    revokeInvite,
+    refetch,
+  } = useEpkCollaborators({
+    epkId,
+    enabled: isOpen,
+    includeStatus: activeTab === 'pending' ? 'pending' : 'accepted',
+    realtime: true,
+  })
 
   const isOwner = userRole === 'owner'
 
@@ -87,7 +101,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
     const result = await sendInvite(inviteEmail, inviteRole, { message: inviteMessage })
 
     if (result.success) {
-      setInviteSuccess(result.inviteUrl || 'Invite sent successfully')
+      setInviteSuccess(result.inviteUrl || 'invite sent successfully')
       setInviteEmail('')
       setInviteMessage('')
       setShowInviteForm(false)
@@ -105,18 +119,25 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
   /**
    * Handle remove collaborator
    */
-  const handleRemove = async (collaboratorId: string) => {
+  const handleRemove = async (collaborator: EpkCollaborator & { status: 'accepted' | 'pending' }) => {
     const confirmed = window.confirm('Remove this collaborator?')
     if (!confirmed) return
 
-    await removeCollaborator(collaboratorId)
+    if (collaborator.status === 'pending') {
+      await revokeInvite(collaborator.id)
+    } else {
+      await removeCollaborator(collaborator.id)
+    }
   }
 
   /**
    * Handle copy invite URL
    */
-  const handleCopyInviteUrl = (url: string) => {
-    navigator.clipboard.writeText(url)
+  const handleCopyInviteUrl = (url?: string) => {
+    if (!url) return
+    navigator.clipboard.writeText(url).catch((error) => {
+      log.error('Failed to copy invite URL', { error })
+    })
   }
 
   // Get tab-specific collaborators
@@ -161,7 +182,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
               }}
             >
               <div>
-                <h2 className="text-lg font-semibold text-white">Collaborators</h2>
+        <h2 className="text-lg font-semibold text-white">collaborators</h2>
                 <p className="text-xs text-grey-400">
                   Your role: <span style={{ color: flowCoreColours.slateCyan }}>{userRole}</span>
                 </p>
@@ -180,7 +201,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                 }}
                 aria-label="Close drawer"
               >
-                <span className="text-grey-400">✕</span>
+                <X size={18} strokeWidth={1.6} className="text-grey-400" />
               </button>
             </div>
 
@@ -212,7 +233,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                   }
                 }}
               >
-                Collaborators ({displayedCollaborators.length})
+                collaborators ({displayedCollaborators.length})
               </button>
               {isOwner && (
                 <button
@@ -236,7 +257,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                     }
                   }}
                 >
-                  Pending ({collaborators.filter((c) => c.status === 'pending').length})
+                  pending ({collaborators.filter((c) => c.status === 'pending').length})
                 </button>
               )}
             </div>
@@ -274,10 +295,10 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                   border: `1px solid ${flowCoreColours.hoverGrey}`,
                 }}
               >
-                <h3 className="text-sm font-semibold text-white">Send Invite</h3>
+                <h3 className="text-sm font-semibold text-white">send invite</h3>
 
                 <div>
-                  <label className="block text-xs text-grey-400 mb-1">Email</label>
+                  <label className="block text-xs text-grey-400 mb-1">email</label>
                   <input
                     type="email"
                     value={inviteEmail}
@@ -298,7 +319,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                 </div>
 
                 <div>
-                  <label className="block text-xs text-grey-400 mb-1">Role</label>
+                  <label className="block text-xs text-grey-400 mb-1">role</label>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as 'editor' | 'viewer' | 'guest')}
@@ -314,14 +335,14 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                       e.currentTarget.style.borderColor = flowCoreColours.hoverGrey
                     }}
                   >
-                    <option value="editor">Editor (can edit and comment)</option>
-                    <option value="viewer">Viewer (read-only)</option>
-                    <option value="guest">Guest (limited access)</option>
+                    <option value="editor">editor (can edit and comment)</option>
+                    <option value="viewer">viewer (read-only)</option>
+                    <option value="guest">guest (limited access)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs text-grey-400 mb-1">Message (optional)</label>
+                  <label className="block text-xs text-grey-400 mb-1">message (optional)</label>
                   <textarea
                     value={inviteMessage}
                     onChange={(e) => setInviteMessage(e.target.value)}
@@ -358,7 +379,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                       e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
                     }}
                   >
-                    Send Invite
+                    send invite
                   </button>
                   <button
                     onClick={() => setShowInviteForm(false)}
@@ -373,7 +394,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                       e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
                     }}
                   >
-                    Cancel
+                    cancel
                   </button>
                 </div>
               </motion.div>
@@ -395,18 +416,18 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                     e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
                   }}
                 >
-                  + Invite Collaborator
+                  open invite form
                 </button>
               </div>
             )}
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {loading && <div className="text-center text-grey-400 text-sm py-8">Loading...</div>}
+              {loading && <div className="text-center text-grey-400 text-sm py-8">loading...</div>}
 
               {!loading && displayedCollaborators.length === 0 && (
                 <div className="text-center text-grey-400 text-sm py-8">
-                  {activeTab === 'pending' ? 'No pending invites' : 'No collaborators yet'}
+                  {activeTab === 'pending' ? 'no pending invites' : 'no collaborators yet'}
                 </div>
               )}
 
@@ -436,15 +457,15 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                               backgroundColor: flowCoreColours.hoverGrey,
                             }}
                           >
-                            {collab.fullName?.[0] || collab.email[0].toUpperCase()}
+                            {(collab.displayName ?? collab.email ?? collab.userId ?? '?').charAt(0)}
                           </div>
 
                           {/* Name/Email */}
                           <div>
                             <p className="text-sm font-medium text-white">
-                              {collab.fullName || collab.email}
+                              {collab.displayName ?? collab.email ?? collab.userId ?? 'collaborator'}
                             </p>
-                            {collab.fullName && (
+                            {collab.displayName && collab.email && (
                               <p className="text-xs text-grey-400">{collab.email}</p>
                             )}
                           </div>
@@ -464,42 +485,71 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                         </div>
 
                         {/* Status info */}
-                        {activeTab === 'pending' && (
+                        {collab.status === 'pending' && (
                           <div className="mt-2 text-xs text-grey-400">
-                            <p>Invited by {collab.invitedBy.email}</p>
+                            <p>
+                              invited by{' '}
+                              {collab.invitedBy?.displayName ||
+                                collab.invitedBy?.email ||
+                                'campaign owner'}
+                            </p>
                             {collab.expiresAt && (
-                              <p>Expires {new Date(collab.expiresAt).toLocaleDateString()}</p>
+                              <p>expires {new Date(collab.expiresAt).toLocaleDateString()}</p>
                             )}
                           </div>
                         )}
 
-                        {activeTab === 'collaborators' && collab.acceptedAt && (
+                        {collab.status === 'accepted' && collab.acceptedAt && (
                           <div className="mt-2 text-xs text-grey-400">
-                            Joined {new Date(collab.acceptedAt).toLocaleDateString()}
+                            joined {new Date(collab.acceptedAt).toLocaleDateString()}
                           </div>
                         )}
                       </div>
 
                       {/* Actions */}
-                      {isOwner && collab.role !== 'owner' && (
-                        <button
-                          onClick={() => handleRemove(collab.id)}
-                          className="p-1.5 text-grey-400 rounded transition-colours duration-120"
-                          style={{
-                            backgroundColor: 'transparent',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = flowCoreColours.errorRed
-                            e.currentTarget.style.backgroundColor = 'rgba(229, 115, 115, 0.1)'
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = flowCoreColours.textSecondary
-                            e.currentTarget.style.backgroundColor = 'transparent'
-                          }}
-                          aria-label="Remove collaborator"
-                        >
-                          <span className="text-sm">✕</span>
-                        </button>
+                      {isOwner && (
+                        <div className="flex items-center gap-2">
+                          {collab.status === 'pending' && collab.inviteUrl && (
+                            <button
+                              onClick={() => handleCopyInviteUrl(collab.inviteUrl)}
+                              className="p-1.5 text-grey-400 rounded transition-colours duration-120"
+                              style={{
+                                backgroundColor: 'transparent',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = flowCoreColours.slateCyan
+                                e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = flowCoreColours.textSecondary
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                              }}
+                              aria-label="Copy invite link"
+                            >
+                              copy link
+                            </button>
+                          )}
+                          {collab.role !== 'owner' && (
+                            <button
+                              onClick={() => handleRemove(collab)}
+                              className="p-1.5 text-grey-400 rounded transition-colours duration-120"
+                              style={{
+                                backgroundColor: 'transparent',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = flowCoreColours.errorRed
+                                e.currentTarget.style.backgroundColor = 'rgba(229, 115, 115, 0.1)'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = flowCoreColours.textSecondary
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                              }}
+                              aria-label="Remove collaborator"
+                            >
+                              <X size={14} strokeWidth={1.6} />
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -513,7 +563,7 @@ export function CollaboratorsDrawer({ epkId, isOpen, onClose }: CollaboratorsDra
                 borderTop: `1px solid ${flowCoreColours.borderGrey}`,
               }}
             >
-              <p>Press ⌘P to toggle this drawer</p>
+              <p>press ⌘P to toggle this drawer</p>
             </div>
           </motion.div>
         </>

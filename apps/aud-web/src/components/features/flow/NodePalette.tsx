@@ -275,7 +275,7 @@ export function NodePalette({ open, onClose, onSpawnNode, activeTab }: NodePalet
                       borderRadius: '6px',
                       cursor: 'pointer',
                       textAlign: 'left',
-                      transition: 'all 0.12s ease',
+                      transition: 'all var(--flowcore-motion-fast) ease',
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected) {
@@ -291,11 +291,13 @@ export function NodePalette({ open, onClose, onSpawnNode, activeTab }: NodePalet
                     {/* Icon */}
                     <div
                       style={{
-                        fontSize: '24px',
                         flexShrink: 0,
+                        color: isSelected ? flowCoreColours.iceCyan : flowCoreColours.textSecondary,
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
-                      {node.icon}
+                      <node.icon size={22} strokeWidth={1.6} />
                     </div>
 
                     {/* Info */}

@@ -13,10 +13,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
-
-export const runtime = 'edge'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('AssetListAPI')
 
@@ -48,48 +46,6 @@ interface ListResponse {
   message?: string
 }
 
-/**
- * Generate demo fixtures for unauthenticated users
- */
-function generateDemoFixtures(): Asset[] {
-  return [
-    {
-      id: 'demo-1',
-      user_id: 'demo',
-      campaign_id: null,
-      kind: 'audio',
-      title: 'demo-track.mp3',
-      description: 'Example audio file',
-      tags: ['demo', 'audio'],
-      path: null,
-      url: null,
-      mime_type: 'audio/mpeg',
-      byte_size: 5242880,
-      is_public: false,
-      public_share_id: 'demo-share-1',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      id: 'demo-2',
-      user_id: 'demo',
-      campaign_id: null,
-      kind: 'image',
-      title: 'press-photo.jpg',
-      description: 'Example press photo',
-      tags: ['demo', 'image', 'press'],
-      path: null,
-      url: null,
-      mime_type: 'image/jpeg',
-      byte_size: 1048576,
-      is_public: false,
-      public_share_id: 'demo-share-2',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  ]
-}
-
 export async function GET(request: NextRequest) {
   const startTime = Date.now()
 
@@ -104,39 +60,29 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10)
     const size = Math.min(parseInt(searchParams.get('size') || '50', 10), 100) // Max 100
 
-    // Get Supabase client
-    const supabase = createClient()
-
-    // Get authenticated user
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    // Demo mode for unauthenticated users
-    if (!user) {
-      const duration = Date.now() - startTime
-      const fixtures = generateDemoFixtures()
-
-      log.debug('Demo mode: returning fixtures', { count: fixtures.length })
-
-      const response: ListResponse = {
-        success: true,
-        assets: fixtures,
-        total: fixtures.length,
-        page: 1,
-        size: fixtures.length,
-        duration,
-        message: 'Demo mode: showing example assets',
-      }
-
-      return NextResponse.json(response)
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
 
     // Build query
     let query = supabase
       .from('artist_assets')
       .select('*', { count: 'exact' })
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
+      .eq('user_id', userId)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
 

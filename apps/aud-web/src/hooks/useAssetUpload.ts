@@ -210,7 +210,7 @@ export function useAssetUpload(): UseAssetUploadReturn {
             }
 
             const backoffDelay = Math.pow(2, retryCount) * 1000 // Exponential backoff: 2s, 4s, 8s
-            log.warn(`Sign URL failed, retrying in ${backoffDelay}ms`, error, { retryCount })
+            log.warn(`Sign URL failed, retrying in ${backoffDelay}ms`, { error, retryCount })
             await new Promise((resolve) => setTimeout(resolve, backoffDelay))
           }
         }
@@ -258,7 +258,8 @@ export function useAssetUpload(): UseAssetUploadReturn {
       } catch (error) {
         const duration = Date.now() - startTime
 
-        log.error('Asset upload failed', error, {
+        log.error('Asset upload failed', {
+          error,
           filename: file.name,
           duration,
         })

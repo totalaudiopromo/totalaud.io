@@ -28,7 +28,7 @@ export function useFlowHub() {
    */
   const openFlowHub = useCallback(() => {
     setIsFlowHubOpen(true)
-    trackEvent('flow_hub_opened', {})
+    trackEvent('flow_hub_opened', { metadata: {} })
     log.debug('Flow Hub opened')
   }, [trackEvent])
 

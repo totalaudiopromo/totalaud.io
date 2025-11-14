@@ -20,13 +20,28 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
-import type { OutreachLog } from '@/lib/tracker-with-assets'
-import type { AssetAttachment } from '@/types/asset-attachment'
+import type { OutreachLog as OrchestrationOutreachLog } from '@/types/console'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { AssetViewModal } from '@/components/console/AssetViewModal'
 import { useOrchestration } from '@/contexts/OrchestrationContext'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
+import { BarChart2 } from 'lucide-react'
 
 const log = logger.scope('TrackerAgentNode')
+
+type TrackerStatus = 'sent' | 'replied' | 'bounced' | 'pending'
+
+interface TrackerLogEntry {
+  id: string
+  contactName: string
+  message: string
+  assetId?: string
+  assetTitle?: string
+  assetKind?: string
+  sentAt: string
+  status: TrackerStatus
+  campaignId?: string
+}
 
 export interface TrackerAgentNodeProps {
   campaignId?: string
@@ -38,7 +53,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
   const { trackEvent } = useFlowStateTelemetry()
   const { recentLogs } = useOrchestration()
 
-  const [logs, setLogs] = useState<OutreachLog[]>([])
+  const [logs, setLogs] = useState<TrackerLogEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [viewModalOpen, setViewModalOpen] = useState(false)
@@ -47,26 +62,36 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
    * Merge API logs with recent orchestration logs
    */
   useEffect(() => {
-    if (recentLogs.length > 0) {
-      // Convert OrchestrationContext OutreachLog to TrackerAgentNode OutreachLog format
-      const convertedLogs = recentLogs.map((orchLog) => ({
-        ...orchLog,
-        contact_name: orchLog.contact_name || 'Unknown',
-        message: orchLog.message_preview,
-        sent_at: orchLog.timestamp,
-        asset_id: orchLog.asset_ids[0], // Use first asset for display
-        asset_kind: 'audio', // Default kind, would need enrichment in real implementation
-        asset_title: undefined,
-      }))
+    if (recentLogs.length === 0) return
 
-      // Prepend recent logs to existing logs (avoid duplicates by ID)
-      setLogs((prevLogs) => {
-        const existingIds = new Set(prevLogs.map((l) => l.id))
-        const newLogs = convertedLogs.filter((l) => !existingIds.has(l.id))
-        return [...newLogs, ...prevLogs]
+    const convertedLogs: TrackerLogEntry[] = recentLogs.map(
+      (orchLog: OrchestrationOutreachLog) => ({
+        id: orchLog.id,
+        contactName: orchLog.contact_name ?? 'unknown contact',
+        message: orchLog.message_preview,
+        assetId: orchLog.asset_ids[0],
+        assetTitle: undefined,
+        assetKind: undefined,
+        sentAt: orchLog.timestamp,
+        status: orchLog.status,
+        campaignId: orchLog.campaign_id,
       })
-    }
-  }, [recentLogs])
+    )
+
+    setLogs((prevLogs) => {
+      const existingIds = new Set(prevLogs.map((entry) => entry.id))
+      const newLogs = convertedLogs.filter((entry) => !existingIds.has(entry.id))
+      return [...newLogs, ...prevLogs]
+    })
+
+    trackEvent('tracker_update', {
+      metadata: {
+        campaignId,
+        logCount: convertedLogs.length,
+        source: 'orchestration',
+      },
+    })
+  }, [recentLogs, campaignId, trackEvent])
 
   /**
    * Fetch outreach logs on mount
@@ -79,15 +104,21 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
    * Fetch outreach logs from API
    */
   const fetchOutreachLogs = useCallback(async () => {
+    if (!campaignId || !userId) {
+      setLogs([])
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     try {
       const response = await fetch('/api/agents/tracker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sessionId: campaignId || 'tracker-demo',
-          userId: userId || 'demo-user',
-          campaignId: campaignId || 'demo-campaign',
+          sessionId: campaignId,
+          userId,
+          campaignId,
         }),
       })
 
@@ -96,26 +127,48 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
       }
 
       const data = await response.json()
-      setLogs(data.logs || [])
-      log.info('Outreach logs fetched', { count: data.logs?.length || 0 })
+      const fetchedLogs: TrackerLogEntry[] = Array.isArray(data.logs)
+        ? data.logs.map((raw: any) => ({
+            id: String(raw.id),
+            contactName: raw.contact_name ?? 'unknown contact',
+            message:
+              raw.message_preview ??
+              raw.message ??
+              raw.result_data?.message ??
+              'no message available',
+            assetId: raw.asset_id ?? raw.asset_ids?.[0],
+            assetTitle: raw.asset_title ?? undefined,
+            assetKind: raw.asset_kind ?? undefined,
+            sentAt: raw.sent_at ?? raw.created_at ?? new Date().toISOString(),
+            status: (raw.status ?? 'sent') as TrackerStatus,
+            campaignId: raw.campaign_id ?? undefined,
+          }))
+        : []
 
-      // Show demo mode toast if applicable
-      if (data.demo) {
-        // Toast already shown by console page, don't duplicate
-      }
+      setLogs(fetchedLogs)
+      log.info('Outreach logs fetched', { count: fetchedLogs.length })
+
+      trackEvent('tracker_update', {
+        metadata: {
+          campaignId,
+          logCount: fetchedLogs.length,
+          source: 'fetch',
+        },
+      })
     } catch (error) {
       log.error('Failed to fetch outreach logs', error)
       setLogs([])
     } finally {
       setLoading(false)
     }
-  }, [campaignId, userId])
+  }, [campaignId, userId, trackEvent])
 
   /**
    * Handle asset icon click
    */
   const handleAssetClick = useCallback(
-    (assetId: string, logId: string) => {
+    (assetId: string | undefined, logId: string) => {
+      if (!assetId) return
       log.info('Asset clicked from tracker', { assetId, logId })
 
       // Track telemetry
@@ -150,7 +203,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
   /**
    * Get status badge colour
    */
-  const getStatusColour = (status: OutreachLog['status']): string => {
+  const getStatusColour = (status: TrackerStatus): string => {
     switch (status) {
       case 'sent':
         return flowCoreColours.slateCyan
@@ -168,22 +221,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
   /**
    * Get asset kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    switch (kind) {
-      case 'audio':
-        return '🎵'
-      case 'image':
-        return '🖼️'
-      case 'document':
-        return '📄'
-      case 'archive':
-        return '📦'
-      case 'link':
-        return '🔗'
-      default:
-        return '📎'
-    }
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   return (
     <>
@@ -232,7 +270,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
               fontWeight: 500,
               cursor: loading ? 'not-allowed' : 'pointer',
               textTransform: 'lowercase',
-              transition: 'all 0.24s ease',
+              transition: 'all var(--flowcore-motion-normal) ease',
               opacity: loading ? 0.5 : 1,
             }}
             onMouseEnter={(e) => {
@@ -251,6 +289,23 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
             {loading ? 'loading...' : 'refresh'}
           </button>
         </div>
+
+        {(!campaignId || !userId) && (
+          <div
+            style={{
+              padding: '16px',
+              backgroundColor: 'rgba(58, 169, 190, 0.05)',
+              border: `1px solid ${flowCoreColours.borderGrey}`,
+              borderRadius: '6px',
+              fontSize: '12px',
+              color: flowCoreColours.textSecondary,
+              textAlign: 'center',
+              marginBottom: '16px',
+            }}
+          >
+            select a campaign to view outreach logs
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
@@ -277,13 +332,8 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
               textAlign: 'center',
             }}
           >
-            <div
-              style={{
-                fontSize: '32px',
-                marginBottom: '12px',
-              }}
-            >
-              📊
+            <div style={{ marginBottom: '12px', color: flowCoreColours.slateCyan }}>
+              <BarChart2 size={32} strokeWidth={1.5} />
             </div>
             <div
               style={{
@@ -411,7 +461,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
                         fontWeight: 500,
                       }}
                     >
-                      {logItem.contact_name}
+                      {logItem.contactName}
                     </td>
 
                     {/* Message Preview */}
@@ -435,17 +485,17 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
                         textAlign: 'center',
                       }}
                     >
-                      {logItem.asset_id && logItem.asset_kind ? (
+                      {logItem.assetId && logItem.assetKind ? (
                         <button
-                          onClick={() => handleAssetClick(logItem.asset_id!, logItem.id)}
-                          aria-label={`View asset: ${logItem.asset_title || 'Untitled'}`}
+                          onClick={() => handleAssetClick(logItem.assetId, logItem.id)}
+                          aria-label={`View asset: ${logItem.assetTitle || 'Untitled'}`}
                           style={{
                             background: 'transparent',
                             border: 'none',
                             cursor: 'pointer',
                             fontSize: '20px',
                             padding: '4px',
-                            transition: 'transform 0.12s ease',
+                            transition: 'transform var(--flowcore-motion-fast) ease',
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.2)'
@@ -453,9 +503,12 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
                           onMouseLeave={(e) => {
                             e.currentTarget.style.transform = 'scale(1)'
                           }}
-                          title={logItem.asset_title || 'View asset'}
+                          title={logItem.assetTitle || 'View asset'}
                         >
-                          {getKindIcon(logItem.asset_kind)}
+                          {(() => {
+                            const Icon = getKindIcon(logItem.assetKind!)
+                            return <Icon size={18} strokeWidth={1.4} />
+                          })()}
                         </button>
                       ) : (
                         <span
@@ -477,7 +530,7 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
                         fontSize: '12px',
                       }}
                     >
-                      {formatDate(logItem.sent_at)}
+                      {formatDate(logItem.sentAt)}
                     </td>
 
                     {/* Status Badge */}
@@ -525,8 +578,8 @@ export function TrackerAgentNode({ campaignId, userId }: TrackerAgentNodeProps) 
               {logs.length} outreach log{logs.length === 1 ? '' : 's'}
             </span>
             <span>
-              {logs.filter((l) => l.asset_id).length} with asset
-              {logs.filter((l) => l.asset_id).length === 1 ? '' : 's'}
+              {logs.filter((l) => l.assetId).length} with asset
+              {logs.filter((l) => l.assetId).length === 1 ? '' : 's'}
             </span>
           </div>
         )}

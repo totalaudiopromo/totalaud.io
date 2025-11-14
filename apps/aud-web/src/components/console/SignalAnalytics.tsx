@@ -30,6 +30,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
+import { X } from 'lucide-react'
 
 const log = logger.scope('SignalAnalytics')
 
@@ -297,21 +298,23 @@ export function SignalAnalytics({
                 signal analytics
               </h2>
 
-              <button
-                onClick={onClose}
-                aria-label="Close analytics panel"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: flowCoreColours.textSecondary,
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  lineHeight: 1,
-                }}
-              >
-                ×
-              </button>
+            <button
+              onClick={onClose}
+              aria-label="Close analytics panel"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: flowCoreColours.textSecondary,
+                fontSize: '24px',
+                cursor: 'pointer',
+                padding: '4px',
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <X size={18} strokeWidth={1.6} />
+            </button>
             </div>
 
             {/* Content */}
@@ -338,7 +341,7 @@ export function SignalAnalytics({
               {error && (
                 <div
                   style={{
-                    color: '#E57373',
+                    color: flowCoreColours.errorRed,
                     fontSize: '14px',
                     textAlign: 'center',
                     padding: '40px 0',
@@ -556,7 +559,7 @@ export function SignalAnalytics({
                   fontWeight: 500,
                   cursor: 'pointer',
                   textTransform: 'lowercase',
-                  transition: 'all 0.24s ease',
+                  transition: 'all var(--flowcore-motion-normal) ease',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = flowCoreColours.slateCyan

@@ -13,11 +13,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@aud-web/lib/supabaseClient'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
-
-export const runtime = 'edge'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('AssetDeleteAPI')
 
@@ -42,33 +40,34 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { assetId } = deleteRequestSchema.parse(body)
 
-    // Get Supabase client
-    const supabase = createClient()
-
-    // Get authenticated user
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized', details: 'Authentication required' },
-        { status: 401 }
-      )
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
 
     // Fetch asset to get path and verify ownership
     const { data: asset, error: fetchError } = await supabase
       .from('artist_assets')
       .select('*')
       .eq('id', assetId)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .is('deleted_at', null)
       .single()
 
     if (fetchError || !asset) {
-      log.warn('Asset not found or already deleted', { assetId, userId: user.id })
+      log.warn('Asset not found or already deleted', { assetId, userId })
       return NextResponse.json(
         {
           error: 'Asset not found',
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
       .from('artist_assets')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', assetId)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
 
     if (updateError) {
       log.error('Failed to soft delete asset', updateError, { assetId })
@@ -102,7 +101,8 @@ export async function POST(request: NextRequest) {
 
       if (storageError) {
         // Log error but don't fail the request (soft delete already succeeded)
-        log.warn('Failed to delete storage object', storageError, {
+        log.warn('Failed to delete storage object', {
+          error: storageError,
           assetId,
           path: asset.path,
         })

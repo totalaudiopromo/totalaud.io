@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { useEPKAnalytics } from '@aud-web/hooks/useEPKAnalytics'
 import { logger } from '@/lib/logger'
+import { BarChart2, Download, Eye, Share2, X } from 'lucide-react'
 
 const log = logger.scope('EPKAnalyticsDrawer')
 
@@ -99,7 +100,10 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                     textTransform: 'lowercase',
                   }}
                 >
-                  📊 epk analytics
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <BarChart2 size={20} strokeWidth={1.6} />
+                    epk analytics
+                  </span>
                 </h2>
                 <button
                   onClick={onClose}
@@ -114,7 +118,7 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                   }}
                   aria-label="Close drawer"
                 >
-                  ✕
+                  <X size={18} strokeWidth={1.6} />
                 </button>
               </div>
 
@@ -138,7 +142,7 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                       fontWeight: 500,
                       cursor: 'pointer',
                       textTransform: 'lowercase',
-                      transition: 'all 0.12s ease',
+                      transition: 'all var(--flowcore-motion-fast) ease',
                     }}
                   >
                     {tab}
@@ -197,9 +201,9 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                     {activeTab === 'overview' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {[
-                          { label: 'total views', value: data.totals.views, icon: '👁' },
-                          { label: 'total downloads', value: data.totals.downloads, icon: '⬇' },
-                          { label: 'total shares', value: data.totals.shares, icon: '↗' },
+                          { label: 'total views', value: data.totals.views, Icon: Eye },
+                          { label: 'total downloads', value: data.totals.downloads, Icon: Download },
+                          { label: 'total shares', value: data.totals.shares, Icon: Share2 },
                         ].map((metric) => (
                           <div
                             key={metric.label}
@@ -216,9 +220,13 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                                 color: flowCoreColours.textTertiary,
                                 textTransform: 'lowercase',
                                 marginBottom: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
                               }}
                             >
-                              {metric.icon} {metric.label}
+                                <metric.Icon size={16} strokeWidth={1.6} />
+                                {metric.label}
                             </div>
                             <div
                               style={{
@@ -287,11 +295,21 @@ export function EPKAnalyticsDrawer({ epkId, isOpen, onClose }: EPKAnalyticsDrawe
                                   gap: '16px',
                                   fontSize: '12px',
                                   color: flowCoreColours.textSecondary,
+                                  alignItems: 'center',
                                 }}
                               >
-                                <span>👁 {group.views}</span>
-                                <span>⬇ {group.downloads}</span>
-                                <span>↗ {group.shares}</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                  <Eye size={14} strokeWidth={1.6} />
+                                  {group.views}
+                                </span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                  <Download size={14} strokeWidth={1.6} />
+                                  {group.downloads}
+                                </span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                  <Share2 size={14} strokeWidth={1.6} />
+                                  {group.shares}
+                                </span>
                               </div>
                             </div>
                           ))

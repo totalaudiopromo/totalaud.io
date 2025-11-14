@@ -1,235 +1,449 @@
 /**
- * FlowCanvas Component
- * Phase 15.3: Connected Console & Orchestration
+ * FlowCanvas 2.0
+ * Phase 16: FlowCore Recovery & Auth Reconnection
  *
- * Purpose:
- * - Provide infinite canvas for node-based workflow
- * - Support node spawning from registry
- * - Manage node positioning and connections
- * - Edge glow affordance on drag
- *
- * @todo: upgrade if legacy component found
+ * React Flow powered canvas with Zustand state and Supabase persistence.
  */
 
 'use client'
 
-import { useState, useCallback, useRef, type ReactNode } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import ReactFlow, {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Background,
+  BackgroundVariant,
+  Controls,
+  MiniMap,
+  type Connection,
+  type Edge,
+  type EdgeChange,
+  type Node,
+  type NodeChange,
+  type NodeProps,
+} from 'reactflow'
+import 'reactflow/dist/style.css'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
-import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { getNodeByKind } from '@/components/features/flow/node-registry'
 import type { NodeKind } from '@/types/console'
-import { getNodeByKind } from '@/features/flow/node-registry'
+import { useFlowCanvasStore } from '@/store/flowCanvasStore'
+import { createBrowserSupabaseClient } from '@aud-web/lib/supabase/client'
+import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
 
 const log = logger.scope('FlowCanvas')
 
-export interface NodePosition {
-  x: number
-  y: number
-}
-
-export interface SpawnedNode {
-  id: string
+interface FlowNodeData {
   kind: NodeKind
-  position: NodePosition
-  element: ReactNode
+  campaignId?: string
+  userId?: string
 }
 
-export interface FlowCanvasProps {
+interface FlowCanvasProps {
   campaignId?: string
   userId?: string
   children?: ReactNode
-  onNodeSpawned?: (kind: NodeKind, nodeId: string) => void
 }
 
-export function FlowCanvas({ campaignId, userId, children, onNodeSpawned }: FlowCanvasProps) {
+type SceneState = {
+  nodes: Node<FlowNodeData>[]
+  edges: Edge[]
+}
+
+function FlowCanvasNode({ data }: NodeProps<FlowNodeData>) {
+  const nodeDef = getNodeByKind(data.kind)
+
+  if (!nodeDef) {
+    log.warn('Node definition missing', { kind: data.kind })
+    return null
+  }
+
+  return (
+    <div style={{ minWidth: 360 }}>
+      {nodeDef.spawn({
+        campaignId: data.campaignId,
+        userId: data.userId,
+      })}
+    </div>
+  )
+}
+
+const nodeTypes = { 'flow-node': FlowCanvasNode } as const
+const AUTO_SAVE_INTERVAL_MS = 60_000
+
+let spawnOffset = 0
+
+export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
+  const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   const prefersReducedMotion = useReducedMotion()
-  const { trackEvent } = useFlowStateTelemetry()
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const { nodes, edges, setNodes, setEdges, reset } = useFlowCanvasStore((state) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    setNodes: state.setNodes,
+    setEdges: state.setEdges,
+    reset: state.reset,
+  }))
+  const [sceneId, setSceneId] = useState<string | null>(null)
+  const [isHydrating, setIsHydrating] = useState(true)
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
 
-  const [spawnedNodes, setSpawnedNodes] = useState<SpawnedNode[]>([])
-  const [edgeGlowActive, setEdgeGlowActive] = useState(false)
-  const [cursorPosition, setCursorPosition] = useState<NodePosition>({ x: 0, y: 0 })
+  const pendingSaveRef = useRef(false)
+  const skipNextSaveRef = useRef(false)
 
-  /**
-   * Spawn a node at the specified position (or cursor position)
-   */
-  const spawnNode = useCallback(
-    (kind: NodeKind, at?: NodePosition) => {
+  useEffect(() => {
+    if (!userId) {
+      skipNextSaveRef.current = true
+      reset()
+      setSceneId(null)
+      setLastSavedAt(null)
+      setIsHydrating(false)
+      return
+    }
+
+    let cancelled = false
+
+    async function loadScene() {
+      setIsHydrating(true)
+
       try {
-        const nodeDef = getNodeByKind(kind)
-        if (!nodeDef) {
-          log.warn('Node kind not found in registry', { kind })
-          return null
+        let query = supabase
+          .from('canvas_scenes')
+          .select('id, scene_state, updated_at')
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+
+        if (campaignId) {
+          query = query.eq('campaign_id', campaignId)
+        } else {
+          query = query.is('campaign_id', null)
         }
 
-        const position = at || cursorPosition
-        const nodeId = `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+        const { data, error } = await query.maybeSingle()
 
-        log.info('Spawning node', { kind, nodeId, position })
+        if (cancelled) return
 
-        // Spawn the node element using the factory
-        const element = nodeDef.spawn({
-          campaignId,
-          userId,
-        })
-
-        const newNode: SpawnedNode = {
-          id: nodeId,
-          kind,
-          position,
-          element,
+        if (error) {
+          log.warn('Failed to load canvas scene', { error, campaignId, userId })
+          skipNextSaveRef.current = true
+          reset()
+          setSceneId(null)
+          setLastSavedAt(null)
+          return
         }
 
-        setSpawnedNodes((prev) => [...prev, newNode])
+        if (data?.scene_state) {
+          const scene = data.scene_state as SceneState
+          const hydratedNodes: Node<FlowNodeData>[] =
+            scene.nodes
+              ?.map((node) => {
+                const rawData = (node.data as Partial<FlowNodeData> | undefined) ?? {}
+                if (!rawData.kind) {
+                  log.warn('Skipping node without kind', { nodeId: node.id })
+                  return null
+                }
 
-        // Track telemetry
-        trackEvent('save', {
-          metadata: {
-            action: 'node_spawned',
-            nodeKind: kind,
-            nodeId,
-            campaignId: campaignId || 'global',
-          },
-        })
+                const formatted: Node<FlowNodeData> = {
+                  ...node,
+                  data: {
+                    kind: rawData.kind,
+                    campaignId,
+                    userId,
+                    ...rawData,
+                  },
+                }
 
-        // Edge glow affordance
-        setEdgeGlowActive(true)
-        setTimeout(() => setEdgeGlowActive(false), 400)
+                return formatted
+              })
+              .filter((node): node is Node<FlowNodeData> => node !== null) ?? []
 
-        if (onNodeSpawned) {
-          onNodeSpawned(kind, nodeId)
+          skipNextSaveRef.current = true
+          setNodes(hydratedNodes)
+          setEdges(scene.edges ?? [])
+          setSceneId(data.id)
+          setLastSavedAt(data.updated_at ?? null)
+        } else {
+          skipNextSaveRef.current = true
+          reset()
+          setSceneId(null)
+          setLastSavedAt(null)
+        }
+      } finally {
+        if (!cancelled) {
+          setIsHydrating(false)
+        }
+      }
+    }
+
+    void loadScene()
+
+    return () => {
+      cancelled = true
+    }
+  }, [campaignId, reset, setEdges, setNodes, supabase, userId])
+
+  useEffect(() => {
+    if (!userId) return
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false
+      return
+    }
+    pendingSaveRef.current = true
+  }, [edges, nodes, userId])
+
+  const persistScene = useCallback(async () => {
+    if (!userId) return false
+
+    const payload: SceneState = {
+      nodes,
+      edges,
+    }
+
+    try {
+      if (sceneId) {
+        const { data, error } = await supabase
+          .from('canvas_scenes')
+          .update({ scene_state: payload })
+          .eq('id', sceneId)
+          .select('updated_at')
+          .single()
+
+        if (error) {
+          log.error('Failed to update canvas scene', { error, sceneId })
+          return false
         }
 
-        return nodeId
-      } catch (error) {
-        log.error('Failed to spawn node', error, { kind })
-        return null
+        setLastSavedAt(data?.updated_at ?? new Date().toISOString())
+      } else {
+        const { data, error } = await supabase
+          .from('canvas_scenes')
+          .insert({
+            user_id: userId,
+            campaign_id: campaignId ?? null,
+            title: 'Console Scene',
+            scene_state: payload,
+          })
+          .select('id, updated_at')
+          .single()
+
+        if (error) {
+          log.error('Failed to create canvas scene', { error })
+          return false
+        }
+
+        setSceneId(data.id)
+        setLastSavedAt(data.updated_at ?? new Date().toISOString())
+      }
+
+      pendingSaveRef.current = false
+      log.debug('Canvas scene saved', { sceneId: sceneId ?? 'new' })
+      return true
+    } catch (error) {
+      log.error('Unexpected error saving canvas scene', { error })
+      return false
+    }
+  }, [campaignId, edges, nodes, sceneId, supabase, userId])
+
+  useEffect(() => {
+    if (!userId) return
+
+    const intervalId = window.setInterval(() => {
+      if (pendingSaveRef.current) {
+        void persistScene()
+      }
+    }, AUTO_SAVE_INTERVAL_MS)
+
+    return () => window.clearInterval(intervalId)
+  }, [persistScene, userId])
+
+  useEffect(() => {
+    if (!userId) return
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden' && pendingSaveRef.current) {
+        void persistScene()
+      }
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (pendingSaveRef.current) {
+        void persistScene()
+        event.preventDefault()
+        event.returnValue = ''
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [persistScene, userId])
+
+  useEffect(
+    () => () => {
+      if (pendingSaveRef.current) {
+        void persistScene()
       }
     },
-    [cursorPosition, campaignId, userId, trackEvent, onNodeSpawned]
+    [persistScene]
   )
 
-  /**
-   * Remove a spawned node
-   */
-  const removeNode = useCallback((nodeId: string) => {
-    log.info('Removing node', { nodeId })
-    setSpawnedNodes((prev) => prev.filter((node) => node.id !== nodeId))
-  }, [])
+  const handleNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      setNodes((current) => applyNodeChanges(changes, current))
+    },
+    [setNodes]
+  )
 
-  /**
-   * Track cursor position for placement
-   */
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect()
-      setCursorPosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      })
+  const handleEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      setEdges((current) => applyEdgeChanges(changes, current))
+    },
+    [setEdges]
+  )
+
+  const handleConnect = useCallback(
+    (connection: Connection) => {
+      setEdges((current) => addEdge(connection, current))
+    },
+    [setEdges]
+  )
+
+  const handleNodesDelete = useCallback((deleted: Node[]) => {
+    if (deleted.length > 0) {
+      try {
+        playAssetDetachSound()
+      } catch (error) {
+        log.debug('Failed to play detach sound', { error })
+      }
     }
   }, [])
 
   return (
     <div
-      ref={canvasRef}
-      onMouseMove={handleMouseMove}
       style={{
-        position: 'relative',
         width: '100%',
         height: '100%',
         minHeight: '600px',
+        position: 'relative',
         backgroundColor: flowCoreColours.matteBlack,
-        backgroundImage: `
-          linear-gradient(${flowCoreColours.borderGrey} 1px, transparent 1px),
-          linear-gradient(90deg, ${flowCoreColours.borderGrey} 1px, transparent 1px)
-        `,
-        backgroundSize: '24px 24px',
-        overflow: 'hidden',
-        transition: edgeGlowActive ? 'box-shadow 0.24s ease' : 'none',
-        boxShadow: edgeGlowActive
-          ? `inset 0 0 40px rgba(58, 169, 190, 0.2), 0 0 20px rgba(58, 169, 190, 0.1)`
-          : 'none',
       }}
     >
-      {/* Grid background */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-        }}
-      />
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
+        onConnect={handleConnect}
+        onNodesDelete={handleNodesDelete}
+        fitView
+        fitViewOptions={{ duration: prefersReducedMotion ? 0 : 240, padding: 0.2 }}
+        minZoom={0.25}
+        maxZoom={1.6}
+        proOptions={{ hideAttribution: true }}
+        style={{ background: flowCoreColours.matteBlack }}
+      >
+        <MiniMap
+          style={{ background: flowCoreColours.overlaySoft }}
+          nodeStrokeColor={() => flowCoreColours.slateCyan}
+          nodeColor={() => flowCoreColours.slateCyan}
+          pannable
+        />
+        <Controls
+          showInteractive={false}
+          style={{
+            background: flowCoreColours.overlayStrong,
+            border: `1px solid ${flowCoreColours.borderGrey}`,
+            color: flowCoreColours.textSecondary,
+          }}
+        />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={24}
+          size={1}
+          color={flowCoreColours.overlayAccent}
+        />
+      </ReactFlow>
 
-      {/* Spawned nodes */}
-      <AnimatePresence mode="popLayout">
-        {spawnedNodes.map((node) => (
-          <motion.div
-            key={node.id}
-            initial={{ opacity: 0, scale: 0.9, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{
-              duration: prefersReducedMotion ? 0 : 0.24,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            style={{
-              position: 'absolute',
-              left: node.position.x,
-              top: node.position.y,
-              maxWidth: '480px',
-              zIndex: 10,
-            }}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => removeNode(node.id)}
-              aria-label={`Remove ${node.kind} agent`}
-              style={{
-                position: 'absolute',
-                top: '8px',
-                right: '8px',
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                border: `1px solid ${flowCoreColours.borderGrey}`,
-                backgroundColor: flowCoreColours.darkGrey,
-                color: flowCoreColours.textSecondary,
-                fontSize: '12px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 20,
-                transition: 'all 0.12s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = flowCoreColours.warningOrange
-                e.currentTarget.style.color = flowCoreColours.matteBlack
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = flowCoreColours.darkGrey
-                e.currentTarget.style.color = flowCoreColours.textSecondary
-              }}
-            >
-              ✕
-            </button>
-
-            {/* Node element */}
-            {node.element}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {/* Children (custom content) */}
       {children}
+
+      {isHydrating && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            backgroundColor: flowCoreColours.overlayStrong,
+            color: flowCoreColours.textSecondary,
+            fontSize: '13px',
+            fontFamily: 'var(--flowcore-font-mono)',
+            textTransform: 'lowercase',
+          }}
+        >
+          loading canvas...
+        </div>
+      )}
+
+      {lastSavedAt && (
+        <div
+          style={{
+            position: 'absolute',
+            right: '16px',
+            bottom: '16px',
+            fontSize: '11px',
+            color: flowCoreColours.textTertiary,
+            backgroundColor: flowCoreColours.overlayStrong,
+            padding: '6px 10px',
+            borderRadius: '999px',
+            border: `1px solid ${flowCoreColours.borderGrey}`,
+            fontFamily: 'var(--flowcore-font-mono)',
+            textTransform: 'lowercase',
+          }}
+        >
+          auto-saved {new Date(lastSavedAt).toLocaleTimeString()}
+        </div>
+      )}
     </div>
   )
 }
 
-/**
- * Export spawnNode as a standalone function for external use
- * This allows other components to trigger node spawning
- */
-export type SpawnNodeFunction = (kind: NodeKind, at?: NodePosition) => string | null
+export function spawnFlowNode(
+  kind: NodeKind,
+  options: { campaignId?: string; userId?: string }
+): string {
+  const id = `${kind}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
+  const positionOffset = (spawnOffset++ % 8) * 32
+
+  const node: Node<FlowNodeData> = {
+    id,
+    type: 'flow-node',
+    position: {
+      x: 240 + positionOffset,
+      y: 160 + positionOffset,
+    },
+    data: {
+      kind,
+      campaignId: options.campaignId,
+      userId: options.userId,
+    },
+  }
+
+  useFlowCanvasStore.getState().addNode(node)
+
+  try {
+    playAssetAttachSound()
+  } catch (error) {
+    log.debug('Failed to play attach sound', { error })
+  }
+
+  return id
+}

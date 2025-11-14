@@ -10,6 +10,11 @@
 
 import type { NodeKind, NodeSpawnPosition } from '@/types/console'
 import type { ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
+import { Mail, Search, Target } from 'lucide-react'
+import { IntelAgentNode } from '@/components/agents/IntelAgentNode'
+import { PitchAgentNode } from '@/components/agents/PitchAgentNode'
+import { TrackerAgentNode } from '@/components/agents/TrackerAgentNode'
 
 /**
  * Node definition for registry
@@ -17,7 +22,7 @@ import type { ReactNode } from 'react'
 export interface NodeDefinition {
   kind: NodeKind
   title: string
-  icon: string
+  icon: LucideIcon
   description: string
   spawn: (props: NodeSpawnProps) => ReactNode
   hotkey?: string
@@ -101,14 +106,12 @@ const registry = new NodeRegistry()
 registry.register({
   kind: 'intel',
   title: 'Intel Agent',
-  icon: '🔍',
+  icon: Search,
   description: 'Research and enrichment with document context',
   hotkey: 'i',
   paletteGroup: 'agents',
   category: 'plan',
   spawn: (props) => {
-    // Lazy import to avoid circular dependencies
-    const { IntelAgentNode } = require('@/components/agents/IntelAgentNode')
     return IntelAgentNode({
       campaignId: props.campaignId,
       userId: props.userId,
@@ -123,13 +126,12 @@ registry.register({
 registry.register({
   kind: 'pitch',
   title: 'Pitch Agent',
-  icon: '✉️',
+  icon: Mail,
   description: 'Generate pitches with asset attachments',
   hotkey: 'p',
   paletteGroup: 'agents',
   category: 'do',
   spawn: (props) => {
-    const { PitchAgentNode } = require('@/components/agents/PitchAgentNode')
     return PitchAgentNode({
       campaignId: props.campaignId,
       userId: props.userId,
@@ -144,13 +146,12 @@ registry.register({
 registry.register({
   kind: 'tracker',
   title: 'Tracker Agent',
-  icon: '📊',
+  icon: Target,
   description: 'Track outreach logs with asset links',
   hotkey: 't',
   paletteGroup: 'agents',
   category: 'track',
   spawn: (props) => {
-    const { TrackerAgentNode } = require('@/components/agents/TrackerAgentNode')
     return TrackerAgentNode({
       campaignId: props.campaignId,
       userId: props.userId,

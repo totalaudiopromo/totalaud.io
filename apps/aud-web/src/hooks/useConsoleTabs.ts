@@ -58,7 +58,7 @@ function loadPersistedTab(campaignId?: string, defaultTab: ConsoleTab = 'plan'):
       return stored as ConsoleTab
     }
   } catch (error) {
-    log.warn('Failed to load persisted tab', error)
+    log.warn('Failed to load persisted tab', { error })
   }
 
   return defaultTab
@@ -74,7 +74,7 @@ function persistTab(tab: ConsoleTab, campaignId?: string): void {
     const key = getStorageKey(campaignId)
     localStorage.setItem(key, tab)
   } catch (error) {
-    log.warn('Failed to persist tab', error)
+    log.warn('Failed to persist tab', { error })
   }
 }
 

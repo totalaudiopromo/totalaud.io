@@ -12,6 +12,7 @@
 
 import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
+import { getEpkCampaign } from '@/lib/epk/getEpkCampaign'
 
 export const runtime = 'edge'
 
@@ -29,12 +30,15 @@ export async function GET(req: NextRequest, { params }: { params: { campaignId: 
   const { campaignId } = params
 
   try {
-    // In real implementation, fetch campaign data from Supabase
-    // For demo, use placeholder data
-    const campaignName = 'Night Drive'
-    const artistName = 'Demo Artist'
-    const tagline = 'A cinematic journey through sound'
-    const genre = 'Electronic / Ambient'
+    const campaign = await getEpkCampaign(campaignId)
+
+    const campaignName = campaign?.name ?? 'Electronic Press Kit'
+    const artistName = campaign?.artistName ?? 'Independent Artist'
+    const tagline =
+      campaign?.tagline ??
+      campaign?.description ??
+      'Share your latest campaign assets with the industry.'
+    const genre = campaign?.genre ?? 'music promotion'
 
     return new ImageResponse(
       (
@@ -148,16 +152,24 @@ export async function GET(req: NextRequest, { params }: { params: { campaignId: 
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              fontSize: '20px',
+              fontSize: '18px',
               color: flowCoreColours.textSecondary,
             }}
           >
             <span
               style={{
-                fontSize: '24px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: flowCoreColours.slateCyan,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                color: flowCoreColours.matteBlack,
               }}
             >
-              🎵
+              TA
             </span>
             <span>totalaud.io/epk</span>
           </div>

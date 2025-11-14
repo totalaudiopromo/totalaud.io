@@ -13,164 +13,140 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabaseClient'
 import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('FlowHubSummaryAPI')
 
-// Cache staleness threshold (1 hour)
-const CACHE_STALENESS_MS = 60 * 60 * 1000
+const ALLOWED_PERIODS = new Set([7, 30, 90])
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const periodParam = searchParams.get('period')
-    const period = parseInt(periodParam || '7', 10)
+    const periodParam = parseInt(searchParams.get('period') || '7', 10)
+    const period = ALLOWED_PERIODS.has(periodParam) ? periodParam : 7
 
-    // Validate period
-    if (![7, 30, 90].includes(period)) {
-      log.warn('Invalid period parameter', { period: periodParam })
-      return NextResponse.json({ error: 'period must be 7, 30, or 90' }, { status: 400 })
-    }
-
-    const supabase = createClient()
-
-    // Check authentication
+    const supabase = createRouteSupabaseClient()
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
-      log.debug('Demo mode: returning fixture analytics')
-      return NextResponse.json(getDemoSummary(period), { status: 200 })
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
 
-    log.debug('Fetching flow hub summary', { userId: user.id, period })
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
 
-    // Try to fetch from cache
-    const { data: cachedSummary, error: cacheError } = await supabase
+    const userId = session.user.id
+    const now = new Date()
+    const periodStart = new Date(now)
+    periodStart.setDate(periodStart.getDate() - period)
+
+    const {
+      data: cachedSummary,
+      error: cacheError,
+    } = await supabase
       .from('flow_hub_summary_cache')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('period_days', period)
+      .select('metrics, generated_at, expires_at')
+      .eq('user_id', userId)
       .maybeSingle()
 
     if (cacheError) {
-      log.error('Failed to fetch cached summary', cacheError)
-      // Continue to refresh path
+      log.error('Failed to load cached Flow Hub summary', cacheError)
     }
 
-    // Check if cache is fresh (< 1 hour old)
-    const isCacheFresh =
-      cachedSummary &&
-      new Date(cachedSummary.updated_at).getTime() > Date.now() - CACHE_STALENESS_MS
+    let summary = cachedSummary
+    let isCacheHit = false
 
-    if (isCacheFresh) {
-      log.info('Returning fresh cached summary', {
-        userId: user.id,
-        period,
-        cacheAge: Date.now() - new Date(cachedSummary.updated_at).getTime(),
+    if (summary?.expires_at) {
+      isCacheHit = new Date(summary.expires_at).getTime() > now.getTime()
+    }
+
+    if (!summary || !isCacheHit) {
+      const { error: refreshError } = await supabase.rpc('refresh_flow_hub_summary', {
+        uid: userId,
       })
 
-      return NextResponse.json(
-        {
-          ...formatSummary(cachedSummary),
-          cached: true,
-          cacheAge: Date.now() - new Date(cachedSummary.updated_at).getTime(),
-        },
-        { status: 200 }
-      )
-    }
-
-    // Cache miss or stale - refresh summary
-    log.info('Cache miss or stale, refreshing summary', { userId: user.id, period })
-
-    const { data: refreshedSummary, error: refreshError } = await supabase.rpc(
-      'refresh_flow_hub_summary',
-      {
-        p_user_id: user.id,
-        p_period_days: period,
+      if (refreshError) {
+        log.error('Failed to refresh Flow Hub summary', refreshError)
+        return NextResponse.json(
+          { error: 'Failed to refresh analytics summary' },
+          { status: 500 }
+        )
       }
-    )
 
-    if (refreshError) {
-      log.error('Failed to refresh summary', refreshError)
-      return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
+      const refreshed = await supabase
+        .from('flow_hub_summary_cache')
+        .select('metrics, generated_at, expires_at')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (refreshed.error) {
+        log.error('Failed to load refreshed Flow Hub summary', refreshed.error)
+        return NextResponse.json({ error: 'Failed to load analytics summary' }, { status: 500 })
+      }
+
+      summary = refreshed.data ?? null
+      isCacheHit = false
     }
 
-    log.info('Summary refreshed successfully', { userId: user.id, period })
+    if (!summary) {
+      log.error('Flow Hub summary unavailable after refresh', { userId })
+      return NextResponse.json({ error: 'Analytics summary unavailable' }, { status: 404 })
+    }
 
-    return NextResponse.json(
-      {
-        ...refreshedSummary,
-        cached: false,
-      },
-      { status: 200 }
-    )
+    const metrics = (summary.metrics as Record<string, unknown>) || {}
+    const totals = (metrics.totals as Record<string, number>) || {}
+    const topEpks = (metrics.top_epks as Array<Record<string, unknown>>) || []
+    const topAgents = (metrics.top_agents as Array<Record<string, unknown>>) || []
+
+    const briefNode = metrics.ai_brief as
+      | { data?: Record<string, unknown>; generated_at?: string }
+      | undefined
+
+    const response = {
+      period_days: period,
+      period_start: periodStart.toISOString(),
+      period_end: now.toISOString(),
+      total_campaigns: Number(totals.campaigns ?? 0),
+      total_epks: Number(totals.epks ?? 0),
+      total_views: Number(totals.epk_views ?? 0),
+      total_downloads: Number(totals.epk_downloads ?? 0),
+      total_shares: Number(totals.epk_shares ?? 0),
+      total_agent_runs: Number(totals.agent_runs ?? 0),
+      total_saves: Number(totals.manual_saves ?? 0),
+      avg_ctr: 0,
+      avg_engagement_score: 0,
+      top_epks: topEpks.map((epk) => ({
+        epk_id: String(epk.epk_id ?? ''),
+        views: Number(epk.views ?? 0),
+        downloads: Number(epk.downloads ?? 0),
+        shares: Number(epk.shares ?? 0),
+      })),
+      top_agents: topAgents.map((agent) => ({
+        agent_type: String(agent.agent_type ?? ''),
+        runs: Number(agent.runs ?? 0),
+      })),
+      generated_at: summary.generated_at ?? null,
+      expires_at: summary.expires_at ?? null,
+      cached: isCacheHit,
+      ai_brief: briefNode?.data ?? null,
+      ai_brief_generated_at: briefNode?.generated_at ?? null,
+    }
+
+    log.info('Flow Hub summary served', {
+      userId,
+      period,
+      cached: isCacheHit,
+    })
+
+    return NextResponse.json(response, { status: 200 })
   } catch (error) {
-    log.error('Unexpected error in flow hub summary API', error)
+    log.error('Unexpected error in Flow Hub summary API', { error })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-/**
- * Format cached summary for response
- */
-function formatSummary(summary: any) {
-  return {
-    period_days: summary.period_days,
-    period_start: summary.period_start,
-    period_end: summary.period_end,
-    total_campaigns: summary.total_campaigns,
-    total_epks: summary.total_epks,
-    total_views: summary.total_views,
-    total_downloads: summary.total_downloads,
-    total_shares: summary.total_shares,
-    total_agent_runs: summary.total_agent_runs,
-    total_saves: summary.total_saves,
-    avg_ctr: parseFloat(summary.avg_ctr || '0'),
-    avg_engagement_score: parseFloat(summary.avg_engagement_score || '0'),
-    top_epks: summary.top_epks || [],
-    top_agents: summary.top_agents || [],
-    ai_brief: summary.ai_brief || null,
-    ai_brief_generated_at: summary.ai_brief_generated_at || null,
-  }
-}
-
-/**
- * Get demo fixture summary
- */
-function getDemoSummary(period: number) {
-  const now = new Date()
-  const start = new Date(now.getTime() - period * 24 * 60 * 60 * 1000)
-
-  return {
-    period_days: period,
-    period_start: start.toISOString(),
-    period_end: now.toISOString(),
-    total_campaigns: 3,
-    total_epks: 5,
-    total_views: 247,
-    total_downloads: 42,
-    total_shares: 18,
-    total_agent_runs: 156,
-    total_saves: 23,
-    avg_ctr: 12.45,
-    avg_engagement_score: 7.8,
-    top_epks: [
-      { epk_id: 'demo-epk-1', campaign_id: 'demo-campaign-1', views: 124 },
-      { epk_id: 'demo-epk-2', campaign_id: 'demo-campaign-2', views: 89 },
-      { epk_id: 'demo-epk-3', campaign_id: 'demo-campaign-3', views: 34 },
-    ],
-    top_agents: [
-      { agent_id: 'demo-agent-1', name: 'intel scout', runs: 67 },
-      { agent_id: 'demo-agent-2', name: 'pitch coach', runs: 52 },
-      { agent_id: 'demo-agent-3', name: 'tracker', runs: 37 },
-    ],
-    ai_brief: null,
-    ai_brief_generated_at: null,
-    cached: false,
-    demo: true,
   }
 }

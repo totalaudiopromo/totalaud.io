@@ -12,12 +12,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { ConsoleLayout } from '@aud-web/layouts/ConsoleLayout'
 import { ConsoleHeader } from '@aud-web/components/console/ConsoleHeader'
-import { FlowCanvas } from '@aud-web/components/features/flow/FlowCanvas'
+import { FlowCanvas, spawnFlowNode } from '@aud-web/components/features/flow/FlowCanvas'
 import { NodePalette } from '@aud-web/components/features/flow/NodePalette'
 import { CommandPalette } from '@aud-web/components/ui/CommandPalette'
 import { FlowHubDashboard } from '@aud-web/components/console/FlowHubDashboard'
@@ -30,6 +29,7 @@ import { toast } from 'sonner'
 const log = logger.scope('ConsolePage')
 
 export default function ConsolePage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const { trackEvent } = useFlowStateTelemetry()
   const { isFlowHubOpen, openFlowHub, closeFlowHub } = useFlowHub()
@@ -50,61 +50,72 @@ export default function ConsolePage() {
       try {
         // Check authentication status
         const authResponse = await fetch('/api/auth/session')
-        const authData = await authResponse.json()
 
-        // Get campaign ID from query (available for both auth and demo mode)
+        if (authResponse.status === 401) {
+          log.warn('User unauthenticated, redirecting to sign-in')
+          router.replace('/auth/signin?redirect=/console')
+          return
+        }
+
+        if (!authResponse.ok) {
+          const { error: authError } = await authResponse.json()
+          throw new Error(authError || 'Authentication check failed')
+        }
+
+        const authData = await authResponse.json()
+        const authenticatedUserId = authData.user?.id as string | undefined
+
+        if (!authenticatedUserId) {
+          throw new Error('Missing user identifier')
+        }
+
+        setUserId(authenticatedUserId)
+
+        // Get campaign ID from query
         const campaignIdFromQuery = searchParams?.get('id')
 
-        if (authData.authenticated) {
-          setIsAuthenticated(true)
-          setUserId(authData.userId)
-
-          // Get or create campaign
-          if (campaignIdFromQuery) {
-            setCampaignId(campaignIdFromQuery)
-          } else {
-            // Load last used campaign or create new one
-            const campaignResponse = await fetch('/api/campaigns/last-used', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-            })
-            const campaignData = await campaignResponse.json()
-            setCampaignId(campaignData.campaignId)
-          }
+        if (campaignIdFromQuery) {
+          setCampaignId(campaignIdFromQuery)
         } else {
-          // Demo mode
-          setIsAuthenticated(false)
-          setUserId('demo-user')
-          setCampaignId('demo-campaign')
-
-          toast.info('demo mode — no authentication', {
-            description: 'data will not be saved',
-            duration: 5000,
+          const campaignResponse = await fetch('/api/campaigns/last-used', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
           })
+
+          if (campaignResponse.status === 401) {
+            router.replace('/auth/signin?redirect=/console')
+            return
+          }
+
+          if (!campaignResponse.ok) {
+            const { error: campaignError } = await campaignResponse.json()
+            throw new Error(campaignError || 'Failed to load campaign')
+          }
+
+          const campaignData = await campaignResponse.json()
+          setCampaignId(campaignData.campaignId)
         }
+
+        setIsAuthenticated(true)
 
         // Track page open
         trackEvent('save', {
           metadata: {
             action: 'route_opened',
             path: '/console',
-            mode: authData.authenticated ? 'authenticated' : 'demo',
+            mode: 'authenticated',
           },
         })
 
         log.info('Console initialized', {
-          authenticated: authData.authenticated,
+          authenticated: true,
           campaignId: campaignIdFromQuery || 'auto',
         })
       } catch (error) {
-        log.error('Failed to initialize console', error)
-        // Fallback to demo mode
+        log.error('Failed to initialize console', { error })
         setIsAuthenticated(false)
-        setUserId('demo-user')
-        setCampaignId('demo-campaign')
-
         toast.error('failed to load console', {
-          description: 'running in demo mode',
+          description: error instanceof Error ? error.message : 'please try again',
         })
       } finally {
         setLoading(false)
@@ -141,7 +152,16 @@ export default function ConsolePage() {
    * Handle node spawn
    */
   const handleNodeSpawn = (kind: NodeKind) => {
-    log.info('Node spawned', { kind, authenticated: isAuthenticated })
+    if (!userId) {
+      toast.error('sign in required', {
+        description: 'you need to be authenticated to spawn agents',
+      })
+      return
+    }
+
+    const nodeId = spawnFlowNode(kind, { campaignId: campaignId || undefined, userId })
+
+    log.info('Node spawned', { kind, authenticated: isAuthenticated, nodeId })
     setCurrentNodeKind(kind)
     setNodePaletteOpen(false)
     setCommandPaletteOpen(false)
@@ -182,7 +202,7 @@ export default function ConsolePage() {
               textTransform: 'lowercase',
               fontFamily:
                 'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -208,7 +228,7 @@ export default function ConsolePage() {
               textTransform: 'lowercase',
               fontFamily:
                 'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-              transition: 'all 0.12s ease',
+              transition: 'all var(--flowcore-motion-fast) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -237,11 +257,7 @@ export default function ConsolePage() {
 
         {/* FlowCanvas */}
         <div style={{ flex: 1, minHeight: 0 }}>
-          <FlowCanvas
-            campaignId={campaignId || undefined}
-            userId={userId || undefined}
-            onNodeSpawned={handleNodeSpawn}
-          />
+          <FlowCanvas campaignId={campaignId || undefined} userId={userId || undefined} />
         </div>
       </div>
     )
@@ -267,6 +283,28 @@ export default function ConsolePage() {
     )
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: flowCoreColours.matteBlack,
+          color: flowCoreColours.textSecondary,
+          fontFamily:
+            'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+          fontSize: '13px',
+          textAlign: 'center',
+          padding: '0 24px',
+        }}
+      >
+        unable to load console — please refresh or sign in again
+      </div>
+    )
+  }
+
   return (
     <div
       style={{
@@ -276,56 +314,6 @@ export default function ConsolePage() {
         backgroundColor: flowCoreColours.matteBlack,
       }}
     >
-      {/* Demo Mode Banner (if unauthenticated) */}
-      {!isAuthenticated && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: 'rgba(137, 223, 243, 0.1)',
-            borderBottom: `1px solid ${flowCoreColours.iceCyan}`,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            fontSize: '13px',
-            color: flowCoreColours.iceCyan,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600 }}>demo mode — sign in to save your work</div>
-            <div style={{ fontSize: '11px', color: flowCoreColours.textSecondary }}>
-              all features available · writes will not be persisted
-            </div>
-          </div>
-          <a
-            href="/auth/signin"
-            style={{
-              padding: '8px 14px',
-              backgroundColor: flowCoreColours.slateCyan,
-              border: 'none',
-              borderRadius: '6px',
-              color: flowCoreColours.matteBlack,
-              fontSize: '12px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              textTransform: 'lowercase',
-              transition: 'all 0.12s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
-            }}
-          >
-            sign in
-          </a>
-        </motion.div>
-      )}
-
       {/* Console Layout */}
       <ConsoleLayout
         campaignId={campaignId || undefined}

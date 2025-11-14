@@ -86,7 +86,7 @@ export default function AgentsUITestPage() {
                 fontWeight: activeTab === tab ? 600 : 500,
                 cursor: 'pointer',
                 textTransform: 'lowercase',
-                transition: 'all 0.24s ease',
+                transition: 'all var(--flowcore-motion-normal) ease',
               }}
               onMouseEnter={(e) => {
                 if (activeTab !== tab) {
@@ -143,8 +143,9 @@ export default function AgentsUITestPage() {
               campaignId="test-campaign-123"
               userId="test-user-456"
               initialGoal="Get radio play on BBC Radio 1"
-              onPitchGenerated={(pitch) => {
-                console.log('✅ Pitch generated:', pitch)
+              onPitchGenerated={(pitch, attachments) => {
+                console.log('Pitch generated:', pitch)
+                console.log('Attachments used:', attachments.length)
               }}
             />
           </div>
@@ -182,8 +183,8 @@ export default function AgentsUITestPage() {
               userId="test-user-456"
               query="Fred again.."
               onIntelGenerated={(research, assets) => {
-                console.log('✅ Intel generated:', research)
-                console.log('✅ Assets used:', assets)
+                console.log('intel generated:', research)
+                console.log('assets used:', assets)
               }}
             />
           </div>
@@ -208,7 +209,7 @@ export default function AgentsUITestPage() {
               <br />
               2. Verify table displays contact, message, asset icon, sent date, status
               <br />
-              3. Click asset icon (🎵📄📦) to open AssetViewModal
+              3. Click asset icon (audio/document/archive indicators) to open AssetViewModal
               <br />
               4. Test modal keyboard navigation (Esc to close)
               <br />
@@ -297,7 +298,7 @@ export default function AgentsUITestPage() {
                 marginBottom: '8px',
               }}
             >
-              ✅ PitchAgentNode
+              PitchAgentNode
             </div>
             <div
               style={{
@@ -323,7 +324,7 @@ export default function AgentsUITestPage() {
                 marginBottom: '8px',
               }}
             >
-              ✅ IntelAgentNode
+              IntelAgentNode
             </div>
             <div
               style={{
@@ -349,7 +350,7 @@ export default function AgentsUITestPage() {
                 marginBottom: '8px',
               }}
             >
-              ✅ TrackerAgentNode
+              TrackerAgentNode
             </div>
             <div
               style={{

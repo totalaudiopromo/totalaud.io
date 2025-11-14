@@ -17,10 +17,14 @@ import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
 import { useAssets } from '@/hooks/useAssets'
+import type { Asset } from '@/hooks/useAssets'
 import { useAssetFilters } from '@/hooks/useAssetFilters'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { toast } from 'sonner'
 import { playAssetAttachSound } from '@/lib/asset-sounds'
+import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
+import type { NodeKind } from '@/types/console'
+import { Archive, Lock, X } from 'lucide-react'
 
 const log = logger.scope('AssetInboxDrawer')
 
@@ -28,7 +32,8 @@ export interface AssetInboxDrawerProps {
   open: boolean
   onClose: () => void
   onAttach?: (asset: AssetAttachment) => void
-  currentNodeKind?: 'pitch' | 'tracker' | null
+  currentNodeKind?: NodeKind | null
+  campaignId?: string
 }
 
 export function AssetInboxDrawer({
@@ -36,11 +41,16 @@ export function AssetInboxDrawer({
   onClose,
   onAttach,
   currentNodeKind,
+  campaignId,
 }: AssetInboxDrawerProps) {
   const prefersReducedMotion = useReducedMotion()
   const { trackEvent } = useFlowStateTelemetry()
+  const attachableNodeKind: Exclude<NodeKind, 'intel'> | null =
+    currentNodeKind && currentNodeKind !== 'intel' ? currentNodeKind : null
 
-  const { assets: allAssets, loading } = useAssets({})
+  const { assets: allAssets, loading } = useAssets(
+    campaignId ? { campaignId } : {}
+  )
   const {
     searchQuery,
     setSearchQuery,
@@ -92,12 +102,38 @@ export function AssetInboxDrawer({
     }).length
   }, [allAssets])
 
+  const toAssetAttachment = useCallback((asset: Asset): AssetAttachment | null => {
+    if (!asset.url) {
+      return null
+    }
+
+    return {
+      id: asset.id,
+      title: asset.title,
+      kind: asset.kind,
+      url: asset.url,
+      is_public: asset.is_public,
+      byte_size: asset.byte_size ?? undefined,
+      mime_type: asset.mime_type ?? undefined,
+      created_at: asset.created_at ?? undefined,
+    }
+  }, [])
+
   /**
    * Handle asset quick attach
    */
   const handleQuickAttach = useCallback(
-    (asset: AssetAttachment) => {
-      if (!currentNodeKind) {
+    (asset: Asset) => {
+      const attachment = toAssetAttachment(asset)
+
+      if (!attachment) {
+        toast.error('asset unavailable', {
+          description: 'upload is missing a shareable URL',
+        })
+        return
+      }
+
+      if (!attachableNodeKind) {
         toast.error('select a node to attach assets', {
           description: 'open pitch or tracker agent first',
         })
@@ -105,7 +141,7 @@ export function AssetInboxDrawer({
       }
 
       // Check privacy
-      if (!asset.is_public && currentNodeKind === 'pitch') {
+      if (!attachment.is_public && attachableNodeKind === 'pitch') {
         toast.warning('private asset filtered', {
           description: 'only public assets can be used in pitch',
         })
@@ -113,18 +149,18 @@ export function AssetInboxDrawer({
       }
 
       log.info('Quick attach asset', {
-        assetId: asset.id,
-        assetTitle: asset.title,
-        nodeKind: currentNodeKind,
+        assetId: attachment.id,
+        assetTitle: attachment.title,
+        nodeKind: attachableNodeKind,
       })
 
       // Track telemetry
       trackEvent('save', {
         metadata: {
           action: 'asset_quick_attach',
-          assetId: asset.id,
-          assetKind: asset.kind,
-          nodeKind: currentNodeKind,
+          assetId: attachment.id,
+          assetKind: attachment.kind,
+          nodeKind: attachableNodeKind,
         },
       })
 
@@ -133,15 +169,17 @@ export function AssetInboxDrawer({
 
       // Call callback
       if (onAttach) {
-        onAttach(asset)
+        onAttach(attachment)
       }
 
       // Show success toast
       toast.success('asset attached', {
-        description: `${asset.title} → ${currentNodeKind} agent`,
+        description: attachableNodeKind
+          ? `${attachment.title} → ${attachableNodeKind} agent`
+          : attachment.title,
       })
     },
-    [currentNodeKind, onAttach, trackEvent]
+    [attachableNodeKind, onAttach, toAssetAttachment, trackEvent]
   )
 
   /**
@@ -184,22 +222,7 @@ export function AssetInboxDrawer({
   /**
    * Get kind icon
    */
-  const getKindIcon = (kind: string): string => {
-    switch (kind) {
-      case 'audio':
-        return '🎵'
-      case 'image':
-        return '🖼️'
-      case 'document':
-        return '📄'
-      case 'archive':
-        return '📦'
-      case 'link':
-        return '🔗'
-      default:
-        return '📎'
-    }
-  }
+  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
 
   /**
    * Format file size
@@ -331,7 +354,7 @@ export function AssetInboxDrawer({
                     fontSize: '24px',
                     cursor: 'pointer',
                     padding: '4px',
-                    transition: 'color 0.12s ease',
+                  transition: 'color var(--flowcore-motion-fast) ease',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = flowCoreColours.iceCyan
@@ -340,7 +363,7 @@ export function AssetInboxDrawer({
                     e.currentTarget.style.color = flowCoreColours.textSecondary
                   }}
                 >
-                  ×
+                  <X size={18} strokeWidth={1.5} />
                 </button>
               </div>
 
@@ -360,7 +383,7 @@ export function AssetInboxDrawer({
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
-                  transition: 'border-color 0.24s ease',
+                  transition: 'border-color var(--flowcore-motion-normal) ease',
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -381,11 +404,11 @@ export function AssetInboxDrawer({
               >
                 {/* Kind filters */}
                 {(['audio', 'image', 'document', 'archive'] as const).map((kind) => {
-                  const isActive = filters.kind === kind
+                  const isActive = selectedKind === kind
                   return (
                     <button
                       key={kind}
-                      onClick={() => setFilter('kind', isActive ? null : kind)}
+                      onClick={() => setSelectedKind(isActive ? null : kind)}
                       style={{
                         padding: '6px 12px',
                         backgroundColor: isActive
@@ -397,7 +420,7 @@ export function AssetInboxDrawer({
                         fontSize: '12px',
                         cursor: 'pointer',
                         textTransform: 'lowercase',
-                        transition: 'all 0.12s ease',
+                        transition: 'all var(--flowcore-motion-fast) ease',
                       }}
                     >
                       {kind}
@@ -406,7 +429,7 @@ export function AssetInboxDrawer({
                 })}
 
                 {/* Clear filters */}
-                {(filters.kind || filters.isPublic !== null) && (
+                {selectedKind && (
                   <button
                     onClick={clearFilters}
                     style={{
@@ -426,7 +449,7 @@ export function AssetInboxDrawer({
               </div>
 
               {/* Current node indicator */}
-              {currentNodeKind && (
+              {attachableNodeKind && (
                 <div
                   style={{
                     marginTop: '12px',
@@ -438,7 +461,7 @@ export function AssetInboxDrawer({
                     color: flowCoreColours.iceCyan,
                   }}
                 >
-                  attaching to: <strong>{currentNodeKind} agent</strong>
+                  attaching to: <strong>{attachableNodeKind} agent</strong>
                 </div>
               )}
             </div>
@@ -471,7 +494,9 @@ export function AssetInboxDrawer({
                     padding: '32px',
                   }}
                 >
-                  <div style={{ fontSize: '48px', marginBottom: '12px' }}>📦</div>
+                  <div style={{ marginBottom: '12px', color: flowCoreColours.slateCyan }}>
+                    <Archive size={48} strokeWidth={1.4} />
+                  </div>
                   <div
                     style={{
                       fontSize: '13px',
@@ -479,9 +504,9 @@ export function AssetInboxDrawer({
                       marginBottom: '4px',
                     }}
                   >
-                    {searchQuery || filters.kind ? 'no assets found' : 'no assets uploaded yet'}
+                  {searchQuery || selectedKind ? 'no assets found' : 'no assets uploaded yet'}
                   </div>
-                  {(searchQuery || filters.kind) && (
+                {(searchQuery || selectedKind) && (
                     <button
                       onClick={() => {
                         setSearchQuery('')
@@ -529,11 +554,16 @@ export function AssetInboxDrawer({
                       {/* Asset icon */}
                       <div
                         style={{
-                          fontSize: '24px',
                           flexShrink: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: flowCoreColours.slateCyan,
                         }}
                       >
-                        {getKindIcon(asset.kind)}
+                        {(() => {
+                          const Icon = getKindIcon(asset.kind)
+                          return <Icon size={22} strokeWidth={1.5} />
+                        })()}
                       </div>
 
                       {/* Asset info */}
@@ -556,9 +586,13 @@ export function AssetInboxDrawer({
                                 marginLeft: '6px',
                                 fontSize: '11px',
                                 color: flowCoreColours.warningOrange,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
                               }}
                             >
-                              🔒
+                              <Lock size={12} strokeWidth={1.5} />
+                              private
                             </span>
                           )}
                         </div>
@@ -568,8 +602,8 @@ export function AssetInboxDrawer({
                             color: flowCoreColours.textTertiary,
                           }}
                         >
-                          {asset.size_bytes && formatSize(asset.size_bytes)}
-                          {asset.size_bytes && asset.created_at && ' · '}
+                          {asset.byte_size && formatSize(asset.byte_size)}
+                          {asset.byte_size && asset.created_at && ' · '}
                           {asset.created_at && formatRelativeTime(asset.created_at)}
                         </div>
                       </div>
@@ -577,32 +611,32 @@ export function AssetInboxDrawer({
                       {/* Quick attach button */}
                       <button
                         onClick={() => handleQuickAttach(asset)}
-                        disabled={!currentNodeKind}
+                        disabled={!attachableNodeKind}
                         aria-label={`Attach ${asset.title}`}
                         style={{
                           padding: '6px 12px',
-                          backgroundColor: currentNodeKind
+                          backgroundColor: attachableNodeKind
                             ? flowCoreColours.slateCyan
                             : flowCoreColours.borderGrey,
-                          color: currentNodeKind
+                          color: attachableNodeKind
                             ? flowCoreColours.matteBlack
                             : flowCoreColours.textTertiary,
                           border: 'none',
                           borderRadius: '4px',
                           fontSize: '12px',
                           fontWeight: 600,
-                          cursor: currentNodeKind ? 'pointer' : 'not-allowed',
+                          cursor: attachableNodeKind ? 'pointer' : 'not-allowed',
                           textTransform: 'lowercase',
-                          transition: 'all 0.12s ease',
+                          transition: 'all var(--flowcore-motion-fast) ease',
                           flexShrink: 0,
                         }}
                         onMouseEnter={(e) => {
-                          if (currentNodeKind) {
+                          if (attachableNodeKind) {
                             e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
                           }
                         }}
                         onMouseLeave={(e) => {
-                          if (currentNodeKind) {
+                          if (attachableNodeKind) {
                             e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
                           }
                         }}

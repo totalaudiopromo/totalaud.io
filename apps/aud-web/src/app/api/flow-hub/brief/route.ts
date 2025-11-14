@@ -23,17 +23,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabaseClient'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import Anthropic from '@anthropic-ai/sdk'
 
 const log = logger.scope('FlowHubBriefAPI')
-
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: env.ANTHROPIC_API_KEY,
-})
 
 // AI Brief cache duration (4 hours)
 const BRIEF_CACHE_DURATION_MS = 4 * 60 * 60 * 1000
@@ -49,30 +43,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'period must be 7, 30, or 90' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createRouteSupabaseClient()
 
-    // Check authentication
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
-      log.warn('Unauthenticated request to flow hub brief')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
     }
 
-    log.debug('Generating AI brief', { userId: user.id, period, force_refresh })
+    if (!session) {
+      log.warn('Unauthenticated request to flow hub brief')
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+
+    const userId = session.user.id
+
+    log.debug('Generating AI brief', { userId, period, force_refresh })
 
     // Fetch summary data
-    const { data: summary, error: summaryError } = await supabase
+    const { data: summaryRow, error: summaryError } = await supabase
       .from('flow_hub_summary_cache')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('period_days', period)
+      .select('metrics, generated_at, expires_at')
+      .eq('user_id', userId)
       .maybeSingle()
 
-    if (summaryError || !summary) {
+    if (summaryError || !summaryRow) {
       log.error('Failed to fetch summary for AI brief', summaryError)
       return NextResponse.json(
         { error: 'Analytics summary not found. Please refresh analytics first.' },
@@ -80,39 +79,57 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const metrics = (summaryRow.metrics as Record<string, unknown>) || {}
+    const cachedBrief = metrics.ai_brief as
+      | { data: AIBriefResponse; generated_at: string }
+      | undefined
+
     // Check if cached AI brief is fresh (< 4 hours old)
     const isBriefFresh =
       !force_refresh &&
-      summary.ai_brief &&
-      summary.ai_brief_generated_at &&
-      new Date(summary.ai_brief_generated_at).getTime() > Date.now() - BRIEF_CACHE_DURATION_MS
+      cachedBrief?.generated_at &&
+      new Date(cachedBrief.generated_at).getTime() > Date.now() - BRIEF_CACHE_DURATION_MS
 
     if (isBriefFresh) {
       log.info('Returning cached AI brief', {
-        userId: user.id,
+        userId,
         period,
-        briefAge: Date.now() - new Date(summary.ai_brief_generated_at).getTime(),
+        briefAge: Date.now() - new Date(cachedBrief.generated_at).getTime(),
       })
 
       return NextResponse.json(
         {
-          ...summary.ai_brief,
-          generated_at: summary.ai_brief_generated_at,
+          ...cachedBrief.data,
+          generated_at: cachedBrief.generated_at,
           cached: true,
         },
         { status: 200 }
       )
     }
 
-    // Generate new AI brief
-    log.info('Generating new AI brief with Claude', { userId: user.id, period })
+    const apiKey = process.env.ANTHROPIC_API_KEY
 
-    const briefPrompt = buildBriefPrompt(summary, period)
+    if (!apiKey) {
+      log.error('ANTHROPIC_API_KEY not configured')
+      return NextResponse.json(
+        { error: 'Anthropic API key not configured' },
+        { status: 500 }
+      )
+    }
+
+    const anthropic = new Anthropic({ apiKey })
+
+    const normalizedSummary = normalizeSummary(metrics)
+
+    // Generate new AI brief
+    log.info('Generating new AI brief with Claude Haiku', { userId, period })
+
+    const briefPrompt = buildBriefPrompt(normalizedSummary, period)
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1500,
-      temperature: 0.7,
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 900,
+      temperature: 0.4,
       messages: [
         {
           role: 'user',
@@ -122,38 +139,44 @@ export async function POST(req: NextRequest) {
     })
 
     // Extract text content from response
-    const briefText = response.content.find((block) => block.type === 'text')?.text || ''
+    const briefText = response.content.find((block) => block.type === 'text')?.text?.trim() || ''
 
     // Parse AI response into structured brief
     const brief = parseBriefResponse(briefText)
 
     // Cache the AI brief in database
+    const updatedMetrics = {
+      ...metrics,
+      ai_brief: {
+        data: brief,
+        generated_at: new Date().toISOString(),
+      },
+    }
+
     const { error: updateError } = await supabase
       .from('flow_hub_summary_cache')
-      .update({
-        ai_brief: brief,
-        ai_brief_generated_at: new Date().toISOString(),
-      })
-      .eq('user_id', user.id)
-      .eq('period_days', period)
+      .update({ metrics: updatedMetrics })
+      .eq('user_id', userId)
 
     if (updateError) {
       log.error('Failed to cache AI brief', updateError)
       // Don't fail the request - return brief anyway
     }
 
-    log.info('AI brief generated successfully', { userId: user.id, period })
+    const generatedAt = new Date().toISOString()
+
+    log.info('AI brief generated successfully', { userId, period })
 
     return NextResponse.json(
       {
         ...brief,
-        generated_at: new Date().toISOString(),
+        generated_at: generatedAt,
         cached: false,
       },
       { status: 200 }
     )
   } catch (error) {
-    log.error('Unexpected error in flow hub brief API', error)
+    log.error('Unexpected error in flow hub brief API', { error })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -161,22 +184,22 @@ export async function POST(req: NextRequest) {
 /**
  * Build prompt for Claude to generate AI brief
  */
-function buildBriefPrompt(summary: any, period: number): string {
+function buildBriefPrompt(summary: NormalisedSummary, period: number): string {
   return `You are an AI analyst for totalaud.io, a music promotion platform. Analyse the following campaign performance data and provide a concise executive brief in British English.
 
 **Performance Summary (Last ${period} Days)**
-- Total Campaigns: ${summary.total_campaigns}
-- Total EPKs: ${summary.total_epks}
-- Total Views: ${summary.total_views}
-- Total Downloads: ${summary.total_downloads}
-- Total Shares: ${summary.total_shares}
-- Agent Runs: ${summary.total_agent_runs}
-- Manual Saves: ${summary.total_saves}
-- Average CTR: ${summary.avg_ctr}%
-- Average Engagement Score: ${summary.avg_engagement_score}
+- Total Campaigns: ${summary.totalCampaigns}
+- Total EPKs: ${summary.totalEpks}
+- Total Views: ${summary.totalViews}
+- Total Downloads: ${summary.totalDownloads}
+- Total Shares: ${summary.totalShares}
+- Agent Runs: ${summary.totalAgentRuns}
+- Manual Saves: ${summary.totalSaves}
+- Average CTR: ${summary.avgCtr}%
+- Average Engagement Score: ${summary.avgEngagementScore}
 
 **Top Performing EPKs**
-${JSON.stringify(summary.top_epks, null, 2)}
+${JSON.stringify(summary.topEpks, null, 2)}
 
 **Instructions:**
 1. Provide a **title** (max 60 characters) - a punchy one-liner about the period's performance
@@ -247,5 +270,47 @@ function parseBriefResponse(text: string): {
       risks: [],
       recommendations: ['Retry brief generation', 'Check analytics summary data'],
     }
+  }
+}
+
+interface NormalisedSummary {
+  totalCampaigns: number
+  totalEpks: number
+  totalViews: number
+  totalDownloads: number
+  totalShares: number
+  totalAgentRuns: number
+  totalSaves: number
+  avgCtr: number
+  avgEngagementScore: number
+  topEpks: Array<Record<string, unknown>>
+}
+
+interface AIBriefResponse {
+  title: string
+  summary: string
+  highlights: string[]
+  risks: string[]
+  recommendations: string[]
+}
+
+function normalizeSummary(metrics: Record<string, unknown>): NormalisedSummary {
+  const totals = (metrics.totals as Record<string, unknown>) || {}
+  const totalsNumber = (key: string, fallback = 0) =>
+    Number((totals[key] as number | undefined) ?? fallback)
+
+  const topEpks = (metrics.top_epks as Array<Record<string, unknown>>) || []
+
+  return {
+    totalCampaigns: totalsNumber('campaigns'),
+    totalEpks: totalsNumber('epks'),
+    totalViews: totalsNumber('epk_views'),
+    totalDownloads: totalsNumber('epk_downloads'),
+    totalShares: totalsNumber('epk_shares'),
+    totalAgentRuns: totalsNumber('agent_runs'),
+    totalSaves: totalsNumber('manual_saves'),
+    avgCtr: Number((metrics.avg_ctr as number | undefined) ?? 0),
+    avgEngagementScore: Number((metrics.avg_engagement_score as number | undefined) ?? 0),
+    topEpks,
   }
 }

@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAssets } from '@/hooks/useAssets'
 import { useAssetFilters } from '@/hooks/useAssetFilters'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
+import { X } from 'lucide-react'
 import { AssetGrid } from '@/components/console/AssetGrid'
 import { AssetSidebar } from '@/components/console/AssetSidebar'
 import { AssetDropZone } from '@/components/console/AssetDropZone'
@@ -223,7 +224,7 @@ export default function AssetsFullPage() {
               fontWeight: 500,
               cursor: 'pointer',
               textTransform: 'lowercase',
-              transition: 'all 0.24s ease',
+              transition: 'all var(--flowcore-motion-normal) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = flowCoreColours.slateCyan
@@ -251,7 +252,7 @@ export default function AssetsFullPage() {
               fontWeight: 600,
               cursor: 'pointer',
               textTransform: 'lowercase',
-              transition: 'all 0.24s ease',
+              transition: 'all var(--flowcore-motion-normal) ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
@@ -368,7 +369,7 @@ export default function AssetsFullPage() {
                     lineHeight: 1,
                   }}
                 >
-                  ×
+                  <X size={18} strokeWidth={1.6} />
                 </button>
               </div>
 

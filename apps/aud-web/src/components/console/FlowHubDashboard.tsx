@@ -46,7 +46,7 @@ interface FlowHubSummary {
   avg_ctr: number
   avg_engagement_score: number
   top_epks: Array<{ epk_id: string; campaign_id: string; views: number }>
-  top_agents: Array<{ agent_id: string; name: string; runs: number }>
+  top_agents: Array<{ agent_type: string; runs: number }>
   ai_brief?: AIBrief | null
   ai_brief_generated_at?: string | null
   cached?: boolean
@@ -122,8 +122,10 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
 
         // Track telemetry
         trackEvent('flow_brief_generated', {
-          period,
-          force_refresh,
+          metadata: {
+            period,
+            forceRefresh: force_refresh,
+          },
         })
 
         const response = await fetch('/api/flow-hub/brief', {
@@ -159,7 +161,7 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
       fetchSummary()
 
       // Track telemetry
-      trackEvent('flow_hub_opened', { period })
+      trackEvent('flow_hub_opened', { metadata: { period } })
     }
   }, [isOpen, period, fetchSummary, trackEvent])
 
@@ -196,7 +198,7 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
       setActiveTab(tab)
 
       // Track telemetry
-      trackEvent('flow_hub_tab_changed', { tab })
+      trackEvent('flow_hub_tab_changed', { metadata: { tab } })
 
       // Auto-generate brief if switching to brief tab and no brief exists
       if (tab === 'brief' && !brief && !briefLoading) {
@@ -564,7 +566,6 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
         </div>
       </div>
 
-      {/* Top Agents (placeholder) */}
       <div>
         <h3
           className="text-lg font-semibold mb-4"
@@ -577,15 +578,62 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
         >
           top agents by runs
         </h3>
-        <p
-          style={{
-            color: flowCoreColours.textTertiary,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
-        >
-          agent tracking coming soon
-        </p>
+        <div className="space-y-2">
+          {summary.top_agents.length > 0 ? (
+            summary.top_agents.map((agent, index) => (
+              <div
+                key={`${agent.agent_type}-${index}`}
+                className="flex items-center justify-between p-3 rounded"
+                style={{
+                  backgroundColor: flowCoreColours.cardBackground,
+                  border: `1px solid ${flowCoreColours.borderGrey}`,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="text-sm font-semibold"
+                    style={{
+                      color: flowCoreColours.slateCyan,
+                      fontFamily:
+                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                    }}
+                  >
+                    #{index + 1}
+                  </span>
+                  <span
+                    style={{
+                      color: flowCoreColours.textPrimary,
+                      fontFamily:
+                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                    }}
+                  >
+                    {agent.agent_type || 'agent'}
+                  </span>
+                </div>
+                <span
+                  className="text-sm"
+                  style={{
+                    color: flowCoreColours.textSecondary,
+                    fontFamily:
+                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  }}
+                >
+                  {agent.runs} runs
+                </span>
+              </div>
+            ))
+          ) : (
+            <p
+              style={{
+                color: flowCoreColours.textTertiary,
+                fontFamily:
+                  'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+              }}
+            >
+              agent activity will appear here once runs complete
+            </p>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -617,7 +665,7 @@ function AIBriefPanel({
               'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
           }}
         >
-          generating ai insights with claude 3.5 sonnet...
+          generating ai insights with claude haiku...
         </p>
       </div>
     )
