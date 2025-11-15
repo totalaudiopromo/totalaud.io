@@ -54,6 +54,15 @@ function toAttachment(asset: RawAsset): AssetAttachment | null {
   }
 }
 
+/**
+ * Fetch EPK campaign data for public display
+ *
+ * SERVICE ROLE USAGE JUSTIFICATION:
+ * - EPK pages and OG images must be publicly accessible (no auth required)
+ * - Only fetches assets where is_public=true
+ * - Used by public routes: /epk/[campaignId] and /api/og/epk/[campaignId]
+ * - Safer than exposing public-only data via RLS bypass
+ */
 export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignData | null> {
   const supabase = getSupabaseServiceRoleClient()
 

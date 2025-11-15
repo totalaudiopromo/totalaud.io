@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 
 /**
  * Lightweight healthcheck endpoint for Railway
+ *
+ * PUBLIC ROUTE - No authentication required
  * Keeps response small and dependency-free so it works even
  * when upstream services (Supabase, etc.) are unavailable.
  */
