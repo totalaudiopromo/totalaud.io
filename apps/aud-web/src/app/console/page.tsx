@@ -299,27 +299,8 @@ export default function ConsolePage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: flowCoreColours.matteBlack,
-          color: flowCoreColours.textSecondary,
-          fontFamily:
-            'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          fontSize: '13px',
-          textAlign: 'center',
-          padding: '0 24px',
-        }}
-      >
-        unable to load console — please refresh or sign in again
-      </div>
-    )
-  }
+  // Allow demo mode for unauthenticated users
+  // Console will render but with limited functionality
 
   return (
     <div
