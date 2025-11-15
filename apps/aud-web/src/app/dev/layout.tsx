@@ -3,6 +3,8 @@
  * Provides OrchestrationProvider for all dev pages
  */
 
+'use client'
+
 export const dynamic = 'force-dynamic'
 
 import { OrchestrationProvider } from '@/contexts/OrchestrationContext'
