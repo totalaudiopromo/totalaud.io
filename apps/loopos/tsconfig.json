@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@loopos/*": ["./src/*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/state/*": ["./state/*"],
+      "@/canvas/*": ["./canvas/*"],
+      "@/nodes/*": ["./nodes/*"],
+      "@/momentum/*": ["./momentum/*"],
+      "@/agents/*": ["./agents/*"],
+      "@/notes/*": ["./notes/*"],
+      "@/sounds/*": ["./sounds/*"]
+    },
+    "isolatedModules": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
