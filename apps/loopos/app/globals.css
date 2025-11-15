@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0F1113;
+  --foreground: #ffffff;
+  --accent: #3AA9BE;
+  --border: #2a2a2a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* LoopOS-specific styles */
+.loop-canvas {
+  background-color: var(--background);
+  background-image:
+    linear-gradient(rgba(58, 169, 190, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58, 169, 190, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glow-accent {
+  text-shadow: 0 0 40px rgba(58, 169, 190, 0.15);
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
