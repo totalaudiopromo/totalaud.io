@@ -77,9 +77,7 @@ async function checkHealth(url: string): Promise<void> {
 
     // Optional: Check version matches package.json
     try {
-      const packageJson = JSON.parse(
-        readFileSync(join(process.cwd(), 'package.json'), 'utf-8')
-      )
+      const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf-8'))
       if (data.version !== packageJson.version) {
         console.warn(`⚠ Version mismatch: deployed=${data.version}, local=${packageJson.version}`)
       }
@@ -104,4 +102,3 @@ checkHealth(url).catch((error) => {
   console.error('Fatal error:', error)
   process.exit(1)
 })
-

@@ -38,7 +38,10 @@ interface RollbackResponse {
 
 const RAILWAY_API = 'https://backboard.railway.app/graphql/v2'
 
-async function railwayQuery(query: string, variables: Record<string, unknown> = {}): Promise<unknown> {
+async function railwayQuery(
+  query: string,
+  variables: Record<string, unknown> = {}
+): Promise<unknown> {
   const token = process.env.RAILWAY_TOKEN
 
   if (!token) {
@@ -178,4 +181,3 @@ main().catch((error) => {
   console.error('✗ Fatal error:', error instanceof Error ? error.message : error)
   process.exit(1)
 })
-

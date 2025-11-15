@@ -6,9 +6,15 @@ Complete documentation for the experimental creative OS and AI-powered music mar
 
 ## 📖 Getting Started
 
-- [Complete Context](./TOTALAUD_IO_CONTEXT.md) — Full project overview, architecture, and current status
-- [Quick Start Guide](../CURSOR_QUICK_START.md) — Start developing with Cursor IDE
-- [Getting Started](../GETTING_STARTED.md) — Initial setup and installation
+### For New Developers
+- [README](../README.md) — Project overview and quickstart
+- [DEV_GUIDE](../DEV_GUIDE.md) — **⚡ Quick command reference** (start here!)
+- [CONTRIBUTING](../CONTRIBUTING.md) — Full contribution guide
+- [Complete Context](./TOTALAUD_IO_CONTEXT.md) — Comprehensive project documentation
+
+### For Cursor Users
+- [Quick Start Guide](../CURSOR_QUICK_START.md) — Cursor IDE setup
+- [Commit Conventions](../COMMIT_CONVENTIONS.md) — Git commit standards
 
 ## 🏗️ Architecture
 
