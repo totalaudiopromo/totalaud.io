@@ -187,4 +187,3 @@ export function NodeSearch({ isOpen, onClose }: NodeSearchProps) {
     </div>
   )
 }
-

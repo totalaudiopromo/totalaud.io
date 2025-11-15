@@ -20,7 +20,9 @@
     "db:stop": "supabase stop",
     "db:migrate": "supabase db push",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > packages/schemas/database/types.ts"
+    "db:types": "supabase gen types typescript --local > packages/schemas/database/types.ts",
+    "silver:check": "tsx scripts/silver-deploy.ts",
+    "silver:rollback": "tsx scripts/silver-rollback.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
