@@ -1,0 +1,36 @@
+{
+  "name": "loopos",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=9999",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@total-audio/loopos-db": "workspace:*",
+    "@total-audio/core-logger": "workspace:^",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.546.0",
+    "next": "15.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reactflow": "^11.11.4",
+    "zod": "^3.22.4",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5"
+  }
+}
