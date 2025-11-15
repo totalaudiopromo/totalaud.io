@@ -3,7 +3,7 @@
  * Defines the structure for TotalAud.io's visual and sonic identity system
  */
 
-export type ThemeId = 'ascii' | 'xp' | 'aqua' | 'ableton' | 'punk'
+export type ThemeId = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
 
 export interface ThemePalette {
   background: string
@@ -72,6 +72,18 @@ export interface ThemeEffects {
   grain?: boolean
 }
 
+export interface ThemeTimeline {
+  trackHeight: number // Default track height in pixels
+  clipRadius: number // Border radius for clips in pixels
+  playheadStyle: 'line' | 'marker' | 'beam'
+  playheadColour?: string // Custom playhead colour (defaults to accent)
+  gridStyle: 'solid' | 'dotted' | 'dashed'
+  gridOpacity: number // 0-1
+  waveformStyle?: 'bars' | 'line' | 'none'
+  clipShadow?: boolean
+  trackSeparatorStyle?: 'line' | 'shadow' | 'none'
+}
+
 export interface ThemeManifest {
   id: ThemeId
   name: string
@@ -83,6 +95,7 @@ export interface ThemeManifest {
   motion: ThemeMotion
   sounds: ThemeSounds
   effects: ThemeEffects
+  timeline: ThemeTimeline
 }
 
 export interface ThemeContextValue {

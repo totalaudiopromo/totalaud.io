@@ -1,0 +1,21 @@
+{
+  "name": "@totalaud/os-state",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./campaign/useCampaignState.ts",
+  "types": "./campaign/useCampaignState.ts",
+  "exports": {
+    "./campaign": "./campaign/useCampaignState.ts",
+    "./campaign/types": "./campaign/campaign.types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.6.3"
+  }
+}

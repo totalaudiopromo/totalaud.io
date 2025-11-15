@@ -89,6 +89,17 @@ export const THEMES: Record<ThemeId, ThemeManifest> = {
       vignette: false,
       grain: false,
     },
+    timeline: {
+      trackHeight: 60,
+      clipRadius: 0,
+      playheadStyle: 'line',
+      playheadColour: '#1affb2',
+      gridStyle: 'dotted',
+      gridOpacity: 0.3,
+      waveformStyle: 'bars',
+      clipShadow: false,
+      trackSeparatorStyle: 'line',
+    },
   },
 
   xp: {
@@ -166,6 +177,16 @@ export const THEMES: Record<ThemeId, ThemeManifest> = {
       glow: false,
       vignette: false,
       grain: false,
+    },
+    timeline: {
+      trackHeight: 70,
+      clipRadius: 8,
+      playheadStyle: 'marker',
+      gridStyle: 'solid',
+      gridOpacity: 0.15,
+      waveformStyle: 'line',
+      clipShadow: true,
+      trackSeparatorStyle: 'shadow',
     },
   },
 
@@ -245,11 +266,21 @@ export const THEMES: Record<ThemeId, ThemeManifest> = {
       vignette: true,
       grain: false,
     },
+    timeline: {
+      trackHeight: 65,
+      clipRadius: 6,
+      playheadStyle: 'beam',
+      gridStyle: 'solid',
+      gridOpacity: 0.2,
+      waveformStyle: 'line',
+      clipShadow: true,
+      trackSeparatorStyle: 'line',
+    },
   },
 
-  ableton: {
-    id: 'ableton',
-    name: 'Ableton Mode',
+  daw: {
+    id: 'daw',
+    name: 'DAW Mode',
     description: 'Flow like a DAW',
     mood: 'Dark grid studio precision',
     palette: {
@@ -323,13 +354,24 @@ export const THEMES: Record<ThemeId, ThemeManifest> = {
       vignette: false,
       grain: true,
     },
+    timeline: {
+      trackHeight: 55,
+      clipRadius: 2,
+      playheadStyle: 'line',
+      playheadColour: '#ff8000',
+      gridStyle: 'solid',
+      gridOpacity: 0.1,
+      waveformStyle: 'bars',
+      clipShadow: false,
+      trackSeparatorStyle: 'line',
+    },
   },
 
-  punk: {
-    id: 'punk',
-    name: 'Punk Zine Mode',
-    description: 'Cut-and-paste rebellion',
-    mood: 'DIY xerox chaos',
+  analogue: {
+    id: 'analogue',
+    name: 'Analogue Mode',
+    description: 'Cut-and-paste warmth',
+    mood: 'DIY tape warmth',
     palette: {
       background: '#0f0f0f',
       foreground: '#ffffff',
@@ -404,10 +446,21 @@ export const THEMES: Record<ThemeId, ThemeManifest> = {
       vignette: true,
       grain: true,
     },
+    timeline: {
+      trackHeight: 65,
+      clipRadius: 4,
+      playheadStyle: 'marker',
+      playheadColour: '#ff1aff',
+      gridStyle: 'dashed',
+      gridOpacity: 0.25,
+      waveformStyle: 'line',
+      clipShadow: true,
+      trackSeparatorStyle: 'shadow',
+    },
   },
 }
 
-export const THEME_IDS: ThemeId[] = ['ascii', 'xp', 'aqua', 'ableton', 'punk']
+export const THEME_IDS: ThemeId[] = ['ascii', 'xp', 'aqua', 'daw', 'analogue']
 
 export function getTheme(id: ThemeId): ThemeManifest {
   return THEMES[id]
