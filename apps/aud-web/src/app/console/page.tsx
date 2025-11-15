@@ -54,8 +54,17 @@ export default function ConsolePage() {
         const authResponse = await fetch('/api/auth/session')
 
         if (authResponse.status === 401) {
-          log.warn('User unauthenticated, redirecting to sign-in')
-          router.replace('/auth/signin?redirect=/console')
+          log.info('User unauthenticated, running in demo mode')
+          setIsAuthenticated(false)
+          setLoading(false)
+          // Track demo mode
+          trackEvent('save', {
+            metadata: {
+              action: 'route_opened',
+              path: '/console',
+              mode: 'demo',
+            },
+          })
           return
         }
 
@@ -68,7 +77,10 @@ export default function ConsolePage() {
         const authenticatedUserId = authData.user?.id as string | undefined
 
         if (!authenticatedUserId) {
-          throw new Error('Missing user identifier')
+          log.info('No user ID, running in demo mode')
+          setIsAuthenticated(false)
+          setLoading(false)
+          return
         }
 
         setUserId(authenticatedUserId)
@@ -85,7 +97,9 @@ export default function ConsolePage() {
           })
 
           if (campaignResponse.status === 401) {
-            router.replace('/auth/signin?redirect=/console')
+            log.info('Unauthenticated, skipping campaign load in demo mode')
+            setIsAuthenticated(false)
+            setLoading(false)
             return
           }
 
