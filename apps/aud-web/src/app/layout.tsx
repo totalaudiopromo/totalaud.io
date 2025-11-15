@@ -1,44 +1,30 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { Inter, JetBrains_Mono } from 'next/font/google'
-import './globals.css'
-import { ThemeResolver } from '@aud-web/components/themes/ThemeResolver'
-import { GlobalCommandPalette } from '@aud-web/components/ui'
-import { Analytics } from '@vercel/analytics/react'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 
-const inter = Inter({
+const geistSans = Geist({
   subsets: ['latin'],
-  variable: '--font-inter',
   display: 'swap',
+  variable: '--font-geist-sans',
 })
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
-  variable: '--font-mono',
   display: 'swap',
+  variable: '--font-geist-mono',
 })
 
 export const metadata: Metadata = {
-  title: 'totalaud.io',
-  description: 'Marketing your music should be as creative as making it.',
+  title: 'TotalAud.io Console',
+  description: 'FlowCore console for TotalAud.io',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-        <ThemeResolver>
-          {children}
-          <Suspense fallback={null}>
-            <GlobalCommandPalette />
-          </Suspense>
-        </ThemeResolver>
-        <Analytics />
-      </body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <FlowCoreThemeProvider bodyClassName={`${geistSans.className} ${geistMono.className}`.trim()}>
+        {children}
+      </FlowCoreThemeProvider>
     </html>
   )
 }

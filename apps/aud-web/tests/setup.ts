@@ -21,7 +21,9 @@ export const TEST_CONFIG = {
 
 // Validate environment
 if (!TEST_CONFIG.supabaseUrl || !TEST_CONFIG.supabaseAnonKey) {
-  throw new Error('Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  throw new Error(
+    'Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY'
+  )
 }
 
 /**
@@ -101,20 +103,29 @@ export async function createAuthenticatedUser(supabase: SupabaseClient) {
 /**
  * Set authenticated session in browser
  */
-export async function setAuthSession(page: Page, session: { access_token: string; refresh_token: string }) {
+export async function setAuthSession(
+  page: Page,
+  session: { access_token: string; refresh_token: string }
+) {
   await page.goto(TEST_CONFIG.appUrl)
 
   // Inject session into localStorage (Supabase default storage)
-  await page.evaluate((sessionData) => {
-    const storageKey = `sb-${new URL(sessionData.url).hostname.replace(/\./g, '-')}-auth-token`
-    localStorage.setItem(storageKey, JSON.stringify({
-      access_token: sessionData.access_token,
-      refresh_token: sessionData.refresh_token,
-      expires_at: Date.now() + 3600000, // 1 hour from now
-      token_type: 'bearer',
-      user: null,
-    }))
-  }, { ...session, url: TEST_CONFIG.supabaseUrl })
+  await page.evaluate(
+    (sessionData) => {
+      const storageKey = `sb-${new URL(sessionData.url).hostname.replace(/\./g, '-')}-auth-token`
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          access_token: sessionData.access_token,
+          refresh_token: sessionData.refresh_token,
+          expires_at: Date.now() + 3600000, // 1 hour from now
+          token_type: 'bearer',
+          user: null,
+        })
+      )
+    },
+    { ...session, url: TEST_CONFIG.supabaseUrl }
+  )
 }
 
 /**
@@ -153,22 +164,24 @@ export async function measurePerformance(
   const duration = endTime - startTime
 
   // Get FPS from browser (if available)
-  const fps = await page.evaluate(() => {
-    return new Promise<number>((resolve) => {
-      let lastTime = performance.now()
-      let frames = 0
-      const measureFPS = () => {
-        const currentTime = performance.now()
-        frames++
-        if (currentTime - lastTime >= 1000) {
-          resolve(frames)
-        } else {
-          requestAnimationFrame(measureFPS)
+  const fps = await page
+    .evaluate(() => {
+      return new Promise<number>((resolve) => {
+        let lastTime = performance.now()
+        let frames = 0
+        const measureFPS = () => {
+          const currentTime = performance.now()
+          frames++
+          if (currentTime - lastTime >= 1000) {
+            resolve(frames)
+          } else {
+            requestAnimationFrame(measureFPS)
+          }
         }
-      }
-      requestAnimationFrame(measureFPS)
+        requestAnimationFrame(measureFPS)
+      })
     })
-  }).catch(() => undefined)
+    .catch(() => undefined)
 
   return {
     duration,
@@ -222,5 +235,36 @@ export function logTestResult(testName: string, success: boolean, metrics?: Perf
 export function assert(condition: boolean, message: string) {
   if (!condition) {
     throw new Error(`Assertion failed: ${message}`)
+  }
+}
+
+// Test utilities
+export async function createTestUser(email: string, password: string) {
+  const supabase = createTestSupabaseClient()
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name: email.split('@')[0] },
+    },
+  })
+
+  if (error) throw error
+  if (!data.user) throw new Error('No user returned from sign up')
+
+  return data.user
+}
+
+export async function cleanupTestData(userId: string, campaignId?: string) {
+  const supabase = createAdminSupabaseClient()
+
+  if (campaignId) {
+    await supabase.from('campaigns').delete().eq('id', campaignId)
+  }
+
+  if (userId) {
+    await supabase.from('campaigns').delete().eq('user_id', userId)
+    await supabase.auth.admin.deleteUser(userId)
   }
 }

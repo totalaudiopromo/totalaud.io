@@ -1,0 +1,11 @@
+{
+  "name": "@total-audio/schemas-database",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  }
+}
+

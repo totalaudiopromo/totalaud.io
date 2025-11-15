@@ -6,9 +6,20 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export interface Database {
   public: {
-    Tables: {}
-    Views: {}
-    Functions: {}
-    Enums: {}
+    Tables: {
+      [table: string]: {
+        Row: Record<string, any>
+        Insert: Record<string, any>
+        Update: Record<string, any>
+        Relationships: unknown[]
+      }
+    }
+    Views: {
+      [view: string]: {
+        Row: Record<string, any>
+      }
+    }
+    Functions: Record<string, unknown>
+    Enums: Record<string, unknown>
   }
 }

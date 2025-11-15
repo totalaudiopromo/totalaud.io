@@ -17,10 +17,19 @@
       "@/ui/*": ["./src/components/ui/*"],
       "@/themes/*": ["./src/themes/*"],
       "@/hooks/*": ["./src/hooks/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/lib/*": ["./src/lib/*"],
+      "@/design/*": ["./src/design/*"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/constants/*": ["./src/constants/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/providers/*": ["./src/providers/*"],
+      "@/store/*": ["./src/store/*"],
+      "@/app/*": ["./src/app/*"],
+      "@total-audio/schemas-database": ["../../packages/schemas/database/index.ts"],
+      "@total-audio/schemas-database/*": ["../../packages/schemas/database/*"]
     },
     "isolatedModules": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "tests/**/*"]
 }

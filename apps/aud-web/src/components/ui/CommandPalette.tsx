@@ -1,119 +1,132 @@
 /**
  * CommandPalette Component
+ * Phase 15.3: Connected Console & Orchestration
  *
- * Global command launcher with keyboard navigation.
- * Flow State Design System - Matches moodboard brief.
+ * Purpose:
+ * - Quick command access via ⌘K
+ * - Spawn agents by typing "intel", "pitch", "tracker"
+ * - Integration with FlowCanvas spawning
+ *
+ * @todo: upgrade if legacy component found
  */
 
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Search,
-  Play,
-  BarChart3,
-  Link,
-  MessageSquare,
-  Palette,
-  Focus,
-  VolumeX,
-  Volume2,
-  Command,
-} from 'lucide-react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
+import { logger } from '@/lib/logger'
+import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
+import type { NodeKind } from '@/types/console'
+import { getNodeDefs, isNodeKind, type NodeDefinition } from '@/features/flow/node-registry'
+import type { LucideIcon } from 'lucide-react'
 
-export interface CommandAction {
+const log = logger.scope('CommandPalette')
+
+export interface Command {
   id: string
   label: string
-  description?: string
-  icon: React.ElementType
+  description: string
+  keywords: string[]
+  icon?: LucideIcon
+  hotkey?: string
   action: () => void
-  keywords?: string[]
 }
 
-interface CommandPaletteProps {
-  isOpen: boolean
+export interface CommandPaletteProps {
+  open: boolean
   onClose: () => void
-  commands: CommandAction[]
-  theme?: 'dark' | 'light'
+  onSpawnNode?: (kind: NodeKind) => void
+  customCommands?: Command[]
 }
 
-/**
- * Fuzzy search matcher
- */
-function fuzzyMatch(search: string, text: string): boolean {
-  const searchLower = search.toLowerCase()
-  const textLower = text.toLowerCase()
-
-  let searchIndex = 0
-  for (let i = 0; i < textLower.length && searchIndex < searchLower.length; i++) {
-    if (textLower[i] === searchLower[searchIndex]) {
-      searchIndex++
-    }
-  }
-
-  return searchIndex === searchLower.length
-}
-
-/**
- * CommandPalette Component (Flow State Design)
- */
-export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: CommandPaletteProps) {
-  const [search, setSearch] = useState('')
+export function CommandPalette({
+  open,
+  onClose,
+  onSpawnNode,
+  customCommands = [],
+}: CommandPaletteProps) {
+  const prefersReducedMotion = useReducedMotion()
+  const { trackEvent } = useFlowStateTelemetry()
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const filteredCommands = useMemo(() => {
-    if (!search.trim()) return commands
+  // Build agent spawn commands from registry
+  const agentCommands: Command[] = getNodeDefs().map((node: NodeDefinition) => ({
+    id: `spawn-${node.kind}`,
+    label: `Spawn ${node.title}`,
+    description: node.description,
+    keywords: [node.kind, node.title.toLowerCase(), 'spawn', 'agent', 'add'],
+    icon: node.icon,
+    hotkey: node.hotkey,
+    action: () => {
+      if (onSpawnNode) {
+        onSpawnNode(node.kind)
+      }
+    },
+  }))
 
-    return commands.filter((cmd) => {
-      const searchableText = [cmd.label, cmd.description || '', ...(cmd.keywords || [])].join(' ')
+  // Combine all commands
+  const allCommands = [...agentCommands, ...customCommands]
 
-      return fuzzyMatch(search, searchableText)
-    })
-  }, [search, commands])
+  // Filter commands based on search
+  const filteredCommands = allCommands.filter((cmd) => {
+    const query = searchQuery.toLowerCase()
+    return (
+      cmd.label.toLowerCase().includes(query) ||
+      cmd.description.toLowerCase().includes(query) ||
+      cmd.keywords.some((kw) => kw.toLowerCase().includes(query))
+    )
+  })
 
-  useEffect(() => {
-    setSelectedIndex(0)
-  }, [filteredCommands])
+  /**
+   * Execute selected command
+   */
+  const executeCommand = useCallback(
+    (command: Command) => {
+      log.info('Command executed', { commandId: command.id, label: command.label })
 
-  useEffect(() => {
-    if (isOpen) {
-      setSearch('')
-      setSelectedIndex(0)
-    }
-  }, [isOpen])
+      trackEvent('save', {
+        metadata: {
+          action: 'command_executed',
+          commandId: command.id,
+          commandLabel: command.label,
+        },
+      })
 
-  const executeCommand = useCallback(() => {
-    const command = filteredCommands[selectedIndex]
-    if (command) {
-      console.log('[CommandPalette] Executing:', command.label)
       command.action()
       onClose()
-    }
-  }, [filteredCommands, selectedIndex, onClose])
+      setSearchQuery('')
+      setSelectedIndex(0)
+    },
+    [onClose, trackEvent]
+  )
 
+  /**
+   * Keyboard navigation
+   */
   useEffect(() => {
-    if (!isOpen) return
+    if (!open) return
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
         case 'ArrowDown':
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev < filteredCommands.length - 1 ? prev + 1 : 0))
+          event.preventDefault()
+          setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1))
           break
-
         case 'ArrowUp':
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredCommands.length - 1))
+          event.preventDefault()
+          setSelectedIndex((prev) => Math.max(prev - 1, 0))
           break
-
         case 'Enter':
-          e.preventDefault()
-          executeCommand()
+          event.preventDefault()
+          if (filteredCommands[selectedIndex]) {
+            executeCommand(filteredCommands[selectedIndex])
+          }
           break
-
         case 'Escape':
-          e.preventDefault()
+          event.preventDefault()
           onClose()
           break
       }
@@ -121,209 +134,292 @@ export function CommandPalette({ isOpen, onClose, commands, theme = 'dark' }: Co
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, filteredCommands, executeCommand, onClose])
+  }, [open, selectedIndex, filteredCommands, executeCommand, onClose])
 
-  const colors = {
-    bg: '#0a0d10',
-    bgSecondary: '#14171b',
-    border: '#2a2d30',
-    accent: '#0ea271',
-    text: '#ffffff',
-    textSecondary: '#a0a4a8',
-  }
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={onClose}
-            className="fixed inset-0 z-50"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              backdropFilter: 'blur(8px)',
-            }}
-          />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed top-[20vh] left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4"
-          >
-            <div
-              className="rounded-lg shadow-2xl overflow-hidden"
-              style={{
-                backgroundColor: colors.bg,
-                border: `1px solid ${colors.border}`,
-              }}
-            >
-              <div
-                className="flex items-center gap-3 p-4 border-b"
-                style={{ borderColor: colors.border }}
-              >
-                <Search className="w-5 h-5" style={{ color: colors.textSecondary }} />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="search commands..."
-                  autoFocus
-                  className="flex-1 bg-transparent outline-none font-mono text-sm lowercase"
-                  style={{ color: colors.text }}
-                />
-                <div
-                  className="flex items-center gap-1 px-2 py-1 rounded font-mono text-xs"
-                  style={{
-                    backgroundColor: colors.bgSecondary,
-                    color: colors.textSecondary,
-                  }}
-                >
-                  <Command className="w-3 h-3" />
-                  <span>k</span>
-                </div>
-              </div>
-
-              <div className="max-h-[60vh] overflow-y-auto">
-                {filteredCommands.length === 0 ? (
-                  <div className="p-8 text-center">
-                    <p
-                      className="font-mono text-sm lowercase"
-                      style={{ color: colors.textSecondary }}
-                    >
-                      no commands found
-                    </p>
-                  </div>
-                ) : (
-                  filteredCommands.map((command, index) => {
-                    const Icon = command.icon
-                    const isSelected = index === selectedIndex
-
-                    return (
-                      <motion.button
-                        key={command.id}
-                        onClick={() => {
-                          setSelectedIndex(index)
-                          executeCommand()
-                        }}
-                        onMouseEnter={() => setSelectedIndex(index)}
-                        className="w-full flex items-center gap-3 p-4 transition-colors text-left"
-                        style={{
-                          backgroundColor: isSelected ? colors.bgSecondary : 'transparent',
-                          borderLeft: isSelected
-                            ? `3px solid ${colors.accent}`
-                            : '3px solid transparent',
-                        }}
-                      >
-                        <div
-                          className="flex items-center justify-center w-8 h-8 rounded"
-                          style={{
-                            backgroundColor: isSelected ? `${colors.accent}20` : colors.bgSecondary,
-                            color: isSelected ? colors.accent : colors.textSecondary,
-                          }}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="font-mono text-sm font-semibold lowercase truncate"
-                            style={{ color: colors.text }}
-                          >
-                            {command.label}
-                          </p>
-                          {command.description && (
-                            <p
-                              className="font-mono text-xs lowercase truncate"
-                              style={{ color: colors.textSecondary }}
-                            >
-                              {command.description}
-                            </p>
-                          )}
-                        </div>
-
-                        {isSelected && (
-                          <div
-                            className="px-2 py-1 rounded font-mono text-xs"
-                            style={{
-                              backgroundColor: `${colors.accent}20`,
-                              color: colors.accent,
-                            }}
-                          >
-                            ↵
-                          </div>
-                        )}
-                      </motion.button>
-                    )
-                  })
-                )}
-              </div>
-
-              <div
-                className="flex items-center justify-between p-3 border-t font-mono text-xs"
-                style={{
-                  backgroundColor: colors.bgSecondary,
-                  borderColor: colors.border,
-                  color: colors.textSecondary,
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <span className="lowercase">↑↓ navigate</span>
-                  <span className="lowercase">↵ select</span>
-                  <span className="lowercase">esc close</span>
-                </div>
-                <span className="lowercase">
-                  {filteredCommands.length} {filteredCommands.length === 1 ? 'command' : 'commands'}
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-
-export function useCommandPalette() {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const open = useCallback(() => {
-    console.log('[CommandPalette] Opening')
-    setIsOpen(true)
-  }, [])
-
-  const close = useCallback(() => {
-    console.log('[CommandPalette] Closing')
-    setIsOpen(false)
-  }, [])
-
-  const toggle = useCallback(() => {
-    setIsOpen((prev) => !prev)
-  }, [])
-
+  /**
+   * Global ⌘K shortcut
+   */
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        toggle()
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        // Ignore if inside input/textarea
+        const target = event.target as HTMLElement
+        if (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        ) {
+          return
+        }
+
+        event.preventDefault()
+        if (open) {
+          onClose()
+        } else {
+          // Open is handled by parent component
+        }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [toggle])
+  }, [open, onClose])
 
-  return {
-    isOpen,
-    open,
-    close,
-    toggle,
-  }
+  /**
+   * Focus search input when opened
+   */
+  useEffect(() => {
+    if (open && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [open])
+
+  /**
+   * Reset selection when search changes
+   */
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [searchQuery])
+
+  /**
+   * Track palette open
+   */
+  useEffect(() => {
+    if (open) {
+      trackEvent('save', {
+        metadata: {
+          action: 'palette_opened',
+          source: 'command_palette',
+        },
+      })
+    }
+  }, [open, trackEvent])
+
+  if (!open) return null
+
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: prefersReducedMotion ? 0 : 0.12 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 100,
+        }}
+      />
+
+      {/* Palette */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : 0.24,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        style={{
+          position: 'fixed',
+          top: '15%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '90%',
+          maxWidth: '640px',
+          maxHeight: '70vh',
+          backgroundColor: flowCoreColours.darkGrey,
+          border: `1px solid ${flowCoreColours.slateCyan}`,
+          borderRadius: '8px',
+          boxShadow: `0 0 60px rgba(58, 169, 190, 0.3)`,
+          zIndex: 101,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          fontFamily:
+            'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+        }}
+      >
+        {/* Search Input */}
+        <div
+          style={{
+            padding: '20px',
+            borderBottom: `1px solid ${flowCoreColours.borderGrey}`,
+          }}
+        >
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="type command or agent name..."
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              backgroundColor: flowCoreColours.matteBlack,
+              border: `1px solid ${flowCoreColours.borderGrey}`,
+              borderRadius: '6px',
+              color: flowCoreColours.textPrimary,
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = flowCoreColours.slateCyan
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = flowCoreColours.borderGrey
+            }}
+          />
+        </div>
+
+        {/* Command List */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '8px',
+          }}
+        >
+          {filteredCommands.length === 0 ? (
+            <div
+              style={{
+                padding: '40px 20px',
+                textAlign: 'center',
+                color: flowCoreColours.textTertiary,
+                fontSize: '13px',
+              }}
+            >
+              {searchQuery ? (
+                <>
+                  no commands found for "{searchQuery}"
+                  <br />
+                  <span style={{ fontSize: '11px', marginTop: '8px', display: 'block' }}>
+                    try "intel", "pitch", or "tracker"
+                  </span>
+                </>
+              ) : (
+                'start typing to search commands...'
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {filteredCommands.map((command, index) => {
+                const isSelected = index === selectedIndex
+                return (
+                  <button
+                    key={command.id}
+                    onClick={() => executeCommand(command)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '14px',
+                      backgroundColor: isSelected
+                        ? 'rgba(58, 169, 190, 0.15)'
+                        : flowCoreColours.matteBlack,
+                      border: `1px solid ${
+                        isSelected ? flowCoreColours.slateCyan : flowCoreColours.borderGrey
+                      }`,
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all var(--flowcore-motion-fast) ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.05)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = flowCoreColours.matteBlack
+                      }
+                    }}
+                  >
+                    {/* Icon */}
+                    {command.icon && (
+                      <div
+                        style={{
+                          flexShrink: 0,
+                          color: isSelected
+                            ? flowCoreColours.iceCyan
+                            : flowCoreColours.textSecondary,
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <command.icon size={22} strokeWidth={1.6} />
+                      </div>
+                    )}
+
+                    {/* Info */}
+                    <div style={{ flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: isSelected ? flowCoreColours.iceCyan : flowCoreColours.textPrimary,
+                          marginBottom: '4px',
+                          textTransform: 'lowercase',
+                        }}
+                      >
+                        {command.label}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '11px',
+                          color: flowCoreColours.textTertiary,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {command.description}
+                      </div>
+                    </div>
+
+                    {/* Hotkey */}
+                    {command.hotkey && (
+                      <kbd
+                        style={{
+                          padding: '6px 10px',
+                          backgroundColor: flowCoreColours.darkGrey,
+                          border: `1px solid ${flowCoreColours.borderGrey}`,
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          color: flowCoreColours.textSecondary,
+                          fontFamily: 'inherit',
+                          textTransform: 'uppercase',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {command.hotkey}
+                      </kbd>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            padding: '12px 20px',
+            borderTop: `1px solid ${flowCoreColours.borderGrey}`,
+            fontSize: '11px',
+            color: flowCoreColours.textTertiary,
+            textAlign: 'center',
+          }}
+        >
+          <kbd>↑↓</kbd> navigate · <kbd>enter</kbd> execute · <kbd>esc</kbd> close · <kbd>⌘K</kbd>{' '}
+          toggle
+        </div>
+      </motion.div>
+    </>
+  )
 }
-
-export { Play, BarChart3, Link, MessageSquare, Palette, Focus, VolumeX, Volume2 }
