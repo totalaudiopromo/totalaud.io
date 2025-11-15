@@ -12,6 +12,8 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AssetAttachModal } from '@/components/console/AssetAttachModal'

@@ -12,6 +12,8 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { PitchAgentNode } from '@/components/agents/PitchAgentNode'
