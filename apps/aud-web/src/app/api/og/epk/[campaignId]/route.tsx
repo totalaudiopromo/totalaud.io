@@ -26,7 +26,8 @@ const flowCoreColours = {
   borderGrey: '#2A2D2F',
 }
 
-export async function GET(req: NextRequest, { params }: { params: { campaignId: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ campaignId: string }> }) {
+  const params = await context.params
   const { campaignId } = params
 
   try {
