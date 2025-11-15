@@ -15,6 +15,8 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { AssetDropZone } from '@/components/console/AssetDropZone'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 
