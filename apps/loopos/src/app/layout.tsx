@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Toaster } from 'sonner'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
+import { OfflineIndicator } from '@/components/OfflineIndicator'
 import './globals.css'
 
 const inter = Inter({
@@ -37,6 +39,8 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <Toaster position="top-right" theme="dark" />
+        <PWAInstallPrompt />
+        <OfflineIndicator />
       </body>
     </html>
   )
