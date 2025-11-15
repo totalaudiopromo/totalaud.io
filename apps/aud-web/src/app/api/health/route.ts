@@ -1,5 +1,3 @@
-'use server'
-
 import { NextResponse } from 'next/server'
 
 /**
@@ -7,6 +5,9 @@ import { NextResponse } from 'next/server'
  * Keeps response small and dependency-free so it works even
  * when upstream services (Supabase, etc.) are unavailable.
  */
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET() {
   return NextResponse.json(
     {
