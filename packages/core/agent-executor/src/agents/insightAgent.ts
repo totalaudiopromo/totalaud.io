@@ -11,7 +11,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { complete } from '@total-audio/core-ai-provider'
 import { getBrokerPersonality } from '../personas/brokerPersonalityRegistry'
 
-export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline'
+export type OSTheme = 'operator' | 'guide' | 'map' | 'timeline' | 'tape'
 
 export interface Mixdown {
   sessionId: string

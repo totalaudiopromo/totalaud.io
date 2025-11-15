@@ -12,16 +12,23 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
     "paths": {
+      "@/*": ["apps/aud-web/src/*"],
+      "@/types/*": ["apps/aud-web/src/types/*"],
+      "@/features/*": ["apps/aud-web/src/components/features/*"],
+      "@aud-web/*": ["apps/aud-web/src/*"],
       "@total-audio/core-supabase": ["./packages/core/supabase/src"],
       "@total-audio/core-ai-provider": ["./packages/core/ai-provider/src"],
       "@total-audio/core-skills-engine": ["./packages/core/skills-engine/src"],
       "@total-audio/core-agent-executor": ["./packages/core/agent-executor/src"],
       "@total-audio/core-contacts": ["./packages/core/contacts/src"],
       "@total-audio/ui": ["./packages/ui/src"],
-      "@total-audio/schemas-database": ["./packages/schemas/database"],
+      "@total-audio/schemas-database": ["./packages/schemas/database/index.ts"],
+      "@total-audio/schemas-database/*": ["./packages/schemas/database/*"],
       "@total-audio/schemas-skills": ["./packages/schemas/skills"]
     }
   },
-  "exclude": ["node_modules", ".next", "dist"]
+  "exclude": ["node_modules", ".next", "dist", "**/tests/**"]
 }

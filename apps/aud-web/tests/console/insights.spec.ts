@@ -56,12 +56,48 @@ test.describe('AI Insight Generation', () => {
 
     // Insert sample events to generate meaningful insights
     const sampleEvents = [
-      { campaign_id: campaignId, type: 'pitch_sent', target: 'BBC Radio 1', status: 'sent', message: 'Pitch sent to BBC Radio 1' },
-      { campaign_id: campaignId, type: 'pitch_opened', target: 'BBC Radio 1', status: 'opened', message: 'BBC Radio 1 opened pitch' },
-      { campaign_id: campaignId, type: 'pitch_replied', target: 'BBC Radio 1', status: 'replied', message: 'BBC Radio 1 replied' },
-      { campaign_id: campaignId, type: 'pitch_sent', target: 'BBC Radio 6 Music', status: 'sent', message: 'Pitch sent to BBC Radio 6 Music' },
-      { campaign_id: campaignId, type: 'pitch_opened', target: 'BBC Radio 6 Music', status: 'opened', message: 'BBC Radio 6 Music opened pitch' },
-      { campaign_id: campaignId, type: 'pitch_sent', target: 'Spotify Editorial', status: 'sent', message: 'Pitch sent to Spotify Editorial' },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_sent',
+        target: 'BBC Radio 1',
+        status: 'sent',
+        message: 'Pitch sent to BBC Radio 1',
+      },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_opened',
+        target: 'BBC Radio 1',
+        status: 'opened',
+        message: 'BBC Radio 1 opened pitch',
+      },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_replied',
+        target: 'BBC Radio 1',
+        status: 'replied',
+        message: 'BBC Radio 1 replied',
+      },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_sent',
+        target: 'BBC Radio 6 Music',
+        status: 'sent',
+        message: 'Pitch sent to BBC Radio 6 Music',
+      },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_opened',
+        target: 'BBC Radio 6 Music',
+        status: 'opened',
+        message: 'BBC Radio 6 Music opened pitch',
+      },
+      {
+        campaign_id: campaignId,
+        type: 'pitch_sent',
+        target: 'Spotify Editorial',
+        status: 'sent',
+        message: 'Pitch sent to Spotify Editorial',
+      },
     ]
 
     for (const event of sampleEvents) {
@@ -175,7 +211,9 @@ test.describe('AI Insight Generation', () => {
       const insight = insights[i]
 
       // Check for trend icon (↑ ↓ or •)
-      const trendIcon = insight.locator('span:has-text("↑"), span:has-text("↓"), span:has-text("•")')
+      const trendIcon = insight.locator(
+        'span:has-text("↑"), span:has-text("↓"), span:has-text("•")'
+      )
       const hasTrendIcon = (await trendIcon.count()) > 0
 
       expect(hasTrendIcon).toBeTruthy()
@@ -269,8 +307,8 @@ test.describe('AI Insight Generation', () => {
     await page.waitForTimeout(5000)
 
     // Step 5: Verify no uncaught errors
-    const hasUncaughtErrors = consoleErrors.some((err) =>
-      err.toLowerCase().includes('uncaught') || err.toLowerCase().includes('unhandled')
+    const hasUncaughtErrors = consoleErrors.some(
+      (err) => err.toLowerCase().includes('uncaught') || err.toLowerCase().includes('unhandled')
     )
 
     expect(hasUncaughtErrors).toBeFalsy()

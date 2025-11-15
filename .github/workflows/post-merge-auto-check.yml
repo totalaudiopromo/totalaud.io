@@ -1,0 +1,26 @@
+name: Post-Merge Auto-Check
+on:
+  push:
+    branches: [main, production]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - run: pnpm install
+      - name: Run Lint + Typecheck
+        run: |
+          pnpm --filter aud-web lint || true
+          pnpm --filter aud-web typecheck || true
+      - name: Report to PR
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+        run: node .meta-automation/hooks/post-merge-auto-check.ts

@@ -9,7 +9,8 @@
 const log = {
   info: (msg: string, data?: any) => console.log('[PuppeteerMCP]', msg, data || ''),
   debug: (msg: string, data?: any) => console.debug('[PuppeteerMCP]', msg, data || ''),
-  error: (msg: string, error: Error, data?: any) => console.error('[PuppeteerMCP]', msg, error, data || ''),
+  error: (msg: string, error: Error, data?: any) =>
+    console.error('[PuppeteerMCP]', msg, error, data || ''),
 }
 
 export interface PuppeteerNavigateOptions {
@@ -68,7 +69,7 @@ export class PuppeteerMCPClient {
         await globalWithMCP.mcp__puppeteer__puppeteer_navigate({
           url: options.url,
           allowDangerous: options.allowDangerous,
-          launchOptions: options.launchOptions
+          launchOptions: options.launchOptions,
         })
       } else {
         throw new Error('Puppeteer MCP tool not available in this runtime')
@@ -141,7 +142,7 @@ export class PuppeteerMCPClient {
           selector: options.selector,
           width: options.width,
           height: options.height,
-          encoded: options.encoded
+          encoded: options.encoded,
         })
         return result
       } else {
@@ -163,7 +164,7 @@ export class PuppeteerMCPClient {
       const globalWithMCP = globalThis as any
       if (typeof globalWithMCP.mcp__puppeteer__puppeteer_click === 'function') {
         await globalWithMCP.mcp__puppeteer__puppeteer_click({
-          selector: options.selector
+          selector: options.selector,
         })
       } else {
         throw new Error('Puppeteer MCP click tool not available in this runtime')
@@ -187,7 +188,7 @@ export class PuppeteerMCPClient {
       if (typeof globalWithMCP.mcp__puppeteer__puppeteer_fill === 'function') {
         await globalWithMCP.mcp__puppeteer__puppeteer_fill({
           selector: options.selector,
-          value: options.value
+          value: options.value,
         })
       } else {
         throw new Error('Puppeteer MCP fill tool not available in this runtime')
@@ -211,7 +212,7 @@ export class PuppeteerMCPClient {
       if (typeof globalWithMCP.mcp__puppeteer__puppeteer_select === 'function') {
         await globalWithMCP.mcp__puppeteer__puppeteer_select({
           selector: options.selector,
-          value: options.value
+          value: options.value,
         })
       } else {
         throw new Error('Puppeteer MCP select tool not available in this runtime')
@@ -234,7 +235,7 @@ export class PuppeteerMCPClient {
       const globalWithMCP = globalThis as any
       if (typeof globalWithMCP.mcp__puppeteer__puppeteer_evaluate === 'function') {
         const result = await globalWithMCP.mcp__puppeteer__puppeteer_evaluate({
-          script: options.script
+          script: options.script,
         })
         return result
       } else {
