@@ -93,3 +93,4 @@ create trigger epk_comments_updated_at
 comment on table public.epk_comments is 'Threaded comments for campaign EPK collaboration (Phase 17)';
 comment on column public.epk_comments.parent_id is 'Parent comment id for threaded replies';
 
+

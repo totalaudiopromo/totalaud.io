@@ -27,3 +27,4 @@ export function getSupabaseServiceRoleClient() {
 
   return cachedClient
 }
+

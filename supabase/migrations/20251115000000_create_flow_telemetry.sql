@@ -74,3 +74,4 @@ comment on column flow_telemetry.duration_ms is 'Duration in milliseconds (e.g.,
 comment on column flow_telemetry.metadata is 'Event-specific data: shareId, agent type, tab names, etc.';
 comment on column flow_telemetry.campaign_id is 'Optional campaign/scene context for the event';
 
+

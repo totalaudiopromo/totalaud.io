@@ -41,7 +41,7 @@ export function NodePalette({ open, onClose, onSpawnNode, activeTab }: NodePalet
   const allNodes = getNodeDefs()
 
   // Filter nodes based on search and active tab
-  const filteredNodes = allNodes.filter((node) => {
+  const filteredNodes = allNodes.filter((node: NodeDefinition) => {
     const matchesSearch =
       node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       node.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -255,7 +255,7 @@ export function NodePalette({ open, onClose, onSpawnNode, activeTab }: NodePalet
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {filteredNodes.map((node, index) => {
+              {filteredNodes.map((node: NodeDefinition, index: number) => {
                 const isSelected = index === selectedIndex
                 return (
                   <button

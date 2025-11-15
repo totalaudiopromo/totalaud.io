@@ -171,3 +171,4 @@ comment on column public.artist_assets.is_public is 'Whether asset is publicly a
 comment on column public.artist_assets.public_share_id is 'Unique ID for public sharing (EPK, etc.)';
 comment on column public.artist_assets.deleted_at is 'Soft delete timestamp';
 
+

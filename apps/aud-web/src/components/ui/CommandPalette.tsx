@@ -18,7 +18,7 @@ import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { logger } from '@/lib/logger'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import type { NodeKind } from '@/types/console'
-import { getNodeDefs, isNodeKind } from '@/features/flow/node-registry'
+import { getNodeDefs, isNodeKind, type NodeDefinition } from '@/features/flow/node-registry'
 import type { LucideIcon } from 'lucide-react'
 
 const log = logger.scope('CommandPalette')
@@ -53,7 +53,7 @@ export function CommandPalette({
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Build agent spawn commands from registry
-  const agentCommands: Command[] = getNodeDefs().map((node) => ({
+  const agentCommands: Command[] = getNodeDefs().map((node: NodeDefinition) => ({
     id: `spawn-${node.kind}`,
     label: `Spawn ${node.title}`,
     description: node.description,
