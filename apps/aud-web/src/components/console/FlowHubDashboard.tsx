@@ -212,28 +212,18 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
 
   return (
     <AnimatePresence>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="fixed inset-0 z-[100] flex items-center justify-center">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 0.24 }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            backdropFilter: 'blur(8px)',
+          transition={{
+            duration: prefersReducedMotion ? 0 : 0.24,
+            ease: 'easeOut'
           }}
+          className="absolute inset-0 backdrop-blur-sm"
+          style={{ backgroundColor: flowCoreColours.overlayStrong }}
           onClick={onClose}
         />
 
@@ -246,42 +236,29 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
             duration: prefersReducedMotion ? 0 : 0.24,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="relative w-full max-w-6xl mx-4 rounded-lg overflow-hidden"
+          className="relative w-full max-w-6xl mx-4 rounded-lg overflow-hidden z-10"
           style={{
             backgroundColor: flowCoreColours.matteBlack,
             border: `1px solid ${flowCoreColours.borderGrey}`,
             maxHeight: '90vh',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-            zIndex: 1,
+            boxShadow: `0 20px 60px ${flowCoreColours.overlayStrong}`,
           }}
         >
           {/* Header */}
           <div
-            className="flex items-center justify-between px-6 py-4"
-            style={{
-              borderBottom: `1px solid ${flowCoreColours.borderGrey}`,
-            }}
+            className="flex items-center justify-between px-6 py-4 border-b"
+            style={{ borderBottomColor: flowCoreColours.borderGrey }}
           >
             <div>
               <h2
-                className="text-xl font-semibold"
-                style={{
-                  color: flowCoreColours.textPrimary,
-                  textTransform: 'lowercase',
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                }}
+                className="text-xl font-semibold lowercase font-mono"
+                style={{ color: flowCoreColours.textPrimary }}
               >
                 flow hub
               </h2>
               <p
-                className="text-sm mt-1"
-                style={{
-                  color: flowCoreColours.textTertiary,
-                  textTransform: 'lowercase',
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                }}
+                className="text-sm mt-1 lowercase font-mono"
+                style={{ color: flowCoreColours.textTertiary }}
               >
                 unified analytics & ai insights
               </p>
@@ -297,14 +274,12 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                   <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className="px-3 py-1.5 text-sm rounded transition-colours duration-120"
+                    className="px-3 py-1.5 text-sm rounded lowercase font-mono transition-all"
                     style={{
                       backgroundColor: period === p ? flowCoreColours.slateCyan : 'transparent',
-                      color:
-                        period === p ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
-                      fontFamily:
-                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                      textTransform: 'lowercase',
+                      color: period === p ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
+                      transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
+                      transitionTimingFunction: 'ease-out',
                     }}
                   >
                     {p}d
@@ -315,21 +290,11 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="px-3 py-1.5 text-sm rounded transition-colours duration-120"
+                className="px-3 py-1.5 text-sm rounded lowercase font-mono transition-all hover:bg-[var(--flowcore-overlay-soft)]"
                 style={{
-                  backgroundColor: 'transparent',
                   color: flowCoreColours.textSecondary,
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  textTransform: 'lowercase',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
-                  e.currentTarget.style.color = flowCoreColours.textPrimary
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent'
-                  e.currentTarget.style.color = flowCoreColours.textSecondary
+                  transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
+                  transitionTimingFunction: 'ease-out',
                 }}
                 aria-label="Close Flow Hub"
               >
@@ -340,10 +305,8 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
 
           {/* Tab Navigation */}
           <div
-            className="flex gap-1 px-6 pt-4"
-            style={{
-              borderBottom: `1px solid ${flowCoreColours.borderGrey}`,
-            }}
+            className="flex gap-1 px-6 pt-4 border-b"
+            style={{ borderBottomColor: flowCoreColours.borderGrey }}
           >
             {[
               { id: 'overview' as ActiveTab, label: 'performance overview' },
@@ -353,19 +316,12 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className="px-4 py-2 text-sm transition-colours duration-120"
+                className="px-4 py-2 text-sm lowercase font-mono transition-all border-b-2"
                 style={{
-                  color:
-                    activeTab === tab.id
-                      ? flowCoreColours.slateCyan
-                      : flowCoreColours.textSecondary,
-                  borderBottom:
-                    activeTab === tab.id
-                      ? `2px solid ${flowCoreColours.slateCyan}`
-                      : '2px solid transparent',
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  textTransform: 'lowercase',
+                  color: activeTab === tab.id ? flowCoreColours.slateCyan : flowCoreColours.textSecondary,
+                  borderBottomColor: activeTab === tab.id ? flowCoreColours.slateCyan : 'transparent',
+                  transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
+                  transitionTimingFunction: 'ease-out',
                 }}
               >
                 {tab.label}
@@ -377,13 +333,7 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
           <div className="p-6 overflow-y-auto" style={{ maxHeight: '70vh' }}>
             {loading && (
               <div className="flex items-center justify-center py-12">
-                <p
-                  style={{
-                    color: flowCoreColours.textSecondary,
-                    fontFamily:
-                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  }}
-                >
+                <p className="font-mono" style={{ color: flowCoreColours.textSecondary }}>
                   Loading analytics...
                 </p>
               </div>
@@ -391,19 +341,13 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
 
             {error && !loading && (
               <div
-                className="p-4 rounded"
+                className="p-4 rounded border"
                 style={{
                   backgroundColor: flowCoreColours.cardBackground,
-                  border: `1px solid ${flowCoreColours.errorRed}`,
+                  borderColor: flowCoreColours.errorRed,
                 }}
               >
-                <p
-                  style={{
-                    color: flowCoreColours.errorRed,
-                    fontFamily:
-                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  }}
-                >
+                <p className="font-mono" style={{ color: flowCoreColours.errorRed }}>
                   {error}
                 </p>
               </div>
@@ -456,30 +400,21 @@ function PerformanceOverview({ summary }: { summary: FlowHubSummary }) {
       {metrics.map((metric) => (
         <div
           key={metric.label}
-          className="p-4 rounded"
+          className="p-4 rounded border"
           style={{
             backgroundColor: flowCoreColours.cardBackground,
-            border: `1px solid ${flowCoreColours.borderGrey}`,
+            borderColor: flowCoreColours.borderGrey,
           }}
         >
           <span
-            className="text-sm block mb-2"
-            style={{
-              color: flowCoreColours.textTertiary,
-              textTransform: 'lowercase',
-              fontFamily:
-                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            }}
+            className="text-sm block mb-2 lowercase font-mono"
+            style={{ color: flowCoreColours.textTertiary }}
           >
             {metric.label}
           </span>
           <p
-            className="text-2xl font-semibold"
-            style={{
-              color: flowCoreColours.textPrimary,
-              fontFamily:
-                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            }}
+            className="text-2xl font-semibold font-mono"
+            style={{ color: flowCoreColours.textPrimary }}
           >
             {metric.value}
           </p>
@@ -498,13 +433,8 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
       {/* Top EPKs */}
       <div>
         <h3
-          className="text-lg font-semibold mb-4"
-          style={{
-            color: flowCoreColours.textPrimary,
-            textTransform: 'lowercase',
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
+          className="text-lg font-semibold mb-4 lowercase font-mono"
+          style={{ color: flowCoreColours.textPrimary }}
         >
           top epks by views
         </h3>
@@ -513,53 +443,36 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
             summary.top_epks.map((epk, index) => (
               <div
                 key={epk.epk_id}
-                className="flex items-center justify-between p-3 rounded"
+                className="flex items-center justify-between p-3 rounded border"
                 style={{
                   backgroundColor: flowCoreColours.cardBackground,
-                  border: `1px solid ${flowCoreColours.borderGrey}`,
+                  borderColor: flowCoreColours.borderGrey,
                 }}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className="text-sm font-semibold"
-                    style={{
-                      color: flowCoreColours.slateCyan,
-                      fontFamily:
-                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                    }}
+                    className="text-sm font-semibold font-mono"
+                    style={{ color: flowCoreColours.slateCyan }}
                   >
                     #{index + 1}
                   </span>
                   <span
-                    style={{
-                      color: flowCoreColours.textPrimary,
-                      fontFamily:
-                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                    }}
+                    className="font-mono"
+                    style={{ color: flowCoreColours.textPrimary }}
                   >
                     epk {epk.epk_id.slice(0, 8)}...
                   </span>
                 </div>
                 <span
-                  className="text-sm"
-                  style={{
-                    color: flowCoreColours.textSecondary,
-                    fontFamily:
-                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  }}
+                  className="text-sm font-mono"
+                  style={{ color: flowCoreColours.textSecondary }}
                 >
                   {epk.views} views
                 </span>
               </div>
             ))
           ) : (
-            <p
-              style={{
-                color: flowCoreColours.textTertiary,
-                fontFamily:
-                  'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-              }}
-            >
+            <p className="font-mono" style={{ color: flowCoreColours.textTertiary }}>
               no epks yet
             </p>
           )}
@@ -568,13 +481,8 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
 
       <div>
         <h3
-          className="text-lg font-semibold mb-4"
-          style={{
-            color: flowCoreColours.textPrimary,
-            textTransform: 'lowercase',
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
+          className="text-lg font-semibold mb-4 lowercase font-mono"
+          style={{ color: flowCoreColours.textPrimary }}
         >
           top agents by runs
         </h3>
@@ -583,53 +491,36 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
             summary.top_agents.map((agent, index) => (
               <div
                 key={`${agent.agent_type}-${index}`}
-                className="flex items-center justify-between p-3 rounded"
+                className="flex items-center justify-between p-3 rounded border"
                 style={{
                   backgroundColor: flowCoreColours.cardBackground,
-                  border: `1px solid ${flowCoreColours.borderGrey}`,
+                  borderColor: flowCoreColours.borderGrey,
                 }}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className="text-sm font-semibold"
-                    style={{
-                      color: flowCoreColours.slateCyan,
-                      fontFamily:
-                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                    }}
+                    className="text-sm font-semibold font-mono"
+                    style={{ color: flowCoreColours.slateCyan }}
                   >
                     #{index + 1}
                   </span>
                   <span
-                    style={{
-                      color: flowCoreColours.textPrimary,
-                      fontFamily:
-                        'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                    }}
+                    className="font-mono"
+                    style={{ color: flowCoreColours.textPrimary }}
                   >
                     {agent.agent_type || 'agent'}
                   </span>
                 </div>
                 <span
-                  className="text-sm"
-                  style={{
-                    color: flowCoreColours.textSecondary,
-                    fontFamily:
-                      'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-                  }}
+                  className="text-sm font-mono"
+                  style={{ color: flowCoreColours.textSecondary }}
                 >
                   {agent.runs} runs
                 </span>
               </div>
             ))
           ) : (
-            <p
-              style={{
-                color: flowCoreColours.textTertiary,
-                fontFamily:
-                  'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-              }}
-            >
+            <p className="font-mono" style={{ color: flowCoreColours.textTertiary }}>
               agent activity will appear here once runs complete
             </p>
           )}
@@ -655,16 +546,12 @@ function AIBriefPanel({
   onToggleExpand: () => void
   onRegenerate: () => void
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p
-          style={{
-            color: flowCoreColours.textSecondary,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
-        >
+        <p className="font-mono" style={{ color: flowCoreColours.textSecondary }}>
           generating ai insights with claude haiku...
         </p>
       </div>
@@ -674,25 +561,17 @@ function AIBriefPanel({
   if (!brief) {
     return (
       <div className="text-center py-12">
-        <p
-          className="mb-4"
-          style={{
-            color: flowCoreColours.textSecondary,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-          }}
-        >
+        <p className="mb-4 font-mono" style={{ color: flowCoreColours.textSecondary }}>
           no ai brief available yet
         </p>
         <button
           onClick={() => onRegenerate()}
-          className="px-4 py-2 rounded text-sm transition-colours duration-120"
+          className="px-4 py-2 rounded text-sm lowercase font-mono transition-all"
           style={{
             backgroundColor: flowCoreColours.slateCyan,
             color: flowCoreColours.matteBlack,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            textTransform: 'lowercase',
+            transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
+            transitionTimingFunction: 'ease-out',
           }}
         >
           generate brief
@@ -707,44 +586,26 @@ function AIBriefPanel({
       <div className="flex items-start justify-between">
         <div>
           <h3
-            className="text-xl font-semibold mb-2"
-            style={{
-              color: flowCoreColours.textPrimary,
-              textTransform: 'lowercase',
-              fontFamily:
-                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            }}
+            className="text-xl font-semibold mb-2 lowercase font-mono"
+            style={{ color: flowCoreColours.textPrimary }}
           >
             {brief.title}
           </h3>
           <p
-            className="text-sm mb-4"
-            style={{
-              color: flowCoreColours.textSecondary,
-              fontFamily:
-                'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            }}
+            className="text-sm mb-4 font-mono"
+            style={{ color: flowCoreColours.textSecondary }}
           >
             {brief.summary}
           </p>
         </div>
         <button
           onClick={onRegenerate}
-          className="px-3 py-1.5 text-sm rounded transition-colours duration-120"
+          className="px-3 py-1.5 text-sm rounded lowercase font-mono transition-all hover:bg-[var(--flowcore-colour-accent)] hover:text-[var(--flowcore-colour-bg)]"
           style={{
             backgroundColor: flowCoreColours.hoverGrey,
             color: flowCoreColours.textSecondary,
-            fontFamily:
-              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
-            textTransform: 'lowercase',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
-            e.currentTarget.style.color = flowCoreColours.matteBlack
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = flowCoreColours.hoverGrey
-            e.currentTarget.style.color = flowCoreColours.textSecondary
+            transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
+            transitionTimingFunction: 'ease-out',
           }}
           title="Regenerate Brief (⌘R)"
         >
@@ -756,11 +617,8 @@ function AIBriefPanel({
       {brief.highlights.length > 0 && (
         <div>
           <h4
-            className="text-sm font-semibold mb-2"
-            style={{
-              color: flowCoreColours.successGreen,
-              textTransform: 'lowercase',
-            }}
+            className="text-sm font-semibold mb-2 lowercase font-mono"
+            style={{ color: flowCoreColours.successGreen }}
           >
             highlights
           </h4>
@@ -768,12 +626,10 @@ function AIBriefPanel({
             {brief.highlights.map((highlight, index) => (
               <li
                 key={index}
-                className="pl-4"
+                className="pl-4 border-l-2 font-mono"
                 style={{
                   color: flowCoreColours.textSecondary,
-                  borderLeft: `2px solid ${flowCoreColours.successGreen}`,
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  borderLeftColor: flowCoreColours.successGreen,
                 }}
               >
                 {highlight}
@@ -787,11 +643,8 @@ function AIBriefPanel({
       {brief.risks.length > 0 && (
         <div>
           <h4
-            className="text-sm font-semibold mb-2"
-            style={{
-              color: flowCoreColours.warningOrange,
-              textTransform: 'lowercase',
-            }}
+            className="text-sm font-semibold mb-2 lowercase font-mono"
+            style={{ color: flowCoreColours.warningOrange }}
           >
             risks
           </h4>
@@ -799,12 +652,10 @@ function AIBriefPanel({
             {brief.risks.map((risk, index) => (
               <li
                 key={index}
-                className="pl-4"
+                className="pl-4 border-l-2 font-mono"
                 style={{
                   color: flowCoreColours.textSecondary,
-                  borderLeft: `2px solid ${flowCoreColours.warningOrange}`,
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  borderLeftColor: flowCoreColours.warningOrange,
                 }}
               >
                 {risk}
@@ -818,11 +669,8 @@ function AIBriefPanel({
       {brief.recommendations.length > 0 && (
         <div>
           <h4
-            className="text-sm font-semibold mb-2"
-            style={{
-              color: flowCoreColours.slateCyan,
-              textTransform: 'lowercase',
-            }}
+            className="text-sm font-semibold mb-2 lowercase font-mono"
+            style={{ color: flowCoreColours.slateCyan }}
           >
             recommendations
           </h4>
@@ -830,12 +678,10 @@ function AIBriefPanel({
             {brief.recommendations.map((rec, index) => (
               <li
                 key={index}
-                className="pl-4"
+                className="pl-4 border-l-2 font-mono"
                 style={{
                   color: flowCoreColours.textSecondary,
-                  borderLeft: `2px solid ${flowCoreColours.slateCyan}`,
-                  fontFamily:
-                    'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+                  borderLeftColor: flowCoreColours.slateCyan,
                 }}
               >
                 {rec}
