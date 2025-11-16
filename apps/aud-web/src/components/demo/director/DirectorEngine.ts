@@ -57,7 +57,7 @@ export class DirectorEngine {
   private callbacks: DirectorCallbacks = {}
   private listeners: Set<(state: DirectorState) => void> = new Set()
   private playbackTimeout: number | null = null
-  private currentExecutionAbort: (() => void) | null = null
+  private currentExecutionAbort: AbortController | null = null
   private script: DirectorAction[]
 
   constructor(script: DirectorAction[], callbacks?: DirectorCallbacks) {
@@ -103,13 +103,15 @@ export class DirectorEngine {
     this.state.isPlaying = false
     this.notifyListeners()
 
+    // Clear timeout immediately
     if (this.playbackTimeout !== null) {
       clearTimeout(this.playbackTimeout)
       this.playbackTimeout = null
     }
 
+    // Abort current execution instantly
     if (this.currentExecutionAbort) {
-      this.currentExecutionAbort()
+      this.currentExecutionAbort.abort()
       this.currentExecutionAbort = null
     }
   }
@@ -119,12 +121,16 @@ export class DirectorEngine {
 
     this.state.isPlaying = true
     this.notifyListeners()
+
+    // Continue from current index with fresh scheduling
     this.scheduleNextAction()
   }
 
   stop(): void {
+    // Abort current execution and clear timeout
     this.pause()
 
+    // Reset state cleanly
     this.state = {
       isEnabled: false,
       isPlaying: false,
@@ -137,18 +143,19 @@ export class DirectorEngine {
   skipToNext(): void {
     if (!this.state.isEnabled) return
 
-    // Cancel current action
+    // Cancel current action immediately
     if (this.playbackTimeout !== null) {
       clearTimeout(this.playbackTimeout)
       this.playbackTimeout = null
     }
 
+    // Abort current execution instantly
     if (this.currentExecutionAbort) {
-      this.currentExecutionAbort()
+      this.currentExecutionAbort.abort()
       this.currentExecutionAbort = null
     }
 
-    // Move to next
+    // Move to next action instantly
     if (this.state.currentIndex < this.script.length - 1) {
       this.state.currentIndex++
       this.notifyListeners()
@@ -164,18 +171,19 @@ export class DirectorEngine {
   skipToPrevious(): void {
     if (!this.state.isEnabled) return
 
-    // Cancel current action
+    // Cancel current action immediately
     if (this.playbackTimeout !== null) {
       clearTimeout(this.playbackTimeout)
       this.playbackTimeout = null
     }
 
+    // Abort current execution instantly
     if (this.currentExecutionAbort) {
-      this.currentExecutionAbort()
+      this.currentExecutionAbort.abort()
       this.currentExecutionAbort = null
     }
 
-    // Move to previous
+    // Move to previous action
     if (this.state.currentIndex > 0) {
       this.state.currentIndex--
       this.notifyListeners()
@@ -209,17 +217,28 @@ export class DirectorEngine {
         .then(() => {
           if (!this.state.isPlaying) return
 
-          // Move to next action
-          this.state.currentIndex++
+          // Add 100ms buffer after action completes (unless explicitly disabled)
+          const bufferMs = 100
 
-          if (this.state.currentIndex >= this.script.length) {
-            this.stop()
-          } else {
-            this.scheduleNextAction()
-          }
+          // Move to next action after buffer
+          setTimeout(() => {
+            if (!this.state.isPlaying) return
+
+            this.state.currentIndex++
+
+            if (this.state.currentIndex >= this.script.length) {
+              this.stop()
+            } else {
+              this.scheduleNextAction()
+            }
+          }, bufferMs)
         })
         .catch((error) => {
-          console.error('[DirectorEngine] Action execution failed:', error)
+          // Only log non-abort errors
+          if (error?.message !== 'Action aborted') {
+            console.error('[DirectorEngine] Action execution failed:', error)
+          }
+
           // Continue to next action despite error
           this.state.currentIndex++
           if (this.state.isPlaying) {
@@ -230,74 +249,81 @@ export class DirectorEngine {
   }
 
   private async executeAction(action: DirectorAction): Promise<void> {
-    let aborted = false
-    this.currentExecutionAbort = () => {
-      aborted = true
-    }
+    // Create AbortController for this action
+    const abortController = new AbortController()
+    this.currentExecutionAbort = abortController
 
     try {
       switch (action.kind) {
         case 'WAIT':
-          await this.executeWait()
+          await this.executeWait(abortController.signal)
           break
 
         case 'SET_OS':
-          await this.executeSetOS(action)
+          await this.executeSetOS(action, abortController.signal)
           break
 
         case 'TYPE_ASCII':
-          await this.executeTypeAscii(action)
+          await this.executeTypeAscii(action, abortController.signal)
           break
 
         case 'RUN_ASCII_COMMAND':
-          await this.executeRunAsciiCommand(action)
+          await this.executeRunAsciiCommand(action, abortController.signal)
           break
 
         case 'HIGHLIGHT_ANALOGUE_CARD':
-          await this.executeHighlightAnalogueCard(action)
+          await this.executeHighlightAnalogueCard(action, abortController.signal)
           break
 
         case 'FOCUS_XP_AGENT_RUN':
-          await this.executeFocusXpAgentRun(action)
+          await this.executeFocusXpAgentRun(action, abortController.signal)
           break
 
         case 'PAN_CAMERA':
-          await this.executePanCamera(action)
+          await this.executePanCamera(action, abortController.signal)
           break
 
         case 'PLAY_LOOPOS':
-          await this.executePlayLoopOS(action)
+          await this.executePlayLoopOS(action, abortController.signal)
           break
 
         case 'STOP_LOOPOS':
-          await this.executeStopLoopOS(action)
+          await this.executeStopLoopOS(action, abortController.signal)
           break
 
         case 'OPEN_AQUA_AGENT':
-          await this.executeOpenAquaAgent(action)
+          await this.executeOpenAquaAgent(action, abortController.signal)
           break
 
         case 'SET_AMBIENT_INTENSITY':
-          await this.executeSetAmbientIntensity(action)
+          await this.executeSetAmbientIntensity(action, abortController.signal)
           break
 
         case 'SHOW_NOTE':
-          await this.executeShowNote(action)
+          await this.executeShowNote(action, abortController.signal)
           break
 
         case 'TRIGGER_TAP_EXPORT':
-          await this.executeTriggerTapExport(action)
+          await this.executeTriggerTapExport(action, abortController.signal)
           break
 
         default:
           console.warn('[DirectorEngine] Unknown action kind:', (action as any).kind)
       }
+
+      // Check if aborted after execution
+      if (abortController.signal.aborted) {
+        throw new Error('Action aborted')
+      }
+    } catch (error) {
+      // Re-throw abort errors
+      if (abortController.signal.aborted || (error as Error)?.message === 'Action aborted') {
+        throw new Error('Action aborted')
+      }
+      // Re-throw other errors
+      throw error
     } finally {
       this.currentExecutionAbort = null
-    }
-
-    if (aborted) {
-      throw new Error('Action aborted')
     }
   }
 
@@ -305,33 +331,48 @@ export class DirectorEngine {
   // Action Executors
   // ============================================================
 
-  private async executeWait(): Promise<void> {
+  private async executeWait(signal: AbortSignal): Promise<void> {
     // No-op, delay handled by delayMs
+    // Check abort signal
+    if (signal.aborted) throw new Error('Action aborted')
   }
 
-  private async executeSetOS(action: DirectorAction): Promise<void> {
+  private async executeSetOS(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { osSlug } = action.payload || {}
     if (osSlug && this.callbacks.onSetOS) {
       this.callbacks.onSetOS(osSlug)
     }
   }
 
-  private async executeTypeAscii(action: DirectorAction): Promise<void> {
+  private async executeTypeAscii(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { text } = action.payload || {}
     const durationMs = action.durationMs ?? 1000
 
     if (text && this.callbacks.onTypeAscii) {
       await this.callbacks.onTypeAscii(text, durationMs)
     }
+
+    if (signal.aborted) throw new Error('Action aborted')
   }
 
-  private async executeRunAsciiCommand(action: DirectorAction): Promise<void> {
+  private async executeRunAsciiCommand(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     if (this.callbacks.onRunAsciiCommand) {
       this.callbacks.onRunAsciiCommand()
     }
   }
 
-  private async executeHighlightAnalogueCard(action: DirectorAction): Promise<void> {
+  private async executeHighlightAnalogueCard(
+    action: DirectorAction,
+    signal: AbortSignal
+  ): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { title } = action.payload || {}
     const durationMs = action.durationMs ?? 2000
 
@@ -340,42 +381,61 @@ export class DirectorEngine {
     }
   }
 
-  private async executeFocusXpAgentRun(action: DirectorAction): Promise<void> {
+  private async executeFocusXpAgentRun(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     if (this.callbacks.onFocusXpAgentRun) {
       this.callbacks.onFocusXpAgentRun()
     }
   }
 
-  private async executePanCamera(action: DirectorAction): Promise<void> {
+  private async executePanCamera(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { target } = action.payload || {}
     const durationMs = action.durationMs ?? 1000
 
     if (target && this.callbacks.onPanCamera) {
       await this.callbacks.onPanCamera(target, durationMs)
     }
+
+    if (signal.aborted) throw new Error('Action aborted')
   }
 
-  private async executePlayLoopOS(action: DirectorAction): Promise<void> {
+  private async executePlayLoopOS(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const durationMs = action.durationMs ?? 2000
 
     if (this.callbacks.onPlayLoopOS) {
       await this.callbacks.onPlayLoopOS(durationMs)
     }
+
+    if (signal.aborted) throw new Error('Action aborted')
   }
 
-  private async executeStopLoopOS(action: DirectorAction): Promise<void> {
+  private async executeStopLoopOS(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     if (this.callbacks.onStopLoopOS) {
       this.callbacks.onStopLoopOS()
     }
   }
 
-  private async executeOpenAquaAgent(action: DirectorAction): Promise<void> {
+  private async executeOpenAquaAgent(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     if (this.callbacks.onOpenAquaAgent) {
       this.callbacks.onOpenAquaAgent()
     }
   }
 
-  private async executeSetAmbientIntensity(action: DirectorAction): Promise<void> {
+  private async executeSetAmbientIntensity(
+    action: DirectorAction,
+    signal: AbortSignal
+  ): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { intensity } = action.payload || {}
 
     if (typeof intensity === 'number' && this.callbacks.onSetAmbientIntensity) {
@@ -383,7 +443,9 @@ export class DirectorEngine {
     }
   }
 
-  private async executeShowNote(action: DirectorAction): Promise<void> {
+  private async executeShowNote(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const { text } = action.payload || {}
 
     if (text && this.callbacks.onShowNote) {
@@ -391,13 +453,17 @@ export class DirectorEngine {
     }
   }
 
-  private async executeTriggerTapExport(action: DirectorAction): Promise<void> {
+  private async executeTriggerTapExport(action: DirectorAction, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) throw new Error('Action aborted')
+
     const payload = action.payload || {}
     const durationMs = action.durationMs ?? 2000
 
     if (this.callbacks.onTriggerTapExport) {
       await this.callbacks.onTriggerTapExport(payload, durationMs)
     }
+
+    if (signal.aborted) throw new Error('Action aborted')
   }
 
   // ============================================================

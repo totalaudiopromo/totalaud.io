@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Sparkles, Send } from 'lucide-react'
 import { spacing, radii, colours } from '@/styles/tokens'
-import { duration, easing } from '@/styles/motion'
+import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 // Aqua OS specific colours (glassy macOS Aqua aesthetic)
 const AQUA_BG_FROM = '#E8F4F8'
@@ -51,6 +51,14 @@ export function AquaOSPage() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
   const [inputValue, setInputValue] = useState('')
   const [isThinking, setIsThinking] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+
+  const shouldAnimate = !prefersReducedMotion()
+
+  // Trigger entrance animation
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // Register director callback
   useEffect(() => {
@@ -136,13 +144,37 @@ Would you like me to help draft specific pitch emails for your target playlists?
   }
 
   return (
-    <div
-      className="w-full h-full overflow-hidden"
-      style={{
-        background: `linear-gradient(to bottom right, ${AQUA_BG_FROM}, ${AQUA_BG_TO})`,
-        color: AQUA_TEXT,
-      }}
-    >
+    <>
+      <style>{`
+        @keyframes messageReveal {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes thinkingDots {
+          0%, 20% { opacity: 0.3; }
+          50% { opacity: 1; }
+          100% { opacity: 0.3; }
+        }
+      `}</style>
+      <div
+        className="w-full h-full overflow-hidden"
+        style={{
+          background: `linear-gradient(to bottom right, ${AQUA_BG_FROM}, ${AQUA_BG_TO})`,
+          color: AQUA_TEXT,
+          // OS transition animation
+          opacity: shouldAnimate ? (isVisible ? 1 : 0) : 1,
+          transform: shouldAnimate ? (isVisible ? 'scale(1)' : 'scale(0.98)') : 'scale(1)',
+          transition: shouldAnimate
+            ? `opacity ${duration.medium}s ${easing.default}, transform ${duration.medium}s ${easing.default}`
+            : 'none',
+        }}
+      >
       {/* Glassy header */}
       <div
         style={{
@@ -184,11 +216,15 @@ Would you like me to help draft specific pitch emails for your target playlists?
           gap: spacing[4],
         }}
       >
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
             key={message.id}
             className="flex"
-            style={{ justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start' }}
+            style={{
+              justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+              // Smooth message reveal: fade in + scale pop (0.95 → 1)
+              animation: shouldAnimate ? `messageReveal ${duration.medium}s ${easing.default}` : 'none',
+            }}
           >
             <div
               style={{
@@ -241,32 +277,38 @@ Would you like me to help draft specific pitch emails for your target playlists?
               <div className="flex items-center" style={{ gap: spacing[2] }}>
                 <div className="flex" style={{ gap: spacing[1] }}>
                   <div
-                    className="animate-bounce"
                     style={{
                       width: '8px',
                       height: '8px',
                       backgroundColor: colours.accent,
                       borderRadius: radii.full,
+                      animation: shouldAnimate
+                        ? `thinkingDots ${duration.slow * 2}s ease-in-out infinite`
+                        : 'none',
                     }}
                   />
                   <div
-                    className="animate-bounce"
                     style={{
                       width: '8px',
                       height: '8px',
                       backgroundColor: colours.accent,
                       borderRadius: radii.full,
-                      animationDelay: '0.2s',
+                      animation: shouldAnimate
+                        ? `thinkingDots ${duration.slow * 2}s ease-in-out infinite`
+                        : 'none',
+                      animationDelay: shouldAnimate ? '0.2s' : '0s',
                     }}
                   />
                   <div
-                    className="animate-bounce"
                     style={{
                       width: '8px',
                       height: '8px',
                       backgroundColor: colours.accent,
                       borderRadius: radii.full,
-                      animationDelay: '0.4s',
+                      animation: shouldAnimate
+                        ? `thinkingDots ${duration.slow * 2}s ease-in-out infinite`
+                        : 'none',
+                      animationDelay: shouldAnimate ? '0.4s' : '0s',
                     }}
                   />
                 </div>
@@ -361,6 +403,7 @@ Would you like me to help draft specific pitch emails for your target playlists?
           filter: 'blur(64px)',
         }}
       />
-    </div>
+      </div>
+    </>
   )
 }

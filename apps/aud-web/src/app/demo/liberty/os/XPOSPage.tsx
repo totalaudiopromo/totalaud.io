@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Activity, CheckCircle2, Clock } from 'lucide-react'
 import { spacing, radii, shadows } from '@/styles/tokens'
-import { duration, easing } from '@/styles/motion'
+import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 // XP OS specific colours (glossy Windows XP aesthetic)
 const XP_BG_FROM = '#3A6EA5'
@@ -107,6 +107,13 @@ export function XPOSPage() {
   const director = useDirector()
   const [runs, setRuns] = useState<AgentRun[]>(LIBERTY_RUNS)
   const [activeRunId, setActiveRunId] = useState<string | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const shouldAnimate = !prefersReducedMotion()
+
+  // Trigger entrance animation
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // Register director callback
   useEffect(() => {
@@ -130,6 +137,12 @@ export function XPOSPage() {
         background: `linear-gradient(to bottom right, ${XP_BG_FROM}, ${XP_BG_TO})`,
         color: XP_TEXT,
         padding: spacing[8],
+        // OS transition animation
+        opacity: shouldAnimate ? (isVisible ? 1 : 0) : 1,
+        transform: shouldAnimate ? (isVisible ? 'scale(1)' : 'scale(0.98)') : 'scale(1)',
+        transition: shouldAnimate
+          ? `opacity ${duration.medium}s ${easing.default}, transform ${duration.medium}s ${easing.default}`
+          : 'none',
       }}
     >
       {/* Header */}
@@ -183,10 +196,17 @@ export function XPOSPage() {
                 style={{
                   padding: spacing[3],
                   borderRadius: radii.lg,
-                  transition: `all ${duration.medium}s ${easing.default}`,
+                  // Fade in active state over duration.fast with smooth scale
+                  transition: shouldAnimate
+                    ? `background-color ${duration.fast}s ${easing.default},
+                       border-color ${duration.fast}s ${easing.default},
+                       box-shadow ${duration.fast}s ${easing.default},
+                       transform ${duration.fast}s ${easing.default}`
+                    : 'none',
                   backgroundColor: isActive ? XP_PANEL_ACTIVE_BG : XP_PANEL_BG,
                   border: isActive ? `2px solid ${XP_PANEL_ACTIVE_BORDER}` : `1px solid ${XP_PANEL_BORDER}`,
                   boxShadow: isActive ? shadows.medium : 'none',
+                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
                 }}
               >
                 {/* Status icon */}

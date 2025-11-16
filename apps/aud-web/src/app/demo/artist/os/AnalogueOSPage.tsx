@@ -9,8 +9,8 @@
 import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { BookOpen, Sparkles } from 'lucide-react'
-import { spacing, radii, shadows } from '@/styles/tokens'
-import { duration, easing } from '@/styles/motion'
+import { spacing, radii, shadows, colours } from '@/styles/tokens'
+import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 // Analogue OS specific colours (warm paper/sepia aesthetic)
 const ANALOGUE_BG = '#2A2520'
@@ -56,6 +56,13 @@ const DEMO_CARDS: Card[] = [
 export function AnalogueOSPage() {
   const director = useDirector()
   const [highlightedCardTitle, setHighlightedCardTitle] = useState<string | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const shouldAnimate = !prefersReducedMotion()
+
+  // Trigger entrance animation
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // Register director callback for card highlighting
   useEffect(() => {
@@ -78,6 +85,12 @@ export function AnalogueOSPage() {
         backgroundColor: ANALOGUE_BG,
         color: ANALOGUE_TEXT,
         padding: spacing[8],
+        // OS transition animation
+        opacity: shouldAnimate ? (isVisible ? 1 : 0) : 1,
+        transform: shouldAnimate ? (isVisible ? 'scale(1)' : 'scale(0.98)') : 'scale(1)',
+        transition: shouldAnimate
+          ? `opacity ${duration.medium}s ${easing.default}, transform ${duration.medium}s ${easing.default}`
+          : 'none',
       }}
     >
       {/* Header */}
@@ -130,8 +143,15 @@ export function AnalogueOSPage() {
                 border: `2px solid ${isHighlighted ? ANALOGUE_ACCENT : ANALOGUE_CARD_BORDER}`,
                 borderRadius: radii.lg,
                 padding: spacing[4],
-                transition: `all ${duration.medium}s ${easing.default}`,
-                boxShadow: isHighlighted ? `0 0 24px ${ANALOGUE_GLOW}` : shadows.subtle,
+                // Smooth transitions with different durations for different properties
+                transition: shouldAnimate
+                  ? `transform ${duration.fast}s ${easing.default},
+                     border-color ${duration.fast}s ${easing.default},
+                     box-shadow ${duration.fast}s ${easing.default}`
+                  : 'none',
+                // Fade in glow over duration.fast with colours.glow
+                boxShadow: isHighlighted ? `0 0 24px ${colours.glow}` : shadows.subtle,
+                // Scale 1 → 1.05 smoothly
                 transform: isHighlighted ? 'scale(1.05)' : 'scale(1)',
               }}
             >

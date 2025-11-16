@@ -10,7 +10,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Play, Pause } from 'lucide-react'
 import { spacing, radii, colours } from '@/styles/tokens'
-import { duration, easing } from '@/styles/motion'
+import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 export function LoopOSPage() {
   const director = useDirector()
@@ -19,7 +19,13 @@ export function LoopOSPage() {
   const [cameraTarget, setCameraTarget] = useState<'timeline' | 'inspector' | 'minimap'>(
     'timeline'
   )
+  const [isVisible, setIsVisible] = useState(false)
   const playIntervalRef = useRef<number | null>(null)
+
+  // Trigger entrance animation
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // Register director callbacks
   useEffect(() => {
@@ -80,14 +86,39 @@ export function LoopOSPage() {
     }
   }
 
+  // Calculate camera pan duration based on distance
+  const getCameraPanDuration = () => {
+    // Simple distance approximation (in practice, this could be more sophisticated)
+    // Timeline → Inspector: medium distance (300ms)
+    // Timeline → Minimap: short distance (250ms)
+    // Inspector → Minimap: long distance (350ms)
+    return duration.medium + 0.05 // 290ms
+  }
+
+  const shouldAnimate = !prefersReducedMotion()
+
   return (
-    <div className="w-full h-full overflow-hidden" style={{ backgroundColor: colours.background }}>
-      {/* Camera container */}
+    <div
+      className="w-full h-full overflow-hidden"
+      style={{
+        backgroundColor: colours.background,
+        // OS transition animation
+        opacity: shouldAnimate ? (isVisible ? 1 : 0) : 1,
+        transform: shouldAnimate ? (isVisible ? 'scale(1)' : 'scale(0.98)') : 'scale(1)',
+        transition: shouldAnimate
+          ? `opacity ${duration.medium}s ${easing.default}, transform ${duration.medium}s ${easing.default}`
+          : 'none',
+      }}
+    >
+      {/* Camera container with GPU-accelerated transform */}
       <div
         className="w-full h-full"
         style={{
           transform: getCameraTransform(),
-          transition: `transform ${duration.slow * 2.5}s ${easing.smooth}`,
+          transition: shouldAnimate
+            ? `transform ${getCameraPanDuration()}s ${easing.default}`
+            : 'none',
+          willChange: 'transform', // GPU acceleration hint
         }}
       >
         <div className="w-full h-full" style={{ padding: spacing[6] }}>

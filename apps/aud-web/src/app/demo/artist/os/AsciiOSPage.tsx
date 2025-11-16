@@ -10,7 +10,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Terminal } from 'lucide-react'
 import { colours, spacing } from '@/styles/tokens'
-import { duration, easing } from '@/styles/motion'
+import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 // ASCII OS specific colours (CRT green terminal aesthetic)
 const ASCII_GREEN = '#00FF00'
@@ -27,7 +27,15 @@ export function AsciiOSPage() {
     '',
   ])
   const [isTyping, setIsTyping] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const shouldAnimate = !prefersReducedMotion()
+
+  // Trigger entrance animation
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // Register director callbacks
   useEffect(() => {
@@ -36,10 +44,24 @@ export function AsciiOSPage() {
         setIsTyping(true)
         setInputValue('')
 
+        // Natural typing speed based on text length
+        // Min speed: 18 chars/s (55ms per char), Max speed: 42 chars/s (24ms per char)
+        const textLength = text.length
+        const charsPerSecond = Math.max(18, Math.min(42, 30 + textLength / 10))
+        const baseCharDelay = 1000 / charsPerSecond
+
         // Simulate typing character by character
-        const charDelay = durationMs / text.length
         for (let i = 0; i <= text.length; i++) {
           setInputValue(text.slice(0, i))
+
+          // Calculate delay for this character
+          let charDelay = baseCharDelay
+
+          // Add pause after punctuation (30-40ms)
+          if (i > 0 && /[.,!?]/.test(text[i - 1])) {
+            charDelay += 30 + Math.random() * 10
+          }
+
           await new Promise((resolve) => setTimeout(resolve, charDelay))
         }
 
@@ -106,6 +128,12 @@ export function AsciiOSPage() {
         backgroundColor: colours.background,
         color: ASCII_GREEN,
         padding: spacing[8],
+        // OS transition animation
+        opacity: shouldAnimate ? (isVisible ? 1 : 0) : 1,
+        transform: shouldAnimate ? (isVisible ? 'scale(1)' : 'scale(0.98)') : 'scale(1)',
+        transition: shouldAnimate
+          ? `opacity ${duration.medium}s ${easing.default}, transform ${duration.medium}s ${easing.default}`
+          : 'none',
       }}
     >
       {/* Header */}
