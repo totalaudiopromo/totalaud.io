@@ -28,6 +28,7 @@ interface DirectorContextValue {
   currentIndex: number
   currentActionId: string | null
   progress: number // 0-1
+  totalActions: number
 
   // Actions
   start: () => void
@@ -111,6 +112,7 @@ export function DirectorProvider({ children, script, callbacks }: DirectorProvid
     currentIndex: state.currentIndex,
     currentActionId: state.currentActionId,
     progress,
+    totalActions: script.length,
     start,
     pause,
     resume,

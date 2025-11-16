@@ -212,7 +212,7 @@ export class DirectorEngine {
           // Move to next action
           this.state.currentIndex++
 
-          if (this.state.currentIndex >= DIRECTOR_SCRIPT.length) {
+          if (this.state.currentIndex >= this.script.length) {
             this.stop()
           } else {
             this.scheduleNextAction()

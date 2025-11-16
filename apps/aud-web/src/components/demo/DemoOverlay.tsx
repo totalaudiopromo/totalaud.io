@@ -1,14 +1,18 @@
 'use client'
 
 /**
- * Demo Overlay
+ * Demo Overlay - Phase 29 Polished
  * Shows demo progress, controls, and director playback controls
+ * Uses design tokens for cohesive styling
  */
 
 import { useDemo } from './DemoOrchestrator'
 import { useOptionalDirector } from './director/DirectorProvider'
 import { useOptionalAmbient } from '../ambient/AmbientEngineProvider'
-import { Play, Pause, SkipForward, Square, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Play, Pause, SkipForward, Square, ChevronLeft, ChevronRight, RotateCcw, Home } from 'lucide-react'
+import Link from 'next/link'
+import { colours, radii, spacing, shadows } from '@/styles/tokens'
+import { transitions, duration } from '@/styles/motion'
 
 export function DemoOverlay() {
   const demo = useDemo()
@@ -52,125 +56,416 @@ export function DemoOverlay() {
     director?.skipToNext()
   }
 
+  const handleReplayDemo = () => {
+    if (!director) return
+
+    // Reset to beginning
+    director.stop()
+
+    // Restart after brief pause
+    setTimeout(() => {
+      director.start()
+    }, 300)
+  }
+
+  // Check if demo is complete (progress === 1)
+  const isDemoComplete = director && director.isEnabled && director.progress >= 1
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="max-w-7xl mx-auto px-6 pb-6">
-        <div className="bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg pointer-events-auto">
-          {/* Progress bar */}
-          {director && director.isEnabled && (
-            <div className="h-1 bg-border/30 rounded-t-lg overflow-hidden">
+    <>
+      {/* Vignette effect when demo is active */}
+      {director && director.isEnabled && (
+        <div
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.4) 100%)',
+            zIndex: 45,
+            transition: transitions.opacity,
+          }}
+        />
+      )}
+
+      {/* Dimming overlay when paused */}
+      {director && director.isEnabled && !director.isPlaying && !isDemoComplete && (
+        <div
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(2px)',
+            zIndex: 45,
+            transition: transitions.opacity,
+          }}
+        />
+      )}
+
+      {/* Main overlay panel */}
+      <div
+        className="fixed bottom-0 left-0 right-0 pointer-events-none"
+        style={{ zIndex: 50 }}
+      >
+        <div
+          className="max-w-7xl mx-auto"
+          style={{
+            paddingLeft: spacing[6],
+            paddingRight: spacing[6],
+            paddingBottom: spacing[6],
+          }}
+        >
+          <div
+            className="pointer-events-auto"
+            style={{
+              backgroundColor: 'rgba(15, 17, 19, 0.95)',
+              backdropFilter: 'blur(12px)',
+              border: `1px solid ${colours.border}`,
+              borderRadius: radii.lg,
+              boxShadow: shadows.medium,
+            }}
+          >
+            {/* Animated progress bar */}
+            {director && director.isEnabled && (
               <div
-                className="h-full bg-accent transition-all duration-300"
-                style={{ width: `${director.progress * 100}%` }}
-              />
-            </div>
-          )}
+                style={{
+                  height: '2px',
+                  backgroundColor: colours.border,
+                  borderTopLeftRadius: radii.lg,
+                  borderTopRightRadius: radii.lg,
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${director.progress * 100}%`,
+                    background: `linear-gradient(90deg, ${colours.accent} 0%, ${colours.glow} 100%)`,
+                    boxShadow: shadows.glow,
+                    transition: `width ${duration.medium}s cubic-bezier(0.22, 1, 0.36, 1)`,
+                  }}
+                />
+              </div>
+            )}
 
-          <div className="p-4">
-            {/* Step info */}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <div className="flex items-centre gap-2 mb-1">
-                  <span className="text-xs font-mono text-foreground/60">
-                    STEP {activeStepIndex + 1}/{demo.activeStepIndex + 1}
-                  </span>
-                  <span className="text-xs text-foreground/40">•</span>
-                  <span className="text-xs font-mono text-accent">{activeStep.osSlug}</span>
+            <div style={{ padding: spacing[4] }}>
+              {/* Step info */}
+              <div className="flex items-start justify-between" style={{ marginBottom: spacing[3] }}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2" style={{ marginBottom: spacing[1] }}>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontFamily: 'ui-monospace, monospace',
+                        color: colours.foregroundSubtle,
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      STEP {activeStepIndex + 1}/{demo.activeStepIndex + 1}
+                    </span>
+                    <span style={{ fontSize: '11px', color: colours.foregroundFaint }}>•</span>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontFamily: 'ui-monospace, monospace',
+                        color: colours.accent,
+                        letterSpacing: '0.05em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {activeStep.osSlug}
+                    </span>
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      color: colours.foreground,
+                      lineHeight: '1.3',
+                    }}
+                  >
+                    {activeStep.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '14px',
+                      color: colours.foregroundMuted,
+                      lineHeight: '1.5',
+                    }}
+                  >
+                    {activeStep.description}
+                  </p>
+
+                  {/* Director note */}
+                  {director && director.isEnabled && note && (
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: colours.accent,
+                        marginTop: spacing[2],
+                        fontStyle: 'italic',
+                        opacity: 0.9,
+                      }}
+                    >
+                      {note}
+                    </p>
+                  )}
                 </div>
-                <h3 className="text-lg font-bold text-foreground">{activeStep.title}</h3>
-                <p className="text-sm text-foreground/70">{activeStep.description}</p>
 
-                {/* Director note */}
-                {director && director.isEnabled && note && (
-                  <p className="text-xs text-accent/80 mt-2 italic">{note}</p>
+                {/* Manual navigation (only when not playing) */}
+                {!director?.isPlaying && !isDemoComplete && (
+                  <div className="flex items-center gap-2" style={{ marginLeft: spacing[4] }}>
+                    <button
+                      onClick={previousStep}
+                      disabled={activeStepIndex === 0}
+                      className="hover:bg-accent/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Previous step"
+                      style={{
+                        padding: spacing[2],
+                        borderRadius: radii.sm,
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        transition: transitions.colors,
+                      }}
+                    >
+                      <ChevronLeft className="w-4 h-4" style={{ color: colours.foreground }} />
+                    </button>
+                    <button
+                      onClick={nextStep}
+                      disabled={activeStepIndex === demo.activeStepIndex}
+                      className="hover:bg-accent/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Next step"
+                      style={{
+                        padding: spacing[2],
+                        borderRadius: radii.sm,
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        transition: transitions.colors,
+                      }}
+                    >
+                      <ChevronRight className="w-4 h-4" style={{ color: colours.foreground }} />
+                    </button>
+                  </div>
                 )}
               </div>
 
-              {/* Manual navigation */}
-              {!director?.isPlaying && (
-                <div className="flex items-centre gap-2 ml-4">
-                  <button
-                    onClick={previousStep}
-                    disabled={activeStepIndex === 0}
-                    className="p-2 rounded hover:bg-accent/10 transition-colours disabled:opacity-30 disabled:cursor-not-allowed"
-                    aria-label="Previous step"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={nextStep}
-                    disabled={activeStepIndex === demo.activeStepIndex}
-                    className="p-2 rounded hover:bg-accent/10 transition-colours disabled:opacity-30 disabled:cursor-not-allowed"
-                    aria-label="Next step"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+              {/* Director controls */}
+              {director && (
+                <div
+                  className="flex items-center gap-2"
+                  style={{
+                    paddingTop: spacing[3],
+                    borderTop: `1px solid ${colours.border}`,
+                  }}
+                >
+                  {!director.isEnabled ? (
+                    // Play Demo button (initial state)
+                    <>
+                      <button
+                        onClick={handlePlayDemo}
+                        className="hover:opacity-90"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[4]}`,
+                          backgroundColor: colours.accent,
+                          color: colours.background,
+                          borderRadius: radii.md,
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontWeight: '500',
+                          fontSize: '14px',
+                          transition: transitions.opacity,
+                        }}
+                      >
+                        <Play className="w-4 h-4" />
+                        Begin Cinematic Playthrough
+                      </button>
+                      <Link
+                        href="/demo"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[3]}`,
+                          border: `1px solid ${colours.border}`,
+                          borderRadius: radii.md,
+                          fontSize: '14px',
+                          color: colours.foreground,
+                          textDecoration: 'none',
+                          transition: transitions.colors,
+                          marginLeft: 'auto',
+                        }}
+                        className="hover:bg-accent/10"
+                      >
+                        <Home className="w-4 h-4" />
+                        Demo Menu
+                      </Link>
+                    </>
+                  ) : isDemoComplete ? (
+                    // Demo complete state - Replay + Exit
+                    <>
+                      <button
+                        onClick={handleReplayDemo}
+                        className="hover:bg-accent/10"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[4]}`,
+                          border: `1px solid ${colours.accent}`,
+                          borderRadius: radii.md,
+                          background: 'transparent',
+                          color: colours.accent,
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          transition: transitions.colors,
+                        }}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Replay Demo
+                      </button>
+                      <Link
+                        href="/demo"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[3]}`,
+                          border: `1px solid ${colours.border}`,
+                          borderRadius: radii.md,
+                          fontSize: '14px',
+                          color: colours.foreground,
+                          textDecoration: 'none',
+                          transition: transitions.colors,
+                        }}
+                        className="hover:bg-accent/10"
+                      >
+                        <Home className="w-4 h-4" />
+                        Exit to Demo Menu
+                      </Link>
+                      <span
+                        style={{
+                          marginLeft: 'auto',
+                          fontSize: '11px',
+                          color: colours.foregroundSubtle,
+                          fontFamily: 'ui-monospace, monospace',
+                        }}
+                      >
+                        ✓ Complete
+                      </span>
+                    </>
+                  ) : (
+                    // Active playback controls
+                    <>
+                      {/* Pause/Resume */}
+                      {director.isPlaying ? (
+                        <button
+                          onClick={handlePauseDemo}
+                          className="hover:bg-accent/10"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: spacing[2],
+                            padding: `${spacing[2]} ${spacing[3]}`,
+                            border: `1px solid ${colours.border}`,
+                            borderRadius: radii.md,
+                            background: 'transparent',
+                            color: colours.foreground,
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: transitions.colors,
+                          }}
+                        >
+                          <Pause className="w-4 h-4" />
+                          Pause
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleResumeDemo}
+                          className="hover:bg-accent/10"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: spacing[2],
+                            padding: `${spacing[2]} ${spacing[3]}`,
+                            border: `1px solid ${colours.accent}`,
+                            borderRadius: radii.md,
+                            background: 'transparent',
+                            color: colours.accent,
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: transitions.colors,
+                          }}
+                        >
+                          <Play className="w-4 h-4" />
+                          Resume
+                        </button>
+                      )}
+
+                      {/* Skip */}
+                      <button
+                        onClick={handleSkipNext}
+                        className="hover:bg-accent/10"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[3]}`,
+                          border: `1px solid ${colours.border}`,
+                          borderRadius: radii.md,
+                          background: 'transparent',
+                          color: colours.foreground,
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: transitions.colors,
+                        }}
+                      >
+                        <SkipForward className="w-4 h-4" />
+                        Skip
+                      </button>
+
+                      {/* Stop */}
+                      <button
+                        onClick={handleStopDemo}
+                        className="hover:bg-red-500/10"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing[2],
+                          padding: `${spacing[2]} ${spacing[3]}`,
+                          border: `1px solid ${colours.border}`,
+                          borderRadius: radii.md,
+                          background: 'transparent',
+                          color: colours.error,
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: transitions.colors,
+                        }}
+                      >
+                        <Square className="w-3 h-3" />
+                        Stop
+                      </button>
+
+                      {/* Progress text */}
+                      <span
+                        style={{
+                          marginLeft: 'auto',
+                          fontSize: '11px',
+                          color: colours.foregroundSubtle,
+                          fontFamily: 'ui-monospace, monospace',
+                        }}
+                      >
+                        {director.currentIndex + 1} / {director.totalActions} actions
+                      </span>
+                    </>
+                  )}
                 </div>
               )}
             </div>
-
-            {/* Director controls */}
-            {director && (
-              <div className="flex items-centre gap-2 pt-3 border-t border-border/50">
-                {!director.isEnabled ? (
-                  // Play Demo button
-                  <button
-                    onClick={handlePlayDemo}
-                    className="flex items-centre gap-2 px-4 py-2 bg-accent text-background rounded hover:bg-accent/90 transition-colours font-medium text-sm"
-                  >
-                    <Play className="w-4 h-4" />
-                    Play Demo
-                  </button>
-                ) : (
-                  <>
-                    {/* Pause/Resume */}
-                    {director.isPlaying ? (
-                      <button
-                        onClick={handlePauseDemo}
-                        className="flex items-centre gap-2 px-3 py-2 border border-border rounded hover:bg-accent/10 transition-colours text-sm"
-                      >
-                        <Pause className="w-4 h-4" />
-                        Pause
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleResumeDemo}
-                        className="flex items-centre gap-2 px-3 py-2 border border-accent rounded hover:bg-accent/10 transition-colours text-sm text-accent"
-                      >
-                        <Play className="w-4 h-4" />
-                        Resume
-                      </button>
-                    )}
-
-                    {/* Skip */}
-                    <button
-                      onClick={handleSkipNext}
-                      className="flex items-centre gap-2 px-3 py-2 border border-border rounded hover:bg-accent/10 transition-colours text-sm"
-                    >
-                      <SkipForward className="w-4 h-4" />
-                      Skip
-                    </button>
-
-                    {/* Stop */}
-                    <button
-                      onClick={handleStopDemo}
-                      className="flex items-centre gap-2 px-3 py-2 border border-border rounded hover:bg-destructive/10 transition-colours text-sm text-destructive"
-                    >
-                      <Square className="w-3 h-3" />
-                      Stop
-                    </button>
-
-                    {/* Progress text */}
-                    <span className="ml-auto text-xs text-foreground/60 font-mono">
-                      {director.currentIndex + 1} / {director.currentIndex + 1} actions
-                    </span>
-                  </>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -21,7 +21,7 @@ export const DEMO_STEPS: DemoStep[] = [
   {
     id: 'analogue-intro',
     title: 'Creative Notebook',
-    description: 'Lana's handwritten concepts and midnight signals',
+    description: "Lana's handwritten concepts and midnight signals",
     osSlug: 'analogue',
   },
   {
