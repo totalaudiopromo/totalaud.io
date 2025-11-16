@@ -19,7 +19,7 @@ import {
   type DirectorState,
   type DirectorCallbacks,
 } from './DirectorEngine'
-import { DIRECTOR_SCRIPT } from './directorScript'
+import type { DirectorAction } from './directorScript'
 
 interface DirectorContextValue {
   // State
@@ -45,12 +45,13 @@ const DirectorContext = createContext<DirectorContextValue | null>(null)
 
 export interface DirectorProviderProps {
   children: ReactNode
+  script: DirectorAction[]
   callbacks?: DirectorCallbacks
 }
 
-export function DirectorProvider({ children, callbacks }: DirectorProviderProps) {
+export function DirectorProvider({ children, script, callbacks }: DirectorProviderProps) {
   // Initialize engine
-  const engine = useMemo(() => new DirectorEngine(callbacks), [])
+  const engine = useMemo(() => new DirectorEngine(script, callbacks), [script])
 
   // Subscribe to engine state
   const [state, setState] = useState<DirectorState>(() => engine.getState())
@@ -99,9 +100,9 @@ export function DirectorProvider({ children, callbacks }: DirectorProviderProps)
 
   // Calculate progress
   const progress = useMemo(() => {
-    if (DIRECTOR_SCRIPT.length === 0) return 0
-    return state.currentIndex / DIRECTOR_SCRIPT.length
-  }, [state.currentIndex])
+    if (script.length === 0) return 0
+    return state.currentIndex / script.length
+  }, [state.currentIndex, script.length])
 
   // Context value
   const value: DirectorContextValue = {

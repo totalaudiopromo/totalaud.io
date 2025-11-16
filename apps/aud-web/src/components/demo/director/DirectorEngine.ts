@@ -3,7 +3,7 @@
  * Orchestrates cinematic auto-playback of demo
  */
 
-import { DIRECTOR_SCRIPT, type DirectorAction, type DirectorActionKind } from './directorScript'
+import type { DirectorAction, DirectorActionKind } from './directorScript'
 
 export interface DirectorState {
   isEnabled: boolean // True only in demo mode & when user hits "Play"
@@ -41,6 +41,9 @@ export interface DirectorCallbacks {
 
   // UI
   onShowNote?: (text: string) => void
+
+  // TAP Integration (Phase 28C)
+  onTriggerTapExport?: (payload: any, durationMs: number) => Promise<void>
 }
 
 export class DirectorEngine {
@@ -55,8 +58,10 @@ export class DirectorEngine {
   private listeners: Set<(state: DirectorState) => void> = new Set()
   private playbackTimeout: number | null = null
   private currentExecutionAbort: (() => void) | null = null
+  private script: DirectorAction[]
 
-  constructor(callbacks?: DirectorCallbacks) {
+  constructor(script: DirectorAction[], callbacks?: DirectorCallbacks) {
+    this.script = script
     if (callbacks) {
       this.callbacks = callbacks
     }
@@ -144,7 +149,7 @@ export class DirectorEngine {
     }
 
     // Move to next
-    if (this.state.currentIndex < DIRECTOR_SCRIPT.length - 1) {
+    if (this.state.currentIndex < this.script.length - 1) {
       this.state.currentIndex++
       this.notifyListeners()
 
@@ -188,12 +193,12 @@ export class DirectorEngine {
   private scheduleNextAction(): void {
     if (!this.state.isPlaying) return
 
-    if (this.state.currentIndex >= DIRECTOR_SCRIPT.length) {
+    if (this.state.currentIndex >= this.script.length) {
       this.stop()
       return
     }
 
-    const action = DIRECTOR_SCRIPT[this.state.currentIndex]
+    const action = this.script[this.state.currentIndex]
     const delayMs = action.delayMs ?? 0
 
     this.state.currentActionId = action.id
@@ -278,6 +283,10 @@ export class DirectorEngine {
 
         case 'SHOW_NOTE':
           await this.executeShowNote(action)
+          break
+
+        case 'TRIGGER_TAP_EXPORT':
+          await this.executeTriggerTapExport(action)
           break
 
         default:
@@ -379,6 +388,15 @@ export class DirectorEngine {
 
     if (text && this.callbacks.onShowNote) {
       this.callbacks.onShowNote(text)
+    }
+  }
+
+  private async executeTriggerTapExport(action: DirectorAction): Promise<void> {
+    const payload = action.payload || {}
+    const durationMs = action.durationMs ?? 2000
+
+    if (this.callbacks.onTriggerTapExport) {
+      await this.callbacks.onTriggerTapExport(payload, durationMs)
     }
   }
 

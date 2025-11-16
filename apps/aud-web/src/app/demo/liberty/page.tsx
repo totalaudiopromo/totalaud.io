@@ -1,33 +1,33 @@
 'use client'
 
 /**
- * /demo/artist - Lana Glass Demo
- * Auto-playable cinematic demo with Director Mode
+ * /demo/liberty - Liberty Music PR Campaign Demo
+ * Auto-playable cinematic demo showing indie artist + Liberty PR workflow
  */
 
 import { DemoOrchestrator } from '@/components/demo/DemoOrchestrator'
 import { DirectorProvider } from '@/components/demo/director/DirectorProvider'
 import { DemoOverlay } from '@/components/demo/DemoOverlay'
 import { AmbientEngineProvider } from '@/components/ambient/AmbientEngineProvider'
-import { DIRECTOR_SCRIPT } from '@/components/demo/director/directorScript'
-import { DemoOSShell } from './DemoOSShell'
+import { LIBERTY_DIRECTOR_SCRIPT } from '@/components/demo/director/libertyDirectorScript'
+import { LibertyDemoOSShell } from './LibertyDemoOSShell'
 
-export default function ArtistDemoPage() {
+export default function LibertyDemoPage() {
   return (
     <AmbientEngineProvider>
       <DemoOrchestrator>
-        <DirectorProvider script={DIRECTOR_SCRIPT}>
-          <DemoOSShellContainer />
+        <DirectorProvider script={LIBERTY_DIRECTOR_SCRIPT}>
+          <LibertyDemoOSShellContainer />
         </DirectorProvider>
       </DemoOrchestrator>
     </AmbientEngineProvider>
   )
 }
 
-function DemoOSShellContainer() {
+function LibertyDemoOSShellContainer() {
   return (
     <div className="relative min-h-screen bg-background">
-      <DemoOSShell />
+      <LibertyDemoOSShell />
       <DemoOverlay />
     </div>
   )
