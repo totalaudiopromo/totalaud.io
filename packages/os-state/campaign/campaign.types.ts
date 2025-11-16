@@ -16,6 +16,10 @@ export type CardType =
   | 'frustration'
   | 'breakthrough'
   | 'uncertainty'
+  | 'loop_insight'
+  | 'loop_warning'
+  | 'loop_improvement'
+  | 'loop_prediction'
 
 export interface TimelineClip {
   id: string
@@ -73,6 +77,73 @@ export interface CardState {
   sortBy: 'timestamp' | 'type' | 'recent'
 }
 
+export interface LoopState {
+  loops: AgentLoop[]
+  loopEvents: LoopEvent[]
+  loopSuggestions: LoopSuggestion[]
+  loopMetrics: LoopMetrics | null
+  nextLoopRun: string | null
+  loopHealthScore: number
+}
+
+export interface AgentLoop {
+  id: string
+  userId: string
+  agent: 'scout' | 'coach' | 'tracker' | 'insight'
+  loopType: 'improvement' | 'exploration' | 'healthcheck' | 'emotion' | 'prediction'
+  interval: '5m' | '15m' | '1h' | 'daily'
+  payload: Record<string, unknown>
+  lastRun: string | null
+  nextRun: string
+  status: 'idle' | 'running' | 'error' | 'disabled'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface LoopEvent {
+  id: string
+  loopId: string
+  agent: 'scout' | 'coach' | 'tracker' | 'insight'
+  result: {
+    success: boolean
+    message: string
+    data?: unknown
+    clipsCreated?: number
+    cardsCreated?: number
+    suggestionsGenerated?: number
+    executionTimeMs?: number
+    error?: string
+  }
+  createdAt: string
+}
+
+export interface LoopSuggestion {
+  id: string
+  agent: 'scout' | 'coach' | 'tracker' | 'insight'
+  suggestionType: 'missing_followups' | 'timeline_gap' | 'emotion_drop' | 'overload'
+  message: string
+  priority: 'low' | 'medium' | 'high'
+  recommendedAction: {
+    type: 'create_clips' | 'create_cards' | 'modify_timeline' | 'adjust_timing'
+    payload: unknown
+  }
+  createdAt: string
+  status: 'pending' | 'accepted' | 'declined' | 'modified'
+}
+
+export interface LoopMetrics {
+  totalLoops: number
+  activeLoops: number
+  loopsExecutedLast24h: number
+  loopHealthScore: number
+  nextLoopRun: string | null
+  agentBreakdown: Record<'scout' | 'coach' | 'tracker' | 'insight', {
+    loopCount: number
+    lastRun: string | null
+    successRate: number
+  }>
+}
+
 export interface CampaignMeta {
   id: string
   name: string
@@ -87,6 +158,7 @@ export interface CampaignContext {
   meta: CampaignMeta
   timeline: TimelineState
   cards: CardState
+  loops: LoopState
   isDirty: boolean
   lastSavedAt?: Date
 }
@@ -150,11 +222,38 @@ export interface AgentInsights {
   }>
 }
 
+export interface LoopInsights {
+  totalLoops: number
+  activeLoops: number
+  loopHealthScore: number
+  loopBreakdown: Record<
+    string,
+    {
+      loops: number
+      lastRun: string | null
+      successRate: number
+    }
+  >
+  recentEvents: {
+    loopType: LoopType
+    agent: AgentName
+    success: boolean
+    timestamp: Date
+    message: string
+  }[]
+  suggestions: {
+    pending: number
+    accepted: number
+    declined: number
+  }
+}
+
 export interface MixtapeData {
   campaign: CampaignMeta
   timeline: TimelineState
   cards?: AnalogueCard[]
   agentInsights?: AgentInsights
+  loopInsights?: LoopInsights
   exportedAt: Date
   exportConfig: MixtapeExportConfig
 }

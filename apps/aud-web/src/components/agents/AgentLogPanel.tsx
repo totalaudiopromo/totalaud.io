@@ -34,6 +34,7 @@ export function AgentLogPanel({ isOpen, onClose }: AgentLogPanelProps) {
   const [logs, setLogs] = useState<AgentLogEntry[]>([])
   const [filterAgent, setFilterAgent] = useState<string | null>(null)
   const [filterLevel, setFilterLevel] = useState<LogLevel | null>(null)
+  const [filterSource, setFilterSource] = useState<'all' | 'timeline' | 'loops'>('all')
   const [autoScroll, setAutoScroll] = useState(true)
   const logContainerRef = useRef<HTMLDivElement>(null)
 
@@ -80,6 +81,11 @@ export function AgentLogPanel({ isOpen, onClose }: AgentLogPanelProps) {
   const filteredLogs = logs.filter((log) => {
     if (filterAgent && log.agentName !== filterAgent) return false
     if (filterLevel && log.level !== filterLevel) return false
+    if (filterSource !== 'all') {
+      const source = log.metadata?.source as string | undefined
+      if (filterSource === 'timeline' && source !== 'timeline') return false
+      if (filterSource === 'loops' && source !== 'loop') return false
+    }
     return true
   })
 
@@ -175,6 +181,16 @@ export function AgentLogPanel({ isOpen, onClose }: AgentLogPanelProps) {
               <option value="info">Info</option>
               <option value="warn">Warn</option>
               <option value="error">Error</option>
+            </select>
+
+            <select
+              value={filterSource}
+              onChange={(e) => setFilterSource(e.target.value as 'all' | 'timeline' | 'loops')}
+              className="rounded border border-[var(--flowcore-colour-border)] bg-[var(--flowcore-overlay-soft)] px-2 py-1 font-mono text-xs text-[var(--flowcore-colour-fg)] outline-none"
+            >
+              <option value="all">All Sources</option>
+              <option value="timeline">Timeline Only</option>
+              <option value="loops">Loops Only</option>
             </select>
 
             <label className="ml-auto flex items-centre gap-2 font-mono text-xs text-[var(--flowcore-colour-fg)]/70">

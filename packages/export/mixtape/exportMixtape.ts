@@ -6,7 +6,7 @@
 import type { MixtapeData, MixtapeExportConfig } from '@totalaud/os-state/campaign'
 
 export function generateMixtapeHTML(data: MixtapeData): string {
-  const { campaign, timeline, cards, agentInsights, exportConfig } = data
+  const { campaign, timeline, cards, agentInsights, loopInsights, exportConfig } = data
 
   const themeColours = {
     ascii: { accent: '#00ff99', bg: '#000000', fg: '#00ff99' },
@@ -392,6 +392,104 @@ export function generateMixtapeHTML(data: MixtapeData): string {
               <div style="font-size: 0.75rem; opacity: 0.7; text-transform: uppercase;">
                 ${emotion.trend === 'increasing' ? '↗ Growing' : emotion.trend === 'decreasing' ? '↘ Declining' : '→ Stable'}
               </div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      </div>
+      `
+          : ''
+      }
+    </div>
+    `
+        : ''
+    }
+
+    <!-- Loop Insights -->
+    ${
+      loopInsights
+        ? `
+    <div class="loop-insights" style="background: ${theme.bg}cc; backdrop-filter: blur(10px); border: 2px solid ${theme.accent}; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: ${theme.accent};">🔁 Autonomous Loop Insights</h2>
+
+      <!-- Loop Overview -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Loop Overview</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+            <div style="font-size: 2rem; font-weight: bold; color: ${theme.accent};">${loopInsights.totalLoops}</div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-top: 0.25rem;">Total Loops</div>
+          </div>
+          <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+            <div style="font-size: 2rem; font-weight: bold; color: ${theme.accent};">${loopInsights.activeLoops}</div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-top: 0.25rem;">Active Loops</div>
+          </div>
+          <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+            <div style="font-size: 2rem; font-weight: bold; color: ${loopInsights.loopHealthScore >= 80 ? '#51CF66' : loopInsights.loopHealthScore >= 60 ? '#F59E0B' : '#EF4444'};">${loopInsights.loopHealthScore}%</div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-top: 0.25rem;">Health Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loop Breakdown by Agent -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Loop Breakdown by Agent</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+          ${Object.entries(loopInsights.loopBreakdown)
+            .map(
+              ([agent, stats]) => `
+            <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+              <div style="font-weight: 700; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 0.5rem; color: ${theme.accent};">${agent}</div>
+              <div style="font-size: 1.5rem; font-weight: bold;">${stats.loops}</div>
+              <div style="opacity: 0.7; font-size: 0.85rem; margin-top: 0.25rem;">${Math.round(stats.successRate * 100)}% success</div>
+              ${stats.lastRun ? `<div style="opacity: 0.6; font-size: 0.75rem; margin-top: 0.25rem; font-family: monospace;">Last: ${new Date(stats.lastRun).toLocaleDateString()}</div>` : ''}
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      </div>
+
+      <!-- Loop Suggestions Summary -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Loop Suggestions</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+          <div style="background: ${theme.accent}15; border-left: 4px solid #F59E0B; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 1.8rem; font-weight: bold; color: #F59E0B;">${loopInsights.suggestions.pending}</div>
+            <div style="opacity: 0.7; font-size: 0.85rem; margin-top: 0.25rem; text-transform: uppercase;">Pending</div>
+          </div>
+          <div style="background: ${theme.accent}15; border-left: 4px solid #51CF66; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 1.8rem; font-weight: bold; color: #51CF66;">${loopInsights.suggestions.accepted}</div>
+            <div style="opacity: 0.7; font-size: 0.85rem; margin-top: 0.25rem; text-transform: uppercase;">Accepted</div>
+          </div>
+          <div style="background: ${theme.accent}15; border-left: 4px solid #6B7280; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 1.8rem; font-weight: bold; color: #6B7280;">${loopInsights.suggestions.declined}</div>
+            <div style="opacity: 0.7; font-size: 0.85rem; margin-top: 0.25rem; text-transform: uppercase;">Declined</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Loop Events -->
+      ${
+        loopInsights.recentEvents.length > 0
+          ? `
+      <div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Recent Loop Events</h3>
+        <div style="max-height: 300px; overflow-y: auto;">
+          ${loopInsights.recentEvents
+            .slice(0, 10)
+            .map(
+              (event) => `
+            <div style="background: ${event.success ? theme.accent + '15' : '#EF444415'}; border-left: 4px solid ${event.success ? theme.accent : '#EF4444'}; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: centre; margin-bottom: 0.25rem;">
+                <div style="display: flex; gap: 0.5rem; align-items: centre;">
+                  <span style="background: ${theme.accent}; color: ${theme.bg}; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">${event.agent}</span>
+                  <span style="font-weight: 600; text-transform: capitalize;">${event.loopType}</span>
+                </div>
+                <span style="font-family: monospace; font-size: 0.75rem; opacity: 0.7;">${new Date(event.timestamp).toLocaleTimeString()}</span>
+              </div>
+              <div style="opacity: 0.85; font-size: 0.85rem;">${event.message}</div>
             </div>
           `
             )

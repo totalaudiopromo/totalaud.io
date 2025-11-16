@@ -8,7 +8,8 @@
     ".": "./index.ts",
     "./runtime": "./runtime/index.ts",
     "./behaviours": "./behaviours/index.ts",
-    "./dialogue": "./dialogue/index.ts"
+    "./dialogue": "./dialogue/index.ts",
+    "./loops": "./loops/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

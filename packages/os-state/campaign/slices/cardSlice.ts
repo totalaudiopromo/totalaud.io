@@ -40,6 +40,10 @@ const CARD_COLOURS: Record<CardType, string> = {
   frustration: '#FF5252', // Dark red
   breakthrough: '#10B981', // Emerald
   uncertainty: '#6B7280', // Cool grey
+  loop_insight: '#D4AF37', // Gold
+  loop_warning: '#FFA500', // Orange
+  loop_improvement: '#00CED1', // Dark turquoise
+  loop_prediction: '#9370DB', // Medium purple
 }
 
 export const createCardSlice: StateCreator<

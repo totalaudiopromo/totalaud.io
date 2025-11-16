@@ -10,6 +10,8 @@ import { createTimelineSlice } from './slices/timelineSlice'
 import type { TimelineSlice } from './slices/timelineSlice'
 import { createCardSlice } from './slices/cardSlice'
 import type { CardSliceActions } from './slices/cardSlice'
+import { createLoopSlice } from './slices/loopSlice'
+import type { LoopSliceActions } from './slices/loopSlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -25,7 +27,7 @@ export type {
   OSMoodRing,
 } from './campaign.types'
 
-export type CampaignState = TimelineSlice & CardSliceActions & MetaSlice
+export type CampaignState = TimelineSlice & CardSliceActions & LoopSliceActions & MetaSlice
 
 /**
  * Main campaign state store
@@ -36,6 +38,7 @@ export const useCampaignState = create<CampaignState>()(
     (...args) => ({
       ...createTimelineSlice(...args),
       ...createCardSlice(...args),
+      ...createLoopSlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -53,6 +56,7 @@ export const useCampaignState = create<CampaignState>()(
           duration: state.timeline.duration,
         },
         cards: state.cards,
+        loops: state.loops,
       }),
     }
   )
@@ -108,6 +112,31 @@ export const useCards = () => {
   }))
 
   return { cards, ...actions }
+}
+
+/**
+ * Helper hook to get loop state and actions
+ */
+export const useLoops = () => {
+  const loops = useCampaignState((state) => state.loops)
+  const actions = useCampaignState((state) => ({
+    setLoops: state.setLoops,
+    addLoop: state.addLoop,
+    updateLoop: state.updateLoop,
+    removeLoop: state.removeLoop,
+    addLoopEvent: state.addLoopEvent,
+    clearLoopEvents: state.clearLoopEvents,
+    addLoopSuggestion: state.addLoopSuggestion,
+    updateLoopSuggestion: state.updateLoopSuggestion,
+    removeLoopSuggestion: state.removeLoopSuggestion,
+    setLoopMetrics: state.setLoopMetrics,
+    updateLoopHealthScore: state.updateLoopHealthScore,
+    getLoop: state.getLoop,
+    getLoopsByAgent: state.getLoopsByAgent,
+    getActiveLoops: state.getActiveLoops,
+  }))
+
+  return { loops, ...actions }
 }
 
 /**
