@@ -34,9 +34,9 @@ interface Card {
 const LIBERTY_CARDS: Card[] = [
   {
     id: 'liberty-ep',
-    title: 'Liberty EP — release notes',
+    title: 'Liberty EP — campaign plan',
     content:
-      'UK indie release targeting student radio, BBC Introducing, and Spotify Editorial. Working with Liberty Music PR for strategic campaign roll-out.',
+      'UK indie release. Targets: student radio, BBC Introducing, and Spotify Editorial. Working with Liberty Music PR for strategic campaign roll-out.',
     tags: ['campaign', 'uk-launch', 'liberty'],
   },
   {

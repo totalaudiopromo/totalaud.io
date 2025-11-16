@@ -19,7 +19,7 @@ export default function DemoSelectorPage() {
             <span className="text-accent"> OS Constellation</span>
           </h1>
           <p className="text-lg text-foreground/70">
-            Choose your cinematic demo experience
+            Watch how indie artists and small teams use totalaud.io
           </p>
         </div>
 
@@ -39,8 +39,8 @@ export default function DemoSelectorPage() {
 
             <h2 className="text-2xl font-bold mb-3">Artist Journey Demo</h2>
             <p className="text-foreground/70 mb-4 leading-relaxed">
-              Follow Lana Glass through the complete creative workflow: from notebook sketches to
-              AI-powered strategy, timeline planning, and strategic guidance.
+              Follow Lana Glass from handwritten ideas to agent-suggested plans, timeline builds,
+              and coach feedback.
             </p>
 
             <div className="flex flex-wrap gap-2 mb-6">
@@ -74,8 +74,8 @@ export default function DemoSelectorPage() {
 
             <h2 className="text-2xl font-bold mb-3">Liberty Pitch Demo</h2>
             <p className="text-foreground/70 mb-4 leading-relaxed">
-              Imagine preparing an EP launch with Liberty Music PR. See how a UK indie campaign
-              lives inside the OS constellation, with a preview of TAP integration.
+              See how a UK indie campaign works with Liberty Music PR: from radio targets to press
+              timeline to Total Audio Promo export.
             </p>
 
             <div className="flex flex-wrap gap-2 mb-6">
@@ -91,7 +91,7 @@ export default function DemoSelectorPage() {
             </div>
 
             <div className="text-sm text-foreground/50">
-              Includes: Radio targets, press timeline, TAP export (stub)
+              Includes: Radio targets, press timeline, Total Audio Promo export (preview)
             </div>
           </Link>
         </div>
@@ -99,9 +99,8 @@ export default function DemoSelectorPage() {
         {/* Footer note */}
         <div className="mt-12 text-centre">
           <p className="text-sm text-foreground/50 leading-relaxed max-w-2xl mx-auto">
-            Both demos feature hands-free auto-playback with Play/Pause/Skip controls. You can also
-            navigate manually using the step controls. All changes respect reduced-motion
-            preferences.
+            Both demos play automatically, step by step. Use Play/Pause/Skip to control playback.
+            Respects reduced-motion preferences.
           </p>
         </div>
       </div>

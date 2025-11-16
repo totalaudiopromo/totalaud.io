@@ -35,7 +35,7 @@ interface Card {
 const DEMO_CARDS: Card[] = [
   {
     id: 'midnight-signals',
-    title: 'midnight signals — concept',
+    title: 'midnight signals — EP concept',
     content:
       'EP exploring late-night creative bursts. Themes: urban isolation, neon aesthetics, nostalgia.',
     tags: ['concept', 'ep', 'midnight'],

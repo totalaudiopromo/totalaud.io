@@ -279,7 +279,7 @@ export function DemoOverlay() {
                         }}
                       >
                         <Play className="w-4 h-4" />
-                        Begin Cinematic Playthrough
+                        Play Demo
                       </button>
                       <Link
                         href="/demo"
@@ -299,7 +299,7 @@ export function DemoOverlay() {
                         className="hover:bg-accent/10"
                       >
                         <Home className="w-4 h-4" />
-                        Demo Menu
+                        Back to Demos
                       </Link>
                     </>
                   ) : isDemoComplete ? (
@@ -343,7 +343,7 @@ export function DemoOverlay() {
                         className="hover:bg-accent/10"
                       >
                         <Home className="w-4 h-4" />
-                        Exit to Demo Menu
+                        Back to Demos
                       </Link>
                       <span
                         style={{
@@ -462,7 +462,7 @@ export function DemoOverlay() {
                           fontFamily: 'ui-monospace, monospace',
                         }}
                       >
-                        {director.currentIndex + 1} / {director.totalActions} actions
+                        {director.currentIndex + 1} / {director.totalActions} steps
                       </span>
 
                       {/* Mute toggle */}

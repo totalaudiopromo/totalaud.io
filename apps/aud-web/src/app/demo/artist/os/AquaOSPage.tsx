@@ -35,14 +35,14 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: 'msg-1',
     role: 'assistant',
-    content: `Hello! I'm your Coach agent. I can help you with:
+    content: `I'm Coach. I can help with:
 
-• Strategic planning for releases
-• Marketing and promotion guidance
-• Creative direction and positioning
-• Industry insights and best practices
+• Planning your release timeline
+• Promotion ideas for your music
+• Positioning your sound and story
+• Music industry advice
 
-What would you like to explore today?`,
+Ask me anything.`,
     timestamp: new Date(Date.now() - 120000),
   },
 ]
@@ -146,7 +146,7 @@ Would you like me to help draft specific pitch emails for your target playlists?
       const assistantMessage: Message = {
         id: `msg-${Date.now()}-assistant`,
         role: 'assistant',
-        content: `I can help with that! Let me provide some strategic guidance...`,
+        content: `I can help with that! Let me share some ideas...`,
         timestamp: new Date(),
       }
 
@@ -211,7 +211,7 @@ Would you like me to help draft specific pitch emails for your target playlists?
           <div>
             <h1 style={{ fontSize: '20px', fontWeight: '700' }}>Coach Agent</h1>
             <p style={{ fontSize: '14px', color: AQUA_TEXT_DIM, marginTop: spacing[0] }}>
-              Strategic guidance & creative direction
+              Get feedback on your plans and ideas
             </p>
           </div>
         </div>
@@ -324,7 +324,7 @@ Would you like me to help draft specific pitch emails for your target playlists?
                     }}
                   />
                 </div>
-                <span style={{ fontSize: '12px', color: AQUA_TEXT_DIM }}>Coach is thinking...</span>
+                <span style={{ fontSize: '12px', color: AQUA_TEXT_DIM }}>Coach is writing...</span>
               </div>
             </div>
           </div>

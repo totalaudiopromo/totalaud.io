@@ -21,13 +21,13 @@ export const DEMO_STEPS: DemoStep[] = [
   {
     id: 'analogue-intro',
     title: 'Creative Notebook',
-    description: "Lana's handwritten concepts and midnight signals",
+    description: "Lana's notebook: ideas, aesthetics, and collaboration notes",
     osSlug: 'analogue',
   },
   {
     id: 'ascii-intro',
     title: 'Command Agent',
-    description: 'Running an AI agent to plan the EP announcement',
+    description: 'Run an agent to suggest an EP announcement plan',
     osSlug: 'ascii',
   },
   {
@@ -39,13 +39,13 @@ export const DEMO_STEPS: DemoStep[] = [
   {
     id: 'loopos-intro',
     title: 'Creative Timeline',
-    description: 'The production workflow and collaboration lanes',
+    description: 'Production timeline with collaboration lanes',
     osSlug: 'loopos',
   },
   {
     id: 'aqua-intro',
     title: 'Coach Agent',
-    description: 'Getting strategic guidance on the pitch',
+    description: 'Ask Coach about pitching the EP',
     osSlug: 'aqua',
   },
 ]

@@ -407,7 +407,7 @@ export function LoopOSPage() {
                 color: colours.foreground,
               }}
             >
-              Project Inspector
+              Project Details
             </h3>
             <div className="grid grid-cols-2" style={{ gap: spacing[4], fontSize: '12px' }}>
               <div>
@@ -465,7 +465,7 @@ export function LoopOSPage() {
                 marginBottom: spacing[1],
               }}
             >
-              Timeline Overview
+              Overview
             </div>
             <div
               className="relative"

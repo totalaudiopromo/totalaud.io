@@ -328,7 +328,7 @@ export function XPOSPage() {
                         borderRadius: radii.sm,
                       }}
                     >
-                      ⏳ Processing
+                      Running...
                     </span>
                   )}
                 </div>
@@ -384,7 +384,7 @@ export function XPOSPage() {
                       }}
                     />
                   </div>
-                  <span>Processing...</span>
+                  <span>Running...</span>
                 </div>
               )}
             </div>

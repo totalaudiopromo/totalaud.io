@@ -202,7 +202,7 @@ export const LIBERTY_DIRECTOR_SCRIPT: DirectorAction[] = [
     id: 'liberty-aqua-note',
     stepId: 'aqua-intro',
     kind: 'SHOW_NOTE',
-    payload: { text: 'Getting strategic guidance for Liberty Music PR pitch...' },
+    payload: { text: 'Ask Coach about the Liberty Music PR pitch...' },
     delayMs: 800,
   },
   {

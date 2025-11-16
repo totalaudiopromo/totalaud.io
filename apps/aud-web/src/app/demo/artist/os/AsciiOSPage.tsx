@@ -222,7 +222,7 @@ export function AsciiOSPage() {
             fontFamily: 'ui-monospace, monospace',
             fontSize: '14px',
           }}
-          placeholder={isTyping ? '' : 'Compose your command...'}
+          placeholder={isTyping ? '' : 'Type a command...'}
           autoFocus
         />
         <span
