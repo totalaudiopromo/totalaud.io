@@ -324,6 +324,15 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/demo:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.22
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   packages/os-state:
     dependencies:
       zustand:
