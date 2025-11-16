@@ -20,6 +20,7 @@ LoopOS is a self-contained Next.js 15 application within the totalaud.io monorep
 - **Journal** for reflections and voice memos
 - **Export Centre** for generating campaign materials
 - **TAP Integration** with Total Audio Promo platform
+- **🖥️ Desktop App** - Native macOS/Windows app with offline-first capabilities (Phase 9)
 
 ---
 
@@ -161,6 +162,50 @@ pnpm dev
 ```
 
 LoopOS runs on `http://localhost:3001` (separate from aud-web on 3000).
+
+---
+
+## 🖥️ Desktop App
+
+LoopOS is also available as a native desktop application built with Tauri.
+
+### Features
+
+- 📴 **Offline-First**: Full offline support with automatic sync
+- 💾 **Local Cache**: Secure local storage for all workspace data
+- ⌨️ **Global Shortcuts**: System-wide keyboard shortcuts (Cmd/Ctrl+K, etc.)
+- 🎯 **Native Menus**: File, Edit, View, Window, Help menus
+- 🔄 **Auto-Sync**: Queues actions offline, syncs when reconnecting
+
+### Running Desktop App
+
+```bash
+# Terminal 1: Run LoopOS web app
+cd apps/loopos
+pnpm dev  # Must be running on port 3001
+
+# Terminal 2: Run desktop wrapper
+cd apps/loopos-desktop
+pnpm tauri:dev
+```
+
+### Building Desktop App
+
+```bash
+# Build production binaries
+cd apps/loopos-desktop
+pnpm tauri:build
+```
+
+**Output**:
+- **macOS**: `LoopOS.app` (3-10 MB)
+- **Windows**: `LoopOS_1.0.0_x64.msi`
+
+### Documentation
+
+- [Phase 9 Implementation](./docs/PHASE_9_DESKTOP_APP.md) - Complete technical guide
+- [Phase 9 Summary](./docs/PHASE_9_SUMMARY.md) - Feature overview
+- [Desktop App README](../loopos-desktop/README.md) - Desktop app specific docs
 
 ---
 
