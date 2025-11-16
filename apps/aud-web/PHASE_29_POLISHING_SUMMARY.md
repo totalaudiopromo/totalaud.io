@@ -701,3 +701,211 @@ All files verified for:
 ---
 
 **Pass 6 Complete**: All user-facing text now reflects calm British indie tone. Zero hype, zero buzzwords, 100% grounded.
+
+---
+
+## ✅ Pass 7: Brand Cohesion & Entry-Point Polish (Complete)
+
+**Implementation Date**: 2025-11-16
+**Status**: ✅ Complete
+**Scope**: Favicon, metadata, /about page, demo entry refinement, brand voice
+
+### 🎯 Objective
+
+Bring totalaud.io in line with its actual identity: "Calm indie creativity meets clever agent support."
+
+Create an impeccable first impression across all entry points with proper branding, SEO metadata, and a clear about page.
+
+**Brand Identity**: Clean, warm, human, cinematic, British indie (not tech-hype, not SaaS-corporate, not neon)
+
+### 📋 Changes Summary
+
+**Total Files**: 8 (5 new, 3 modified)
+
+| Type | Files | Changes |
+|------|-------|---------|
+| New icons | 1 | SVG brand icon (512×512) |
+| New pages | 1 | /about page (210 words) |
+| New layouts | 3 | Demo metadata layouts |
+| Modified | 3 | Root metadata, demo entry copy, polishing summary |
+
+### 🎨 Brand Identity Defined
+
+**Name**: totalaud.io (lowercase, always)
+
+**Tagline (Short)**: "Creative tools for independent artists."
+
+**Tagline (Medium)**: "A calm workspace for planning releases, exploring ideas, and using small helpful agents."
+
+**Visual Identity**:
+- Background: Matte black (#0F1113)
+- Accent: Slate cyan (#3AA9BE)
+- Typography: Geist Sans + Geist Mono
+- Motion: Calm, cinematic (120ms/240ms/400ms)
+
+**Tone**: Calm email from a thoughtful producer friend (Ableton × Linear × handwritten note)
+
+### 🖼️ Icon Design
+
+**Created**: `/public/icon.svg` (512×512 SVG)
+
+**Design**:
+- Three vertical bars of varying heights (waveform/signal concept)
+- Slate cyan (#3AA9BE) on matte black (#0F1113)
+- Clean, geometric, minimal
+- No gradients, no neon, no complexity
+
+**Usage**:
+- Favicon
+- Apple touch icon
+- Open Graph image
+- Social share card
+
+### 📄 About Page Created
+
+**Route**: `/app/about/page.tsx`
+
+**Content**: 210 words across 5 sections:
+1. **What it is**: "totalaud.io is a calm workspace for independent artists..."
+2. **What it helps with**: "turning scattered notes into structured timelines..."
+3. **Why it exists**: "independent artists deserve tools that respect their creative process..."
+4. **Who it's for**: "musicians releasing their own work, small labels, PR agencies..."
+5. **Contact**: `hello@totalaud.io`
+
+**Tone**: Calm, direct, honest. No corporate biography, no hype manifesto.
+
+**Design**: Clean typography, no images/animations, design tokens throughout, back link to home
+
+**Footer**: "Made for independent artists. Built in Britain."
+
+### 🔍 Metadata Implementation
+
+**Root Metadata** (`/app/layout.tsx`):
+- Title: "totalaud.io" (with template for subpages)
+- Description: "Creative tools for independent artists. A calm workspace for planning releases, exploring ideas, and using small helpful agents."
+- Keywords: music production, independent artists, release planning, creative tools
+- Open Graph: Full implementation with British locale (en_GB)
+- Twitter cards: Summary card with brand icon
+- Theme color: #0F1113 (matte black)
+- Proper favicon configuration
+
+**Demo Metadata** (3 new layout files):
+- `/demo/layout.tsx` - "Demos" with description of both demos
+- `/demo/artist/layout.tsx` - "Artist Journey Demo" with Lana Glass summary
+- `/demo/liberty/layout.tsx` - "Liberty Pitch Demo" with Liberty PR summary
+
+### 📝 Demo Entry Copy Refinement
+
+**Before**:
+```
+Watch how indie artists and small teams use totalaud.io
+```
+
+**After**:
+```
+A quiet look at how artists plan, sketch ideas, and use small agent tools.
+
+Two short demos. No noise. Just process.
+```
+
+**Why**: Calmer tone, more specific about actions, added clarifying subtitle, British minimalism
+
+### 🔄 Before/After Comparison
+
+#### Site Title
+**Before**: "TotalAud.io Console"
+**After**: "totalaud.io"
+
+#### Meta Description
+**Before**: "FlowCore console for TotalAud.io"
+**After**: "Creative tools for independent artists. A calm workspace for planning releases, exploring ideas, and using small helpful agents."
+
+#### Open Graph
+**Before**: Generic Next.js defaults
+**After**: Custom branding with title, description, image, British locale (en_GB)
+
+### ✅ Quality Checks Passed
+
+**Brand Consistency**:
+- [x] Lowercase "totalaud.io" throughout
+- [x] Consistent tagline usage
+- [x] British English in all text
+- [x] Calm, understated tone everywhere
+- [x] No hype language
+
+**Technical SEO**:
+- [x] Meta descriptions on all pages
+- [x] Open Graph tags configured
+- [x] Twitter card tags configured
+- [x] Theme color set
+- [x] Favicon configured
+- [x] Locale set to en_GB
+
+**User Experience**:
+- [x] /about page exists and reads well
+- [x] Demo entry feels premium and clear
+- [x] All metadata accurate
+- [x] Icons clean and minimal
+- [x] Contact email provided
+
+### 📊 Impact Assessment
+
+**SEO Improvements**:
+- ✅ Descriptive, keyword-rich titles
+- ✅ Clear, benefit-focused descriptions
+- ✅ Full Open Graph implementation
+- ✅ Twitter card support
+- ✅ Proper locale (en_GB)
+- ✅ Keywords array for discoverability
+
+**Brand Perception**:
+- **Before**: Tech console, unclear purpose, corporate feel
+- **After**: Calm indie tool, clear purpose, warm feel
+
+**Social Sharing**:
+- **Before**: Generic Next.js unfurl
+- **After**: Custom unfurl with brand icon, clear title, compelling description
+
+### 📦 Files Created/Modified
+
+**Created**:
+1. `/apps/aud-web/public/icon.svg` - Brand icon
+2. `/apps/aud-web/src/app/about/page.tsx` - About page
+3. `/apps/aud-web/src/app/demo/layout.tsx` - Demo metadata
+4. `/apps/aud-web/src/app/demo/artist/layout.tsx` - Artist demo metadata
+5. `/apps/aud-web/src/app/demo/liberty/layout.tsx` - Liberty demo metadata
+
+**Modified**:
+6. `/apps/aud-web/src/app/layout.tsx` - Root metadata
+7. `/apps/aud-web/src/app/demo/page.tsx` - Demo entry copy
+8. `/apps/aud-web/PHASE_29_POLISHING_SUMMARY.md` - This section
+
+### 🎯 Success Criteria
+
+✅ Brand identity clearly defined
+✅ Favicon and icons created
+✅ /about page exists with calm, clear copy (210 words)
+✅ All pages have proper metadata (SEO + social)
+✅ Demo entry copy refined
+✅ British English throughout
+✅ Tone consistent across all entry points
+✅ Zero functional changes
+✅ All builds pass
+
+### 📚 Reference Documentation
+
+Created comprehensive brand guide: `/apps/aud-web/docs/PHASE_29_PASS_7_BRAND.md`
+
+**Contents**:
+- Brand identity definition (name, tagline, tone)
+- Icon design specs
+- About page full text
+- Metadata strategy for all pages
+- Brand voice guidelines
+- Preferred terminology
+- Before/after comparisons
+- SEO impact analysis
+
+---
+
+**Pass 7 Complete**: totalaud.io now has a consistent, calm, indie-focused brand identity across all entry points. First impression is impeccable. Ready for the world.

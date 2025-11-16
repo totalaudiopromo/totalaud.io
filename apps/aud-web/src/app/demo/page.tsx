@@ -8,6 +8,9 @@
 import Link from 'next/link'
 import { Sparkles, Radio, ArrowRight } from 'lucide-react'
 
+// Note: Metadata must be in layout.tsx for client components
+// See /app/demo/layout.tsx for page metadata
+
 export default function DemoSelectorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-centre justify-centre p-8">
@@ -18,9 +21,10 @@ export default function DemoSelectorPage() {
             totalaud.io
             <span className="text-accent"> OS Constellation</span>
           </h1>
-          <p className="text-lg text-foreground/70">
-            Watch how indie artists and small teams use totalaud.io
+          <p className="text-lg text-foreground/70 mb-2">
+            A quiet look at how artists plan, sketch ideas, and use small agent tools.
           </p>
+          <p className="text-sm text-foreground/50">Two short demos. No noise. Just process.</p>
         </div>
 
         {/* Demo cards */}

@@ -15,8 +15,55 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'TotalAud.io Console',
-  description: 'FlowCore console for TotalAud.io',
+  title: {
+    default: 'totalaud.io',
+    template: '%s | totalaud.io',
+  },
+  description:
+    'Creative tools for independent artists. A calm workspace for planning releases, exploring ideas, and using small helpful agents.',
+  keywords: [
+    'music production',
+    'independent artists',
+    'release planning',
+    'creative tools',
+    'artist workflow',
+    'music industry',
+  ],
+  authors: [{ name: 'totalaud.io' }],
+  creator: 'totalaud.io',
+  publisher: 'totalaud.io',
+  metadataBase: new URL('https://totalaud.io'),
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    url: 'https://totalaud.io',
+    title: 'totalaud.io',
+    description: 'Creative tools for independent artists.',
+    siteName: 'totalaud.io',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 512,
+        height: 512,
+        alt: 'totalaud.io',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'totalaud.io',
+    description: 'Creative tools for independent artists.',
+    images: ['/icon.svg'],
+  },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
+  themeColor: '#0F1113',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

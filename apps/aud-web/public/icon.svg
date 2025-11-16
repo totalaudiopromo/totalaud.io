@@ -1,0 +1,13 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0F1113"/>
+
+  <!-- Simple waveform/signal icon in slate cyan -->
+  <!-- Three vertical bars of varying heights representing audio/signal -->
+  <rect x="160" y="180" width="32" height="152" rx="4" fill="#3AA9BE"/>
+  <rect x="240" y="140" width="32" height="232" rx="4" fill="#3AA9BE"/>
+  <rect x="320" y="200" width="32" height="112" rx="4" fill="#3AA9BE"/>
+
+  <!-- Subtle accent line below -->
+  <line x1="140" y1="380" x2="372" y2="380" stroke="#3AA9BE" stroke-width="2" stroke-opacity="0.4"/>
+</svg>
