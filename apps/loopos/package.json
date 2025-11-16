@@ -16,7 +16,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.39.0",
     "@total-audio/loopos-db": "workspace:*",
-    "@total-audio/schemas": "workspace:*",
+    "@total-audio/schemas-database": "workspace:*",
     "@total-audio/ui": "workspace:*",
     "date-fns": "^3.0.0",
     "framer-motion": "^11.11.17",
