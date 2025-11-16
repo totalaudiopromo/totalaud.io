@@ -5,15 +5,18 @@
  * Main DAW timeline component with tracks, clips, and playback
  */
 
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useTimeline } from '@totalaud/os-state/campaign'
+import { useTimeline, useCampaignMeta, useCards } from '@totalaud/os-state/campaign'
 import { TrackRow } from './TrackRow'
 import { Playhead } from './Playhead'
 import { TimelineRuler } from './TimelineRuler'
 import { TimelineControls } from './TimelineControls'
 import { useTimelineKeyboards } from './hooks/useTimelineKeyboards'
 import { useTimelineZoom } from './hooks/useTimelineZoom'
+import { agentRunner } from '@totalaud/agents/runtime'
+import { createAgentContext } from '@totalaud/agents/runtime'
+import type { TimelineClip } from '@totalaud/os-state/campaign'
 
 interface TimelineCanvasProps {
   className?: string
@@ -29,7 +32,15 @@ export function TimelineCanvas({ className = '' }: TimelineCanvasProps) {
     setPlaying,
     togglePlayback,
     setPlayheadPosition,
+    addClip,
   } = useTimeline()
+
+  const { meta } = useCampaignMeta()
+  const { cards, addCard } = useCards()
+
+  // Track which clips have been activated during this playback session
+  const [activatedClips, setActivatedClips] = useState<Set<string>>(new Set())
+  const [activeClips, setActiveClips] = useState<Set<string>>(new Set())
 
   // Keyboard shortcuts
   useTimelineKeyboards({
@@ -39,6 +50,76 @@ export function TimelineCanvas({ className = '' }: TimelineCanvasProps) {
 
   // Zoom handling (Ctrl/Cmd + Wheel)
   useTimelineZoom({ timelineRef })
+
+  // Reset activated clips when playback stops
+  useEffect(() => {
+    if (!timeline.isPlaying) {
+      setActivatedClips(new Set())
+      setActiveClips(new Set())
+    }
+  }, [timeline.isPlaying])
+
+  // Agent execution during playback
+  useEffect(() => {
+    if (!timeline.isPlaying) return
+
+    const currentPosition = timeline.playheadPosition
+
+    // Find clips that are currently active
+    const nowActive = new Set<string>()
+    const clipsToActivate: TimelineClip[] = []
+    const clipsToComplete: TimelineClip[] = []
+
+    timeline.clips.forEach((clip) => {
+      const clipEnd = clip.startTime + clip.duration
+      const isActive = currentPosition >= clip.startTime && currentPosition < clipEnd
+
+      if (isActive) {
+        nowActive.add(clip.id)
+
+        // If this clip just became active and hasn't been activated yet
+        if (!activatedClips.has(clip.id) && clip.agentSource) {
+          clipsToActivate.push(clip)
+        }
+      } else if (activeClips.has(clip.id) && currentPosition >= clipEnd) {
+        // Clip just ended
+        clipsToComplete.push(clip)
+      }
+    })
+
+    // Execute newly activated clips
+    if (clipsToActivate.length > 0) {
+      const context = createAgentContext(
+        meta,
+        timeline,
+        cards,
+        meta.currentTheme,
+        crypto.randomUUID(),
+        { executionMode: 'auto' }
+      )
+
+      clipsToActivate.forEach(async (clip) => {
+        try {
+          await agentRunner.onClipActivated(clip, currentPosition, context)
+
+          // Mark as activated
+          setActivatedClips((prev) => new Set(prev).add(clip.id))
+        } catch (error) {
+          console.error('Agent execution failed:', error)
+        }
+      })
+    }
+
+    // Complete clips that have ended
+    if (clipsToComplete.length > 0) {
+      clipsToComplete.forEach((clip) => {
+        agentRunner.onClipCompleted(clip)
+      })
+    }
+
+    // Update active clips set
+    setActiveClips(nowActive)
+  }, [timeline.isPlaying, timeline.playheadPosition, timeline.clips, activatedClips, activeClips, meta, cards])
 
   // Playback loop
   useEffect(() => {

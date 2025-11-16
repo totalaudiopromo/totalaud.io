@@ -6,7 +6,7 @@
 import type { MixtapeData, MixtapeExportConfig } from '@totalaud/os-state/campaign'
 
 export function generateMixtapeHTML(data: MixtapeData): string {
-  const { campaign, timeline, cards, exportConfig } = data
+  const { campaign, timeline, cards, agentInsights, exportConfig } = data
 
   const themeColours = {
     ascii: { accent: '#00ff99', bg: '#000000', fg: '#00ff99' },
@@ -291,6 +291,116 @@ export function generateMixtapeHTML(data: MixtapeData): string {
           )
           .join('')}
       </div>
+    </div>
+    `
+        : ''
+    }
+
+    <!-- Agent Insights -->
+    ${
+      agentInsights
+        ? `
+    <div class="agent-insights" style="background: ${theme.bg}cc; backdrop-filter: blur(10px); border: 2px solid ${theme.accent}; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
+      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: ${theme.accent};">🤖 Agent Insights</h2>
+
+      <!-- Performance Stats -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Performance Overview</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+            <div style="font-size: 2rem; font-weight: bold; color: ${theme.accent};">${agentInsights.totalExecutions}</div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-top: 0.25rem;">Total Executions</div>
+          </div>
+          ${Object.entries(agentInsights.agentBreakdown)
+            .map(
+              ([agent, stats]) => `
+            <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre;">
+              <div style="font-weight: 700; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 0.5rem; color: ${theme.accent};">${agent}</div>
+              <div style="font-size: 1.5rem; font-weight: bold;">${stats.executions}</div>
+              <div style="opacity: 0.7; font-size: 0.85rem; margin-top: 0.25rem;">${Math.round(stats.successRate * 100)}% success</div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      </div>
+
+      <!-- Bottlenecks -->
+      ${
+        agentInsights.bottlenecks.length > 0
+          ? `
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Detected Bottlenecks</h3>
+        ${agentInsights.bottlenecks
+          .map(
+            (bottleneck) => `
+          <div style="background: ${bottleneck.severity === 'high' ? '#EF444420' : theme.accent + '15'}; border-left: 4px solid ${bottleneck.severity === 'high' ? '#EF4444' : bottleneck.severity === 'medium' ? '#F59E0B' : theme.accent}; padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: centre; margin-bottom: 0.5rem;">
+              <span style="font-weight: 700; text-transform: capitalize;">${bottleneck.type.replace(/_/g, ' ')}</span>
+              <span style="background: ${bottleneck.severity === 'high' ? '#EF4444' : bottleneck.severity === 'medium' ? '#F59E0B' : theme.accent}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">${bottleneck.severity}</span>
+            </div>
+            <div style="opacity: 0.85; font-size: 0.9rem;">${bottleneck.description}</div>
+          </div>
+        `
+          )
+          .join('')}
+      </div>
+      `
+          : ''
+      }
+
+      <!-- Recommendations -->
+      ${
+        agentInsights.recommendations.length > 0
+          ? `
+      <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Agent Recommendations</h3>
+        ${agentInsights.recommendations
+          .map(
+            (rec) => `
+          <div style="background: ${theme.accent}15; border: 1px solid ${theme.accent}40; padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+              <span style="font-weight: 700; font-size: 1.05rem;">${rec.title}</span>
+              <div style="display: flex; gap: 0.5rem; align-items: centre;">
+                <span style="background: ${rec.impact === 'high' ? '#10B981' : rec.impact === 'medium' ? '#F59E0B' : theme.accent}; color: white; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">Impact: ${rec.impact}</span>
+                <span style="background: ${theme.accent}; color: ${theme.bg}; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">${rec.agent}</span>
+              </div>
+            </div>
+            <div style="opacity: 0.85; font-size: 0.9rem; line-height: 1.5;">${rec.description}</div>
+          </div>
+        `
+          )
+          .join('')}
+      </div>
+      `
+          : ''
+      }
+
+      <!-- Emotional Journey -->
+      ${
+        agentInsights.emotionalJourney.length > 0
+          ? `
+      <div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.9;">Emotional Journey</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+          ${agentInsights.emotionalJourney
+            .map(
+              (emotion) => `
+            <div style="background: ${theme.accent}15; padding: 1rem; border-radius: 8px; text-align: centre; position: relative;">
+              <div style="font-weight: 700; text-transform: capitalize; margin-bottom: 0.5rem;">${emotion.emotion}</div>
+              <div style="font-size: 1.8rem; font-weight: bold; color: ${theme.accent}; margin-bottom: 0.25rem;">${emotion.count}</div>
+              <div style="font-size: 0.75rem; opacity: 0.7; text-transform: uppercase;">
+                ${emotion.trend === 'increasing' ? '↗ Growing' : emotion.trend === 'decreasing' ? '↘ Declining' : '→ Stable'}
+              </div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      </div>
+      `
+          : ''
+      }
     </div>
     `
         : ''

@@ -129,10 +129,32 @@ export interface MixtapeExportConfig {
   description?: string
 }
 
+export interface AgentInsights {
+  totalExecutions: number
+  agentBreakdown: Record<string, { executions: number; successRate: number }>
+  bottlenecks: Array<{
+    type: string
+    severity: 'low' | 'medium' | 'high'
+    description: string
+  }>
+  recommendations: Array<{
+    title: string
+    description: string
+    impact: 'low' | 'medium' | 'high'
+    agent: string
+  }>
+  emotionalJourney: Array<{
+    emotion: CardType
+    count: number
+    trend: 'increasing' | 'stable' | 'decreasing'
+  }>
+}
+
 export interface MixtapeData {
   campaign: CampaignMeta
   timeline: TimelineState
   cards?: AnalogueCard[]
+  agentInsights?: AgentInsights
   exportedAt: Date
   exportConfig: MixtapeExportConfig
 }

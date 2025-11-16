@@ -6,10 +6,11 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { TimelineClip } from '@totalaud/os-state/campaign'
 import { useTimeline, useCards } from '@totalaud/os-state/campaign'
-import { Heart, Link2 } from 'lucide-react'
+import { Heart, Link2, Play, Check } from 'lucide-react'
+import { agentRunner } from '@totalaud/agents/runtime'
 
 interface ClipProps {
   clip: TimelineClip
@@ -24,6 +25,7 @@ export function Clip({ clip, trackHeight }: ClipProps) {
   const [dragStartX, setDragStartX] = useState(0)
   const [dragStartTime, setDragStartTime] = useState(0)
   const [resizeStartWidth, setResizeStartWidth] = useState(0)
+  const [isActive, setIsActive] = useState(false)
 
   const clipRef = useRef<HTMLDivElement>(null)
 
@@ -33,6 +35,25 @@ export function Clip({ clip, trackHeight }: ClipProps) {
 
   const clipWidth = clip.duration * timeline.zoom
   const clipLeft = clip.startTime * timeline.zoom
+
+  // Check if clip is active during playback
+  useEffect(() => {
+    if (!timeline.isPlaying) {
+      setIsActive(false)
+      return
+    }
+
+    const checkActive = () => {
+      const active = agentRunner.isClipActive(clip.id)
+      setIsActive(active)
+    }
+
+    // Check every 100ms during playback
+    const interval = setInterval(checkActive, 100)
+    checkActive() // Initial check
+
+    return () => clearInterval(interval)
+  }, [timeline.isPlaying, clip.id])
 
   // Drag handling
   const handleMouseDown = useCallback(
@@ -124,7 +145,7 @@ export function Clip({ clip, trackHeight }: ClipProps) {
         isSelected
           ? 'ring-2 ring-[var(--flowcore-colour-accent)] ring-offset-1 ring-offset-[var(--flowcore-colour-bg)]'
           : ''
-      }`}
+      } ${isActive ? 'ring-2 ring-white ring-offset-2' : ''}`}
       style={{
         left: `${clipLeft}px`,
         width: `${clipWidth}px`,
@@ -132,11 +153,15 @@ export function Clip({ clip, trackHeight }: ClipProps) {
         height: `${trackHeight - 8}px`,
         backgroundColor: clip.colour,
         opacity: isDragging || isResizing ? 0.7 : 1,
-        zIndex: isDragging || isResizing ? 10 : 1,
+        zIndex: isDragging || isResizing ? 10 : isActive ? 5 : 1,
+        boxShadow: isActive
+          ? `0 0 20px ${clip.colour}, 0 0 40px ${clip.colour}80`
+          : undefined,
       }}
       onMouseDown={handleMouseDown}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.12 }}
+      animate={isActive ? { opacity: [1, 0.9, 1] } : {}}
     >
       {/* Clip content */}
       <div className="flex h-full flex-col px-2 py-1">
@@ -152,6 +177,18 @@ export function Clip({ clip, trackHeight }: ClipProps) {
           <span className="truncate font-mono text-xs font-medium text-white">
             {clip.name}
           </span>
+
+          {/* Active indicator */}
+          {isActive && (
+            <motion.div
+              className="rounded-full bg-white p-0.5"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              title="Agent executing"
+            >
+              <Play size={8} fill="currentColor" />
+            </motion.div>
+          )}
         </div>
 
         {/* Agent source badge */}
