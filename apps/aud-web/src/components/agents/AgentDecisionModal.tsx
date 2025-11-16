@@ -61,6 +61,18 @@ export function AgentDecisionModal({ onResponse }: AgentDecisionModalProps) {
     }
   }, [pendingMessages, currentMessage])
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && currentMessage) {
+        handleDismiss()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentMessage])
+
   const handleResponse = (response: string) => {
     if (!currentMessage) return
 
@@ -99,11 +111,15 @@ export function AgentDecisionModal({ onResponse }: AgentDecisionModalProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.24 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="agent-decision-title"
       >
         {/* Backdrop */}
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={handleDismiss}
+          aria-label="Close modal"
         />
 
         {/* Modal */}
@@ -134,7 +150,10 @@ export function AgentDecisionModal({ onResponse }: AgentDecisionModalProps) {
               {/* Title */}
               <div>
                 <div className="flex items-centre gap-2">
-                  <h3 className="font-mono font-semibold text-[var(--flowcore-colour-fg)]">
+                  <h3
+                    id="agent-decision-title"
+                    className="font-mono font-semibold text-[var(--flowcore-colour-fg)]"
+                  >
                     {currentMessage.agent.charAt(0).toUpperCase() +
                       currentMessage.agent.slice(1)}{' '}
                     needs your input
@@ -157,6 +176,7 @@ export function AgentDecisionModal({ onResponse }: AgentDecisionModalProps) {
             <button
               onClick={handleDismiss}
               className="rounded p-1 text-[var(--flowcore-colour-fg)]/70 transition-colours hover:bg-[var(--flowcore-colour-fg)]/10 hover:text-[var(--flowcore-colour-fg)]"
+              aria-label="Close agent decision modal"
             >
               <X size={20} />
             </button>

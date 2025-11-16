@@ -10,6 +10,7 @@ import type {
 } from '../runtime/agent-runner'
 import type { AgentContext } from '../runtime/agent-context'
 import { DEFAULT_AGENT_CAPABILITIES } from '../runtime/agent-context'
+import type { ClipBehaviour } from '@totalaud/timeline/clip-interpreter'
 
 export const trackerBehaviour: AgentBehaviour = {
   name: 'tracker',
@@ -20,7 +21,7 @@ export const trackerBehaviour: AgentBehaviour = {
   },
 
   canExecute(clip: TimelineClip, context: AgentContext): boolean {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     return (
       clip.agentSource === 'tracker' &&
       (metadata?.behaviourType === 'followup' || metadata?.behaviourType === 'custom')
@@ -28,7 +29,7 @@ export const trackerBehaviour: AgentBehaviour = {
   },
 
   async execute(clip: TimelineClip, context: AgentContext): Promise<AgentBehaviourOutput> {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     const payload = metadata?.payload || {}
 
     try {

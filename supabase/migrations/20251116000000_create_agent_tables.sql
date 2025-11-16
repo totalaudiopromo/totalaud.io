@@ -4,8 +4,8 @@
 -- Agent Events table
 CREATE TABLE IF NOT EXISTS agent_events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  campaign_id UUID REFERENCES campaigns(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  campaign_id UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   clip_id UUID REFERENCES timeline_clips(id) ON DELETE SET NULL,
 
   agent_name TEXT NOT NULL CHECK (agent_name IN ('scout', 'coach', 'tracker', 'insight')),
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS agent_events (
 -- Agent Outputs table
 CREATE TABLE IF NOT EXISTS agent_outputs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  campaign_id UUID REFERENCES campaigns(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  clip_id UUID REFERENCES timeline_clips(id) ON DELETE CASCADE,
+  campaign_id UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  clip_id UUID NOT NULL REFERENCES timeline_clips(id) ON DELETE CASCADE,
 
   agent_name TEXT NOT NULL CHECK (agent_name IN ('scout', 'coach', 'tracker', 'insight')),
   behaviour_type TEXT NOT NULL,
@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS agent_outputs (
 -- Agent Dialogue Messages table
 CREATE TABLE IF NOT EXISTS agent_messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  campaign_id UUID REFERENCES campaigns(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  campaign_id UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   clip_id UUID REFERENCES timeline_clips(id) ON DELETE SET NULL,
 
   agent_name TEXT NOT NULL CHECK (agent_name IN ('scout', 'coach', 'tracker', 'insight')),

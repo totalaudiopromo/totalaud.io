@@ -1,0 +1,25 @@
+{
+  "name": "@totalaud/agents",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./runtime": "./runtime/index.ts",
+    "./behaviours": "./behaviours/index.ts",
+    "./dialogue": "./dialogue/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@totalaud/os-state": "workspace:*",
+    "@totalaud/timeline": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.6.3"
+  }
+}

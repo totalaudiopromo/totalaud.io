@@ -10,6 +10,7 @@ import type {
 } from '../runtime/agent-runner'
 import type { AgentContext } from '../runtime/agent-context'
 import { DEFAULT_AGENT_CAPABILITIES } from '../runtime/agent-context'
+import type { ClipBehaviour } from '@totalaud/timeline/clip-interpreter'
 
 export const insightBehaviour: AgentBehaviour = {
   name: 'insight',
@@ -22,15 +23,15 @@ export const insightBehaviour: AgentBehaviour = {
   },
 
   canExecute(clip: TimelineClip, context: AgentContext): boolean {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     return (
       clip.agentSource === 'insight' &&
-      ['analysis', 'story', 'custom'].includes(metadata?.behaviourType)
+      ['analysis', 'story', 'custom'].includes(metadata?.behaviourType ?? '')
     )
   },
 
   async execute(clip: TimelineClip, context: AgentContext): Promise<AgentBehaviourOutput> {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     const payload = metadata?.payload || {}
 
     try {
@@ -55,7 +56,7 @@ export const insightBehaviour: AgentBehaviour = {
           startTime: clip.startTime + clip.duration + index * 3,
           duration: opt.estimatedDuration,
           colour: '#F59E0B',
-          agentSource: opt.suggestedAgent as any,
+          agentSource: opt.suggestedAgent as 'scout' | 'coach' | 'tracker' | 'insight',
           cardLinks: [],
           metadata: {
             behaviourType: 'custom',

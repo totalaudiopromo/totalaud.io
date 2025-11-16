@@ -10,6 +10,7 @@ import type {
 } from '../runtime/agent-runner'
 import type { AgentContext } from '../runtime/agent-context'
 import { DEFAULT_AGENT_CAPABILITIES } from '../runtime/agent-context'
+import type { ClipBehaviour } from '@totalaud/timeline/clip-interpreter'
 
 export const coachBehaviour: AgentBehaviour = {
   name: 'coach',
@@ -21,7 +22,7 @@ export const coachBehaviour: AgentBehaviour = {
   },
 
   canExecute(clip: TimelineClip, context: AgentContext): boolean {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     return (
       clip.agentSource === 'coach' &&
       (metadata?.behaviourType === 'planning' || metadata?.behaviourType === 'custom')
@@ -29,7 +30,7 @@ export const coachBehaviour: AgentBehaviour = {
   },
 
   async execute(clip: TimelineClip, context: AgentContext): Promise<AgentBehaviourOutput> {
-    const metadata = clip.metadata as any
+    const metadata = clip.metadata as ClipBehaviour | undefined
     const payload = metadata?.payload || {}
 
     try {
@@ -57,7 +58,7 @@ export const coachBehaviour: AgentBehaviour = {
         startTime: clip.startTime + clip.duration + index * subtask.estimatedDuration,
         duration: subtask.estimatedDuration,
         colour: '#8B5CF6',
-        agentSource: subtask.suggestedAgent as any,
+        agentSource: subtask.suggestedAgent as 'scout' | 'coach' | 'tracker' | 'insight',
         cardLinks: [],
         metadata: {
           behaviourType: subtask.behaviourType,
