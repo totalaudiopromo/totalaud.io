@@ -229,3 +229,70 @@ export interface Export {
   created_at: string
   updated_at: string
 }
+
+// ============================================================================
+// RHYTHM TYPES (Phase 31 - Creative Rhythm System)
+// ============================================================================
+
+export const ActivityTypeSchema = z.enum([
+  'note',
+  'coach',
+  'node',
+  'designer',
+  'pack',
+  'login',
+])
+export type ActivityType = z.infer<typeof ActivityTypeSchema>
+
+export interface ActivityEvent {
+  id: string
+  workspace_id: string
+  user_id: string
+  type: ActivityType
+  timestamp: string
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export interface DailySummary {
+  id: string
+  workspace_id: string
+  date: string
+  entries: number
+  nodes_added: number
+  coach_messages: number
+  scenes_generated: number
+  mood: string | null
+  created_at: string
+  updated_at: string
+}
+
+export const EnergyWindowSchema = z.enum([
+  'early_morning',
+  'morning',
+  'afternoon',
+  'evening',
+  'late',
+])
+export type EnergyWindowType = z.infer<typeof EnergyWindowSchema>
+
+export interface EnergyWindow {
+  id: string
+  workspace_id: string
+  window: EnergyWindowType
+  score: number
+  confidence: number
+  last_updated: string
+  created_at: string
+}
+
+export interface ReturnPattern {
+  id: string
+  workspace_id: string
+  streak_days: number
+  last_active_date: string | null
+  typical_gap_days: number | null
+  confidence: number
+  created_at: string
+  updated_at: string
+}
