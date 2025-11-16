@@ -9,7 +9,9 @@
     "./runtime": "./runtime/index.ts",
     "./behaviours": "./behaviours/index.ts",
     "./dialogue": "./dialogue/index.ts",
-    "./loops": "./loops/index.ts"
+    "./loops": "./loops/index.ts",
+    "./fusion": "./fusion/crossOsReasoning.ts",
+    "./personalities": "./personalities/osPersonalities.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

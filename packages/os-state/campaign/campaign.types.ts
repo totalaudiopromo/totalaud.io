@@ -20,6 +20,7 @@ export type CardType =
   | 'loop_warning'
   | 'loop_improvement'
   | 'loop_prediction'
+  | 'fusion'
 
 export interface TimelineClip {
   id: string
@@ -248,12 +249,77 @@ export interface LoopInsights {
   }
 }
 
+// ============================================================================
+// FUSION MODE TYPES (Phase 11)
+// ============================================================================
+
+export interface FusionSession {
+  id: string
+  userId: string
+  focusType: 'clip' | 'card' | 'campaign'
+  focusId: string
+  active: boolean
+  osContributors: ThemeId[]
+  createdAt: string
+  closedAt: string | null
+}
+
+export interface FusionMessage {
+  id: string
+  sessionId: string
+  os: ThemeId
+  agent: AgentName
+  role: 'system' | 'agent' | 'summary'
+  content: {
+    message: string
+    recommendations?: string[]
+    metadata?: Record<string, unknown>
+  }
+  createdAt: string
+}
+
+export interface FusionCardData {
+  osContributors: ThemeId[] // Usually all 5
+  unifiedSummary: string
+  pointsOfAgreement: string[]
+  pointsOfTension?: string[]
+  recommendedNextMoves: string[]
+  sessionId: string
+}
+
+export interface FusionOutput {
+  perOS: Record<
+    ThemeId,
+    {
+      summary: string
+      recommendations: string[]
+      sentiment?: 'positive' | 'neutral' | 'cautious' | 'critical'
+    }
+  >
+  unifiedSummary: string
+  pointsOfAgreement: string[]
+  pointsOfTension: string[]
+}
+
+export interface FusionState {
+  currentSession: FusionSession | null
+  sessions: FusionSession[]
+  messages: FusionMessage[]
+  isLoading: boolean
+}
+
 export interface MixtapeData {
   campaign: CampaignMeta
   timeline: TimelineState
   cards?: AnalogueCard[]
   agentInsights?: AgentInsights
   loopInsights?: LoopInsights
+  fusionInsights?: {
+    totalSessions: number
+    topRecommendations: string[]
+    fusionCardSummary?: string
+    multiOSStory?: string
+  }
   exportedAt: Date
   exportConfig: MixtapeExportConfig
 }

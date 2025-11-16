@@ -12,6 +12,8 @@ import { createCardSlice } from './slices/cardSlice'
 import type { CardSliceActions } from './slices/cardSlice'
 import { createLoopSlice } from './slices/loopSlice'
 import type { LoopSliceActions } from './slices/loopSlice'
+import { createFusionSlice } from './slices/fusionSlice'
+import type { FusionSliceActions } from './slices/fusionSlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -27,7 +29,11 @@ export type {
   OSMoodRing,
 } from './campaign.types'
 
-export type CampaignState = TimelineSlice & CardSliceActions & LoopSliceActions & MetaSlice
+export type CampaignState = TimelineSlice &
+  CardSliceActions &
+  LoopSliceActions &
+  FusionSliceActions &
+  MetaSlice
 
 /**
  * Main campaign state store
@@ -39,6 +45,7 @@ export const useCampaignState = create<CampaignState>()(
       ...createTimelineSlice(...args),
       ...createCardSlice(...args),
       ...createLoopSlice(...args),
+      ...createFusionSlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -57,6 +64,10 @@ export const useCampaignState = create<CampaignState>()(
         },
         cards: state.cards,
         loops: state.loops,
+        fusion: {
+          ...state.fusion,
+          isLoading: false, // Don't persist loading state
+        },
       }),
     }
   )
@@ -137,6 +148,30 @@ export const useLoops = () => {
   }))
 
   return { loops, ...actions }
+}
+
+/**
+ * Helper hook to get fusion state and actions
+ */
+export const useFusion = () => {
+  const fusion = useCampaignState((state) => state.fusion)
+  const actions = useCampaignState((state) => ({
+    startFusionSession: state.startFusionSession,
+    endFusionSession: state.endFusionSession,
+    setCurrentSession: state.setCurrentSession,
+    setFusionSessions: state.setFusionSessions,
+    addFusionMessage: state.addFusionMessage,
+    setFusionMessages: state.setFusionMessages,
+    clearFusionMessages: state.clearFusionMessages,
+    setFusionContributors: state.setFusionContributors,
+    setFusionLoading: state.setFusionLoading,
+    getFusionSession: state.getFusionSession,
+    getActiveSession: state.getActiveSession,
+    getSessionMessages: state.getSessionMessages,
+    getMessagesByOS: state.getMessagesByOS,
+  }))
+
+  return { fusion, ...actions }
 }
 
 /**

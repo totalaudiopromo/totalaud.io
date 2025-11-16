@@ -44,6 +44,7 @@ const CARD_COLOURS: Record<CardType, string> = {
   loop_warning: '#FFA500', // Orange
   loop_improvement: '#00CED1', // Dark turquoise
   loop_prediction: '#9370DB', // Medium purple
+  fusion: '#FF00FF', // Magenta - represents multi-OS synthesis
 }
 
 export const createCardSlice: StateCreator<
