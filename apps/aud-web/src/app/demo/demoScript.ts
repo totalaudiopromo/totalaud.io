@@ -281,5 +281,25 @@ export function getDemoScript() {
     .wait(3000)
     .fadeOut(1000)
     .wait(2000)
+
+    // ========================================================================
+    // CHAPTER 10: PERFORMANCE MODE (Phase 16)
+    // ========================================================================
+    .chapter(
+      'And now... Performance Mode',
+      'Watch your OS collective perform live'
+    )
+    .fadeIn()
+    .wait(1500)
+    .caption('Your creative intelligence visualised in real-time', 3500)
+    .wait(4000)
+    .caption('Five OS personalities collaborating and evolving', 3500)
+    .wait(4000)
+    .caption('Relationships forming, tensions resolving, insights emerging', 4000)
+    .wait(4500)
+    .caption('This is the future of creative collaboration', 3500)
+    .wait(4000)
+    .fadeOut(1000)
+    .wait(2000)
     .build()
 }

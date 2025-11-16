@@ -27,7 +27,17 @@
       "@total-audio/ui": ["./packages/ui/src"],
       "@total-audio/schemas-database": ["./packages/schemas/database/index.ts"],
       "@total-audio/schemas-database/*": ["./packages/schemas/database/*"],
-      "@total-audio/schemas-skills": ["./packages/schemas/skills"]
+      "@total-audio/schemas-skills": ["./packages/schemas/skills"],
+      "@totalaud/performance": ["./packages/performance"],
+      "@totalaud/performance/*": ["./packages/performance/*"],
+      "@totalaud/os-state": ["./packages/os-state"],
+      "@totalaud/os-state/*": ["./packages/os-state/*"],
+      "@totalaud/agents": ["./packages/agents"],
+      "@totalaud/agents/*": ["./packages/agents/*"],
+      "@totalaud/timeline": ["./packages/timeline"],
+      "@totalaud/timeline/*": ["./packages/timeline/*"],
+      "@totalaud/demo": ["./packages/demo"],
+      "@totalaud/demo/*": ["./packages/demo/*"]
     }
   },
   "exclude": ["node_modules", ".next", "dist", "**/tests/**"]
