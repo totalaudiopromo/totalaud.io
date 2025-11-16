@@ -1,0 +1,19 @@
+{
+  "name": "@total-audio/agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./intent": "./intent/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@total-audio/core-theme-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}
