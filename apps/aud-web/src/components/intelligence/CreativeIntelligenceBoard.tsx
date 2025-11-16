@@ -7,8 +7,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Download } from 'lucide-react'
+import { Download, Film } from 'lucide-react'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { ThemeId } from '@totalaud/os-state/campaign'
 import { useSocialGraph } from '@totalaud/os-state/campaign'
@@ -23,6 +24,7 @@ interface CreativeIntelligenceBoardProps {
   onClose?: () => void
   asModal?: boolean
   campaignStartDate?: string
+  campaignId?: string
 }
 
 type CIBView = 'graph' | 'analytics' | 'snapshot' | 'narrative'
@@ -31,7 +33,9 @@ export function CreativeIntelligenceBoard({
   onClose,
   asModal = false,
   campaignStartDate,
+  campaignId,
 }: CreativeIntelligenceBoardProps) {
+  const router = useRouter()
   const { socialGraph } = useSocialGraph()
   const [selectedOS, setSelectedOS] = useState<ThemeId | null>(null)
   const [activeView, setActiveView] = useState<CIBView>('graph')
@@ -43,6 +47,14 @@ export function CreativeIntelligenceBoard({
   const handleExport = () => {
     // TODO: Implement export
     console.log('[CIB] Export report')
+  }
+
+  const handleShowreel = () => {
+    if (!campaignId) {
+      console.warn('[CIB] No campaign ID provided for showreel')
+      return
+    }
+    router.push(`/campaigns/${campaignId}/showreel`)
   }
 
   const containerStyle: React.CSSProperties = asModal
@@ -137,6 +149,36 @@ export function CreativeIntelligenceBoard({
 
             {/* Action buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Showreel button */}
+              {campaignId && (
+                <button
+                  onClick={handleShowreel}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: flowCoreColours.slateCyan,
+                    backgroundColor: `${flowCoreColours.slateCyan}20`,
+                    border: `1px solid ${flowCoreColours.slateCyan}`,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 120ms cubic-bezier(0.22, 1, 0.36, 1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `${flowCoreColours.slateCyan}30`
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = `${flowCoreColours.slateCyan}20`
+                  }}
+                >
+                  <Film size={14} strokeWidth={1.6} />
+                  Watch as Showreel
+                </button>
+              )}
+
               {/* Export button */}
               <button
                 onClick={handleExport}

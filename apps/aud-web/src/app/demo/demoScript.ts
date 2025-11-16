@@ -301,5 +301,27 @@ export function getDemoScript() {
     .wait(4000)
     .fadeOut(1000)
     .wait(2000)
+
+    // ========================================================================
+    // CHAPTER 11: CAMPAIGN SHOWREEL (Phase 17)
+    // ========================================================================
+    .chapter(
+      'Turn any campaign into a showreel',
+      'Cinematic, chaptered playback of your creative intelligence'
+    )
+    .fadeIn()
+    .wait(1500)
+    .caption('Every campaign tells a story', 3000)
+    .wait(3500)
+    .caption('Watch OS personalities emerge and evolve', 3500)
+    .wait(4000)
+    .caption('See relationships form, tensions resolve, insights crystallise', 4000)
+    .wait(4500)
+    .caption('Navigate chapters, replay key moments, export for your portfolio', 4500)
+    .wait(5000)
+    .caption('From raw collaboration to cinematic narrative', 3500)
+    .wait(4000)
+    .fadeOut(1000)
+    .wait(2000)
     .build()
 }

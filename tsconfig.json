@@ -37,7 +37,9 @@
       "@totalaud/timeline": ["./packages/timeline"],
       "@totalaud/timeline/*": ["./packages/timeline/*"],
       "@totalaud/demo": ["./packages/demo"],
-      "@totalaud/demo/*": ["./packages/demo/*"]
+      "@totalaud/demo/*": ["./packages/demo/*"],
+      "@totalaud/showreel": ["./packages/showreel"],
+      "@totalaud/showreel/*": ["./packages/showreel/*"]
     }
   },
   "exclude": ["node_modules", ".next", "dist", "**/tests/**"]
