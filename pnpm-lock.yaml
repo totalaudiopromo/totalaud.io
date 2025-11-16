@@ -77,6 +77,9 @@ importers:
       '@total-audio/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@totalaud/audio':
+        specifier: workspace:*
+        version: link:../../packages/audio
       '@totalaud/performance':
         specifier: workspace:*
         version: link:../../packages/performance
@@ -267,6 +270,12 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  packages/audio:
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   packages/core/agent-executor:
     dependencies:
       '@supabase/supabase-js':
@@ -414,6 +423,9 @@ importers:
 
   packages/render:
     dependencies:
+      '@totalaud/audio':
+        specifier: workspace:*
+        version: link:../audio
       '@totalaud/performance':
         specifier: workspace:*
         version: link:../performance

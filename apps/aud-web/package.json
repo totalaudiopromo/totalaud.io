@@ -29,6 +29,7 @@
     "@totalaud/performance": "workspace:*",
     "@totalaud/showreel": "workspace:*",
     "@totalaud/render": "workspace:*",
+    "@totalaud/audio": "workspace:*",
     "@vercel/analytics": "^1.5.0",
     "@vercel/og": "^0.8.5",
     "framer-motion": "^11.0.0",

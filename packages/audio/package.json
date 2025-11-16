@@ -1,5 +1,5 @@
 {
-  "name": "@totalaud/render",
+  "name": "@totalaud/audio",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,11 +10,6 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@totalaud/performance": "workspace:*",
-    "@totalaud/showreel": "workspace:*",
-    "@totalaud/audio": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

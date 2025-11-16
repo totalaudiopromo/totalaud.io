@@ -36,6 +36,7 @@ export interface ShowreelRenderOptions {
   preset: RenderPresetId;
   includeCaptions?: boolean; // default: true
   includeHud?: boolean; // default: false
+  includeSoundtrack?: boolean; // default: true
 }
 
 export interface ShowreelRenderJob {

@@ -11,7 +11,7 @@ import { Film, Play, Pause, RotateCcw, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ShowreelScriptEngine, ShowreelPlayer } from '@totalaud/showreel';
 import type { ShowreelScript, ShowreelPlayerState } from '@totalaud/showreel';
-import { renderShowreelToVideo } from '@totalaud/render';
+import { renderShowreelWithAudio } from '@totalaud/render';
 import type {
   ShowreelRenderOptions,
   RenderProgress,
@@ -84,7 +84,7 @@ export default function ShowreelPage() {
   ) => {
     if (!script) throw new Error('No script available');
 
-    const result = await renderShowreelToVideo(
+    const result = await renderShowreelWithAudio(
       {
         campaignId,
         script,

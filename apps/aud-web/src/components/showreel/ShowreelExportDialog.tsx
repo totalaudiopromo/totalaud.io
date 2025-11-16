@@ -32,6 +32,7 @@ export function ShowreelExportDialog({
   const [preset, setPreset] = useState<RenderPresetId>('showreel-720p-30');
   const [includeCaptions, setIncludeCaptions] = useState(true);
   const [includeHud, setIncludeHud] = useState(false);
+  const [includeSoundtrack, setIncludeSoundtrack] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [estimatedSecondsRemaining, setEstimatedSecondsRemaining] = useState<
@@ -54,6 +55,7 @@ export function ShowreelExportDialog({
           preset,
           includeCaptions,
           includeHud,
+          includeSoundtrack,
         },
         (prog, estSeconds) => {
           setProgress(prog);
@@ -151,6 +153,17 @@ export function ShowreelExportDialog({
                   className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-[#3AA9BE] focus:ring-[#3AA9BE] disabled:opacity-50"
                 />
                 <span className="text-sm text-slate-300">Include HUD elements</span>
+              </label>
+
+              <label className="flex items-centre gap-3">
+                <input
+                  type="checkbox"
+                  checked={includeSoundtrack}
+                  onChange={(e) => setIncludeSoundtrack(e.target.checked)}
+                  disabled={isExporting}
+                  className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-[#3AA9BE] focus:ring-[#3AA9BE] disabled:opacity-50"
+                />
+                <span className="text-sm text-slate-300">Include soundtrack</span>
               </label>
             </div>
 
