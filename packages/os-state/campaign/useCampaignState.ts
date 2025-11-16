@@ -20,6 +20,8 @@ import { createEvolutionSlice } from './slices/evolutionSlice'
 import type { EvolutionSliceActions } from './slices/evolutionSlice'
 import { createSocialGraphSlice } from './slices/socialGraphSlice'
 import type { SocialGraphSliceActions } from './slices/socialGraphSlice'
+import { createIntelligenceSlice } from './slices/intelligenceSlice'
+import type { IntelligenceSliceActions } from './slices/intelligenceSlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -42,6 +44,7 @@ export type CampaignState = TimelineSlice &
   MemorySliceActions &
   EvolutionSliceActions &
   SocialGraphSliceActions &
+  IntelligenceSliceActions &
   MetaSlice
 
 /**
@@ -58,6 +61,7 @@ export const useCampaignState = create<CampaignState>()(
       ...createMemorySlice(...args),
       ...createEvolutionSlice(...args),
       ...createSocialGraphSlice(...args),
+      ...createIntelligenceSlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -91,6 +95,10 @@ export const useCampaignState = create<CampaignState>()(
         socialGraph: {
           ...state.socialGraph,
           isLoadingSocialGraph: false, // Don't persist loading state
+        },
+        intelligence: {
+          ...state.intelligence,
+          isLoadingIntelligence: false, // Don't persist loading state
         },
       }),
     }
@@ -268,6 +276,25 @@ export const useSocialGraph = () => {
   }))
 
   return { socialGraph, ...actions }
+}
+
+/**
+ * Helper hook to get intelligence state and actions
+ */
+export const useIntelligence = () => {
+  const intelligence = useCampaignState((state) => state.intelligence)
+  const actions = useCampaignState((state) => ({
+    setTimeRange: state.setTimeRange,
+    setSelectedOS: state.setSelectedOS,
+    setSelectedMetric: state.setSelectedMetric,
+    setSnapshots: state.setSnapshots,
+    setEvolutionSeries: state.setEvolutionSeries,
+    setRelationshipSeries: state.setRelationshipSeries,
+    setIsLoadingIntelligence: state.setIsLoadingIntelligence,
+    resetIntelligence: state.resetIntelligence,
+  }))
+
+  return { intelligence, ...actions }
 }
 
 /**
