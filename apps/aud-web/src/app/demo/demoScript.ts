@@ -226,7 +226,36 @@ export function getDemoScript() {
     .fadeOut()
 
     // ========================================================================
-    // CHAPTER 8: FINALE
+    // CHAPTER 8: INTELLIGENCE TIME TRAVEL
+    // ========================================================================
+    .chapter(
+      'Intelligence Time Travel',
+      'They don\'t just react. They remember and change together.'
+    )
+    .fadeIn()
+    .wait(1000)
+    .caption('The Creative Intelligence Board tracks everything', 3500)
+    .wait(4000)
+    .caption('Trust building over time', 2500)
+    .wait(3000)
+    .caption('Tension resolving through collaboration', 3000)
+    .wait(3500)
+    .caption('Cohesion rising as OSs learn to work together', 3500)
+    .wait(4000)
+    .caption('Scrub through time to see how your collective evolved', 4000)
+    .wait(4500)
+    .caption('Point-in-time snapshots capture identity at key moments', 4000)
+    .wait(4500)
+    .caption('Analytics reveal trust/tension arcs and leadership shifts', 4000)
+    .wait(4500)
+    .caption('Intelligence stories narrate the journey automatically', 4000)
+    .wait(4500)
+    .caption('A living record of your campaign\'s creative intelligence', 4000)
+    .wait(4500)
+    .fadeOut()
+
+    // ========================================================================
+    // CHAPTER 9: FINALE
     // ========================================================================
     .chapter(
       'The Living Collaborator',

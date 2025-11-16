@@ -1,32 +1,48 @@
 /**
  * Creative Intelligence Board (CIB)
  * Phase 14: Main panel showing OS social graph and identity summary
+ * Phase 15: CIB 2.0 - Time travel, analytics, and narrative insights
  */
 
 'use client'
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Download } from 'lucide-react'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import type { ThemeId } from '@totalaud/os-state/campaign'
 import { useSocialGraph } from '@totalaud/os-state/campaign'
 import { OSRelationshipGraph } from './OSRelationshipGraph'
 import { OSIdentitySummary } from './OSIdentitySummary'
+import { IntelligenceTimeControls } from './IntelligenceTimeControls'
+import { IntelligenceMetricsPanel } from './IntelligenceMetricsPanel'
+import { IntelligenceSnapshotPanel } from './IntelligenceSnapshotPanel'
+import { IntelligenceNarrativePanel } from './IntelligenceNarrativePanel'
 
 interface CreativeIntelligenceBoardProps {
   onClose?: () => void
   asModal?: boolean
+  campaignStartDate?: string
 }
+
+type CIBView = 'graph' | 'analytics' | 'snapshot' | 'narrative'
 
 export function CreativeIntelligenceBoard({
   onClose,
   asModal = false,
+  campaignStartDate,
 }: CreativeIntelligenceBoardProps) {
   const { socialGraph } = useSocialGraph()
   const [selectedOS, setSelectedOS] = useState<ThemeId | null>(null)
+  const [activeView, setActiveView] = useState<CIBView>('graph')
 
   const handleOSClick = (os: ThemeId) => {
     setSelectedOS(os === selectedOS ? null : os)
+  }
+
+  const handleExport = () => {
+    // TODO: Implement export
+    console.log('[CIB] Export report')
   }
 
   const containerStyle: React.CSSProperties = asModal
@@ -35,10 +51,10 @@ export function CreativeIntelligenceBoard({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '90vw',
-        maxWidth: '1200px',
-        height: '85vh',
-        maxHeight: '800px',
+        width: '95vw',
+        maxWidth: '1400px',
+        height: '90vh',
+        maxHeight: '900px',
         backgroundColor: flowCoreColours.matteBlack,
         border: `1px solid ${flowCoreColours.borderSubtle}`,
         borderRadius: '12px',
@@ -89,137 +105,204 @@ export function CreativeIntelligenceBoard({
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
+            gap: '16px',
             padding: '20px 24px',
             borderBottom: `1px solid ${flowCoreColours.borderSubtle}`,
           }}
         >
-          <div>
-            <h2
-              style={{
-                fontSize: '18px',
-                fontWeight: 600,
-                color: flowCoreColours.textPrimary,
-                marginBottom: '4px',
-              }}
-            >
-              Creative Intelligence Board
-            </h2>
-            <p
-              style={{
-                fontSize: '13px',
-                color: flowCoreColours.textTertiary,
-                lineHeight: 1.4,
-              }}
-            >
-              OS social dynamics and emergent identity
-            </p>
-          </div>
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Snapshot button */}
-            <button
-              onClick={() => {
-                // TODO: Implement snapshot creation
-                console.log('[CIB] Create snapshot')
-              }}
-              style={{
-                padding: '8px 12px',
-                fontSize: '12px',
-                fontWeight: 500,
-                color: flowCoreColours.textSecondary,
-                backgroundColor: 'transparent',
-                border: `1px solid ${flowCoreColours.borderSubtle}`,
-                borderRadius: '4px',
-                cursor: 'pointer',
-                transition: 'all 120ms cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = flowCoreColours.accentCyan
-                e.currentTarget.style.color = flowCoreColours.accentCyan
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = flowCoreColours.borderSubtle
-                e.currentTarget.style.color = flowCoreColours.textSecondary
-              }}
-            >
-              Snapshot
-            </button>
-
-            {/* Close button (modal only) */}
-            {asModal && onClose && (
-              <button
-                onClick={onClose}
+          {/* Title + Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <h2
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   fontSize: '18px',
+                  fontWeight: 600,
+                  color: flowCoreColours.textPrimary,
+                  marginBottom: '4px',
+                }}
+              >
+                Creative Intelligence Board
+              </h2>
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: flowCoreColours.textTertiary,
+                  lineHeight: 1.4,
+                }}
+              >
+                OS social dynamics, evolution, and emergent identity
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Export button */}
+              <button
+                onClick={handleExport}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  fontWeight: 500,
                   color: flowCoreColours.textSecondary,
                   backgroundColor: 'transparent',
                   border: `1px solid ${flowCoreColours.borderSubtle}`,
                   borderRadius: '4px',
                   cursor: 'pointer',
                   transition: 'all 120ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#ff5555'
-                  e.currentTarget.style.color = '#ff5555'
+                  e.currentTarget.style.borderColor = flowCoreColours.accentCyan
+                  e.currentTarget.style.color = flowCoreColours.accentCyan
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = flowCoreColours.borderSubtle
                   e.currentTarget.style.color = flowCoreColours.textSecondary
                 }}
               >
-                ×
+                <Download size={14} strokeWidth={1.6} />
+                Export Report
               </button>
-            )}
+
+              {/* Close button (modal only) */}
+              {asModal && onClose && (
+                <button
+                  onClick={onClose}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '18px',
+                    color: flowCoreColours.textSecondary,
+                    backgroundColor: 'transparent',
+                    border: `1px solid ${flowCoreColours.borderSubtle}`,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 120ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#ff5555'
+                    e.currentTarget.style.color = '#ff5555'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = flowCoreColours.borderSubtle
+                    e.currentTarget.style.color = flowCoreColours.textSecondary
+                  }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* View tabs */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {(['graph', 'analytics', 'snapshot', 'narrative'] as const).map((view) => (
+              <button
+                key={view}
+                onClick={() => setActiveView(view)}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color:
+                    activeView === view ? flowCoreColours.slateCyan : flowCoreColours.textSecondary,
+                  backgroundColor:
+                    activeView === view ? `${flowCoreColours.slateCyan}15` : 'transparent',
+                  border: `1px solid ${activeView === view ? flowCoreColours.slateCyan : flowCoreColours.borderSubtle}`,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  transition: 'all 120ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {view === 'graph'
+                  ? 'Social Graph'
+                  : view === 'analytics'
+                    ? 'Analytics'
+                    : view === 'snapshot'
+                      ? 'Snapshot'
+                      : 'Intelligence Story'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Time controls */}
+        <div style={{ padding: '16px 24px', borderBottom: `1px solid ${flowCoreColours.borderSubtle}` }}>
+          <IntelligenceTimeControls campaignStartDate={campaignStartDate} />
         </div>
 
         {/* Content area */}
         <div
           style={{
-            display: 'flex',
-            height: 'calc(100% - 73px)',
+            height: 'calc(100% - 250px)',
             overflow: 'hidden',
           }}
         >
-          {/* Left/Center: Graph */}
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '24px',
-              overflow: 'auto',
-            }}
-          >
-            <OSRelationshipGraph
-              relationships={socialGraph.relationships}
-              onOSClick={handleOSClick}
-            />
-          </div>
+          {activeView === 'graph' && (
+            <div
+              style={{
+                display: 'flex',
+                height: '100%',
+              }}
+            >
+              {/* Left/Center: Graph */}
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '24px',
+                  overflow: 'auto',
+                }}
+              >
+                <OSRelationshipGraph
+                  relationships={socialGraph.relationships}
+                  onOSClick={handleOSClick}
+                />
+              </div>
 
-          {/* Right: Summary sidebar */}
-          <div
-            style={{
-              width: '320px',
-              borderLeft: `1px solid ${flowCoreColours.borderSubtle}`,
-              overflow: 'auto',
-            }}
-          >
-            <OSIdentitySummary onOSClick={handleOSClick} />
-          </div>
+              {/* Right: Summary sidebar */}
+              <div
+                style={{
+                  width: '320px',
+                  borderLeft: `1px solid ${flowCoreColours.borderSubtle}`,
+                  overflow: 'auto',
+                }}
+              >
+                <OSIdentitySummary onOSClick={handleOSClick} />
+              </div>
+            </div>
+          )}
+
+          {activeView === 'analytics' && (
+            <div style={{ padding: '24px', overflow: 'auto', height: '100%' }}>
+              <IntelligenceMetricsPanel />
+            </div>
+          )}
+
+          {activeView === 'snapshot' && (
+            <div style={{ padding: '24px', overflow: 'auto', height: '100%', maxWidth: '800px', margin: '0 auto' }}>
+              <IntelligenceSnapshotPanel />
+            </div>
+          )}
+
+          {activeView === 'narrative' && (
+            <div style={{ padding: '24px', overflow: 'auto', height: '100%', maxWidth: '900px', margin: '0 auto' }}>
+              <IntelligenceNarrativePanel />
+            </div>
+          )}
         </div>
 
-        {/* Selected OS info (optional footer) */}
-        {selectedOS && (
+        {/* Selected OS info (optional footer) - only for graph view */}
+        {activeView === 'graph' && selectedOS && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
