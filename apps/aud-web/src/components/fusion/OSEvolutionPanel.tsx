@@ -9,10 +9,11 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, TrendingUp, TrendingDown, Minus, Brain } from 'lucide-react'
+import { X, TrendingUp, TrendingDown, Minus, Brain, Network } from 'lucide-react'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { useEvolution } from '@totalaud/os-state/campaign'
 import type { ThemeId, EvolvedOSProfile } from '@totalaud/os-state/campaign'
+import { CreativeIntelligenceBoard } from '@aud-web/components/intelligence'
 
 const OS_COLOURS: Record<ThemeId, string> = {
   ascii: '#00ff99',
@@ -39,6 +40,7 @@ interface OSEvolutionPanelProps {
 export function OSEvolutionPanel({ isOpen, onClose, selectedOS }: OSEvolutionPanelProps) {
   const { evolution, getOSProfile, getEvolutionEvents } = useEvolution()
   const [activeOS, setActiveOS] = useState<ThemeId>(selectedOS || 'ascii')
+  const [showCIB, setShowCIB] = useState(false)
 
   useEffect(() => {
     if (selectedOS) {
@@ -141,7 +143,7 @@ export function OSEvolutionPanel({ isOpen, onClose, selectedOS }: OSEvolutionPan
             </div>
           </div>
 
-          {/* OS Tabs */}
+          {/* OS Tabs + Social Graph Button */}
           <div
             style={{
               display: 'flex',
@@ -149,6 +151,7 @@ export function OSEvolutionPanel({ isOpen, onClose, selectedOS }: OSEvolutionPan
               padding: '12px 20px',
               borderBottom: `1px solid ${flowCoreColours.borderSubtle}`,
               overflowX: 'auto',
+              alignItems: 'center',
             }}
           >
             {(['ascii', 'xp', 'aqua', 'daw', 'analogue'] as ThemeId[]).map((os) => (
@@ -172,6 +175,47 @@ export function OSEvolutionPanel({ isOpen, onClose, selectedOS }: OSEvolutionPan
                 {OS_LABELS[os]}
               </button>
             ))}
+
+            {/* Divider */}
+            <div
+              style={{
+                width: '1px',
+                height: '20px',
+                background: flowCoreColours.borderSubtle,
+                margin: '0 4px',
+              }}
+            />
+
+            {/* View Social Graph Button */}
+            <button
+              onClick={() => setShowCIB(true)}
+              style={{
+                padding: '6px 12px',
+                background: 'transparent',
+                border: `1px solid ${flowCoreColours.borderSubtle}`,
+                borderRadius: '4px',
+                color: flowCoreColours.textSecondary,
+                fontSize: '11px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 120ms ease',
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = flowCoreColours.accentCyan
+                e.currentTarget.style.color = flowCoreColours.accentCyan
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = flowCoreColours.borderSubtle
+                e.currentTarget.style.color = flowCoreColours.textSecondary
+              }}
+            >
+              <Network size={14} strokeWidth={1.6} />
+              Social Graph
+            </button>
           </div>
 
           {/* Content */}
@@ -279,6 +323,11 @@ export function OSEvolutionPanel({ isOpen, onClose, selectedOS }: OSEvolutionPan
             )}
           </div>
         </motion.div>
+
+        {/* Creative Intelligence Board Modal */}
+        {showCIB && (
+          <CreativeIntelligenceBoard asModal onClose={() => setShowCIB(false)} />
+        )}
       </motion.div>
     </AnimatePresence>
   )

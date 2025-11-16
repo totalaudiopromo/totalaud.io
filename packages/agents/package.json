@@ -15,7 +15,9 @@
     "./memory": "./memory/index.ts",
     "./memory/memoryWriter": "./memory/memoryWriter.ts",
     "./memory/memoryReader": "./memory/memoryReader.ts",
-    "./events": "./events/index.ts"
+    "./events": "./events/index.ts",
+    "./evolution": "./evolution/index.ts",
+    "./social": "./social/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

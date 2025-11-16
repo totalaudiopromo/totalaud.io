@@ -18,6 +18,8 @@ export type DemoAction =
   | { type: 'triggerEvolution'; os: string; eventType: string }
   | { type: 'showEvolutionPanel'; os?: string }
   | { type: 'hideEvolutionPanel' }
+  | { type: 'showSocialGraph' }
+  | { type: 'hideSocialGraph' }
   | { type: 'chapter'; title: string; subtitle?: string }
   | { type: 'fadeOut'; duration?: number }
   | { type: 'fadeIn'; duration?: number }
@@ -355,6 +357,24 @@ export class DemoScriptBuilder {
   hideEvolutionPanel(): this {
     if (!this.currentChapter) throw new Error('No chapter active')
     this.currentChapter.actions.push({ type: 'hideEvolutionPanel' })
+    return this
+  }
+
+  /**
+   * Show social graph / Creative Intelligence Board
+   */
+  showSocialGraph(): this {
+    if (!this.currentChapter) throw new Error('No chapter active')
+    this.currentChapter.actions.push({ type: 'showSocialGraph' })
+    return this
+  }
+
+  /**
+   * Hide social graph / Creative Intelligence Board
+   */
+  hideSocialGraph(): this {
+    if (!this.currentChapter) throw new Error('No chapter active')
+    this.currentChapter.actions.push({ type: 'hideSocialGraph' })
     return this
   }
 

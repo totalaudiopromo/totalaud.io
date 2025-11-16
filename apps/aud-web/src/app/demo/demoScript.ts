@@ -191,7 +191,42 @@ export function getDemoScript() {
     .fadeOut()
 
     // ========================================================================
-    // CHAPTER 7: FINALE
+    // CHAPTER 7: SOCIAL GRAPH
+    // ========================================================================
+    .chapter(
+      'Social Graph',
+      'OS relationships form a living social system'
+    )
+    .fadeIn()
+    .wait(1000)
+    .caption('As OSs interact, they form relationships with each other', 4500)
+    .wait(5000)
+    .caption('Fusion agreement builds trust and synergy', 3500)
+    .wait(4000)
+    .caption('Fusion tension creates challenges and learning', 3500)
+    .wait(4000)
+    .caption('Over time, clear social roles emerge', 3000)
+    .wait(3500)
+    .showSocialGraph()
+    .wait(2000)
+    .caption('The Creative Intelligence Board reveals the social dynamics', 4000)
+    .wait(4500)
+    .caption('Leader OS: Guides most decisions with high trust', 3500)
+    .wait(4000)
+    .caption('Support OSs: Collaborate and reinforce the direction', 3500)
+    .wait(4000)
+    .caption('Challenger OSs: Push back, question, and explore alternatives', 4000)
+    .wait(4500)
+    .caption('Trust, synergy, and tension shape the collective intelligence', 4000)
+    .wait(4500)
+    .hideSocialGraph()
+    .wait(500)
+    .caption('An emergent identity unique to your campaign', 3500)
+    .wait(4000)
+    .fadeOut()
+
+    // ========================================================================
+    // CHAPTER 8: FINALE
     // ========================================================================
     .chapter(
       'The Living Collaborator',
