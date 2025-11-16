@@ -1,13 +1,22 @@
 'use client'
 
 /**
- * ASCII OS Page - Terminal & Agent Commands
+ * ASCII OS Page - Terminal & Agent Commands (Phase 29 Polished)
  * Supports director typing and command execution
+ * Uses design tokens for cohesive styling
  */
 
 import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Terminal } from 'lucide-react'
+import { colours, spacing } from '@/styles/tokens'
+import { duration, easing } from '@/styles/motion'
+
+// ASCII OS specific colours (CRT green terminal aesthetic)
+const ASCII_GREEN = '#00FF00'
+const ASCII_GREEN_DIM = 'rgba(0, 255, 0, 0.6)'
+const ASCII_GLOW = 'rgba(0, 255, 0, 0.15)'
+const SCANLINE_OPACITY = 0.03
 
 export function AsciiOSPage() {
   const director = useDirector()
@@ -91,28 +100,77 @@ export function AsciiOSPage() {
   }
 
   return (
-    <div className="w-full h-full bg-[#0F1113] text-[#00FF00] p-8 font-mono overflow-auto">
+    <div
+      className="w-full h-full font-mono overflow-auto"
+      style={{
+        backgroundColor: colours.background,
+        color: ASCII_GREEN,
+        padding: spacing[8],
+      }}
+    >
       {/* Header */}
-      <div className="flex items-centre gap-3 mb-6">
-        <Terminal className="w-6 h-6" />
+      <div
+        className="flex items-center"
+        style={{
+          gap: spacing[3],
+          marginBottom: spacing[6],
+        }}
+      >
+        <Terminal className="w-6 h-6" style={{ color: ASCII_GREEN }} />
         <div>
-          <h1 className="text-xl font-bold">ASCII Terminal</h1>
-          <p className="text-xs text-[#00FF00]/60">aud-os command interface</p>
+          <h1
+            style={{
+              fontSize: '20px',
+              fontWeight: '700',
+              color: ASCII_GREEN,
+            }}
+          >
+            ASCII Terminal
+          </h1>
+          <p
+            style={{
+              fontSize: '12px',
+              color: ASCII_GREEN_DIM,
+              marginTop: spacing[1],
+            }}
+          >
+            aud-os command interface
+          </p>
         </div>
       </div>
 
       {/* Terminal output */}
-      <div className="mb-4 space-y-1">
+      <div
+        style={{
+          marginBottom: spacing[4],
+          display: 'flex',
+          flexDirection: 'column',
+          gap: spacing[1],
+        }}
+      >
         {output.map((line, i) => (
-          <div key={i} className="text-sm leading-relaxed whitespace-pre-wrap">
+          <div
+            key={i}
+            style={{
+              fontSize: '14px',
+              lineHeight: '1.6',
+              whiteSpace: 'pre-wrap',
+              color: ASCII_GREEN,
+            }}
+          >
             {line}
           </div>
         ))}
       </div>
 
       {/* Input line */}
-      <div className="flex items-centre gap-2">
-        <span className="text-[#00FF00]">{'>'}</span>
+      <div
+        className="flex items-center"
+        style={{
+          gap: spacing[2],
+        }}
+      >
+        <span style={{ color: ASCII_GREEN }}>{'>'}</span>
         <input
           ref={inputRef}
           type="text"
@@ -120,17 +178,34 @@ export function AsciiOSPage() {
           onChange={(e) => !isTyping && setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isTyping}
-          className="flex-1 bg-transparent border-none outline-none text-[#00FF00] font-mono text-sm"
-          placeholder={isTyping ? '' : 'Type a command...'}
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: ASCII_GREEN,
+            fontFamily: 'ui-monospace, monospace',
+            fontSize: '14px',
+          }}
+          placeholder={isTyping ? '' : 'Compose your command...'}
           autoFocus
         />
-        <span className="animate-pulse">_</span>
+        <span
+          className="animate-pulse"
+          style={{
+            color: ASCII_GREEN,
+            animation: `pulse ${duration.slow}s ${easing.smooth} infinite`,
+          }}
+        >
+          _
+        </span>
       </div>
 
-      {/* CRT scan lines effect */}
+      {/* CRT scan lines effect (reduced opacity for subtlety) */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-5"
+        className="fixed inset-0 pointer-events-none"
         style={{
+          opacity: SCANLINE_OPACITY,
           background:
             'repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px)',
         }}
@@ -138,9 +213,10 @@ export function AsciiOSPage() {
 
       {/* Glow effect */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-10"
+        className="fixed inset-0 pointer-events-none"
         style={{
-          boxShadow: 'inset 0 0 100px rgba(0,255,0,0.1)',
+          boxShadow: `inset 0 0 100px ${ASCII_GLOW}`,
+          opacity: 0.6,
         }}
       />
     </div>

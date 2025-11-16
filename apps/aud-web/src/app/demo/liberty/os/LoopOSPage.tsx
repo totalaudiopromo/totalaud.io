@@ -1,13 +1,16 @@
 'use client'
 
 /**
- * LoopOS Page - Liberty Campaign Timeline
+ * LoopOS Page - Liberty Campaign Timeline (Phase 29 Polished)
  * Supports director camera panning and playback control
+ * Uses design tokens for consistent styling
  */
 
 import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
 import { Play, Pause } from 'lucide-react'
+import { spacing, radii, colours } from '@/styles/tokens'
+import { duration, easing } from '@/styles/motion'
 
 export function LoopOSPage() {
   const director = useDirector()
@@ -78,130 +81,413 @@ export function LoopOSPage() {
   }
 
   return (
-    <div className="w-full h-full bg-[#0F1113] text-foreground overflow-hidden">
+    <div className="w-full h-full overflow-hidden" style={{ backgroundColor: colours.background }}>
       {/* Camera container */}
       <div
-        className="w-full h-full transition-transform duration-1000 ease-out"
-        style={{ transform: getCameraTransform() }}
+        className="w-full h-full"
+        style={{
+          transform: getCameraTransform(),
+          transition: `transform ${duration.slow * 2.5}s ${easing.smooth}`,
+        }}
       >
-        <div className="w-full h-full p-6">
+        <div className="w-full h-full" style={{ padding: spacing[6] }}>
           {/* Header */}
-          <div className="flex items-centre justify-between mb-6">
+          <div
+            className="flex items-center justify-between"
+            style={{ marginBottom: spacing[6] }}
+          >
             <div>
-              <h1 className="text-2xl font-bold">Liberty Campaign Timeline</h1>
-              <p className="text-sm text-foreground/60">UK Indie Launch — Radio & Press</p>
+              <h1 style={{ fontSize: '24px', fontWeight: '700', color: colours.foreground }}>
+                Liberty Campaign Timeline
+              </h1>
+              <p style={{ fontSize: '14px', color: colours.foreground, opacity: 0.6, marginTop: spacing[1] }}>
+                UK Indie Launch — Radio & Press
+              </p>
             </div>
 
             {/* Playback controls */}
-            <div className="flex items-centre gap-3">
+            <div className="flex items-center" style={{ gap: spacing[3] }}>
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 disabled={director.isPlaying}
-                className="p-2 bg-accent text-background rounded hover:bg-accent/90 transition-colours disabled:opacity-50"
+                className="hover:scale-105"
+                style={{
+                  padding: spacing[2],
+                  backgroundColor: colours.accent,
+                  color: colours.background,
+                  borderRadius: radii.md,
+                  transition: `all ${duration.fast}s ${easing.default}`,
+                  opacity: director.isPlaying ? 0.5 : 1,
+                  cursor: director.isPlaying ? 'not-allowed' : 'pointer',
+                }}
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
-              <span className="text-sm text-foreground/60 font-mono">
+              <span
+                style={{
+                  fontSize: '14px',
+                  color: colours.foreground,
+                  opacity: 0.6,
+                  fontFamily: 'monospace',
+                }}
+              >
                 {playheadPosition.toFixed(1)}%
               </span>
             </div>
           </div>
 
           {/* Timeline lanes */}
-          <div className="space-y-4 mb-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[4], marginBottom: spacing[6] }}>
             {/* BBC Introducing lane */}
-            <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-              <div className="flex items-centre gap-2 mb-3">
-                <div className="w-3 h-3 bg-accent rounded-full" />
-                <span className="text-sm font-bold">BBC Introducing</span>
+            <div
+              style={{
+                backgroundColor: `${colours.accent}0D`,
+                border: `1px solid ${colours.border}`,
+                borderRadius: radii.lg,
+                padding: spacing[4],
+              }}
+            >
+              <div className="flex items-center" style={{ gap: spacing[2], marginBottom: spacing[3] }}>
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: colours.accent,
+                    borderRadius: radii.full,
+                  }}
+                />
+                <span style={{ fontSize: '14px', fontWeight: '700', color: colours.foreground }}>
+                  BBC Introducing
+                </span>
               </div>
-              <div className="relative h-12 bg-background/50 rounded overflow-hidden">
-                {/* Timeline blocks */}
-                <div className="absolute left-[10%] top-2 bottom-2 w-[15%] bg-accent/60 rounded" />
-                <div className="absolute left-[30%] top-2 bottom-2 w-[20%] bg-accent/80 rounded" />
-                <div className="absolute left-[55%] top-2 bottom-2 w-[15%] bg-accent/60 rounded" />
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  height: '48px',
+                  backgroundColor: `${colours.background}80`,
+                  borderRadius: radii.md,
+                }}
+              >
+                <div
+                  className="absolute"
+                  style={{
+                    left: '10%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '15%',
+                    backgroundColor: `${colours.accent}99`,
+                    borderRadius: radii.sm,
+                  }}
+                />
+                <div
+                  className="absolute"
+                  style={{
+                    left: '30%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '20%',
+                    backgroundColor: `${colours.accent}CC`,
+                    borderRadius: radii.sm,
+                  }}
+                />
+                <div
+                  className="absolute"
+                  style={{
+                    left: '55%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '15%',
+                    backgroundColor: `${colours.accent}99`,
+                    borderRadius: radii.sm,
+                  }}
+                />
 
                 {/* Playhead */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-accent shadow-[0_0_10px_currentColor] transition-all"
-                  style={{ left: `${playheadPosition}%` }}
+                  className="absolute"
+                  style={{
+                    top: 0,
+                    bottom: 0,
+                    width: '2px',
+                    left: `${playheadPosition}%`,
+                    backgroundColor: colours.accent,
+                    boxShadow: colours.glow,
+                    transition: `left ${duration.fast}s linear`,
+                  }}
                 />
               </div>
             </div>
 
             {/* Student Radio lane */}
-            <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-              <div className="flex items-centre gap-2 mb-3">
-                <div className="w-3 h-3 bg-accent/60 rounded-full" />
-                <span className="text-sm font-bold">Student Radio</span>
+            <div
+              style={{
+                backgroundColor: `${colours.accent}0D`,
+                border: `1px solid ${colours.border}`,
+                borderRadius: radii.lg,
+                padding: spacing[4],
+              }}
+            >
+              <div className="flex items-center" style={{ gap: spacing[2], marginBottom: spacing[3] }}>
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: `${colours.accent}99`,
+                    borderRadius: radii.full,
+                  }}
+                />
+                <span style={{ fontSize: '14px', fontWeight: '700', color: colours.foreground }}>
+                  Student Radio
+                </span>
               </div>
-              <div className="relative h-12 bg-background/50 rounded overflow-hidden">
-                <div className="absolute left-[20%] top-2 bottom-2 w-[25%] bg-accent/50 rounded" />
-                <div className="absolute left-[50%] top-2 bottom-2 w-[30%] bg-accent/70 rounded" />
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  height: '48px',
+                  backgroundColor: `${colours.background}80`,
+                  borderRadius: radii.md,
+                }}
+              >
+                <div
+                  className="absolute"
+                  style={{
+                    left: '20%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '25%',
+                    backgroundColor: `${colours.accent}80`,
+                    borderRadius: radii.sm,
+                  }}
+                />
+                <div
+                  className="absolute"
+                  style={{
+                    left: '50%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '30%',
+                    backgroundColor: `${colours.accent}B3`,
+                    borderRadius: radii.sm,
+                  }}
+                />
 
                 {/* Playhead */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-accent shadow-[0_0_10px_currentColor] transition-all"
-                  style={{ left: `${playheadPosition}%` }}
+                  className="absolute"
+                  style={{
+                    top: 0,
+                    bottom: 0,
+                    width: '2px',
+                    left: `${playheadPosition}%`,
+                    backgroundColor: colours.accent,
+                    boxShadow: colours.glow,
+                    transition: `left ${duration.fast}s linear`,
+                  }}
                 />
               </div>
             </div>
 
             {/* Spotify Editorial lane */}
-            <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-              <div className="flex items-centre gap-2 mb-3">
-                <div className="w-3 h-3 bg-accent/40 rounded-full" />
-                <span className="text-sm font-bold">Spotify Editorial Pitch</span>
+            <div
+              style={{
+                backgroundColor: `${colours.accent}0D`,
+                border: `1px solid ${colours.border}`,
+                borderRadius: radii.lg,
+                padding: spacing[4],
+              }}
+            >
+              <div className="flex items-center" style={{ gap: spacing[2], marginBottom: spacing[3] }}>
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: `${colours.accent}66`,
+                    borderRadius: radii.full,
+                  }}
+                />
+                <span style={{ fontSize: '14px', fontWeight: '700', color: colours.foreground }}>
+                  Spotify Editorial Pitch
+                </span>
               </div>
-              <div className="relative h-12 bg-background/50 rounded overflow-hidden">
-                <div className="absolute left-[40%] top-2 bottom-2 w-[35%] bg-accent/30 rounded" />
-                <div className="absolute left-[80%] top-2 bottom-2 w-[15%] bg-accent/40 rounded" />
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  height: '48px',
+                  backgroundColor: `${colours.background}80`,
+                  borderRadius: radii.md,
+                }}
+              >
+                <div
+                  className="absolute"
+                  style={{
+                    left: '40%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '35%',
+                    backgroundColor: `${colours.accent}4D`,
+                    borderRadius: radii.sm,
+                  }}
+                />
+                <div
+                  className="absolute"
+                  style={{
+                    left: '80%',
+                    top: spacing[2],
+                    bottom: spacing[2],
+                    width: '15%',
+                    backgroundColor: `${colours.accent}66`,
+                    borderRadius: radii.sm,
+                  }}
+                />
 
                 {/* Playhead */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-accent shadow-[0_0_10px_currentColor] transition-all"
-                  style={{ left: `${playheadPosition}%` }}
+                  className="absolute"
+                  style={{
+                    top: 0,
+                    bottom: 0,
+                    width: '2px',
+                    left: `${playheadPosition}%`,
+                    backgroundColor: colours.accent,
+                    boxShadow: colours.glow,
+                    transition: `left ${duration.fast}s linear`,
+                  }}
                 />
               </div>
             </div>
           </div>
 
           {/* Inspector panel */}
-          <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-            <h3 className="text-sm font-bold mb-3">Campaign Inspector</h3>
-            <div className="grid grid-cols-2 gap-4 text-xs">
+          <div
+            style={{
+              backgroundColor: `${colours.accent}0D`,
+              border: `1px solid ${colours.border}`,
+              borderRadius: radii.lg,
+              padding: spacing[4],
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '14px',
+                fontWeight: '700',
+                marginBottom: spacing[3],
+                color: colours.foreground,
+              }}
+            >
+              Campaign Inspector
+            </h3>
+            <div className="grid grid-cols-2" style={{ gap: spacing[4], fontSize: '12px' }}>
               <div>
-                <span className="text-foreground/60">Radio Targets:</span>
-                <span className="ml-2 font-mono">24</span>
+                <span style={{ color: colours.foreground, opacity: 0.6 }}>Radio Targets:</span>
+                <span style={{ marginLeft: spacing[2], fontFamily: 'monospace', color: colours.foreground }}>
+                  24
+                </span>
               </div>
               <div>
-                <span className="text-foreground/60">Duration:</span>
-                <span className="ml-2 font-mono">4 weeks</span>
+                <span style={{ color: colours.foreground, opacity: 0.6 }}>Duration:</span>
+                <span style={{ marginLeft: spacing[2], fontFamily: 'monospace', color: colours.foreground }}>
+                  4 weeks
+                </span>
               </div>
               <div>
-                <span className="text-foreground/60">Press Outlets:</span>
-                <span className="ml-2 font-mono">12</span>
+                <span style={{ color: colours.foreground, opacity: 0.6 }}>Press Outlets:</span>
+                <span style={{ marginLeft: spacing[2], fontFamily: 'monospace', color: colours.foreground }}>
+                  12
+                </span>
               </div>
               <div>
-                <span className="text-foreground/60">Status:</span>
-                <span className="ml-2 text-accent font-mono">Planning</span>
+                <span style={{ color: colours.foreground, opacity: 0.6 }}>Status:</span>
+                <span
+                  style={{
+                    marginLeft: spacing[2],
+                    color: colours.accent,
+                    fontFamily: 'monospace',
+                  }}
+                >
+                  Planning
+                </span>
               </div>
             </div>
           </div>
 
           {/* Minimap */}
-          <div className="absolute top-6 right-6 w-48 h-32 bg-background/80 border border-accent/20 rounded-lg p-2">
-            <div className="text-[10px] text-foreground/60 mb-1">Campaign Overview</div>
-            <div className="relative h-full bg-accent/5 rounded">
+          <div
+            className="absolute"
+            style={{
+              top: spacing[6],
+              right: spacing[6],
+              width: '192px',
+              height: '128px',
+              backgroundColor: `${colours.background}CC`,
+              border: `1px solid ${colours.border}`,
+              borderRadius: radii.lg,
+              padding: spacing[2],
+            }}
+          >
+            <div
+              style={{
+                fontSize: '10px',
+                color: colours.foreground,
+                opacity: 0.6,
+                marginBottom: spacing[1],
+              }}
+            >
+              Campaign Overview
+            </div>
+            <div
+              className="relative"
+              style={{
+                height: 'calc(100% - 16px)',
+                backgroundColor: `${colours.accent}0D`,
+                borderRadius: radii.sm,
+              }}
+            >
               {/* Mini timeline bars */}
-              <div className="absolute left-[10%] top-[20%] w-[30%] h-1 bg-accent/40 rounded" />
-              <div className="absolute left-[25%] top-[40%] w-[40%] h-1 bg-accent/40 rounded" />
-              <div className="absolute left-[45%] top-[60%] w-[35%] h-1 bg-accent/40 rounded" />
+              <div
+                className="absolute"
+                style={{
+                  left: '10%',
+                  top: '20%',
+                  width: '30%',
+                  height: '4px',
+                  backgroundColor: `${colours.accent}66`,
+                  borderRadius: radii.sm,
+                }}
+              />
+              <div
+                className="absolute"
+                style={{
+                  left: '25%',
+                  top: '40%',
+                  width: '40%',
+                  height: '4px',
+                  backgroundColor: `${colours.accent}66`,
+                  borderRadius: radii.sm,
+                }}
+              />
+              <div
+                className="absolute"
+                style={{
+                  left: '45%',
+                  top: '60%',
+                  width: '35%',
+                  height: '4px',
+                  backgroundColor: `${colours.accent}66`,
+                  borderRadius: radii.sm,
+                }}
+              />
 
               {/* Mini playhead */}
               <div
-                className="absolute top-0 bottom-0 w-px bg-accent transition-all"
-                style={{ left: `${playheadPosition}%` }}
+                className="absolute"
+                style={{
+                  top: 0,
+                  bottom: 0,
+                  width: '1px',
+                  left: `${playheadPosition}%`,
+                  backgroundColor: colours.accent,
+                  transition: `left ${duration.fast}s linear`,
+                }}
               />
             </div>
           </div>
