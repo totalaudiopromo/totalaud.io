@@ -3,21 +3,32 @@
 /**
  * Fusion Mode Canvas
  * Radial layout showing all 5 OS perspectives collaborating
+ * Phase 12B: Now with live OS activity states and real-time reactions
  */
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useFusion } from '@totalaud/os-state/campaign'
 import type { ThemeId, FusionOutput } from '@totalaud/os-state/campaign'
-import { X, Sparkles } from 'lucide-react'
+import { X, Sparkles, Zap } from 'lucide-react'
 import { FusionOSBubble } from './FusionOSBubble'
 import { FusionOutputRenderer } from './FusionOutputRenderer'
+import { liveEventBus, type LiveEventPayload } from '@totalaud/agents/events'
 
 interface FusionModeCanvasProps {
   isOpen: boolean
   onClose: () => void
   fusionOutput?: FusionOutput | null
   onCreateFusionCard?: () => void
+}
+
+export type OSActivityState = 'idle' | 'thinking' | 'speaking'
+
+interface OSActivity {
+  os: ThemeId
+  state: OSActivityState
+  lastSpokeAt?: string
+  messageCount: number
 }
 
 const OS_COLOURS: Record<ThemeId, string> = {
@@ -29,11 +40,11 @@ const OS_COLOURS: Record<ThemeId, string> = {
 }
 
 const OS_POSITIONS: Record<ThemeId, { x: number; y: number }> = {
-  ascii: { x: 0, y: -200 }, // Top
-  xp: { x: 190, y: -60 }, // Top right
-  aqua: { x: 120, y: 160 }, // Bottom right
-  daw: { x: -120, y: 160 }, // Bottom left
-  analogue: { x: -190, y: -60 }, // Top left
+  ascii: { x: 0, y: -200 },
+  xp: { x: 190, y: -60 },
+  aqua: { x: 120, y: 160 },
+  daw: { x: -120, y: 160 },
+  analogue: { x: -190, y: -60 },
 }
 
 export function FusionModeCanvas({
@@ -42,10 +53,9 @@ export function FusionModeCanvas({
   fusionOutput,
   onCreateFusionCard,
 }: FusionModeCanvasProps) {
-  const { fusion } = useFusion()
+  const { fusion, setLiveEnabled } = useFusion()
   const [activeOS, setActiveOS] = useState<ThemeId | null>(null)
-
-  if (!isOpen) return null
+  const [osActivities, setOSActivities] = useState<Map<ThemeId, OSActivity>>(new Map())
 
   const currentSession = fusion.currentSession
   const osContributors = currentSession?.osContributors || [
@@ -55,6 +65,124 @@ export function FusionModeCanvas({
     'daw',
     'analogue',
   ]
+
+  // Initialize OS activities from fusion messages
+  useEffect(() => {
+    if (!currentSession) return
+
+    const activities = new Map<ThemeId, OSActivity>()
+
+    osContributors.forEach((os) => {
+      const osMessages = fusion.messages.filter(
+        (msg) => msg.sessionId === currentSession.id && msg.os === os
+      )
+      const lastMessage = osMessages[osMessages.length - 1]
+
+      activities.set(os, {
+        os,
+        state: 'idle',
+        lastSpokeAt: lastMessage?.createdAt,
+        messageCount: osMessages.length,
+      })
+    })
+
+    setOSActivities(activities)
+  }, [currentSession, osContributors, fusion.messages])
+
+  // Subscribe to live events for activity updates
+  useEffect(() => {
+    if (!isOpen || !fusion.liveEnabled) return
+
+    const handleEvent = (event: LiveEventPayload) => {
+      // fusion_message_created → set OS to 'speaking'
+      if (event.type === 'fusion_message_created' && event.osHint) {
+        setOSActivities((prev) => {
+          const updated = new Map(prev)
+          const activity = updated.get(event.osHint!)
+
+          if (activity) {
+            updated.set(event.osHint!, {
+              ...activity,
+              state: 'speaking',
+              lastSpokeAt: event.timestamp,
+              messageCount: activity.messageCount + 1,
+            })
+          }
+
+          return updated
+        })
+
+        // Reset to idle after 5 seconds
+        setTimeout(() => {
+          setOSActivities((prev) => {
+            const updated = new Map(prev)
+            const activity = updated.get(event.osHint!)
+
+            if (activity && activity.state === 'speaking') {
+              updated.set(event.osHint!, {
+                ...activity,
+                state: 'idle',
+              })
+            }
+
+            return updated
+          })
+        }, 5000)
+      }
+
+      // High-priority events → set OS to 'thinking'
+      if (
+        (event.type === 'agent_warning' ||
+          event.type === 'loop_suggestion_created' ||
+          event.type === 'memory_created') &&
+        event.osHint
+      ) {
+        setOSActivities((prev) => {
+          const updated = new Map(prev)
+          const activity = updated.get(event.osHint!)
+
+          if (activity && activity.state === 'idle') {
+            updated.set(event.osHint!, {
+              ...activity,
+              state: 'thinking',
+            })
+          }
+
+          return updated
+        })
+
+        // Reset to idle after 3 seconds if still thinking
+        setTimeout(() => {
+          setOSActivities((prev) => {
+            const updated = new Map(prev)
+            const activity = updated.get(event.osHint!)
+
+            if (activity && activity.state === 'thinking') {
+              updated.set(event.osHint!, {
+                ...activity,
+                state: 'idle',
+              })
+            }
+
+            return updated
+          })
+        }, 3000)
+      }
+    }
+
+    const unsubscribe = liveEventBus.subscribe(handleEvent)
+    return () => unsubscribe()
+  }, [isOpen, fusion.liveEnabled])
+
+  const handleToggleLive = () => {
+    setLiveEnabled(!fusion.liveEnabled)
+  }
+
+  if (!isOpen) return null
+
+  // Check if there's consensus or tension
+  const hasConsensus = checkForConsensus(fusion.messages, currentSession?.id)
+  const hasTension = checkForTension(fusion.messages, currentSession?.id)
 
   return (
     <AnimatePresence>
@@ -96,6 +224,23 @@ export function FusionModeCanvas({
             </div>
 
             <div className="flex items-centre gap-2">
+              {/* Live Toggle */}
+              <button
+                onClick={handleToggleLive}
+                className="flex items-centre gap-2 rounded border px-3 py-1.5 font-mono text-xs font-semibold transition-all hover:bg-[var(--flowcore-colour-fg)]/5"
+                style={{
+                  color: fusion.liveEnabled
+                    ? 'var(--flowcore-colour-accent)'
+                    : 'var(--flowcore-colour-fg)',
+                  borderColor: fusion.liveEnabled
+                    ? 'var(--flowcore-colour-accent)'
+                    : 'var(--flowcore-colour-border)',
+                }}
+              >
+                <Zap size={14} />
+                Live: {fusion.liveEnabled ? 'On' : 'Off'}
+              </button>
+
               {onCreateFusionCard && fusionOutput && (
                 <button
                   onClick={onCreateFusionCard}
@@ -122,7 +267,14 @@ export function FusionModeCanvas({
               {/* Centre Focus */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 <motion.div
-                  className="flex h-32 w-32 items-centre justify-centre rounded-full border-2 border-[var(--flowcore-colour-accent)] bg-[var(--flowcore-colour-accent)]/10"
+                  className="flex h-32 w-32 items-centre justify-centre rounded-full border-2 bg-[var(--flowcore-colour-accent)]/10"
+                  style={{
+                    borderColor: hasConsensus
+                      ? '#3AA9BE'
+                      : hasTension
+                        ? '#ff8000'
+                        : 'var(--flowcore-colour-accent)',
+                  }}
                   animate={{
                     scale: [1, 1.05, 1],
                     opacity: [0.8, 1, 0.8],
@@ -137,6 +289,46 @@ export function FusionModeCanvas({
                     {currentSession?.focusType || 'Focus'}
                   </p>
                 </motion.div>
+
+                {/* Consensus Ring */}
+                {hasConsensus && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: '2px solid #3AA9BE',
+                      opacity: 0.3,
+                    }}
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.3, 0.1, 0.3],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                )}
+
+                {/* Tension Ripple */}
+                {hasTension && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: '2px solid #ff8000',
+                      opacity: 0.4,
+                    }}
+                    animate={{
+                      scale: [1, 1.4, 1],
+                      opacity: [0.4, 0, 0.4],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeOut',
+                    }}
+                  />
+                )}
               </div>
 
               {/* OS Bubbles in Radial Layout */}
@@ -144,6 +336,7 @@ export function FusionModeCanvas({
                 const position = OS_POSITIONS[os]
                 const colour = OS_COLOURS[os]
                 const contribution = fusionOutput?.perOS[os]
+                const activity = osActivities.get(os)
 
                 return (
                   <motion.div
@@ -187,6 +380,9 @@ export function FusionModeCanvas({
                       os={os}
                       contribution={contribution}
                       isActive={activeOS === os}
+                      activityState={activity?.state || 'idle'}
+                      messageCount={activity?.messageCount || 0}
+                      lastSpokeAt={activity?.lastSpokeAt}
                       onClick={() => setActiveOS(activeOS === os ? null : os)}
                     />
                   </motion.div>
@@ -205,4 +401,47 @@ export function FusionModeCanvas({
       </motion.div>
     </AnimatePresence>
   )
+}
+
+/**
+ * Check if there's consensus (3+ OSs with same sentiment)
+ */
+function checkForConsensus(messages: any[], sessionId?: string): boolean {
+  if (!sessionId) return false
+
+  const recentMessages = messages
+    .filter((msg) => msg.sessionId === sessionId)
+    .slice(-5)
+
+  const sentimentCounts: Record<string, number> = {}
+  recentMessages.forEach((msg) => {
+    const sentiment = (msg.content as any)?.metadata?.sentiment
+    if (sentiment) {
+      sentimentCounts[sentiment] = (sentimentCounts[sentiment] || 0) + 1
+    }
+  })
+
+  return Object.values(sentimentCounts).some((count) => count >= 3)
+}
+
+/**
+ * Check if there's tension (conflicting sentiments)
+ */
+function checkForTension(messages: any[], sessionId?: string): boolean {
+  if (!sessionId) return false
+
+  const recentMessages = messages
+    .filter((msg) => msg.sessionId === sessionId)
+    .slice(-5)
+
+  let hasPositive = false
+  let hasCritical = false
+
+  recentMessages.forEach((msg) => {
+    const sentiment = (msg.content as any)?.metadata?.sentiment
+    if (sentiment === 'positive') hasPositive = true
+    if (sentiment === 'critical' || sentiment === 'cautious') hasCritical = true
+  })
+
+  return hasPositive && hasCritical
 }
