@@ -362,3 +362,74 @@ export interface MemoryState {
   memoryLinks: MemoryLink[]
   isLoadingMemories: boolean
 }
+
+// ============================================================================
+// OS EVOLUTION TYPES (Phase 13A)
+// ============================================================================
+
+export type EvolutionEventType =
+  | 'memory'
+  | 'fusion_agreement'
+  | 'fusion_tension'
+  | 'loop_feedback'
+  | 'agent_success'
+  | 'agent_warning'
+  | 'user_override'
+  | 'sentiment_shift'
+
+export interface EmotionalBias {
+  hope: number
+  doubt: number
+  clarity: number
+  pride: number
+  fear: number
+}
+
+export interface EvolvedOSProfile {
+  id: string
+  userId: string
+  campaignId?: string | null
+  os: ThemeId
+
+  // Personality parameters (0-1 scale)
+  confidenceLevel: number
+  verbosity: number
+  riskTolerance: number
+  empathyLevel: number
+
+  // Emotional bias weights (sum to 1.0)
+  emotionalBias: EmotionalBias
+
+  // DAW-specific: tempo preference (60-180 bpm)
+  tempoPreference?: number
+
+  // Historical drift
+  driftHistory: Array<{
+    timestamp: string
+    delta: Record<string, number>
+    reasoning: string
+  }>
+
+  updatedAt: string
+  createdAt: string
+}
+
+export interface OSEvolutionEvent {
+  id: string
+  userId: string
+  campaignId?: string | null
+  os: ThemeId
+  eventType: EvolutionEventType
+  delta: Record<string, unknown>
+  reasoning: string
+  sourceEntityType?: string
+  sourceEntityId?: string
+  createdAt: string
+}
+
+export interface EvolutionState {
+  profiles: EvolvedOSProfile[]
+  events: OSEvolutionEvent[]
+  isLoadingProfiles: boolean
+  lastEvolutionEventAt: string | null
+}

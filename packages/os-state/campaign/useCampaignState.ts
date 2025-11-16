@@ -16,6 +16,8 @@ import { createFusionSlice } from './slices/fusionSlice'
 import type { FusionSliceActions } from './slices/fusionSlice'
 import { createMemorySlice } from './slices/memorySlice'
 import type { MemorySliceActions } from './slices/memorySlice'
+import { createEvolutionSlice } from './slices/evolutionSlice'
+import type { EvolutionSliceActions } from './slices/evolutionSlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -36,6 +38,7 @@ export type CampaignState = TimelineSlice &
   LoopSliceActions &
   FusionSliceActions &
   MemorySliceActions &
+  EvolutionSliceActions &
   MetaSlice
 
 /**
@@ -50,6 +53,7 @@ export const useCampaignState = create<CampaignState>()(
       ...createLoopSlice(...args),
       ...createFusionSlice(...args),
       ...createMemorySlice(...args),
+      ...createEvolutionSlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -75,6 +79,10 @@ export const useCampaignState = create<CampaignState>()(
         memory: {
           ...state.memory,
           isLoadingMemories: false, // Don't persist loading state
+        },
+        evolution: {
+          ...state.evolution,
+          isLoadingProfiles: false, // Don't persist loading state
         },
       }),
     }
@@ -208,6 +216,28 @@ export const useMemory = () => {
   }))
 
   return { memory, ...actions }
+}
+
+/**
+ * Helper hook to get evolution state and actions
+ */
+export const useEvolution = () => {
+  const evolution = useCampaignState((state) => state.evolution)
+  const actions = useCampaignState((state) => ({
+    loadEvolutionProfiles: state.loadEvolutionProfiles,
+    getOSProfile: state.getOSProfile,
+    setEvolutionProfiles: state.setEvolutionProfiles,
+    resetEvolution: state.resetEvolution,
+    applyEvolutionDelta: state.applyEvolutionDelta,
+    addEvolutionEvent: state.addEvolutionEvent,
+    setEvolutionEvents: state.setEvolutionEvents,
+    setEvolutionLoading: state.setEvolutionLoading,
+    setLastEvolutionEventAt: state.setLastEvolutionEventAt,
+    getEvolutionEvents: state.getEvolutionEvents,
+    hasSignificantDrift: state.hasSignificantDrift,
+  }))
+
+  return { evolution, ...actions }
 }
 
 /**
