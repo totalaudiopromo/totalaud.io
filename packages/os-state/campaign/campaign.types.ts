@@ -433,3 +433,49 @@ export interface EvolutionState {
   isLoadingProfiles: boolean
   lastEvolutionEventAt: string | null
 }
+
+// ============================================================================
+// OS SOCIAL GRAPH TYPES (Phase 14)
+// ============================================================================
+
+export interface OSRelationship {
+  id: string
+  userId: string
+  campaignId?: string | null
+  osA: ThemeId
+  osB: ThemeId
+  trust: number // -1 to 1
+  synergy: number // 0 to 1
+  tension: number // 0 to 1
+  influenceBias: number // -1 to 1
+  dataPoints: number
+  updatedAt: string
+  createdAt: string
+}
+
+export interface OSIdentitySnapshot {
+  id: string
+  userId: string
+  campaignId?: string | null
+  takenAt: string
+  leaderOS?: ThemeId | null
+  supportOS: ThemeId[]
+  rebelOS: ThemeId[]
+  cohesionScore: number // 0-1
+  notes: Record<string, unknown>
+  createdAt: string
+}
+
+export interface SocialGraphState {
+  relationships: OSRelationship[]
+  snapshots: OSIdentitySnapshot[]
+  isLoadingSocialGraph: boolean
+  lastSnapshotAt: string | null
+}
+
+export interface SocialSummary {
+  leaderOS?: ThemeId
+  supportOS: ThemeId[]
+  rebelOS: ThemeId[]
+  cohesionScore: number
+}

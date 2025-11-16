@@ -18,6 +18,7 @@ import {
   type OSType,
 } from '../personalities/osPersonalities'
 import { processEvolutionEvent } from '../evolution/evolutionEngine'
+import { applyBatchSocialEvents, type SocialEvent } from '../social/relationshipEngine'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface FusionFocus {
@@ -401,6 +402,85 @@ export function createFusionCardFromOutput(
     pointsOfTension: output.pointsOfTension,
     recommendedNextMoves,
     sessionId,
+  }
+}
+
+/**
+ * Trigger social graph updates based on fusion consensus/tension
+ * Phase 14: Updates OS relationships
+ */
+export async function triggerFusionSocialEvents({
+  output,
+  userId,
+  campaignId,
+  osContributors,
+  supabase,
+}: {
+  output: FusionOutput
+  userId: string
+  campaignId?: string
+  osContributors: ThemeId[]
+  supabase: SupabaseClient
+}): Promise<void> {
+  const socialEvents: SocialEvent[] = []
+
+  // Determine which OSs share sentiment (agreement)
+  const sentimentGroups = new Map<string, ThemeId[]>()
+
+  for (const [os, contrib] of Object.entries(output.perOS)) {
+    const sentiment = contrib.sentiment || 'neutral'
+    if (!sentimentGroups.has(sentiment)) {
+      sentimentGroups.set(sentiment, [])
+    }
+    sentimentGroups.get(sentiment)!.push(os as ThemeId)
+  }
+
+  // Generate pairwise events for OSs with same sentiment (agreement)
+  for (const [sentiment, oses] of sentimentGroups.entries()) {
+    if (oses.length >= 2) {
+      // Create pairwise agreement events
+      for (let i = 0; i < oses.length; i++) {
+        for (let j = i + 1; j < oses.length; j++) {
+          socialEvents.push({
+            userId,
+            campaignId,
+            osA: oses[i],
+            osB: oses[j],
+            type: 'fusion_agreement',
+            sentiment: sentiment as any,
+            weight: 1,
+          })
+        }
+      }
+    }
+  }
+
+  // Generate tension events for OSs with conflicting sentiments
+  const positiveOSs =
+    sentimentGroups.get('positive') || sentimentGroups.get('neutral') || []
+  const negativeOSs =
+    sentimentGroups.get('critical') || sentimentGroups.get('cautious') || []
+
+  if (positiveOSs.length > 0 && negativeOSs.length > 0) {
+    for (const posOS of positiveOSs) {
+      for (const negOS of negativeOSs) {
+        socialEvents.push({
+          userId,
+          campaignId,
+          osA: posOS,
+          osB: negOS,
+          type: 'fusion_tension',
+          sentiment: 'critical',
+          weight: 0.8, // Slightly lower weight for cross-sentiment tension
+        })
+      }
+    }
+  }
+
+  // Apply all social events
+  if (socialEvents.length > 0) {
+    await applyBatchSocialEvents(supabase, socialEvents)
+    console.log(`[FusionSocial] Applied ${socialEvents.length} social events`)
   }
 }
 

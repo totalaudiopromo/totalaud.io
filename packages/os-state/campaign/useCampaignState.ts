@@ -18,6 +18,8 @@ import { createMemorySlice } from './slices/memorySlice'
 import type { MemorySliceActions } from './slices/memorySlice'
 import { createEvolutionSlice } from './slices/evolutionSlice'
 import type { EvolutionSliceActions } from './slices/evolutionSlice'
+import { createSocialGraphSlice } from './slices/socialGraphSlice'
+import type { SocialGraphSliceActions } from './slices/socialGraphSlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -39,6 +41,7 @@ export type CampaignState = TimelineSlice &
   FusionSliceActions &
   MemorySliceActions &
   EvolutionSliceActions &
+  SocialGraphSliceActions &
   MetaSlice
 
 /**
@@ -54,6 +57,7 @@ export const useCampaignState = create<CampaignState>()(
       ...createFusionSlice(...args),
       ...createMemorySlice(...args),
       ...createEvolutionSlice(...args),
+      ...createSocialGraphSlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -83,6 +87,10 @@ export const useCampaignState = create<CampaignState>()(
         evolution: {
           ...state.evolution,
           isLoadingProfiles: false, // Don't persist loading state
+        },
+        socialGraph: {
+          ...state.socialGraph,
+          isLoadingSocialGraph: false, // Don't persist loading state
         },
       }),
     }
@@ -238,6 +246,28 @@ export const useEvolution = () => {
   }))
 
   return { evolution, ...actions }
+}
+
+/**
+ * Helper hook to get social graph state and actions
+ */
+export const useSocialGraph = () => {
+  const socialGraph = useCampaignState((state) => state.socialGraph)
+  const actions = useCampaignState((state) => ({
+    setRelationships: state.setRelationships,
+    updateRelationship: state.updateRelationship,
+    getRelationship: state.getRelationship,
+    getTrustMatrix: state.getTrustMatrix,
+    setSnapshots: state.setSnapshots,
+    addSnapshot: state.addSnapshot,
+    getLatestSnapshot: state.getLatestSnapshot,
+    setSocialGraphLoading: state.setSocialGraphLoading,
+    setLastSnapshotAt: state.setLastSnapshotAt,
+    getCohesionScore: state.getCohesionScore,
+    getSocialSummary: state.getSocialSummary,
+  }))
+
+  return { socialGraph, ...actions }
 }
 
 /**
