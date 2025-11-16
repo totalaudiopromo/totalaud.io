@@ -11,7 +11,10 @@
     "./dialogue": "./dialogue/index.ts",
     "./loops": "./loops/index.ts",
     "./fusion": "./fusion/crossOsReasoning.ts",
-    "./personalities": "./personalities/osPersonalities.ts"
+    "./personalities": "./personalities/osPersonalities.ts",
+    "./memory": "./memory/index.ts",
+    "./memory/memoryWriter": "./memory/memoryWriter.ts",
+    "./memory/memoryReader": "./memory/memoryReader.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

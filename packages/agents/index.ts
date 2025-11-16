@@ -11,3 +11,6 @@ export * from './behaviours'
 
 // Dialogue exports
 export * from './dialogue/agent-dialogue'
+
+// Memory exports
+export * from './memory'

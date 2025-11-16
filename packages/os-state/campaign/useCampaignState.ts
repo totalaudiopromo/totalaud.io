@@ -14,6 +14,8 @@ import { createLoopSlice } from './slices/loopSlice'
 import type { LoopSliceActions } from './slices/loopSlice'
 import { createFusionSlice } from './slices/fusionSlice'
 import type { FusionSliceActions } from './slices/fusionSlice'
+import { createMemorySlice } from './slices/memorySlice'
+import type { MemorySliceActions } from './slices/memorySlice'
 import { createMetaSlice } from './slices/metaSlice'
 import type { MetaSlice } from './slices/metaSlice'
 
@@ -33,6 +35,7 @@ export type CampaignState = TimelineSlice &
   CardSliceActions &
   LoopSliceActions &
   FusionSliceActions &
+  MemorySliceActions &
   MetaSlice
 
 /**
@@ -46,6 +49,7 @@ export const useCampaignState = create<CampaignState>()(
       ...createCardSlice(...args),
       ...createLoopSlice(...args),
       ...createFusionSlice(...args),
+      ...createMemorySlice(...args),
       ...createMetaSlice(...args),
     }),
     {
@@ -67,6 +71,10 @@ export const useCampaignState = create<CampaignState>()(
         fusion: {
           ...state.fusion,
           isLoading: false, // Don't persist loading state
+        },
+        memory: {
+          ...state.memory,
+          isLoadingMemories: false, // Don't persist loading state
         },
       }),
     }
@@ -172,6 +180,34 @@ export const useFusion = () => {
   }))
 
   return { fusion, ...actions }
+}
+
+/**
+ * Helper hook to get memory state and actions
+ */
+export const useMemory = () => {
+  const memory = useCampaignState((state) => state.memory)
+  const actions = useCampaignState((state) => ({
+    setMemories: state.setMemories,
+    addMemory: state.addMemory,
+    updateMemory: state.updateMemory,
+    removeMemory: state.removeMemory,
+    addMemoryLink: state.addMemoryLink,
+    setMemoryLinks: state.setMemoryLinks,
+    removeMemoryLink: state.removeMemoryLink,
+    setMemoryLoading: state.setMemoryLoading,
+    loadMemoriesForCampaign: state.loadMemoriesForCampaign,
+    loadMemoriesForEntity: state.loadMemoriesForEntity,
+    clearMemoryState: state.clearMemoryState,
+    getMemory: state.getMemory,
+    getMemoriesByOS: state.getMemoriesByOS,
+    getMemoriesByAgent: state.getMemoriesByAgent,
+    getMemoriesForEntity: state.getMemoriesForEntity,
+    getRecentMemories: state.getRecentMemories,
+    getImportantMemories: state.getImportantMemories,
+  }))
+
+  return { memory, ...actions }
 }
 
 /**

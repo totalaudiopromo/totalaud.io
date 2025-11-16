@@ -6,6 +6,10 @@
 
 export type ThemeId = 'ascii' | 'xp' | 'aqua' | 'daw' | 'analogue'
 
+export type AgentName = 'scout' | 'coach' | 'tracker' | 'insight'
+
+export type LoopType = 'improvement' | 'exploration' | 'healthcheck' | 'emotion' | 'prediction'
+
 export type CardType =
   | 'hope'
   | 'doubt'
@@ -90,8 +94,8 @@ export interface LoopState {
 export interface AgentLoop {
   id: string
   userId: string
-  agent: 'scout' | 'coach' | 'tracker' | 'insight'
-  loopType: 'improvement' | 'exploration' | 'healthcheck' | 'emotion' | 'prediction'
+  agent: AgentName
+  loopType: LoopType
   interval: '5m' | '15m' | '1h' | 'daily'
   payload: Record<string, unknown>
   lastRun: string | null
@@ -322,4 +326,37 @@ export interface MixtapeData {
   }
   exportedAt: Date
   exportConfig: MixtapeExportConfig
+}
+
+// ============================================================================
+// MEMORY SYSTEM TYPES (Phase 12A)
+// ============================================================================
+
+export type MemoryType = 'fact' | 'pattern' | 'reflection' | 'emotion' | 'warning'
+
+export interface OSMemory {
+  id: string
+  userId: string
+  campaignId?: string | null // Global vs per-campaign
+  os: ThemeId
+  agent?: AgentName | null
+  memoryType: MemoryType
+  title: string
+  content: Record<string, unknown>
+  importance: number // 1-5
+  createdAt: string
+}
+
+export interface MemoryLink {
+  id: string
+  memoryId: string
+  entityType: 'clip' | 'card' | 'loop' | 'campaign' | 'fusion_session'
+  entityId: string
+  createdAt: string
+}
+
+export interface MemoryState {
+  memories: OSMemory[]
+  memoryLinks: MemoryLink[]
+  isLoadingMemories: boolean
 }
