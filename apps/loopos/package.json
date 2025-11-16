@@ -18,6 +18,7 @@
     "@total-audio/loopos-db": "workspace:*",
     "@total-audio/schemas": "workspace:*",
     "@total-audio/ui": "workspace:*",
+    "date-fns": "^3.0.0",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.546.0",
     "nanoid": "^5.1.6",

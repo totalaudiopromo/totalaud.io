@@ -1,10 +1,10 @@
 # LoopOS — Creative Campaign Operating System
 
-**Status**: Phase 7 Implementation (In Progress)
+**Status**: Phase 8 Complete - Real-Time Collaboration
 **Version**: 1.0.0-alpha
 **Port**: 3001 (separate from aud-web on 3000)
 
-LoopOS is a standalone creative campaign companion for music promotion, powered by AI. It provides a comprehensive workspace for planning, executing, and exporting music promotion campaigns.
+LoopOS is a standalone creative campaign companion for music promotion, powered by AI. It provides a comprehensive workspace for planning, executing, and exporting music promotion campaigns with **real-time collaboration** features.
 
 ---
 
@@ -13,8 +13,12 @@ LoopOS is a standalone creative campaign companion for music promotion, powered 
 LoopOS is a self-contained Next.js 15 application within the totalaud.io monorepo that provides:
 
 - **Multi-workspace collaboration** with role-based access (owner, editor, viewer)
+- **Real-time presence** - See who's online and where they are
+- **Live cursors** - View collaborators' cursor movements on Timeline and Designer
+- **Collaborative editing** - Real-time node synchronisation across users
 - **Timeline canvas** for visual campaign planning
 - **AI-powered tools** (Coach, Designer Mode)
+- **Shared AI scenes** - Collaborate on visual strategy generation
 - **Creative Packs** library with templates and frameworks
 - **Playbook** for strategic guidance
 - **Journal** for reflections and voice memos
@@ -35,7 +39,8 @@ totalaud.io/
 │   └── loopos-db/              # Database client and helpers
 └── supabase/
     └── migrations/
-        └── 20251115000000_loopos_phase_7_setup.sql
+        ├── 20251115000000_loopos_phase_7_setup.sql
+        └── 20251116000000_loopos_phase_8_realtime_collab.sql
 ```
 
 ### Tech Stack
@@ -166,8 +171,19 @@ LoopOS runs on `http://localhost:3001` (separate from aud-web on 3000).
 
 ## 📱 Features
 
-### ✅ Implemented (Phase 7a)
+### ✅ Implemented
 
+**Phase 8: Real-Time Collaboration**
+- [x] Workspace presence tracking (who's online, where they are)
+- [x] Live cursors (Timeline and Designer Mode)
+- [x] Collaborative node editing (real-time synchronisation)
+- [x] Designer scene collaboration (shared AI-generated scenes)
+- [x] Presence UI components (PresenceBar, WorkspaceParticipants)
+- [x] Activity indicators (who's editing what)
+- [x] Conflict resolution (version-based, last-write-wins)
+- [x] Session hooks (infrastructure for future WebRTC/voice)
+
+**Phase 7: Foundation**
 - [x] Supabase passwordless authentication (magic links)
 - [x] Multi-workspace support
 - [x] Workspace creation, switching, and management
@@ -178,36 +194,27 @@ LoopOS runs on `http://localhost:3001` (separate from aud-web on 3000).
 - [x] Dashboard with auth guards
 - [x] PWA manifest and service worker
 - [x] Environment variable validation
+- [x] Timeline canvas with React Flow
+- [x] Node creation and management
+- [x] Coach AI interface
+- [x] Designer Mode (AI scene generation)
+- [x] TAP integrations (Console, Audio Intel, Tracker, Pitch)
 
-### 🚧 In Progress
+### 📋 Future Enhancements
 
-- [ ] Timeline canvas with React Flow
-- [ ] Node creation and management
-- [ ] Packs library
-- [ ] Playbook chapters
-- [ ] Coach AI interface
+**Voice & Video Collaboration (Future)**
+- [ ] WebRTC voice channels
+- [ ] Video presence
+- [ ] Screen sharing
+- [ ] Session recording
+
+**Additional Features**
+- [ ] Packs library (creative templates)
+- [ ] Playbook chapters (strategic guidance)
 - [ ] Journal with voice memos
-- [ ] Export Centre
-
-### 📋 Planned (Phase 7b-7d)
-
-**Track 2: TAP Integration**
-- [ ] Console export (tasks, creative refs)
-- [ ] Audio Intel enrichment (audience insights)
-- [ ] Tracker submission helpers
-- [ ] Pitch generation (press releases, EPKs)
-
-**Track 3: AI Designer Mode**
-- [ ] VisionOS-inspired visual engine
-- [ ] AI scene generation
-- [ ] Strategy visualisation
-- [ ] Iterative regeneration
-
-**Track 4: iOS/PWA**
+- [ ] Export Centre (campaign materials)
 - [ ] Touch gestures (pinch, drag, long-press)
-- [ ] Offline mode with sync queue
-- [ ] Install prompts
-- [ ] Haptic feedback
+- [ ] Enhanced offline mode with sync queue
 
 ---
 
@@ -334,7 +341,9 @@ vercel deploy
 
 ## 📚 Documentation
 
+- [PHASE_8_REALTIME_COLLAB.md](./docs/PHASE_8_REALTIME_COLLAB.md) - **Real-time collaboration** (Latest)
 - [PHASE_7_IMPLEMENTATION.md](./docs/PHASE_7_IMPLEMENTATION.md) - Complete implementation guide
+- [PHASE_7_COMPLETE_SUMMARY.md](./docs/PHASE_7_COMPLETE_SUMMARY.md) - Phase 7 summary
 - [API.md](./docs/API.md) - API documentation (coming soon)
 - [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Contribution guidelines (coming soon)
 
@@ -363,10 +372,14 @@ Part of the totalaud.io experimental project.
 
 ## 🧑‍💻 Development Status
 
-**Current Phase**: Phase 7a Complete (Auth + Workspaces + RLS)
-**Next Phase**: Phase 7b (TAP Integration Layer)
+**Current Phase**: Phase 8 Complete - Real-Time Collaboration
+**Completed Phases**:
+- Phase 7: Foundation (Auth, Workspaces, Timeline, Designer, TAP Integration)
+- Phase 8: Real-Time Collaboration (Presence, Cursors, Live Sync)
+
+**Next Phase**: Additional features (Packs, Playbook, Journal, Export Centre)
 **Timeline**: Iterative development, no fixed deadline
 
 ---
 
-**Last Updated**: 2025-11-15
+**Last Updated**: 2025-11-16
