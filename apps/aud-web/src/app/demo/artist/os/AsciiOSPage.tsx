@@ -8,6 +8,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
+import { useOptionalAmbient } from '@/components/ambient/AmbientEngineProvider'
 import { Terminal } from 'lucide-react'
 import { colours, spacing } from '@/styles/tokens'
 import { duration, easing, prefersReducedMotion } from '@/styles/motion'
@@ -20,6 +21,7 @@ const SCANLINE_OPACITY = 0.03
 
 export function AsciiOSPage() {
   const director = useDirector()
+  const ambient = useOptionalAmbient()
   const [inputValue, setInputValue] = useState('')
   const [output, setOutput] = useState<string[]>([
     '> aud-os v2.0.0',
@@ -41,6 +43,11 @@ export function AsciiOSPage() {
   useEffect(() => {
     director.engine.setCallbacks({
       onTypeAscii: async (text: string, durationMs: number) => {
+        // Play type sound at start
+        if (ambient) {
+          ambient.playEffect('type')
+        }
+
         setIsTyping(true)
         setInputValue('')
 
@@ -72,7 +79,7 @@ export function AsciiOSPage() {
         handleSubmit()
       },
     })
-  }, [director])
+  }, [director, ambient])
 
   const handleSubmit = () => {
     if (!inputValue.trim()) return

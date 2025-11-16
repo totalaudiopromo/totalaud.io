@@ -8,12 +8,14 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
+import { useOptionalAmbient } from '@/components/ambient/AmbientEngineProvider'
 import { Play, Pause } from 'lucide-react'
 import { spacing, radii, colours } from '@/styles/tokens'
 import { duration, easing, prefersReducedMotion } from '@/styles/motion'
 
 export function LoopOSPage() {
   const director = useDirector()
+  const ambient = useOptionalAmbient()
   const [isPlaying, setIsPlaying] = useState(false)
   const [playheadPosition, setPlayheadPosition] = useState(0)
   const [cameraTarget, setCameraTarget] = useState<'timeline' | 'inspector' | 'minimap'>(
@@ -31,6 +33,11 @@ export function LoopOSPage() {
   useEffect(() => {
     director.engine.setCallbacks({
       onPanCamera: async (target: string, durationMs: number) => {
+        // Play camera pan sound
+        if (ambient) {
+          ambient.playEffect('camera-pan')
+        }
+
         setCameraTarget(target as any)
         return new Promise((resolve) => setTimeout(resolve, durationMs))
       },
@@ -41,6 +48,11 @@ export function LoopOSPage() {
         // Simulate playback
         const interval = window.setInterval(() => {
           setPlayheadPosition((prev) => Math.min(prev + 0.5, 100))
+
+          // Play playhead tick occasionally (every 10th update)
+          if (Math.random() > 0.9 && ambient) {
+            ambient.playEffect('playhead')
+          }
         }, 50)
 
         playIntervalRef.current = interval
@@ -70,7 +82,7 @@ export function LoopOSPage() {
         clearInterval(playIntervalRef.current)
       }
     }
-  }, [director])
+  }, [director, ambient])
 
   // Calculate camera transform
   const getCameraTransform = () => {

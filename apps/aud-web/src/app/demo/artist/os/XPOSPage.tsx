@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
+import { useOptionalAmbient } from '@/components/ambient/AmbientEngineProvider'
 import { Activity, CheckCircle2, Clock } from 'lucide-react'
 import { spacing, radii, shadows } from '@/styles/tokens'
 import { duration, easing, prefersReducedMotion } from '@/styles/motion'
@@ -74,6 +75,7 @@ const DEMO_RUNS: AgentRun[] = [
 
 export function XPOSPage() {
   const director = useDirector()
+  const ambient = useOptionalAmbient()
   const [runs, setRuns] = useState<AgentRun[]>(DEMO_RUNS)
   const [activeRunId, setActiveRunId] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -88,6 +90,11 @@ export function XPOSPage() {
   useEffect(() => {
     director.engine.setCallbacks({
       onFocusXpAgentRun: () => {
+        // Play highlight sound
+        if (ambient) {
+          ambient.playEffect('highlight')
+        }
+
         // Find last completed run
         const lastCompleted = runs.find((run) => run.status === 'done')
         if (lastCompleted) {
@@ -95,7 +102,7 @@ export function XPOSPage() {
         }
       },
     })
-  }, [director, runs])
+  }, [director, ambient, runs])
 
   const activeRun = runs.find((run) => run.id === activeRunId)
 

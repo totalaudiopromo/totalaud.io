@@ -44,6 +44,9 @@ export interface DirectorCallbacks {
 
   // TAP Integration (Phase 28C)
   onTriggerTapExport?: (payload: any, durationMs: number) => Promise<void>
+
+  // Audio (Phase 29 Pass 5)
+  onPlayEffect?: (effectName: string) => void
 }
 
 export class DirectorEngine {

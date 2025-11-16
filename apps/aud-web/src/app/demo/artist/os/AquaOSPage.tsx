@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
+import { useOptionalAmbient } from '@/components/ambient/AmbientEngineProvider'
 import { Sparkles, Send } from 'lucide-react'
 import { spacing, radii, colours } from '@/styles/tokens'
 import { duration, easing, prefersReducedMotion } from '@/styles/motion'
@@ -48,6 +49,7 @@ What would you like to explore today?`,
 
 export function AquaOSPage() {
   const director = useDirector()
+  const ambient = useOptionalAmbient()
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
   const [inputValue, setInputValue] = useState('')
   const [isThinking, setIsThinking] = useState(false)
@@ -76,6 +78,11 @@ export function AquaOSPage() {
       content:
         'I want to pitch the "Midnight Signals" EP to playlist curators. What should I emphasize?',
       timestamp: new Date(),
+    }
+
+    // Play message pop sound
+    if (ambient) {
+      ambient.playEffect('message-pop')
     }
 
     setMessages((prev) => [...prev, userMessage])
@@ -108,6 +115,11 @@ export function AquaOSPage() {
 
 Would you like me to help draft specific pitch emails for your target playlists?`,
         timestamp: new Date(),
+      }
+
+      // Play message pop sound
+      if (ambient) {
+        ambient.playEffect('message-pop')
       }
 
       setMessages((prev) => [...prev, assistantMessage])

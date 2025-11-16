@@ -9,6 +9,7 @@
 import { useDemo } from './DemoOrchestrator'
 import { useOptionalDirector } from './director/DirectorProvider'
 import { useOptionalAmbient } from '../ambient/AmbientEngineProvider'
+import { MuteToggle } from './MuteToggle'
 import { Play, Pause, SkipForward, Square, ChevronLeft, ChevronRight, RotateCcw, Home } from 'lucide-react'
 import Link from 'next/link'
 import { colours, radii, spacing, shadows } from '@/styles/tokens'
@@ -354,6 +355,11 @@ export function DemoOverlay() {
                       >
                         ✓ Complete
                       </span>
+
+                      {/* Mute toggle */}
+                      {ambient && (
+                        <MuteToggle isMuted={ambient.isMuted} onToggle={ambient.toggleMute} />
+                      )}
                     </>
                   ) : (
                     // Active playback controls
@@ -458,6 +464,11 @@ export function DemoOverlay() {
                       >
                         {director.currentIndex + 1} / {director.totalActions} actions
                       </span>
+
+                      {/* Mute toggle */}
+                      {ambient && (
+                        <MuteToggle isMuted={ambient.isMuted} onToggle={ambient.toggleMute} />
+                      )}
                     </>
                   )}
                 </div>

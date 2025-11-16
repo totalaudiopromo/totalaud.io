@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDirector } from '@/components/demo/director/DirectorProvider'
+import { useOptionalAmbient } from '@/components/ambient/AmbientEngineProvider'
 import { BookOpen, Sparkles } from 'lucide-react'
 import { spacing, radii, shadows, colours } from '@/styles/tokens'
 import { duration, easing, prefersReducedMotion } from '@/styles/motion'
@@ -55,6 +56,7 @@ const DEMO_CARDS: Card[] = [
 
 export function AnalogueOSPage() {
   const director = useDirector()
+  const ambient = useOptionalAmbient()
   const [highlightedCardTitle, setHighlightedCardTitle] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const shouldAnimate = !prefersReducedMotion()
@@ -68,6 +70,11 @@ export function AnalogueOSPage() {
   useEffect(() => {
     director.engine.setCallbacks({
       onHighlightAnalogueCard: (title: string, durationMs: number) => {
+        // Play highlight sound
+        if (ambient) {
+          ambient.playEffect('highlight')
+        }
+
         setHighlightedCardTitle(title)
 
         // Clear highlight after duration
@@ -76,7 +83,7 @@ export function AnalogueOSPage() {
         }, durationMs)
       },
     })
-  }, [director])
+  }, [director, ambient])
 
   return (
     <div
