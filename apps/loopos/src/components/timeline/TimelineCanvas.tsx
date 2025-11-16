@@ -14,6 +14,8 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { useWorkspace } from '@/hooks/useWorkspace'
+import { useAuth } from '@/hooks/useAuth'
+import { useRealtimeNodes } from '@/hooks/useRealtimeNodes'
 import { nodesDb, type Node, type NodeType } from '@total-audio/loopos-db'
 import { toast } from 'sonner'
 import { CampaignNode } from './CampaignNode'
@@ -28,11 +30,43 @@ interface TimelineCanvasProps {
 }
 
 export function TimelineCanvas({ workspaceId }: TimelineCanvasProps) {
+  const { user } = useAuth()
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [loading, setLoading] = useState(true)
   const [showCreator, setShowCreator] = useState(false)
   const [creatorPosition, setCreatorPosition] = useState({ x: 0, y: 0 })
+
+  // Convert DB node to Flow node
+  const dbNodeToFlowNode = (node: Node): FlowNode => ({
+    id: node.id,
+    type: 'campaign',
+    position: { x: node.position_x, y: node.position_y },
+    data: {
+      title: node.title,
+      content: node.content,
+      colour: node.colour,
+      nodeType: node.type,
+      metadata: node.metadata,
+    },
+  })
+
+  // Realtime node synchronisation
+  useRealtimeNodes(workspaceId, user?.id || null, {
+    onCreate: (node) => {
+      const flowNode = dbNodeToFlowNode(node)
+      setNodes((nds) => [...nds, flowNode])
+    },
+    onUpdate: (node, oldNode) => {
+      const flowNode = dbNodeToFlowNode(node)
+      setNodes((nds) =>
+        nds.map((n) => (n.id === node.id ? flowNode : n))
+      )
+    },
+    onDelete: (nodeId) => {
+      setNodes((nds) => nds.filter((n) => n.id !== nodeId))
+    },
+  })
 
   // Load nodes from database
   useEffect(() => {
@@ -45,18 +79,7 @@ export function TimelineCanvas({ workspaceId }: TimelineCanvasProps) {
       const dbNodes = await nodesDb.list(workspaceId)
 
       // Convert DB nodes to React Flow nodes
-      const flowNodes: FlowNode[] = dbNodes.map((node) => ({
-        id: node.id,
-        type: 'campaign',
-        position: { x: node.position_x, y: node.position_y },
-        data: {
-          title: node.title,
-          content: node.content,
-          colour: node.colour,
-          nodeType: node.type,
-          metadata: node.metadata,
-        },
-      }))
+      const flowNodes: FlowNode[] = dbNodes.map(dbNodeToFlowNode)
 
       setNodes(flowNodes)
     } catch (error) {
@@ -105,28 +128,16 @@ export function TimelineCanvas({ workspaceId }: TimelineCanvasProps) {
     content: string
     colour: string
   }) => {
+    if (!user) return
+
     try {
-      const node = await nodesDb.create(workspaceId, 'current-user-id', {
+      const node = await nodesDb.create(workspaceId, user.id, {
         ...data,
         position_x: creatorPosition.x,
         position_y: creatorPosition.y,
       })
 
-      // Add to canvas
-      const newFlowNode: FlowNode = {
-        id: node.id,
-        type: 'campaign',
-        position: { x: node.position_x, y: node.position_y },
-        data: {
-          title: node.title,
-          content: node.content,
-          colour: node.colour,
-          nodeType: node.type,
-          metadata: node.metadata,
-        },
-      }
-
-      setNodes((nds) => [...nds, newFlowNode])
+      // Realtime hook will handle adding to canvas
       setShowCreator(false)
       toast.success('Node created!')
     } catch (error) {

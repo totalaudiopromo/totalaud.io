@@ -4,7 +4,11 @@ import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import { useWorkspace } from '@/hooks/useWorkspace'
 import { WorkspaceSwitcher } from './WorkspaceSwitcher'
+import { PresenceBar } from './presence/PresenceBar'
+import { CursorLayer } from './presence/CursorLayer'
+import { WorkspaceParticipants } from './presence/WorkspaceParticipants'
 import {
   LayoutDashboard,
   Package,
@@ -36,6 +40,7 @@ const navigation = [
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname()
   const { user } = useAuth()
+  const { currentWorkspace } = useWorkspace()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
@@ -45,12 +50,23 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Cursor Layer (Global) */}
+      {currentWorkspace && user && (
+        <CursorLayer workspaceId={currentWorkspace.id} userId={user.id} />
+      )}
+
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col h-full border-r border-border bg-background">
-          {/* Logo */}
-          <div className="flex h-16 shrink-0 items-centre px-6 border-b border-border">
+          {/* Logo + Presence */}
+          <div className="flex h-16 shrink-0 items-centre justify-between px-6 border-b border-border">
             <h1 className="text-2xl font-bold text-glow">LoopOS</h1>
+            {currentWorkspace && user && (
+              <WorkspaceParticipants
+                workspaceId={currentWorkspace.id}
+                userId={user.id}
+              />
+            )}
           </div>
 
           {/* Workspace Switcher */}
@@ -117,6 +133,12 @@ export function AppShell({ children }: AppShellProps) {
           <Menu className="h-6 w-6" />
         </button>
         <div className="flex-1 text-sm font-semibold">LoopOS</div>
+        {currentWorkspace && user && (
+          <WorkspaceParticipants
+            workspaceId={currentWorkspace.id}
+            userId={user.id}
+          />
+        )}
       </div>
 
       {/* Mobile Menu */}
