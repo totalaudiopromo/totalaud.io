@@ -10,6 +10,7 @@ import { agentRunner } from '../runtime/agent-runner'
 import { agentLogger } from '../runtime/agent-logger'
 import { createAgentContext } from '../runtime/agent-context'
 import type { CampaignMeta, TimelineState, CardState, ThemeId } from '@totalaud/os-state/campaign'
+import { processEvolutionEvent } from '../evolution/evolutionEngine'
 
 export class LoopEngine {
   private loops: Map<string, AgentLoop> = new Map()
@@ -199,6 +200,29 @@ export class LoopEngine {
         loop.id,
         { executionTime: event.result.executionTimeMs }
       )
+
+      // Trigger OS Evolution for loop feedback
+      try {
+        const os = context?.currentOS || 'daw' // Default to DAW for loops
+        await processEvolutionEvent(
+          {
+            type: 'loop_feedback',
+            os,
+            meta: {
+              loopStatus: result.success ? 'completed' : 'failed',
+              loopType: loop.loopType,
+              loopId: loop.id,
+              agent: loop.agent,
+            },
+            timestamp: new Date().toISOString(),
+          },
+          loop.userId,
+          undefined // Loops are not campaign-specific in this implementation
+        )
+      } catch (error) {
+        agentLogger.log('loop-engine', 'error', `[LoopEvolution] Failed to trigger evolution: ${error}`)
+        // Continue anyway - loop completed successfully
+      }
 
       return result
     } catch (error) {

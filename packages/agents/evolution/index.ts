@@ -6,3 +6,4 @@
 export * from './evolutionRules'
 export * from './evolutionEngine'
 export * from './evolvedPersonality'
+export * from './evolutionListener'

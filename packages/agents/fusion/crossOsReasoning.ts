@@ -17,6 +17,8 @@ import {
   formatAgentMessage,
   type OSType,
 } from '../personalities/osPersonalities'
+import { processEvolutionEvent } from '../evolution/evolutionEngine'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface FusionFocus {
   type: 'clip' | 'card' | 'campaign'
@@ -399,5 +401,89 @@ export function createFusionCardFromOutput(
     pointsOfTension: output.pointsOfTension,
     recommendedNextMoves,
     sessionId,
+  }
+}
+
+/**
+ * Trigger OS Evolution events based on fusion consensus/tension
+ * Called after fusion reasoning completes
+ */
+export async function triggerFusionEvolution({
+  output,
+  userId,
+  campaignId,
+  osContributors,
+}: {
+  output: FusionOutput
+  userId: string
+  campaignId?: string
+  osContributors: ThemeId[]
+}): Promise<void> {
+  const hasConsensus = output.pointsOfAgreement.length >= 1
+  const hasTension = output.pointsOfTension.length >= 1
+
+  // Determine which OSs are in agreement vs tension
+  const sentimentCounts = new Map<string, { os: ThemeId; sentiment: string }[]>()
+
+  for (const [os, contrib] of Object.entries(output.perOS)) {
+    const sentiment = contrib.sentiment || 'neutral'
+    if (!sentimentCounts.has(sentiment)) {
+      sentimentCounts.set(sentiment, [])
+    }
+    sentimentCounts.get(sentiment)!.push({ os: os as ThemeId, sentiment })
+  }
+
+  // Find majority sentiment
+  let majoritySentiment: string | null = null
+  let maxCount = 0
+  for (const [sentiment, oses] of sentimentCounts.entries()) {
+    if (oses.length > maxCount) {
+      maxCount = oses.length
+      majoritySentiment = sentiment
+    }
+  }
+
+  // Trigger evolution for each OS
+  for (const os of osContributors) {
+    try {
+      const contrib = output.perOS[os]
+      const sentiment = contrib.sentiment || 'neutral'
+      const isInMajority = sentiment === majoritySentiment && maxCount >= 3
+
+      if (hasConsensus && isInMajority) {
+        // This OS agrees with consensus → confidence boost
+        await processEvolutionEvent(
+          {
+            type: 'fusion_agreement',
+            os,
+            meta: {
+              sentiment,
+              agreements: output.pointsOfAgreement.length,
+            },
+            timestamp: new Date().toISOString(),
+          },
+          userId,
+          campaignId
+        )
+      } else if (hasTension && !isInMajority) {
+        // This OS is out of sync → caution increase
+        await processEvolutionEvent(
+          {
+            type: 'fusion_tension',
+            os,
+            meta: {
+              sentiment,
+              tensions: output.pointsOfTension.length,
+            },
+            timestamp: new Date().toISOString(),
+          },
+          userId,
+          campaignId
+        )
+      }
+    } catch (error) {
+      console.error(`[FusionEvolution] Failed to evolve ${os}:`, error)
+      // Continue with other OSs
+    }
   }
 }

@@ -6,6 +6,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ThemeId, OSMemory, MemoryType } from '@totalaud/os-state/campaign'
 import type { AgentName } from '@totalaud/os-state/campaign'
+import { processEvolutionEvent } from '../evolution/evolutionEngine'
 
 export interface WriteAgentMemoryInput {
   supabase: SupabaseClient
@@ -76,6 +77,30 @@ export async function writeAgentMemory(input: WriteAgentMemoryInput): Promise<OS
 
     if (linkError) {
       console.error('Failed to create memory links:', linkError)
+      // Continue anyway - memory was created successfully
+    }
+  }
+
+  // Trigger OS Evolution for high-importance memories (≥3)
+  if (validImportance >= 3) {
+    try {
+      await processEvolutionEvent(
+        {
+          type: 'memory',
+          os,
+          meta: {
+            importance: validImportance,
+            memoryType,
+            title,
+            agent,
+          },
+          timestamp: new Date().toISOString(),
+        },
+        userId,
+        campaignId || undefined
+      )
+    } catch (error) {
+      console.error('[MemoryWriter] Failed to trigger evolution event:', error)
       // Continue anyway - memory was created successfully
     }
   }
