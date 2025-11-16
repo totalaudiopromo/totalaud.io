@@ -14,7 +14,8 @@
     "./personalities": "./personalities/osPersonalities.ts",
     "./memory": "./memory/index.ts",
     "./memory/memoryWriter": "./memory/memoryWriter.ts",
-    "./memory/memoryReader": "./memory/memoryReader.ts"
+    "./memory/memoryReader": "./memory/memoryReader.ts",
+    "./events": "./events/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

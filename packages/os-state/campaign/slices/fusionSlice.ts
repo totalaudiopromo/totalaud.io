@@ -30,6 +30,10 @@ export interface FusionSliceActions {
   // Loading state
   setFusionLoading: (loading: boolean) => void
 
+  // Live fusion state (Phase 12B)
+  setLiveEnabled: (enabled: boolean) => void
+  setLastFusionEventAt: (timestamp: string) => void
+
   // Getters
   getFusionSession: (sessionId: string) => FusionSession | undefined
   getActiveSession: () => FusionSession | null
@@ -42,6 +46,8 @@ const initialFusionState: FusionState = {
   sessions: [],
   messages: [],
   isLoading: false,
+  liveEnabled: false,
+  lastFusionEventAt: null,
 }
 
 export const createFusionSlice: StateCreator<FusionSliceActions> = (set, get) => ({
@@ -169,6 +175,25 @@ export const createFusionSlice: StateCreator<FusionSliceActions> = (set, get) =>
       fusion: {
         ...state.fusion,
         isLoading: loading,
+      },
+    }))
+  },
+
+  // Live fusion state (Phase 12B)
+  setLiveEnabled: (enabled) => {
+    set((state) => ({
+      fusion: {
+        ...state.fusion,
+        liveEnabled: enabled,
+      },
+    }))
+  },
+
+  setLastFusionEventAt: (timestamp) => {
+    set((state) => ({
+      fusion: {
+        ...state.fusion,
+        lastFusionEventAt: timestamp,
       },
     }))
   },

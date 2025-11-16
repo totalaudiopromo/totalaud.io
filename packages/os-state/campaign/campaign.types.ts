@@ -310,6 +310,8 @@ export interface FusionState {
   sessions: FusionSession[]
   messages: FusionMessage[]
   isLoading: boolean
+  liveEnabled: boolean
+  lastFusionEventAt: string | null
 }
 
 export interface MixtapeData {
