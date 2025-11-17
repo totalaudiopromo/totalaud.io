@@ -9,10 +9,10 @@
 
 import { useEffect, useMemo } from 'react'
 import { useCommandPalette } from '@/hooks/palette/useCommandPalette'
+import { useEnhancedSearch } from '@/hooks/palette/useEnhancedSearch'
 import { PaletteInput } from './PaletteInput'
 import { PaletteResults } from './PaletteResults'
 import { getDefaultCommands, getVisibleCommands } from '@/lib/palette/registry'
-import { filterCommands, groupResults } from '@/lib/palette/search'
 import type { SearchResult } from '@/lib/palette/types'
 
 export function CommandPalette() {
@@ -40,14 +40,14 @@ export function CommandPalette() {
     [allCommands, context]
   )
 
-  // Filter and score by query
-  const results = useMemo(
-    () => filterCommands(visibleCommands, query),
-    [visibleCommands, query]
-  )
-
-  // Group results
-  const groups = useMemo(() => groupResults(results), [results])
+  // Enhanced search (combines local commands + API content search)
+  // TODO: Get actual workspace ID from context/auth
+  const { groups, isLoading } = useEnhancedSearch({
+    query,
+    commands: visibleCommands,
+    workspaceId: 'demo-workspace-id', // TODO: Replace with real workspace ID
+    debounceMs: 300,
+  })
 
   // Handle result selection
   function handleSelect(result: SearchResult) {
