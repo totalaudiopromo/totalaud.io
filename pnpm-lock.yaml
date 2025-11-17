@@ -59,6 +59,9 @@ importers:
       '@total-audio/core-agent-executor':
         specifier: workspace:*
         version: link:../../packages/core/agent-executor
+      '@total-audio/core-ai-provider':
+        specifier: workspace:*
+        version: link:../../packages/core/ai-provider
       '@total-audio/core-integrations':
         specifier: workspace:^
         version: link:../../packages/core/integrations

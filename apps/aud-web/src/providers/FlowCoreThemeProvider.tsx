@@ -12,6 +12,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 import { getTheme, type ThemeId } from '@total-audio/core-theme-engine'
 
 export const flowCore = {
@@ -69,8 +70,13 @@ export function FlowCoreThemeProvider({
     .filter(Boolean)
     .join(' ')
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.body.className = composedClassName
+  }, [composedClassName])
+
   return (
-    <body className={composedClassName}>
+    <>
       <style jsx global>{`
         :root {
           color-scheme: dark;
@@ -134,6 +140,6 @@ export function FlowCoreThemeProvider({
         }
       `}</style>
       {children}
-    </body>
+    </>
   )
 }
