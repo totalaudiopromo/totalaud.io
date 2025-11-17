@@ -44,4 +44,14 @@ export {
   exportCreativeScoreMarkdown,
   exportCreativeScoreCSV,
   downloadCreativeScore,
+  exportAdaptiveRewritesJSON,
+  exportAdaptiveSummaryMarkdown,
 } from './creativeScoreExporter'
+
+// Rewriter (Phase 21)
+export type { AdaptiveRewriteEntry, AdaptiveCreativeScore } from './creativeScoreRewriter'
+export {
+  applyAdaptiveRewrites,
+  insertMicroScene,
+  getRewriteSummary,
+} from './creativeScoreRewriter'

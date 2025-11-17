@@ -4,6 +4,10 @@
  */
 
 import type { CreativeScore, CreativeScene } from '../agents/intent/intent.types'
+import type {
+  AdaptiveCreativeScore,
+  AdaptiveRewriteEntry,
+} from '../agents/intent/creativeScoreRewriter'
 
 /**
  * Showreel Script - A visual/audio performance script
@@ -18,6 +22,15 @@ export interface ShowreelScript {
     sourceScoreId: string
     style: string
     arc: string
+  }
+  adaptiveSummary?: {
+    totalRewrites: number
+    sceneExtensions: number
+    sceneCompressions: number
+    osRoleChanges: number
+    cameraIntensityChanges: number
+    durationDrift: number
+    structurePreserved: boolean
   }
 }
 
@@ -56,7 +69,7 @@ export interface ShowreelScene {
 export function buildIntentShowreel(score: CreativeScore): ShowreelScript {
   const scenes = score.scenes.map((scene, i) => buildShowreelScene(scene, i, score))
 
-  return {
+  const script: ShowreelScript = {
     id: `showreel_${score.id}`,
     title: generateShowreelTitle(score),
     duration: score.duration,
@@ -68,6 +81,14 @@ export function buildIntentShowreel(score: CreativeScore): ShowreelScript {
       arc: score.sourceIntent?.arc || 'unknown',
     },
   }
+
+  // Add adaptive summary if this is an adaptive score
+  const adaptiveScore = score as AdaptiveCreativeScore
+  if (adaptiveScore.rewriteHistory && adaptiveScore.rewriteHistory.length > 0) {
+    script.adaptiveSummary = generateAdaptiveSummary(adaptiveScore)
+  }
+
+  return script
 }
 
 /**
@@ -225,6 +246,60 @@ function generateShowreelTitle(score: CreativeScore): string {
   const arc = score.sourceIntent?.arc || 'journey'
 
   return `${style.charAt(0).toUpperCase() + style.slice(1)} ${arc} in ${palette} tones`
+}
+
+/**
+ * Generate adaptive summary from AdaptiveCreativeScore
+ * Phase 21 - Track adaptive changes in showreel
+ */
+function generateAdaptiveSummary(score: AdaptiveCreativeScore): {
+  totalRewrites: number
+  sceneExtensions: number
+  sceneCompressions: number
+  osRoleChanges: number
+  cameraIntensityChanges: number
+  durationDrift: number
+  structurePreserved: boolean
+} {
+  let sceneExtensions = 0
+  let sceneCompressions = 0
+  let osRoleChanges = 0
+  let cameraIntensityChanges = 0
+
+  score.rewriteHistory.forEach((rewrite) => {
+    // Count scene duration changes
+    if (rewrite.affectedProperty === 'duration') {
+      const delta = (rewrite.newValue as number) - (rewrite.oldValue as number)
+      if (delta > 0) {
+        sceneExtensions++
+      } else if (delta < 0) {
+        sceneCompressions++
+      }
+    }
+
+    // Count OS role changes
+    if (rewrite.affectedProperty === 'leadOS') {
+      osRoleChanges++
+    }
+
+    // Count camera/intensity changes (visual or tension)
+    if (
+      rewrite.affectedProperty === 'visualProfile.brightness' ||
+      rewrite.affectedProperty === 'tension'
+    ) {
+      cameraIntensityChanges++
+    }
+  })
+
+  return {
+    totalRewrites: score.rewriteHistory.length,
+    sceneExtensions,
+    sceneCompressions,
+    osRoleChanges,
+    cameraIntensityChanges,
+    durationDrift: score.adaptiveMetadata.durationDrift,
+    structurePreserved: score.adaptiveMetadata.structurePreserved,
+  }
 }
 
 /**
