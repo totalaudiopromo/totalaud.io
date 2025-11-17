@@ -1,6 +1,6 @@
 'use client'
 
-import { isTAPConfigured } from '@/integrations'
+import { isTAPConfigured } from '@/integrations/index'
 import { CheckCircle2, XCircle } from 'lucide-react'
 
 export function TAPStatus() {

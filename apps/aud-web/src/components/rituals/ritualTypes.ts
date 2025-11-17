@@ -9,6 +9,8 @@ export type RitualId =
   | 'micro_promo'
   | 'reflect'
   | 'plan_day'
+  | 'loop_constellation'
+  | 'a_and_r_lens'
 
 export interface Ritual {
   id: RitualId

@@ -62,18 +62,18 @@ export const CampaignNode = memo(({ data }: NodeProps<CampaignNodeData>) => {
         <p className="text-sm text-foreground/80 line-clamp-2 mb-2">{data.content}</p>
       )}
 
-      {data.metadata?.tags && Array.isArray(data.metadata.tags) && (
+      {data.metadata?.tags && Array.isArray(data.metadata.tags) ? (
         <div className="flex flex-wrap gap-1">
           {(data.metadata.tags as string[]).slice(0, 3).map((tag, i) => (
             <span
               key={i}
               className="text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent"
             >
-              {tag}
+              {String(tag)}
             </span>
           ))}
         </div>
-      )}
+      ) : null}
 
       <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
     </div>
