@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
+import { CommandPaletteProvider } from '@/lib/palette/context'
+import { CommandPalette } from '@/components/palette/CommandPalette'
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -69,9 +71,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <FlowCoreThemeProvider bodyClassName={`${geistSans.className} ${geistMono.className}`.trim()}>
-        {children}
-      </FlowCoreThemeProvider>
+      <CommandPaletteProvider>
+        <FlowCoreThemeProvider bodyClassName={`${geistSans.className} ${geistMono.className}`.trim()}>
+          {children}
+          <CommandPalette />
+        </FlowCoreThemeProvider>
+      </CommandPaletteProvider>
     </html>
   )
 }
