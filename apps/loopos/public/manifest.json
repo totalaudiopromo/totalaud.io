@@ -1,0 +1,56 @@
+{
+  "name": "LoopOS - Creative Campaign Operating System",
+  "short_name": "LoopOS",
+  "description": "Your creative campaign companion for music promotion, powered by AI",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0F1113",
+  "theme_color": "#3AA9BE",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["productivity", "business", "music"],
+  "shortcuts": [
+    {
+      "name": "Timeline",
+      "url": "/dashboard",
+      "description": "View your campaign timeline"
+    },
+    {
+      "name": "Coach",
+      "url": "/coach",
+      "description": "Chat with your AI coach"
+    },
+    {
+      "name": "Designer",
+      "url": "/designer",
+      "description": "Open AI Designer Mode"
+    }
+  ]
+}
