@@ -1,0 +1,38 @@
+{
+  "name": "Studio Workflow Launcher",
+  "description": "Opens CIS, sets initial parameters, and triggers inspiration pulse",
+  "version": "1.0",
+  "steps": [
+    {
+      "action": "open_window",
+      "target": "cis",
+      "param": {}
+    },
+    {
+      "delay": 500
+    },
+    {
+      "action": "control_param",
+      "param": {
+        "param": "intensity",
+        "value": 0.7
+      }
+    },
+    {
+      "action": "control_param",
+      "param": {
+        "param": "creativity",
+        "value": 0.8
+      }
+    },
+    {
+      "delay": 300
+    },
+    {
+      "action": "trigger_command",
+      "param": {
+        "command": "inspire"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Hold + Encoder Combo",
+  "description": "Hold pad 0-0 while turning encoder 0 for fine parameter control",
+  "gestureType": "combo",
+  "data": {
+    "inputs": ["pad-0-0", "encoder-0"],
+    "comboInterval": 100,
+    "holdDuration": 400
+  },
+  "action": "adjust_param",
+  "actionParam": {
+    "param": "intensity",
+    "fineTune": true,
+    "scale": 0.1
+  },
+  "feedback": "cyan-pulse"
+}

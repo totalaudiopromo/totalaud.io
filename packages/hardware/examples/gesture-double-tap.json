@@ -1,0 +1,16 @@
+{
+  "name": "Double Tap to Save Snapshot",
+  "description": "Quick double-tap on pad 0-0 to save creative snapshot",
+  "gestureType": "double_tap",
+  "data": {
+    "inputs": ["pad-0-0"],
+    "maxInterval": 200,
+    "minVelocity": 50
+  },
+  "action": "save_snapshot",
+  "actionParam": {
+    "notify": true,
+    "autoName": true
+  },
+  "feedback": "green-blink"
+}

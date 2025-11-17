@@ -1,0 +1,17 @@
+{
+  "sessionId": "uuid-example",
+  "flowScore": 78.5,
+  "breakdown": {
+    "uniqueInputsScore": 30,
+    "gestureScore": 36,
+    "sessionDurationScore": 12.5
+  },
+  "factors": {
+    "uniqueInputs": 15,
+    "gesturesDetected": 12,
+    "sessionDurationMinutes": 25,
+    "actionDiversity": 0.83
+  },
+  "rating": "High Flow State",
+  "description": "Excellent creative session with diverse control usage and natural gesture patterns"
+}

@@ -41,3 +41,26 @@ export { FeedbackEngine, FeedbackPattern } from './feedbackEngine';
 
 // Logger
 export { logger, HCLLogger } from './utils/logger';
+
+// ══════════════════════════════════════════════════════════════════════════
+// PHASE 2 EXPORTS
+// ══════════════════════════════════════════════════════════════════════════
+
+// Gesture Engine
+export { GestureEngine, DetectedGesture, GesturePattern, GestureType } from './gestures/gestureEngine';
+export { GestureRecorder, RecordedGesture } from './gestures/gestureRecorder';
+
+// Script Engine
+export { ScriptEngine, HardwareScript, ScriptStep } from './scripts/scriptEngine';
+
+// Device Grouping
+export { DeviceGroupEngine, DeviceGroup, ConnectedDevice } from './grouping/deviceGroupEngine';
+
+// Performance Mode
+export { PerformanceMode, PerformanceLayout, PerformanceCell, PerformanceLayoutType } from './performance/performanceMode';
+
+// Learn Mode
+export { LearnModeEngine, LearnModeCallback } from './learnMode/learnModeEngine';
+
+// Analytics
+export { UsageTracker, UsageData, HeatmapData } from './analytics/usageTracker';

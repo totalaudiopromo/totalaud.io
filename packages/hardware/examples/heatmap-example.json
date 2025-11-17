@@ -1,0 +1,35 @@
+{
+  "sessionId": "uuid-example",
+  "heatmapData": [
+    {
+      "inputId": "pad-0-0",
+      "usageCount": 145,
+      "avgVelocity": 87.3,
+      "intensity": 1.0
+    },
+    {
+      "inputId": "encoder-0",
+      "usageCount": 98,
+      "avgVelocity": 0,
+      "intensity": 0.68
+    },
+    {
+      "inputId": "pad-0-1",
+      "usageCount": 67,
+      "avgVelocity": 92.1,
+      "intensity": 0.46
+    },
+    {
+      "inputId": "encoder-1",
+      "usageCount": 54,
+      "avgVelocity": 0,
+      "intensity": 0.37
+    }
+  ],
+  "metadata": {
+    "sessionDuration": 1800000,
+    "totalInputs": 364,
+    "uniqueInputs": 15,
+    "gesturesDetected": 12
+  }
+}
