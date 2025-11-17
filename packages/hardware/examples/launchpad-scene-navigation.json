@@ -1,0 +1,87 @@
+{
+  "name": "Launchpad Scene Navigation",
+  "description": "Navigate scenes and trigger microgenre radar with Launchpad",
+  "deviceType": "launchpad",
+  "mappings": [
+    {
+      "inputId": "pad-0-0",
+      "inputType": "pad",
+      "action": "trigger_scene",
+      "param": { "scene": "scene-1" },
+      "feedback": "cyan-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-1",
+      "inputType": "pad",
+      "action": "trigger_scene",
+      "param": { "scene": "scene-2" },
+      "feedback": "cyan-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-2",
+      "inputType": "pad",
+      "action": "trigger_scene",
+      "param": { "scene": "scene-3" },
+      "feedback": "cyan-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-3",
+      "inputType": "pad",
+      "action": "trigger_scene",
+      "param": { "scene": "scene-4" },
+      "feedback": "cyan-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-1-0",
+      "inputType": "pad",
+      "action": "navigate",
+      "param": { "direction": "up" },
+      "feedback": "green-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-1-1",
+      "inputType": "pad",
+      "action": "navigate",
+      "param": { "direction": "down" },
+      "feedback": "green-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-1-2",
+      "inputType": "pad",
+      "action": "navigate",
+      "param": { "direction": "left" },
+      "feedback": "green-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-1-3",
+      "inputType": "pad",
+      "action": "navigate",
+      "param": { "direction": "right" },
+      "feedback": "green-static",
+      "enabled": true
+    },
+    {
+      "inputId": "scene-0",
+      "inputType": "button",
+      "action": "open_window",
+      "param": { "window": "scenes" },
+      "feedback": null,
+      "enabled": true
+    },
+    {
+      "inputId": "scene-1",
+      "inputType": "button",
+      "action": "toggle_flow_mode",
+      "param": {},
+      "feedback": null,
+      "enabled": true
+    }
+  ]
+}

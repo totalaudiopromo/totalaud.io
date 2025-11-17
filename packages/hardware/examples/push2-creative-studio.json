@@ -1,0 +1,110 @@
+{
+  "name": "Push 2 Creative Studio Control",
+  "description": "Comprehensive Push 2 mapping for Creative Intelligence Studio",
+  "deviceType": "push2",
+  "mappings": [
+    {
+      "inputId": "pad-0-0",
+      "inputType": "pad",
+      "action": "open_window",
+      "param": { "window": "studio" },
+      "feedback": "cyan-static",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-1",
+      "inputType": "pad",
+      "action": "save_snapshot",
+      "param": {},
+      "feedback": "green-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-2",
+      "inputType": "pad",
+      "action": "toggle_mode",
+      "param": { "mode": "creative" },
+      "feedback": "orange-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "pad-0-3",
+      "inputType": "pad",
+      "action": "trigger_command",
+      "param": { "command": "inspire" },
+      "feedback": "purple-blink",
+      "enabled": true
+    },
+    {
+      "inputId": "encoder-0",
+      "inputType": "encoder",
+      "action": "adjust_param",
+      "param": { "param": "intensity" },
+      "feedback": "cyan-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "encoder-1",
+      "inputType": "encoder",
+      "action": "adjust_param",
+      "param": { "param": "creativity" },
+      "feedback": "cyan-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "encoder-2",
+      "inputType": "encoder",
+      "action": "adjust_param",
+      "param": { "param": "randomness" },
+      "feedback": "cyan-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "encoder-3",
+      "inputType": "encoder",
+      "action": "adjust_param",
+      "param": { "param": "emotion-warmth" },
+      "feedback": "orange-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "encoder-4",
+      "inputType": "encoder",
+      "action": "adjust_param",
+      "param": { "param": "emotion-energy" },
+      "feedback": "red-pulse",
+      "enabled": true
+    },
+    {
+      "inputId": "button-play",
+      "inputType": "button",
+      "action": "trigger_command",
+      "param": { "command": "inspire" },
+      "feedback": null,
+      "enabled": true
+    },
+    {
+      "inputId": "button-session",
+      "inputType": "button",
+      "action": "toggle_flow_mode",
+      "param": {},
+      "feedback": null,
+      "enabled": true
+    },
+    {
+      "inputId": "button-note",
+      "inputType": "button",
+      "action": "open_window",
+      "param": { "window": "journal" },
+      "feedback": null,
+      "enabled": true
+    }
+  ],
+  "flowModePattern": {
+    "allPads": {
+      "colour": "#3AA9BE",
+      "intensity": 80,
+      "mode": "pulse"
+    }
+  }
+}

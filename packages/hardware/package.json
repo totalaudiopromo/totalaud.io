@@ -1,0 +1,28 @@
+{
+  "name": "@total-audio/hardware",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts --max-warnings=0",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@total-audio/loopos-db": "workspace:*",
+    "@total-audio/schemas": "workspace:*",
+    "webmidi": "^3.1.11",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@vitest/ui": "^1.0.0",
+    "typescript": "^5.6.3",
+    "vitest": "^1.0.0"
+  }
+}
