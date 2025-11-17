@@ -296,3 +296,49 @@ export interface ReturnPattern {
   created_at: string
   updated_at: string
 }
+
+// ============================================================================
+// LINKING TYPES (Phase 32 - Creative Continuity)
+// ============================================================================
+
+export const LinkTypeSchema = z.enum(['origin', 'reference', 'derived'])
+export type LinkType = z.infer<typeof LinkTypeSchema>
+
+export const OriginTypeSchema = z.enum(['note', 'analogue', 'coach', 'designer'])
+export type OriginType = z.infer<typeof OriginTypeSchema>
+
+export interface AnalogueCard {
+  id: string
+  workspace_id: string
+  user_id: string
+  title: string
+  content: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}
+
+export interface NoteLink {
+  id: string
+  workspace_id: string
+  note_id: string | null
+  analogue_card_id: string | null
+  node_id: string
+  link_type: LinkType
+  created_at: string
+}
+
+export interface NodeOrigin {
+  origin_type: OriginType | null
+  origin_id: string | null
+  origin_title: string | null
+  origin_content: string | null
+  link_type: LinkType | null
+}
+
+export interface LinkedNode {
+  node_id: string
+  node_title: string
+  node_type: NodeType
+  link_type: LinkType
+  created_at: string
+}
