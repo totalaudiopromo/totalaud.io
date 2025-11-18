@@ -1,0 +1,32 @@
+{
+  "name": "totalaud-io",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3005",
+    "build": "next build",
+    "start": "next start -p 3005",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@total-audio/operator-os": "workspace:*",
+    "@total-audio/operator-boot": "workspace:*",
+    "@total-audio/operator-services": "workspace:*",
+    "next": "15.3.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "framer-motion": "^10.16.16",
+    "lucide-react": "^0.542.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.7.2",
+    "tailwindcss": "^3.4.18",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  }
+}
