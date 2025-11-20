@@ -1,6 +1,6 @@
 /**
  * FlowCanvas 2.0
- * Phase 16: FlowCore Recovery & Auth Reconnection
+ * Phase 18: Added node duplication, search, and agent debug drawer
  *
  * React Flow powered canvas with Zustand state and Supabase persistence.
  */
@@ -32,6 +32,8 @@ import type { NodeKind } from '@/types/console'
 import { useFlowCanvasStore } from '@/store/flowCanvasStore'
 import { createBrowserSupabaseClient } from '@aud-web/lib/supabase/client'
 import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
+import { NodeSearch } from './NodeSearch'
+import { AgentDebugDrawer } from './AgentDebugDrawer'
 
 const log = logger.scope('FlowCanvas')
 
@@ -78,16 +80,30 @@ let spawnOffset = 0
 export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   const prefersReducedMotion = useReducedMotion()
-  const { nodes, edges, setNodes, setEdges, reset } = useFlowCanvasStore((state) => ({
+  const {
+    nodes,
+    edges,
+    selectedNodeIds,
+    setNodes,
+    setEdges,
+    setSelectedNodeIds,
+    duplicateNode,
+    reset,
+  } = useFlowCanvasStore((state) => ({
     nodes: state.nodes,
     edges: state.edges,
+    selectedNodeIds: state.selectedNodeIds,
     setNodes: state.setNodes,
     setEdges: state.setEdges,
+    setSelectedNodeIds: state.setSelectedNodeIds,
+    duplicateNode: state.duplicateNode,
     reset: state.reset,
   }))
   const [sceneId, setSceneId] = useState<string | null>(null)
   const [isHydrating, setIsHydrating] = useState(true)
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [debugNodeId, setDebugNodeId] = useState<string | null>(null)
 
   const pendingSaveRef = useRef(false)
   const skipNextSaveRef = useRef(false)
@@ -324,6 +340,44 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
     }
   }, [])
 
+  const handleSelectionChange = useCallback(
+    ({ nodes }: { nodes: Node[] }) => {
+      setSelectedNodeIds(nodes.map((n) => n.id))
+    },
+    [setSelectedNodeIds]
+  )
+
+  // Keyboard shortcuts: ⌘D (duplicate) and ⌘F (search)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey
+
+      // ⌘D - Duplicate selected node
+      if (isMod && e.key === 'd') {
+        e.preventDefault()
+        if (selectedNodeIds.length === 1) {
+          const duplicated = duplicateNode(selectedNodeIds[0])
+          if (duplicated) {
+            try {
+              playAssetAttachSound()
+            } catch (error) {
+              log.debug('Failed to play attach sound', { error })
+            }
+          }
+        }
+      }
+
+      // ⌘F - Open node search
+      if (isMod && e.key === 'f') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedNodeIds, duplicateNode])
+
   return (
     <div
       style={{
@@ -342,6 +396,7 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
         onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
         onNodesDelete={handleNodesDelete}
+        onSelectionChange={handleSelectionChange}
         fitView
         fitViewOptions={{ duration: prefersReducedMotion ? 0 : 240, padding: 0.2 }}
         minZoom={0.25}
@@ -412,6 +467,16 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
           auto-saved {new Date(lastSavedAt).toLocaleTimeString()}
         </div>
       )}
+
+      {/* Node Search Modal (⌘F) */}
+      <NodeSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Agent Debug Drawer (read-only) */}
+      <AgentDebugDrawer
+        nodeId={debugNodeId}
+        isOpen={debugNodeId !== null}
+        onClose={() => setDebugNodeId(null)}
+      />
     </div>
   )
 }

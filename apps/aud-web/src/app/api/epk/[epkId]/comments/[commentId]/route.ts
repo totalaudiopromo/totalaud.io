@@ -6,7 +6,7 @@ const log = logger.scope('EpkCommentDetailAPI')
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { epkId: string; commentId: string } }
+  context: { params: Promise<{ epkId: string; commentId: string }> }
 ) {
   try {
     const body = (await request.json()) as { body?: string }
@@ -29,6 +29,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
+    const params = await context.params
     const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
@@ -82,7 +83,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { epkId: string; commentId: string } }
+  context: { params: Promise<{ epkId: string; commentId: string }> }
 ) {
   try {
     const supabase = createRouteSupabaseClient()
@@ -100,6 +101,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
+    const params = await context.params
     const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')

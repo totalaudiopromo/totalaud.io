@@ -1,15 +1,26 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { AIMessage, AICompletionOptions, AICompletionResult } from './types'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+function getAnthropicClient(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+
+  if (!apiKey) {
+    throw new Error(
+      'ANTHROPIC_API_KEY is missing or empty. Set it in your environment to use the Anthropic provider.',
+    )
+  }
+
+  return new Anthropic({
+    apiKey,
+  })
+}
 
 export async function completeWithAnthropic(
   messages: AIMessage[],
-  options: AICompletionOptions = {}
+  options: AICompletionOptions = {},
 ): Promise<AICompletionResult> {
   const model = options.model || 'claude-sonnet-4-20250514'
+  const anthropic = getAnthropicClient()
 
   // Extract system message
   const systemMessage = messages.find((m) => m.role === 'system')?.content || ''
