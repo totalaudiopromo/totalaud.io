@@ -29,7 +29,7 @@ import { logger } from '@/lib/logger'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { getNodeByKind } from '@/components/features/flow/node-registry'
 import type { NodeKind } from '@/types/console'
-import { useFlowCanvasStore } from '@/store/flowCanvasStore'
+import { useFlowCanvasStore, useFlowCanvasStoreFactory } from '@/store/flowCanvasStore'
 import { createBrowserSupabaseClient } from '@aud-web/lib/supabase/client'
 import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
 import { NodeSearch } from './NodeSearch'
@@ -80,6 +80,10 @@ let spawnOffset = 0
 export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   const prefersReducedMotion = useReducedMotion()
+
+  // Use the store factory - ensures client-side only creation
+  const store = useFlowCanvasStore()
+
   const {
     nodes,
     edges,
@@ -89,7 +93,7 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
     setSelectedNodeIds,
     duplicateNode,
     reset,
-  } = useFlowCanvasStore((state) => ({
+  } = store((state) => ({
     nodes: state.nodes,
     edges: state.edges,
     selectedNodeIds: state.selectedNodeIds,
@@ -311,23 +315,26 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      setNodes((current) => applyNodeChanges(changes, current))
+      const currentNodes = store.getState().nodes
+      setNodes(applyNodeChanges(changes, currentNodes))
     },
-    [setNodes]
+    [setNodes, store]
   )
 
   const handleEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      setEdges((current) => applyEdgeChanges(changes, current))
+      const currentEdges = store.getState().edges
+      setEdges(applyEdgeChanges(changes, currentEdges))
     },
-    [setEdges]
+    [setEdges, store]
   )
 
   const handleConnect = useCallback(
     (connection: Connection) => {
-      setEdges((current) => addEdge(connection, current))
+      const currentEdges = store.getState().edges
+      setEdges(addEdge(connection, currentEdges))
     },
-    [setEdges]
+    [setEdges, store]
   )
 
   const handleNodesDelete = useCallback((deleted: Node[]) => {
@@ -341,8 +348,8 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
   }, [])
 
   const handleSelectionChange = useCallback(
-    ({ nodes }: { nodes: Node[] }) => {
-      setSelectedNodeIds(nodes.map((n) => n.id))
+    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
+      setSelectedNodeIds(selectedNodes.map((n) => n.id))
     },
     [setSelectedNodeIds]
   )
@@ -485,6 +492,12 @@ export function spawnFlowNode(
   kind: NodeKind,
   options: { campaignId?: string; userId?: string }
 ): string {
+  // Only works on client-side (browser environment)
+  if (typeof window === 'undefined') {
+    log.warn('spawnFlowNode called during SSR, skipping', { kind })
+    return ''
+  }
+
   const id = `${kind}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
   const positionOffset = (spawnOffset++ % 8) * 32
 
@@ -502,7 +515,9 @@ export function spawnFlowNode(
     },
   }
 
-  useFlowCanvasStore.getState().addNode(node)
+  // Use store factory for imperative access (client-side only)
+  const storeInstance = useFlowCanvasStoreFactory()
+  storeInstance.getState().addNode(node)
 
   try {
     playAssetAttachSound()

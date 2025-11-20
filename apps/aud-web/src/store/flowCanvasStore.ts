@@ -1,9 +1,12 @@
 /**
  * FlowCanvas Store
  * Phase 18: Added node duplication support
+ * Fixed: SSR-safe Zustand store using stable factory
  */
 
-import { create } from 'zustand'
+'use client'
+
+import { createZustandStore } from '@/lib/createZustandStore'
 import type { Edge, Node } from 'reactflow'
 
 type NodesUpdater = Node[] | ((nodes: Node[]) => Node[])
@@ -21,7 +24,7 @@ interface FlowCanvasState {
   reset: () => void
 }
 
-export const useFlowCanvasStore = create<FlowCanvasState>((set, get) => ({
+const useFlowCanvasStoreFactory = createZustandStore<FlowCanvasState>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeIds: [],
@@ -67,3 +70,23 @@ export const useFlowCanvasStore = create<FlowCanvasState>((set, get) => ({
   },
   reset: () => set({ nodes: [], edges: [], selectedNodeIds: [] }),
 }))
+
+/**
+ * FlowCanvas Store Hook
+ * SSR-safe: Only creates store on client-side
+ *
+ * Usage in components:
+ * const store = useFlowCanvasStore()
+ * const nodes = store((state) => state.nodes)
+ */
+export const useFlowCanvasStore = useFlowCanvasStoreFactory
+
+/**
+ * FlowCanvas Store Factory (exported for imperative access)
+ * Use this for non-hook usage (e.g., spawnFlowNode)
+ *
+ * Usage outside components:
+ * const store = useFlowCanvasStoreFactory()
+ * store.getState().addNode(node)
+ */
+export { useFlowCanvasStoreFactory }
