@@ -52,10 +52,7 @@ export function createPresenceChannel(workspaceId: string): RealtimeChannel {
 /**
  * Join presence channel and track user presence
  */
-export async function trackPresence(
-  channel: RealtimeChannel,
-  state: PresenceState
-): Promise<void> {
+export async function trackPresence(channel: RealtimeChannel, state: PresenceState): Promise<void> {
   await channel.track(state)
 }
 
@@ -75,7 +72,7 @@ export async function updatePresence(
     return
   }
 
-  const current = currentState[myKey]?.[0] as PresenceState | undefined
+  const current = currentState[myKey]?.[0] as unknown as PresenceState | undefined
 
   if (!current) {
     console.warn('Current presence state not found')
@@ -103,15 +100,13 @@ export async function leavePresence(channel: RealtimeChannel): Promise<void> {
 /**
  * Get all participants in a presence channel
  */
-export function getPresenceParticipants(
-  channel: RealtimeChannel
-): PresenceParticipant[] {
+export function getPresenceParticipants(channel: RealtimeChannel): PresenceParticipant[] {
   const state = channel.presenceState()
   const participants: PresenceParticipant[] = []
 
   Object.values(state).forEach((presences) => {
     presences.forEach((presence) => {
-      participants.push(presence as PresenceParticipant)
+      participants.push(presence as unknown as PresenceParticipant)
     })
   })
 

@@ -72,19 +72,16 @@ export function TimelineCanvas({ workspaceId }: TimelineCanvasProps) {
     [setEdges]
   )
 
-  const handleNodeDragStop = useCallback(
-    async (event: any, node: FlowNode) => {
-      try {
-        await nodesDb.update(node.id, {
-          position_x: node.position.x,
-          position_y: node.position.y,
-        })
-      } catch (error) {
-        console.error('Failed to update node position:', error)
-      }
-    },
-    []
-  )
+  const handleNodeDragStop = useCallback(async (event: any, node: FlowNode) => {
+    try {
+      await nodesDb.update(node.id, {
+        position_x: node.position.x,
+        position_y: node.position.y,
+      })
+    } catch (error) {
+      console.error('Failed to update node position:', error)
+    }
+  }, [])
 
   const handleCanvasDoubleClick = useCallback((event: React.MouseEvent) => {
     const target = event.target as HTMLElement

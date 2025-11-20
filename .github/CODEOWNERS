@@ -1,0 +1,40 @@
+# Code Ownership for TotalAud.io
+# 
+# This file defines who owns which parts of the codebase.
+# GitHub will automatically request reviews from these owners when PRs touch their areas.
+#
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything
+* @totalaudiopromo/core-team
+
+# Core business logic
+/packages/core/ @totalaudiopromo/core-team
+
+# Agent system
+/packages/core/agent-executor/ @totalaudiopromo/core-team
+/packages/core/skills-engine/ @totalaudiopromo/core-team
+
+# Database and migrations
+/supabase/ @totalaudiopromo/core-team
+/packages/schemas/ @totalaudiopromo/core-team
+
+# Theme engine and UI
+/packages/core/theme-engine/ @totalaudiopromo/core-team
+/packages/ui/ @totalaudiopromo/core-team
+
+# Main application
+/apps/aud-web/ @totalaudiopromo/core-team
+
+# API routes (requires auth/security review)
+/apps/aud-web/src/app/api/ @totalaudiopromo/core-team
+
+# Deployment and infrastructure
+/.github/ @totalaudiopromo/core-team
+/railway.json @totalaudiopromo/core-team
+/scripts/silver-*.ts @totalaudiopromo/core-team
+
+# Documentation
+/docs/ @totalaudiopromo/core-team
+/*.md @totalaudiopromo/core-team
+

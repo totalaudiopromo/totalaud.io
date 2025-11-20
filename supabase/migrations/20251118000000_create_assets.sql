@@ -172,3 +172,4 @@ comment on column public.artist_assets.public_share_id is 'Unique ID for public 
 comment on column public.artist_assets.deleted_at is 'Soft delete timestamp';
 
 
+

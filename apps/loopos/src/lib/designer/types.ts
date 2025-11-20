@@ -23,7 +23,12 @@ export interface Arc {
   strength: number // 0-1
 }
 
-export type SceneType = 'release-strategy' | 'audience-development' | 'growth-30day' | 'epk-structure' | 'creative-identity'
+export type SceneType =
+  | 'release-strategy'
+  | 'audience-development'
+  | 'growth-30day'
+  | 'epk-structure'
+  | 'creative-identity'
 
 export interface Scene {
   id: string

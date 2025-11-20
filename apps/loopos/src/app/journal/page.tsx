@@ -22,9 +22,7 @@ export default function JournalPage() {
                 <BookMarked className="w-8 h-8 text-accent" />
               </div>
               <h2 className="text-xl font-semibold mb-2">Journal coming soon</h2>
-              <p className="text-foreground/60">
-                Record voice memos and written reflections
-              </p>
+              <p className="text-foreground/60">Record voice memos and written reflections</p>
             </div>
           </div>
         </div>

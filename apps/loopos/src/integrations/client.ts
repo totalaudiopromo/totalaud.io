@@ -38,7 +38,7 @@ class TAPClient {
 
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.apiKey}`,
+      Authorization: `Bearer ${this.apiKey}`,
       ...headers,
     }
 
@@ -63,9 +63,7 @@ class TAPClient {
       if (error instanceof TAPApiError) {
         throw error
       }
-      throw new TAPApiError(
-        error instanceof Error ? error.message : 'Unknown TAP API error'
-      )
+      throw new TAPApiError(error instanceof Error ? error.message : 'Unknown TAP API error')
     }
   }
 

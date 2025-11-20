@@ -1,6 +1,19 @@
+/**
+ * FlowCore Theme Provider
+ * Phase 18: Minimal theme-engine integration
+ *
+ * Provides:
+ * - 5 minimal CSS tokens (--fc-bg, --fc-fg, --fc-accent, --fc-border, --fc-overlay)
+ * - Reduced-motion detection and handling
+ * - Theme-engine registry connection
+ * - Legacy flowCore tokens (backwards compatibility)
+ */
+
 'use client'
 
-import type { ReactNode} from 'react'
+import type { ReactNode } from 'react'
+import { useEffect } from 'react'
+import { getTheme, type ThemeId } from '@total-audio/core-theme-engine'
 
 export const flowCore = {
   colours: {
@@ -32,16 +45,50 @@ export const flowCore = {
 interface FlowCoreThemeProviderProps {
   children: ReactNode
   bodyClassName?: string
+  themeId?: ThemeId
 }
 
-export function FlowCoreThemeProvider({ children, bodyClassName }: FlowCoreThemeProviderProps) {
-  const composedClassName = ['flowcore-theme', bodyClassName].filter(Boolean).join(' ')
+export function FlowCoreThemeProvider({
+  children,
+  bodyClassName,
+  themeId = 'ascii',
+}: FlowCoreThemeProviderProps) {
+  // Load theme from theme-engine registry
+  const theme = getTheme(themeId)
+
+  // Detect reduced motion preference
+  const reducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+
+  const composedClassName = [
+    'flowcore-theme',
+    reducedMotion ? 'reduced-motion' : null,
+    bodyClassName,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.body.className = composedClassName
+  }, [composedClassName])
 
   return (
-    <body className={composedClassName}>
+    <>
       <style jsx global>{`
         :root {
           color-scheme: dark;
+
+          /* Theme-engine minimal tokens */
+          --fc-bg: ${theme.palette.background};
+          --fc-fg: ${theme.palette.foreground};
+          --fc-accent: ${theme.palette.accent};
+          --fc-border: ${theme.palette.border};
+          --fc-overlay: color-mix(in srgb, ${theme.palette.background} 85%, #000000 15%);
+
+          /* Legacy FlowCore tokens (backwards compatibility) */
           --flowcore-colour-bg: ${flowCore.colours.bg};
           --flowcore-colour-fg: ${flowCore.colours.fg};
           --flowcore-colour-accent: ${flowCore.colours.cyan};
@@ -62,17 +109,15 @@ export function FlowCoreThemeProvider({ children, bodyClassName }: FlowCoreTheme
           --flowcore-font-mono:
             '${flowCore.font.mono}', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
             'Liberation Mono', 'Courier New', monospace;
-          --flowcore-motion-fast: ${flowCore.motion.fast}ms;
-          --flowcore-motion-normal: ${flowCore.motion.normal}ms;
-          --flowcore-motion-slow: ${flowCore.motion.slow}ms;
+          --flowcore-motion-fast: ${reducedMotion ? 0 : flowCore.motion.fast}ms;
+          --flowcore-motion-normal: ${reducedMotion ? 0 : flowCore.motion.normal}ms;
+          --flowcore-motion-slow: ${reducedMotion ? 0 : flowCore.motion.slow}ms;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-          :root {
-            --flowcore-motion-fast: 0ms;
-            --flowcore-motion-normal: 0ms;
-            --flowcore-motion-slow: 0ms;
-          }
+        body.reduced-motion * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
 
         html,
@@ -95,6 +140,6 @@ export function FlowCoreThemeProvider({ children, bodyClassName }: FlowCoreTheme
         }
       `}</style>
       {children}
-    </body>
+    </>
   )
 }

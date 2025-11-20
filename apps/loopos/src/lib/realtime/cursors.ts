@@ -21,10 +21,7 @@ export type CursorContext = 'timeline' | 'designer'
 /**
  * Create a cursor broadcast channel
  */
-export function createCursorChannel(
-  workspaceId: string,
-  context: CursorContext
-): RealtimeChannel {
+export function createCursorChannel(workspaceId: string, context: CursorContext): RealtimeChannel {
   const channelName = `loopos:cursor:${context}:${workspaceId}`
 
   return supabase.channel(channelName)
@@ -90,10 +87,13 @@ export function createCursorThrottle(delay: number = 60) {
     } else {
       // Schedule for later if not called recently
       if (timeoutId) clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
-        lastCall = Date.now()
-        fn(...args)
-      }, delay - (now - lastCall))
+      timeoutId = setTimeout(
+        () => {
+          lastCall = Date.now()
+          fn(...args)
+        },
+        delay - (now - lastCall)
+      )
     }
   }
 }

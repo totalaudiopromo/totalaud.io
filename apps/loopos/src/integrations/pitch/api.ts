@@ -105,10 +105,7 @@ export const pitchApi = {
     pluggerBrief: TAPPluggerBrief
   }> {
     // Extract key points from context
-    const keyPoints = [
-      ...(context.playbook?.highlights || []),
-      ...(context.journalInsights || []),
-    ]
+    const keyPoints = [...(context.playbook?.highlights || []), ...(context.journalInsights || [])]
 
     // Generate press release
     const pressRelease = await this.generatePressRelease({
@@ -149,14 +146,15 @@ export const pitchApi = {
     epk: TAPEPKCopy
   }> {
     // Extract relevant content from playbook
-    const highlights = playbookContent.chapters
-      ?.map((ch: any) => ch.key_points)
-      .flat()
-      .slice(0, 5) || []
+    const highlights =
+      playbookContent.chapters
+        ?.map((ch: any) => ch.key_points)
+        .flat()
+        .slice(0, 5) || []
 
     // Extract pack insights
     const packInsights = packs
-      .map(p => p.content?.insights || [])
+      .map((p) => p.content?.insights || [])
       .flat()
       .slice(0, 3)
 

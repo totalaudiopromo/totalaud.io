@@ -11,6 +11,16 @@ build/
 # Environment
 .env
 .env*.local
+.env.*
+*.env
+
+# Secrets and credentials - prevent committing API keys
+*SECRET*
+*API_KEY*
+*TOKEN*
+*PASSWORD*
+*PRIVATE_KEY*
+*ACCESS_KEY*
 
 # Supabase
 supabase/.branches/
@@ -33,5 +43,8 @@ Thumbs.db
 
 # Testing
 coverage/
+
+# Deployment reports
+reports/
 
 .vercel

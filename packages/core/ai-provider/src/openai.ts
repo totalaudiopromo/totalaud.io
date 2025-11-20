@@ -1,15 +1,26 @@
 import OpenAI from 'openai'
 import type { AIMessage, AICompletionOptions, AICompletionResult } from './types'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAIClient(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY
+
+  if (!apiKey) {
+    throw new Error(
+      'OPENAI_API_KEY is missing or empty. Set it in your environment to use the OpenAI provider.'
+    )
+  }
+
+  return new OpenAI({
+    apiKey,
+  })
+}
 
 export async function completeWithOpenAI(
   messages: AIMessage[],
   options: AICompletionOptions = {}
 ): Promise<AICompletionResult> {
   const model = options.model || 'gpt-4o'
+  const openai = getOpenAIClient()
 
   const completion = await openai.chat.completions.create({
     model,

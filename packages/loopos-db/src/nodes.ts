@@ -97,10 +97,7 @@ export const notesDb = {
   },
 
   async list(workspaceId: string, nodeId?: string): Promise<Note[]> {
-    let query = supabase
-      .from('loopos_notes')
-      .select('*')
-      .eq('workspace_id', workspaceId)
+    let query = supabase.from('loopos_notes').select('*').eq('workspace_id', workspaceId)
 
     if (nodeId) {
       query = query.eq('node_id', nodeId)

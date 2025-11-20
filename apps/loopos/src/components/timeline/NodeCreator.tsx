@@ -15,12 +15,7 @@ const nodeTypes: { value: NodeType; label: string; colour: string }[] = [
 
 interface NodeCreatorProps {
   position: { x: number; y: number }
-  onCreate: (data: {
-    type: NodeType
-    title: string
-    content: string
-    colour: string
-  }) => void
+  onCreate: (data: { type: NodeType; title: string; content: string; colour: string }) => void
   onCancel: () => void
 }
 

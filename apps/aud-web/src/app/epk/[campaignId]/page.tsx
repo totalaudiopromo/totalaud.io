@@ -17,16 +17,17 @@ import { EPKClient } from './EPKClient'
 import { getEpkCampaign } from '@/lib/epk/getEpkCampaign'
 
 interface EPKPageProps {
-  params: {
+  params: Promise<{
     campaignId: string
-  }
+  }>
 }
 
 /**
  * Generate metadata for SEO and social sharing
  */
 export async function generateMetadata({ params }: EPKPageProps): Promise<Metadata> {
-  const { campaignId } = params
+  const resolvedParams = await params
+  const { campaignId } = resolvedParams
   const campaign = await getEpkCampaign(campaignId)
 
   if (!campaign) {
@@ -69,7 +70,8 @@ export async function generateMetadata({ params }: EPKPageProps): Promise<Metada
  * Server Component - Fetch campaign data
  */
 export default async function EPKPage({ params }: EPKPageProps) {
-  const { campaignId } = params
+  const resolvedParams = await params
+  const { campaignId } = resolvedParams
   const campaignData = await getEpkCampaign(campaignId)
 
   if (!campaignData) {

@@ -84,7 +84,7 @@ export function SceneRenderer({ scene, onRefine }: SceneRendererProps) {
 
           {/* Arcs */}
           <svg className="absolute inset-0 pointer-events-none">
-            {scene.arcs.map((arc) => {
+            {scene.arcs.map((arc, index) => {
               const fromElement = scene.elements.find((e) => e.id === arc.from)
               const toElement = scene.elements.find((e) => e.id === arc.to)
 
@@ -187,9 +187,7 @@ function SceneElementComponent({
         <h4 className="font-semibold text-sm mb-1" style={{ color: element.colour }}>
           {element.title}
         </h4>
-        {element.description && (
-          <p className="text-xs text-foreground/60">{element.description}</p>
-        )}
+        {element.description && <p className="text-xs text-foreground/60">{element.description}</p>}
         <div
           className="absolute top-2 right-2 w-2 h-2 rounded-full"
           style={{ backgroundColor: element.colour }}
