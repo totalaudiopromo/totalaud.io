@@ -2,12 +2,7 @@
 const CACHE_NAME = 'loopos-v1'
 const OFFLINE_URL = '/offline.html'
 
-const STATIC_ASSETS = [
-  '/',
-  '/dashboard',
-  '/manifest.json',
-  OFFLINE_URL,
-]
+const STATIC_ASSETS = ['/', '/dashboard', '/manifest.json', OFFLINE_URL]
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -24,9 +19,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
       )
     })
   )

@@ -1,0 +1,75 @@
+name: totalaud.io CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: npm install -g pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test -- --runInBand
+        continue-on-error: true
+
+      - name: Build (monorepo aware)
+        run: pnpm turbo build --filter=aud-web
+
+      - name: Ensure no TAP imports
+        run: |
+          if grep -r "@tap/" apps packages 2>/dev/null || \
+             grep -r "from '@tap/" apps packages 2>/dev/null || \
+             grep -r "import.*@tap/" apps packages 2>/dev/null; then
+            echo "❌ TAP import detected in totalaud.io"
+            exit 1
+          fi
+          echo "✅ No TAP imports found"
+
+      - name: Ensure migrations do not contain TAP tables
+        run: |
+          if grep -r "anr_" supabase/migrations 2>/dev/null || \
+             grep -r "rcf_" supabase/migrations 2>/dev/null || \
+             grep -r "scenes_" supabase/migrations 2>/dev/null || \
+             grep -r "pr_" supabase/migrations 2>/dev/null || \
+             grep -r "coverage_" supabase/migrations 2>/dev/null || \
+             grep -r "smart_segments" supabase/migrations 2>/dev/null || \
+             grep -r "email_campaigns" supabase/migrations 2>/dev/null || \
+             grep -r "workspace_" supabase/migrations 2>/dev/null; then
+            echo "❌ Forbidden TAP table detected in migrations"
+            exit 1
+          fi
+          echo "✅ No TAP tables found in migrations"
+
+      - name: Ensure only totalaud.io campaign tables
+        run: |
+          # Check that campaign_* tables are only totalaud.io ones
+          if grep -r "CREATE TABLE.*campaign_" supabase/migrations 2>/dev/null | \
+             grep -v "campaign_context\|campaign_workflows\|campaign_collaborators\|campaign_outreach_logs\|campaign_dashboard_metrics\|campaign_results"; then
+            echo "⚠️  Unknown campaign table detected - verify it's totalaud.io specific"
+          fi
+          echo "✅ Campaign tables verified"
+

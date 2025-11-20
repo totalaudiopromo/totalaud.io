@@ -64,10 +64,7 @@ export const playbookDb = {
   },
 
   async delete(chapterId: string): Promise<void> {
-    const { error } = await supabase
-      .from('loopos_playbook_chapters')
-      .delete()
-      .eq('id', chapterId)
+    const { error } = await supabase.from('loopos_playbook_chapters').delete().eq('id', chapterId)
 
     if (error) throw error
   },

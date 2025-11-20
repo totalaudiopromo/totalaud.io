@@ -53,10 +53,7 @@ export const consoleApi = {
     return tapClient.post('/console/creative-refs', data)
   },
 
-  async listCreativeRefs(filters?: {
-    type?: string
-    tags?: string[]
-  }): Promise<TAPCreativeRef[]> {
+  async listCreativeRefs(filters?: { type?: string; tags?: string[] }): Promise<TAPCreativeRef[]> {
     const params = new URLSearchParams()
     if (filters?.type) params.append('type', filters.type)
     if (filters?.tags) params.append('tags', filters.tags.join(','))
@@ -104,9 +101,9 @@ export const consoleApi = {
       const task = await this.createTask({
         title: node.title,
         description: node.content,
-        priority: node.metadata?.priority as any || 'medium',
+        priority: (node.metadata?.priority as any) || 'medium',
         due_date: node.metadata?.due_date as string,
-        tags: node.metadata?.tags as string[] || [node.type],
+        tags: (node.metadata?.tags as string[]) || [node.type],
       })
       tasks.push(task)
     }

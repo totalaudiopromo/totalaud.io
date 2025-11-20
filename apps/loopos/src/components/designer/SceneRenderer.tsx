@@ -187,9 +187,7 @@ function SceneElementComponent({
         <h4 className="font-semibold text-sm mb-1" style={{ color: element.colour }}>
           {element.title}
         </h4>
-        {element.description && (
-          <p className="text-xs text-foreground/60">{element.description}</p>
-        )}
+        {element.description && <p className="text-xs text-foreground/60">{element.description}</p>}
         <div
           className="absolute top-2 right-2 w-2 h-2 rounded-full"
           style={{ backgroundColor: element.colour }}

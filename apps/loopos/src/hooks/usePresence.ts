@@ -104,7 +104,15 @@ export function usePresence(options: UsePresenceOptions): UsePresenceReturn {
         setIsConnected(false)
       }
     }
-  }, [user, workspaceId, location, initialFocusNodeId, initialFocusSceneId, getUserDisplayName, getUserColour])
+  }, [
+    user,
+    workspaceId,
+    location,
+    initialFocusNodeId,
+    initialFocusSceneId,
+    getUserDisplayName,
+    getUserColour,
+  ])
 
   // Update presence function
   const handleUpdatePresence = useCallback(async (updates: PresenceUpdate) => {

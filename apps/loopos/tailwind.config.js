@@ -20,7 +20,7 @@ module.exports = {
       animation: {
         'fade-in': 'fadeIn 240ms cubic-bezier(0.22, 1, 0.36, 1)',
         'slide-up': 'slideUp 240ms cubic-bezier(0.22, 1, 0.36, 1)',
-        'glow': 'glow 400ms ease-in-out',
+        glow: 'glow 400ms ease-in-out',
       },
       keyframes: {
         fadeIn: {

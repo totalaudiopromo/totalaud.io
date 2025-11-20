@@ -64,10 +64,7 @@ export const workspaceDb = {
   },
 
   async delete(workspaceId: string): Promise<void> {
-    const { error } = await supabase
-      .from('loopos_workspaces')
-      .delete()
-      .eq('id', workspaceId)
+    const { error } = await supabase.from('loopos_workspaces').delete().eq('id', workspaceId)
 
     if (error) throw error
   },
@@ -108,10 +105,7 @@ export const workspaceDb = {
     return data
   },
 
-  async getMemberRole(
-    workspaceId: string,
-    userId: string
-  ): Promise<WorkspaceRole | null> {
+  async getMemberRole(workspaceId: string, userId: string): Promise<WorkspaceRole | null> {
     const { data, error } = await supabase
       .from('loopos_workspace_members')
       .select('role')

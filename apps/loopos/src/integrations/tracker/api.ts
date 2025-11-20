@@ -79,8 +79,8 @@ export const trackerApi = {
     for (const node of nodes) {
       // Extract submission data from node metadata
       const submission = await this.createSubmission({
-        target_name: node.metadata?.target_name as string || node.title,
-        target_type: node.metadata?.target_type as any || 'other',
+        target_name: (node.metadata?.target_name as string) || node.title,
+        target_type: (node.metadata?.target_type as any) || 'other',
         pitch_angle: node.content,
         contact_email: node.metadata?.contact_email as string,
         contact_name: node.metadata?.contact_name as string,
@@ -111,7 +111,10 @@ export const trackerApi = {
   /**
    * Preview submission outcomes based on past data
    */
-  async previewOutcomes(targetName: string, targetType: string): Promise<{
+  async previewOutcomes(
+    targetName: string,
+    targetType: string
+  ): Promise<{
     averageResponseTime: string
     successRate: number
     tips: string[]
