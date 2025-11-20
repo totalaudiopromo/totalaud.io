@@ -12,8 +12,9 @@
 'use client'
 
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { flowCoreColours } from '@aud-web/constants/flowCoreColours'
 import { ConsoleLayout } from '@aud-web/layouts/ConsoleLayout'
@@ -30,7 +31,7 @@ import { toast } from 'sonner'
 
 const log = logger.scope('ConsolePage')
 
-export default function ConsolePage() {
+function ConsolePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { trackEvent } = useFlowStateTelemetry()
@@ -347,5 +348,31 @@ export default function ConsolePage() {
       {/* Flow Hub Dashboard */}
       <FlowHubDashboard isOpen={isFlowHubOpen} onClose={closeFlowHub} />
     </div>
+  )
+}
+
+export default function ConsolePage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            height: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: flowCoreColours.matteBlack,
+            color: flowCoreColours.textSecondary,
+            fontFamily:
+              'var(--font-geist-mono, ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace)',
+            fontSize: '13px',
+          }}
+        >
+          loading console...
+        </div>
+      }
+    >
+      <ConsolePageContent />
+    </Suspense>
   )
 }

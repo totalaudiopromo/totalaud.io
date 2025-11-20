@@ -2,7 +2,6 @@
 
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { useMemo } from 'react'
 
 /**
  * Stable Store Factory for Zustand
@@ -18,23 +17,28 @@ import { useMemo } from 'react'
  */
 export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
   let store: any = null
+  let storeCreated = false
 
-  function useBoundStore() {
+  function useBoundStore(selector?: any, equalityFn?: any) {
     // Only create store on client-side (browser environment)
     if (typeof window === 'undefined') {
-      // SSR: Return a placeholder that won't break
-      return {
-        getState: () => ({}) as T,
-        setState: () => {},
-        subscribe: () => () => {},
+      // SSR: Return a dummy selector function that returns empty state
+      if (selector) {
+        return selector({} as T)
       }
+      return {} as T
     }
 
     // Client-side: Create store once
-    if (!store) {
+    if (!storeCreated) {
       store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      storeCreated = true
     }
 
+    // Use the store hook normally
+    if (selector) {
+      return store(selector, equalityFn)
+    }
     return store
   }
 
@@ -43,11 +47,24 @@ export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
     if (typeof window === 'undefined') {
       return {} as T
     }
-    if (!store) {
+    if (!storeCreated) {
       store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      storeCreated = true
     }
     return store.getState()
   }
 
-  return useBoundStore
+  // Provide setState for imperative updates
+  useBoundStore.setState = (partial: any, replace?: boolean) => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    if (!storeCreated) {
+      store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      storeCreated = true
+    }
+    return store.setState(partial, replace)
+  }
+
+  return useBoundStore as any
 }

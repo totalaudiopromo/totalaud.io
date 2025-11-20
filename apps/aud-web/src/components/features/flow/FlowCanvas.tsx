@@ -78,12 +78,17 @@ const AUTO_SAVE_INTERVAL_MS = 60_000
 let spawnOffset = 0
 
 export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
+  // Early return during SSR to prevent hydration issues
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   const prefersReducedMotion = useReducedMotion()
 
-  // Use the store factory - ensures client-side only creation
-  const store = useFlowCanvasStore()
-
+  // Use the store hook - ensures client-side only creation
   const {
     nodes,
     edges,
@@ -93,7 +98,7 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
     setSelectedNodeIds,
     duplicateNode,
     reset,
-  } = store((state) => ({
+  } = useFlowCanvasStore((state) => ({
     nodes: state.nodes,
     edges: state.edges,
     selectedNodeIds: state.selectedNodeIds,
@@ -103,6 +108,29 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
     duplicateNode: state.duplicateNode,
     reset: state.reset,
   }))
+
+  // Don't render ReactFlow during SSR
+  if (!isMounted) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          minHeight: '600px',
+          position: 'relative',
+          backgroundColor: flowCoreColours.matteBlack,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: flowCoreColours.textSecondary,
+          fontSize: '13px',
+          fontFamily: 'var(--flowcore-font-mono)',
+        }}
+      >
+        loading canvas...
+      </div>
+    )
+  }
   const [sceneId, setSceneId] = useState<string | null>(null)
   const [isHydrating, setIsHydrating] = useState(true)
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
