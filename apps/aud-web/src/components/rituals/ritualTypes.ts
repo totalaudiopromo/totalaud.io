@@ -19,5 +19,3 @@ export interface Ritual {
   os: OSSlug
   weight: number
 }
-
-

@@ -28,5 +28,3 @@ export function useRituals(): RitualsContextValue {
 export function useOptionalRituals(): RitualsContextValue | null {
   return useContext(RitualsContext)
 }
-
-

@@ -29,23 +29,16 @@ export function AquaToggle({ label, checked, onChange }: AquaToggleProps) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleToggle}
-      className="group inline-flex items-center gap-3"
-    >
+    <button type="button" onClick={handleToggle} className="group inline-flex items-center gap-3">
       {label && (
-        <span className="text-xs font-medium tracking-wide text-slate-100/80">
-          {label}
-        </span>
+        <span className="text-xs font-medium tracking-wide text-slate-100/80">{label}</span>
       )}
 
       <div
         className="relative flex h-6 w-11 items-center rounded-full border border-white/25 bg-white/10 px-[3px]"
         style={{
           background: 'rgba(15,23,42,0.75)',
-          boxShadow:
-            '0 6px 18px rgba(15,23,42,0.9), 0 0 0 1px rgba(148,163,184,0.6)',
+          boxShadow: '0 6px 18px rgba(15,23,42,0.9), 0 0 0 1px rgba(148,163,184,0.6)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
         }}
@@ -65,8 +58,7 @@ export function AquaToggle({ label, checked, onChange }: AquaToggleProps) {
         <motion.div
           className="relative h-4 w-4 rounded-full border border-white/70 bg-slate-900/80"
           style={{
-            boxShadow:
-              '0 4px 10px rgba(15,23,42,0.9), 0 0 0 1px rgba(148,163,184,0.6)',
+            boxShadow: '0 4px 10px rgba(15,23,42,0.9), 0 0 0 1px rgba(148,163,184,0.6)',
           }}
           animate={{ x: isOn ? 18 : 0 }}
           transition={
@@ -90,5 +82,3 @@ export function AquaToggle({ label, checked, onChange }: AquaToggleProps) {
     </button>
   )
 }
-
-

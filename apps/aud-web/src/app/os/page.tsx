@@ -18,24 +18,9 @@ export default function OSLauncherPage() {
           subtitle="your creative loop constellation"
           preview="studio"
         />
-        <OSCard
-          os="ascii"
-          title="ASCII OS"
-          subtitle="minimal terminal workspace"
-          preview="ascii"
-        />
-        <OSCard
-          os="xp"
-          title="XP OS"
-          subtitle="retro desktop environment"
-          preview="xp"
-        />
-        <OSCard
-          os="aqua"
-          title="Aqua OS"
-          subtitle="cinematic glass workspace"
-          preview="aqua"
-        />
+        <OSCard os="ascii" title="ASCII OS" subtitle="minimal terminal workspace" preview="ascii" />
+        <OSCard os="xp" title="XP OS" subtitle="retro desktop environment" preview="xp" />
+        <OSCard os="aqua" title="Aqua OS" subtitle="cinematic glass workspace" preview="aqua" />
         <OSCard
           os="daw"
           title="DAW OS"
@@ -52,6 +37,3 @@ export default function OSLauncherPage() {
     </LauncherContainer>
   )
 }
-
-
-

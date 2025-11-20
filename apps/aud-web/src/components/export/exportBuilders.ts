@@ -38,7 +38,10 @@ export function buildBaseExport({
   }
 }
 
-export function buildLoopSummaryBody(loop: LoopSummaryInput, agentInsights?: AgentOutputSummary): string {
+export function buildLoopSummaryBody(
+  loop: LoopSummaryInput,
+  agentInsights?: AgentOutputSummary
+): string {
   const lines: string[] = []
 
   if (loop.name) {
@@ -55,9 +58,7 @@ export function buildLoopSummaryBody(loop: LoopSummaryInput, agentInsights?: Age
 
   if (loop.momentumLabel || typeof loop.momentumScore === 'number') {
     const score = loop.momentumScore != null ? `${Math.round(loop.momentumScore * 100)}%` : null
-    lines.push(
-      `Momentum: ${loop.momentumLabel ?? 'n/a'}${score ? ` (${score})` : ''}`,
-    )
+    lines.push(`Momentum: ${loop.momentumLabel ?? 'n/a'}${score ? ` (${score})` : ''}`)
   }
 
   if (loop.lanes && loop.lanes.length > 0) {
@@ -76,5 +77,3 @@ export function buildLoopSummaryBody(loop: LoopSummaryInput, agentInsights?: Age
 
   return lines.join('\n')
 }
-
-

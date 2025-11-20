@@ -23,13 +23,10 @@ export function OSIntroHeader() {
           </h1>
         </div>
         <p className="max-w-md text-sm text-slate-400">
-          Choose your creative operating system. Each OS is a different way to think, plan and
-          ship your music ideas.
+          Choose your creative operating system. Each OS is a different way to think, plan and ship
+          your music ideas.
         </p>
       </motion.div>
     </header>
   )
 }
-
-
-

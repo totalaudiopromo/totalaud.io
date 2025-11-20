@@ -6,6 +6,6 @@ const nextConfig = {
     '@total-audio/operator-boot',
     '@total-audio/operator-services',
   ],
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

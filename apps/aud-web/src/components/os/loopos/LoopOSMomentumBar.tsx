@@ -10,7 +10,10 @@ interface LoopOSMomentumBarProps {
   momentum: MomentumResult | null
 }
 
-function getMomentumLabel(score: number, label: MomentumResult['label']): {
+function getMomentumLabel(
+  score: number,
+  label: MomentumResult['label']
+): {
   label: string
   tone: 'good' | 'ok' | 'low'
 } {
@@ -70,11 +73,7 @@ export function LoopOSMomentumBar({ momentum }: LoopOSMomentumBarProps) {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.9),_transparent_70%)]" />
           {momentum && (
             <div className="pointer-events-none absolute inset-0 flex">
-              {(
-                Object.entries(momentum.laneWeights) as Array<
-                  [LoopOSLane, number]
-                >
-              )
+              {(Object.entries(momentum.laneWeights) as Array<[LoopOSLane, number]>)
                 .filter(([, weight]) => weight > 0.01)
                 .map(([lane, weight]) => (
                   <div
@@ -99,5 +98,3 @@ export function LoopOSMomentumBar({ momentum }: LoopOSMomentumBarProps) {
     </div>
   )
 }
-
-

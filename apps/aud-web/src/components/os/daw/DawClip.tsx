@@ -21,7 +21,13 @@ const variantGradient: Record<DawClipVariant, string> = {
   refine: 'from-sky-400/70 via-blue-400/70 to-indigo-300/90',
 }
 
-export function DawClip({ label, variant, isSelected = false, loopOSReady = false, onSelect }: DawClipProps) {
+export function DawClip({
+  label,
+  variant,
+  isSelected = false,
+  loopOSReady = false,
+  onSelect,
+}: DawClipProps) {
   const { play } = useThemeAudio()
   const prefersReducedMotion = useReducedMotion()
 
@@ -99,4 +105,3 @@ export function DawClip({ label, variant, isSelected = false, loopOSReady = fals
     </motion.div>
   )
 }
-

@@ -84,13 +84,11 @@ export function DirectorProvider({ children }: { children: React.ReactNode }) {
 
       const bump = prefersReducedMotion ? 0.1 : 0.2
       const baseline =
-        baselineAmbientRef.current != null
-          ? baselineAmbientRef.current
-          : ambient.intensity
+        baselineAmbientRef.current != null ? baselineAmbientRef.current : ambient.intensity
       const target = Math.max(baseline, value - bump)
       ambient.setIntensity(target)
     },
-    [ambient, prefersReducedMotion],
+    [ambient, prefersReducedMotion]
   )
 
   const runNextAction = useCallback(() => {
@@ -155,7 +153,7 @@ export function DirectorProvider({ children }: { children: React.ReactNode }) {
       clearTimer()
       setAmbientOverride(null)
     },
-    [setAmbientOverride],
+    [setAmbientOverride]
   )
 
   const start = useCallback(() => {
@@ -261,10 +259,8 @@ export function DirectorProvider({ children }: { children: React.ReactNode }) {
       skipToPrevious,
       start,
       stop,
-    ],
+    ]
   )
 
   return <DirectorContext.Provider value={value}>{children}</DirectorContext.Provider>
 }
-
-

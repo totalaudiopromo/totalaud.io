@@ -57,7 +57,7 @@ export function NarrativeProvider({ children }: { children: ReactNode }) {
       creativeFocus: state.lastChoiceTags.includes('creative_focus'),
       campaignFocus: state.lastChoiceTags.includes('campaign_focus'),
     }),
-    [state.lastChoiceTags],
+    [state.lastChoiceTags]
   )
 
   const goToBeat = useCallback((id: NarrativeBeatId) => {
@@ -83,7 +83,7 @@ export function NarrativeProvider({ children }: { children: ReactNode }) {
       goToBeat,
       chooseChoice,
     }),
-    [state, activeBeat, flags, goToBeat, chooseChoice],
+    [state, activeBeat, flags, goToBeat, chooseChoice]
   )
 
   return <NarrativeContext.Provider value={value}>{children}</NarrativeContext.Provider>
@@ -102,5 +102,3 @@ export function useOptionalNarrativeContext(): NarrativeContextValue | null {
 }
 
 export { NarrativeContext }
-
-

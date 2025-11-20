@@ -3,38 +3,38 @@
  * Save and load desktop layouts (window positions, theme, persona)
  */
 
-import type { OperatorWindow, OperatorOSTheme, OperatorPersona } from '../types';
-import { debounce } from '../utils/debounce';
+import type { OperatorWindow, OperatorOSTheme, OperatorPersona } from '../types'
+import { debounce } from '../utils/debounce'
 
 export interface OperatorLayout {
-  id?: string;
-  user_id?: string;
-  workspace_id?: string;
-  layout_name: string;
-  windows: OperatorLayoutWindow[];
-  theme: OperatorOSTheme;
-  persona: OperatorPersona;
-  created_at?: string;
-  updated_at?: string;
+  id?: string
+  user_id?: string
+  workspace_id?: string
+  layout_name: string
+  windows: OperatorLayoutWindow[]
+  theme: OperatorOSTheme
+  persona: OperatorPersona
+  created_at?: string
+  updated_at?: string
 }
 
 export interface OperatorLayoutWindow {
-  appId: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  zIndex: number;
-  isMinimised: boolean;
-  isMaximised?: boolean;
+  appId: string
+  x: number
+  y: number
+  width: number
+  height: number
+  zIndex: number
+  isMinimised: boolean
+  isMaximised?: boolean
 }
 
 export interface OperatorLayoutSummary {
-  layout_name: string;
-  theme: OperatorOSTheme;
-  persona: OperatorPersona;
-  window_count: number;
-  updated_at: string;
+  layout_name: string
+  theme: OperatorOSTheme
+  persona: OperatorPersona
+  window_count: number
+  updated_at: string
 }
 
 /**
@@ -46,9 +46,9 @@ export async function loadLayout(
   layoutName?: string
 ): Promise<OperatorLayout | null> {
   try {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams()
     if (layoutName) {
-      params.set('name', layoutName);
+      params.set('name', layoutName)
     }
 
     const response = await fetch(
@@ -59,24 +59,24 @@ export async function loadLayout(
           'Content-Type': 'application/json',
         },
       }
-    );
+    )
 
     if (!response.ok) {
       if (response.status === 404) {
-        return null;
+        return null
       }
-      throw new Error(`Failed to load layout: ${response.statusText}`);
+      throw new Error(`Failed to load layout: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok || !data.data) {
-      return null;
+      return null
     }
 
-    return data.data as OperatorLayout;
+    return data.data as OperatorLayout
   } catch (error) {
-    console.error('Error loading layout:', error);
-    return null;
+    console.error('Error loading layout:', error)
+    return null
   }
 }
 
@@ -100,19 +100,19 @@ export async function saveLayout(
         theme: layout.theme,
         persona: layout.persona,
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Failed to save layout: ${response.statusText}`);
+      throw new Error(`Failed to save layout: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok) {
-      throw new Error(data.error || 'Failed to save layout');
+      throw new Error(data.error || 'Failed to save layout')
     }
   } catch (error) {
-    console.error('Error saving layout:', error);
-    throw error;
+    console.error('Error saving layout:', error)
+    throw error
   }
 }
 
@@ -129,21 +129,21 @@ export async function listLayouts(
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Failed to list layouts: ${response.statusText}`);
+      throw new Error(`Failed to list layouts: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok || !data.data) {
-      return [];
+      return []
     }
 
-    return data.data as OperatorLayoutSummary[];
+    return data.data as OperatorLayoutSummary[]
   } catch (error) {
-    console.error('Error listing layouts:', error);
-    return [];
+    console.error('Error listing layouts:', error)
+    return []
   }
 }
 
@@ -161,19 +161,19 @@ export async function deleteLayout(
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Failed to delete layout: ${response.statusText}`);
+      throw new Error(`Failed to delete layout: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok) {
-      throw new Error(data.error || 'Failed to delete layout');
+      throw new Error(data.error || 'Failed to delete layout')
     }
   } catch (error) {
-    console.error('Error deleting layout:', error);
-    throw error;
+    console.error('Error deleting layout:', error)
+    throw error
   }
 }
 
@@ -201,16 +201,13 @@ export function applyLayoutToStore(
       zIndex: w.zIndex,
     })),
     focusedWindowId: layout.windows.length > 0 ? `window-${Date.now()}-0` : null,
-  }));
+  }))
 }
 
 /**
  * Extract current layout from Zustand store
  */
-export function extractLayoutFromStore(
-  state: any,
-  layoutName: string
-): OperatorLayout {
+export function extractLayoutFromStore(state: any, layoutName: string): OperatorLayout {
   return {
     layout_name: layoutName,
     windows: state.windows.map((w: OperatorWindow) => ({
@@ -225,7 +222,7 @@ export function extractLayoutFromStore(
     })),
     theme: state.activeTheme,
     persona: state.operatorPersona,
-  };
+  }
 }
 
 /**
@@ -238,9 +235,9 @@ export function exportLayoutToJson(layout: OperatorLayout): string {
     theme: layout.theme,
     persona: layout.persona,
     exported_at: new Date().toISOString(),
-  };
+  }
 
-  return JSON.stringify(exportData, null, 2);
+  return JSON.stringify(exportData, null, 2)
 }
 
 /**
@@ -248,23 +245,29 @@ export function exportLayoutToJson(layout: OperatorLayout): string {
  */
 export function importLayoutFromJson(json: string): OperatorLayout {
   try {
-    const parsed = JSON.parse(json);
+    const parsed = JSON.parse(json)
 
     // Validate required fields
     if (!parsed.layout_name || !parsed.windows || !parsed.theme || !parsed.persona) {
-      throw new Error('Invalid layout JSON: missing required fields');
+      throw new Error('Invalid layout JSON: missing required fields')
     }
 
     // Validate theme
-    const validThemes: OperatorOSTheme[] = ['xp', 'aqua', 'daw', 'ascii', 'analogue'];
+    const validThemes: OperatorOSTheme[] = ['xp', 'aqua', 'daw', 'ascii', 'analogue']
     if (!validThemes.includes(parsed.theme)) {
-      throw new Error(`Invalid theme: ${parsed.theme}`);
+      throw new Error(`Invalid theme: ${parsed.theme}`)
     }
 
     // Validate persona
-    const validPersonas: OperatorPersona[] = ['default', 'strategist', 'producer', 'campaign', 'dev'];
+    const validPersonas: OperatorPersona[] = [
+      'default',
+      'strategist',
+      'producer',
+      'campaign',
+      'dev',
+    ]
     if (!validPersonas.includes(parsed.persona)) {
-      throw new Error(`Invalid persona: ${parsed.persona}`);
+      throw new Error(`Invalid persona: ${parsed.persona}`)
     }
 
     return {
@@ -272,10 +275,10 @@ export function importLayoutFromJson(json: string): OperatorLayout {
       windows: parsed.windows,
       theme: parsed.theme,
       persona: parsed.persona,
-    };
+    }
   } catch (error) {
-    console.error('Error importing layout from JSON:', error);
-    throw error;
+    console.error('Error importing layout from JSON:', error)
+    throw error
   }
 }
 
@@ -290,10 +293,10 @@ export const createDebouncedLayoutSave = (
   delay: number = 2000
 ) => {
   return debounce((getState: () => any) => {
-    const state = getState();
-    const layout = extractLayoutFromStore(state, layoutName);
-    saveLayout(userId, workspaceId, layout).catch(err => {
-      console.error('Auto-save layout failed:', err);
-    });
-  }, delay);
-};
+    const state = getState()
+    const layout = extractLayoutFromStore(state, layoutName)
+    saveLayout(userId, workspaceId, layout).catch((err) => {
+      console.error('Auto-save layout failed:', err)
+    })
+  }, delay)
+}

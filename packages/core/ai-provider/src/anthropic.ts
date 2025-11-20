@@ -6,7 +6,7 @@ function getAnthropicClient(): Anthropic {
 
   if (!apiKey) {
     throw new Error(
-      'ANTHROPIC_API_KEY is missing or empty. Set it in your environment to use the Anthropic provider.',
+      'ANTHROPIC_API_KEY is missing or empty. Set it in your environment to use the Anthropic provider.'
     )
   }
 
@@ -17,7 +17,7 @@ function getAnthropicClient(): Anthropic {
 
 export async function completeWithAnthropic(
   messages: AIMessage[],
-  options: AICompletionOptions = {},
+  options: AICompletionOptions = {}
 ): Promise<AICompletionResult> {
   const model = options.model || 'claude-sonnet-4-20250514'
   const anthropic = getAnthropicClient()

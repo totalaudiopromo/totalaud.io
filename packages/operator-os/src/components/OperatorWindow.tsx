@@ -3,18 +3,18 @@
  * Individual window component with chrome, drag, and resize
  */
 
-'use client';
+'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { X, Minus, Maximize2, Minimize2 } from 'lucide-react';
-import { useOperatorStore } from '../state/operatorStore';
-import { themes } from '../themes';
-import { windowVariants } from '../utils/animations';
-import type { OperatorWindow as OperatorWindowType } from '../types';
+import React, { useState, useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { X, Minus, Maximize2, Minimize2 } from 'lucide-react'
+import { useOperatorStore } from '../state/operatorStore'
+import { themes } from '../themes'
+import { windowVariants } from '../utils/animations'
+import type { OperatorWindow as OperatorWindowType } from '../types'
 
 interface OperatorWindowProps {
-  window: OperatorWindowType;
+  window: OperatorWindowType
 }
 
 export function OperatorWindow({ window }: OperatorWindowProps) {
@@ -26,62 +26,62 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
     maximiseWindow,
     moveWindow,
     resizeWindow,
-  } = useOperatorStore();
+  } = useOperatorStore()
 
-  const theme = themes[activeTheme];
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const dragStartPos = useRef({ x: 0, y: 0 });
-  const windowRef = useRef<HTMLDivElement>(null);
+  const theme = themes[activeTheme]
+  const [isDragging, setIsDragging] = useState(false)
+  const [isResizing, setIsResizing] = useState(false)
+  const dragStartPos = useRef({ x: 0, y: 0 })
+  const windowRef = useRef<HTMLDivElement>(null)
 
   // Handle window focus
   const handleWindowClick = () => {
     if (!window.isFocused) {
-      focusWindow(window.id);
+      focusWindow(window.id)
     }
-  };
+  }
 
   // Handle drag start
   const handleDragStart = (e: React.MouseEvent) => {
-    if (window.isMaximised) return;
+    if (window.isMaximised) return
 
-    e.stopPropagation();
-    setIsDragging(true);
+    e.stopPropagation()
+    setIsDragging(true)
     dragStartPos.current = {
       x: e.clientX - window.position.x,
       y: e.clientY - window.position.y,
-    };
-    focusWindow(window.id);
-  };
+    }
+    focusWindow(window.id)
+  }
 
   // Handle double-click to toggle maximise
   const handleTitleBarDoubleClick = () => {
-    maximiseWindow(window.id);
-  };
+    maximiseWindow(window.id)
+  }
 
   // Handle dragging
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging) return
 
     const handleMouseMove = (e: MouseEvent) => {
-      const newX = e.clientX - dragStartPos.current.x;
-      const newY = Math.max(60, e.clientY - dragStartPos.current.y); // Don't allow dragging above top bar
+      const newX = e.clientX - dragStartPos.current.x
+      const newY = Math.max(60, e.clientY - dragStartPos.current.y) // Don't allow dragging above top bar
 
-      moveWindow(window.id, { x: newX, y: newY });
-    };
+      moveWindow(window.id, { x: newX, y: newY })
+    }
 
     const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+      setIsDragging(false)
+    }
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, window.id, moveWindow]);
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isDragging, window.id, moveWindow])
 
   // Window position and size
   const windowStyle = window.isMaximised
@@ -96,7 +96,7 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
         left: window.position.x,
         width: window.size.width,
         height: window.size.height,
-      };
+      }
 
   return (
     <motion.div
@@ -129,27 +129,25 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
       >
         {/* Title */}
         <div className="flex items-center gap-3 flex-1">
-          <span className="font-medium text-sm font-['JetBrains_Mono']">
-            {window.title}
-          </span>
+          <span className="font-medium text-sm font-['JetBrains_Mono']">{window.title}</span>
         </div>
 
         {/* Window Controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => {
-              e.stopPropagation();
-              minimiseWindow(window.id);
+              e.stopPropagation()
+              minimiseWindow(window.id)
             }}
             className="p-1.5 rounded hover:bg-opacity-20 transition-colors"
             style={{
               color: theme.text.secondary,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = theme.windowChrome.buttonHover;
+              e.currentTarget.style.background = theme.windowChrome.buttonHover
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.background = 'transparent'
             }}
           >
             <Minus size={16} />
@@ -157,18 +155,18 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
 
           <button
             onClick={(e) => {
-              e.stopPropagation();
-              maximiseWindow(window.id);
+              e.stopPropagation()
+              maximiseWindow(window.id)
             }}
             className="p-1.5 rounded hover:bg-opacity-20 transition-colors"
             style={{
               color: theme.text.secondary,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = theme.windowChrome.buttonHover;
+              e.currentTarget.style.background = theme.windowChrome.buttonHover
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.background = 'transparent'
             }}
           >
             {window.isMaximised ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -176,20 +174,20 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
 
           <button
             onClick={(e) => {
-              e.stopPropagation();
-              closeWindow(window.id);
+              e.stopPropagation()
+              closeWindow(window.id)
             }}
             className="p-1.5 rounded hover:bg-red-500/20 transition-colors"
             style={{
               color: theme.text.secondary,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-              e.currentTarget.style.color = '#ef4444';
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
+              e.currentTarget.style.color = '#ef4444'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = theme.text.secondary;
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = theme.text.secondary
             }}
           >
             <X size={16} />
@@ -217,12 +215,12 @@ export function OperatorWindow({ window }: OperatorWindowProps) {
         <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
           onMouseDown={(e) => {
-            e.stopPropagation();
-            setIsResizing(true);
-            focusWindow(window.id);
+            e.stopPropagation()
+            setIsResizing(true)
+            focusWindow(window.id)
           }}
         />
       )}
     </motion.div>
-  );
+  )
 }

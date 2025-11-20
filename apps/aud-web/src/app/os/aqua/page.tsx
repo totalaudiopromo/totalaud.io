@@ -29,8 +29,7 @@ export default function AquaOSPage() {
   const demo = useOptionalDemo()
   const narrative = useOptionalNarrative()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
   const [activeApp, setActiveApp] = useState<AquaAppName | null>('studio')
   const [artistName, setArtistName] = useState('')
   const [releaseName, setReleaseName] = useState('')
@@ -110,13 +109,13 @@ export default function AquaOSPage() {
     setArtistName('LANA GLASS')
     setReleaseName('MIDNIGHT SIGNALS')
     setElevatorPitch(
-      'Left-field electronic pop that feels like tuning into a pirate station after midnight.',
+      'Left-field electronic pop that feels like tuning into a pirate station after midnight.'
     )
     setStory(
       [
         '“Midnight Signals” is LANA GLASS’s EP about late-night frequency drift – glitchy drums, glassy pads, and hooks that sit between club and pop.',
         'It’s built for underground playlists, small venues, and the people who still check radio tracklists at 2am.',
-      ].join(' '),
+      ].join(' ')
     )
   }, [isDemoMode])
 
@@ -287,9 +286,7 @@ export default function AquaOSPage() {
                 </p>
                 {currentProject && (
                   <p className="text-[11px] text-slate-400/90">
-                    <span className="uppercase tracking-[0.18em] text-sky-300/80">
-                      Project
-                    </span>{' '}
+                    <span className="uppercase tracking-[0.18em] text-sky-300/80">Project</span>{' '}
                     <span className="text-slate-300/90">{currentProject.name}</span>
                   </p>
                 )}
@@ -419,7 +416,7 @@ export default function AquaOSPage() {
                               : 'Give them a clear, low-friction next step.'}
                       </span>
                     </div>
-                  ),
+                  )
                 )}
                 {importNotes.length > 0 && (
                   <div className="mt-3 space-y-1 border-t border-sky-500/30 pt-2 text-[11px] text-slate-200/80">
@@ -450,5 +447,3 @@ export default function AquaOSPage() {
     </AquaContainer>
   )
 }
-
-

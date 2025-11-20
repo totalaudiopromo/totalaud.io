@@ -29,7 +29,7 @@ export function PersonaEngineProvider({ children }: PersonaEngineProps) {
 
   const persona: PersonaPreset | null = useMemo(
     () => (activePersonaId ? getPersonaPreset(activePersonaId) : null),
-    [activePersonaId],
+    [activePersonaId]
   )
 
   const value = useMemo(
@@ -41,10 +41,8 @@ export function PersonaEngineProvider({ children }: PersonaEngineProps) {
       personaTraits: persona?.traits ?? [],
       setPersona,
     }),
-    [activePersonaId, persona, setPersona],
+    [activePersonaId, persona, setPersona]
   )
 
   return <PersonaContext.Provider value={value}>{children}</PersonaContext.Provider>
 }
-
-

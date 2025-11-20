@@ -3,7 +3,7 @@
  * Warm, tactile, hardware-inspired aesthetic
  */
 
-import type { ThemeTokens } from '../types';
+import type { ThemeTokens } from '../types'
 
 export const analogueTheme: ThemeTokens = {
   name: 'Analogue',
@@ -33,5 +33,6 @@ export const analogueTheme: ThemeTokens = {
 
   border: 'rgba(212, 165, 116, 0.3)',
   shadow: '0 6px 24px rgba(0, 0, 0, 0.6)',
-  noise: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(212, 165, 116, 0.03) 1px, rgba(212, 165, 116, 0.03) 2px)',
-};
+  noise:
+    'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(212, 165, 116, 0.03) 1px, rgba(212, 165, 116, 0.03) 2px)',
+}

@@ -29,7 +29,7 @@ export function ProjectQuickSwitch() {
         if (a.createdAt === b.createdAt) return a.name.localeCompare(b.name)
         return a.createdAt.localeCompare(b.createdAt)
       }),
-    [projects],
+    [projects]
   )
 
   const items = useMemo(
@@ -42,7 +42,7 @@ export function ProjectQuickSwitch() {
         kind: 'new' as const,
       },
     ],
-    [sortedProjects],
+    [sortedProjects]
   )
 
   useEffect(() => {
@@ -53,9 +53,7 @@ export function ProjectQuickSwitch() {
       return
     }
 
-    const index = sortedProjects.findIndex(
-      (project) => project.id === currentProject?.id,
-    )
+    const index = sortedProjects.findIndex((project) => project.id === currentProject?.id)
     const baseIndex = index === -1 ? 0 : index
     setActiveIndex(baseIndex)
   }, [currentProject?.id, isProjectSwitchOpen, items.length, sortedProjects])
@@ -183,9 +181,7 @@ export function ProjectQuickSwitch() {
                   Switch creative context without leaving the OS.
                 </span>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">
-                ⌘⇧P
-              </span>
+              <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">⌘⇧P</span>
             </div>
 
             {items.map((item, index) => {
@@ -304,5 +300,3 @@ export function ProjectQuickSwitch() {
     </AnimatePresence>
   )
 }
-
-

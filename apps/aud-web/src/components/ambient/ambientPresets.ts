@@ -97,5 +97,3 @@ export function getTimeOfDay(now = new Date()): TimeOfDay {
   if (hours >= 16 && hours < 22) return 'dusk'
   return 'night'
 }
-
-

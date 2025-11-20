@@ -84,5 +84,3 @@ export function XPContainer({ children, onDesktopClick }: XPContainerProps) {
     </div>
   )
 }
-
-

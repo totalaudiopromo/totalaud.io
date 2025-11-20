@@ -204,7 +204,7 @@ export const useLoopOSLocalStore = create<LoopOSState>((set, get) => ({
               ...clip,
               ...partial,
             }
-          : clip,
+          : clip
       )
 
       const derived = recomputeFromClips(clips, state.playhead)
@@ -249,7 +249,7 @@ export const useLoopOSLocalStore = create<LoopOSState>((set, get) => ({
   toggleLoopOSReady: (id) =>
     set((state) => {
       const clips = state.clips.map((clip) =>
-        clip.id === id ? { ...clip, loopOSReady: !clip.loopOSReady } : clip,
+        clip.id === id ? { ...clip, loopOSReady: !clip.loopOSReady } : clip
       )
 
       const derived = recomputeFromClips(clips, state.playhead)
@@ -364,7 +364,7 @@ export const useLoopOSLocalStore = create<LoopOSState>((set, get) => ({
 
   consumeIncoming: (payloads) => {
     const dawPayloads = payloads.filter(
-      (payload): payload is DawToLoopOSPayload => payload.kind === 'daw-to-loopos',
+      (payload): payload is DawToLoopOSPayload => payload.kind === 'daw-to-loopos'
     )
 
     if (!dawPayloads.length) return
@@ -586,10 +586,7 @@ export const useLoopOSLocalStore = create<LoopOSState>((set, get) => ({
               ...loop,
               name: newName,
             }
-          : loop,
+          : loop
       ),
     })),
 }))
-
-
-

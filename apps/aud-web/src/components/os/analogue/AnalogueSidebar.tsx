@@ -18,9 +18,7 @@ export function AnalogueSidebar() {
       <div className="space-y-4">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-10 rounded-full border border-[#f5eadd]/40 bg-[#111111]/60 shadow-[0_0_0_1px_rgba(0,0,0,0.85)]" />
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#f5eadd]/70">
-            audio
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#f5eadd]/70">audio</span>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-[#f5eadd]/30 to-transparent" />
       </div>
@@ -51,5 +49,3 @@ export function AnalogueSidebar() {
     </aside>
   )
 }
-
-

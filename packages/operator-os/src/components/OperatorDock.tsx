@@ -4,10 +4,10 @@
  * Phase 3: Enhanced with app profiles and pinning
  */
 
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
   Radio,
@@ -24,15 +24,15 @@ import {
   Settings,
   Terminal,
   Pin,
-} from 'lucide-react';
-import { useOperatorStore } from '../state/operatorStore';
-import { themes } from '../themes';
-import { dockItemVariants } from '../utils/animations';
-import { resolveInitialWindowState } from '../state/appProfiles';
-import type { OperatorAppID } from '../types';
-import type { AppProfile } from '../state/appProfiles';
-import { AppProfilePopover } from './AppProfilePopover';
-import { useAppProfiles } from '@total-audio/operator-services';
+} from 'lucide-react'
+import { useOperatorStore } from '../state/operatorStore'
+import { themes } from '../themes'
+import { dockItemVariants } from '../utils/animations'
+import { resolveInitialWindowState } from '../state/appProfiles'
+import type { OperatorAppID } from '../types'
+import type { AppProfile } from '../state/appProfiles'
+import { AppProfilePopover } from './AppProfilePopover'
+import { useAppProfiles } from '@total-audio/operator-services'
 
 const appIcons: Record<OperatorAppID, React.ComponentType<{ size?: number }>> = {
   dashboard: LayoutDashboard,
@@ -49,74 +49,74 @@ const appIcons: Record<OperatorAppID, React.ComponentType<{ size?: number }>> = 
   anr: BarChart3,
   settings: Settings,
   terminal: Terminal,
-};
+}
 
 export interface OperatorDockProps {
-  userId?: string;
-  workspaceId?: string;
+  userId?: string
+  workspaceId?: string
 }
 
 export function OperatorDock({
   userId = 'demo-user',
   workspaceId = 'demo-workspace',
 }: OperatorDockProps = {}) {
-  const { activeTheme, dockApps, windows, openApp, focusWindow } = useOperatorStore();
-  const theme = themes[activeTheme];
+  const { activeTheme, dockApps, windows, openApp, focusWindow } = useOperatorStore()
+  const theme = themes[activeTheme]
 
   // App profiles hook
-  const { isPinned, getProfile, updateProfile } = useAppProfiles(userId, workspaceId);
+  const { isPinned, getProfile, updateProfile } = useAppProfiles(userId, workspaceId)
 
   // Popover state
   const [popoverState, setPopoverState] = useState<{
-    appId: OperatorAppID | null;
-    position: { x: number; y: number } | null;
-  }>({ appId: null, position: null });
+    appId: OperatorAppID | null
+    position: { x: number; y: number } | null
+  }>({ appId: null, position: null })
 
   const handleAppClick = async (appId: OperatorAppID) => {
     // Check if window exists
-    const existingWindow = windows.find(w => w.appId === appId);
+    const existingWindow = windows.find((w) => w.appId === appId)
 
     if (existingWindow) {
       if (existingWindow.isMinimised) {
-        focusWindow(existingWindow.id);
+        focusWindow(existingWindow.id)
       } else {
-        focusWindow(existingWindow.id);
+        focusWindow(existingWindow.id)
       }
     } else {
       // Get app profile to determine launch behavior
-      const profile = await getProfile(appId);
-      const initialState = resolveInitialWindowState(profile);
+      const profile = await getProfile(appId)
+      const initialState = resolveInitialWindowState(profile)
 
-      openApp(appId, undefined, initialState);
+      openApp(appId, undefined, initialState)
     }
-  };
+  }
 
   const handleRightClick = (e: React.MouseEvent, appId: OperatorAppID) => {
-    e.preventDefault();
+    e.preventDefault()
     setPopoverState({
       appId,
       position: { x: e.clientX, y: e.clientY },
-    });
-  };
+    })
+  }
 
   const handleClosePopover = () => {
-    setPopoverState({ appId: null, position: null });
-  };
+    setPopoverState({ appId: null, position: null })
+  }
 
   const handleUpdateProfile = async (updates: Partial<AppProfile>) => {
     if (popoverState.appId) {
-      await updateProfile(popoverState.appId, updates);
+      await updateProfile(popoverState.appId, updates)
     }
-  };
+  }
 
   // Get unique dock apps (pinned + currently open)
-  const pinnedApps = dockApps.filter(appId => isPinned(appId));
+  const pinnedApps = dockApps.filter((appId) => isPinned(appId))
   const openApps = windows
-    .map(w => w.appId)
+    .map((w) => w.appId)
     .filter((appId, index, self) => self.indexOf(appId) === index) // unique
-    .filter(appId => !isPinned(appId)); // not already pinned
+    .filter((appId) => !isPinned(appId)) // not already pinned
 
-  const allDockApps = [...pinnedApps, ...openApps];
+  const allDockApps = [...pinnedApps, ...openApps]
 
   return (
     <>
@@ -131,9 +131,9 @@ export function OperatorDock({
         <div className="flex items-end gap-3 px-6">
           {/* Pinned Apps */}
           {pinnedApps.map((appId) => {
-            const Icon = appIcons[appId];
-            const isOpen = windows.some(w => w.appId === appId);
-            const pinned = isPinned(appId);
+            const Icon = appIcons[appId]
+            const isOpen = windows.some((w) => w.appId === appId)
+            const pinned = isPinned(appId)
 
             return (
               <motion.button
@@ -149,10 +149,10 @@ export function OperatorDock({
                   color: theme.text.primary,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme.dock.itemHover;
+                  e.currentTarget.style.background = theme.dock.itemHover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.background = 'transparent'
                 }}
               >
                 <Icon size={28} />
@@ -177,7 +177,7 @@ export function OperatorDock({
                   />
                 )}
               </motion.button>
-            );
+            )
           })}
 
           {/* Separator between pinned and open apps */}
@@ -193,8 +193,8 @@ export function OperatorDock({
 
           {/* Open (non-pinned) Apps */}
           {openApps.map((appId) => {
-            const Icon = appIcons[appId];
-            const isOpen = windows.some(w => w.appId === appId);
+            const Icon = appIcons[appId]
+            const isOpen = windows.some((w) => w.appId === appId)
 
             return (
               <motion.button
@@ -210,10 +210,10 @@ export function OperatorDock({
                   color: theme.text.primary,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme.dock.itemHover;
+                  e.currentTarget.style.background = theme.dock.itemHover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.background = 'transparent'
                 }}
               >
                 <Icon size={28} />
@@ -228,7 +228,7 @@ export function OperatorDock({
                   />
                 )}
               </motion.button>
-            );
+            )
           })}
         </div>
       </div>
@@ -244,5 +244,5 @@ export function OperatorDock({
         />
       )}
     </>
-  );
+  )
 }

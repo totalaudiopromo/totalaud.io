@@ -179,10 +179,7 @@ export function mergeNodeUpdate(
 export function createNodeUpdateDebounce(delay: number = 120) {
   const timeouts = new Map<string, NodeJS.Timeout>()
 
-  return function debounce(
-    nodeId: string,
-    fn: () => void | Promise<void>
-  ): void {
+  return function debounce(nodeId: string, fn: () => void | Promise<void>): void {
     const existing = timeouts.get(nodeId)
     if (existing) {
       clearTimeout(existing)

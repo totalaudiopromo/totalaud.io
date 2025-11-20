@@ -1,7 +1,7 @@
 /**
  * OS Routes Layout
  * Full-screen creative environment with no global UI
- * 
+ *
  * This layout provides:
  * - ThemeProvider context for Creative OS surfaces
  * - Full-screen container with no padding/margins

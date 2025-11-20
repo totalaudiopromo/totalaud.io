@@ -67,8 +67,7 @@ export function CoreContainer({ children }: CoreContainerProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            'radial-gradient(circle at center, transparent 0, rgba(0,0,0,1) 70%)',
+          background: 'radial-gradient(circle at center, transparent 0, rgba(0,0,0,1) 70%)',
           opacity: vignetteOpacity,
           mixBlendMode: 'multiply',
         }}
@@ -80,5 +79,3 @@ export function CoreContainer({ children }: CoreContainerProps) {
     </div>
   )
 }
-
-

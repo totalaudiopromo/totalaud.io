@@ -3,7 +3,7 @@
  * Flow State compliant animation configurations
  */
 
-import type { Variants } from 'framer-motion';
+import type { Variants } from 'framer-motion'
 
 /**
  * Window open/close animation
@@ -32,7 +32,7 @@ export const windowVariants: Variants = {
       ease: [0.4, 0, 1, 1],
     },
   },
-};
+}
 
 /**
  * Window minimise animation
@@ -50,7 +50,7 @@ export const minimiseVariants: Variants = {
       ease: [0.4, 0, 0.2, 1],
     },
   },
-};
+}
 
 /**
  * Dock item hover animation
@@ -74,7 +74,7 @@ export const dockItemVariants: Variants = {
       duration: 0.1,
     },
   },
-};
+}
 
 /**
  * Notification animation
@@ -102,7 +102,7 @@ export const notificationVariants: Variants = {
       duration: 0.2,
     },
   },
-};
+}
 
 /**
  * Command palette animation
@@ -130,12 +130,12 @@ export const commandPaletteVariants: Variants = {
       duration: 0.15,
     },
   },
-};
+}
 
 /**
  * Theme transition animation
  */
-export const themeTransitionDuration = 0.5;
+export const themeTransitionDuration = 0.5
 
 /**
  * Standard easing functions (Flow State compliant)
@@ -144,4 +144,4 @@ export const easing = {
   easeOut: [0.4, 0, 0.2, 1],
   easeIn: [0.4, 0, 1, 1],
   easeInOut: [0.4, 0, 0.2, 1],
-};
+}

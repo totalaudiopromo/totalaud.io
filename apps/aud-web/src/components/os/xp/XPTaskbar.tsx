@@ -55,4 +55,3 @@ export function XPTaskbar({ onToggleStartMenu }: XPTaskbarProps) {
     </div>
   )
 }
-

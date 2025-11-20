@@ -44,7 +44,10 @@ export function RitualPanel({ title = "Today's rituals", variant = 'default' }: 
         <div className="space-y-2">
           {dailyRituals.length === 0 && !isLoading && (
             <p className="text-[11px] text-slate-400">
-              No rituals yet. {showRegenerate ? 'Tap refresh to spin up a small stack.' : 'Demo mode uses a fixed Lana script.'}
+              No rituals yet.{' '}
+              {showRegenerate
+                ? 'Tap refresh to spin up a small stack.'
+                : 'Demo mode uses a fixed Lana script.'}
             </p>
           )}
           {dailyRituals.map((ritual) => (
@@ -113,9 +116,7 @@ export function RitualPanel({ title = "Today's rituals", variant = 'default' }: 
                 <p className="text-[12px] font-semibold text-slate-50 group-hover:text-slate-100">
                   {ritual.title}
                 </p>
-                <p className="mt-1 text-[11px] leading-snug text-slate-300">
-                  {ritual.description}
-                </p>
+                <p className="mt-1 text-[11px] leading-snug text-slate-300">{ritual.description}</p>
               </div>
               <button
                 type="button"
@@ -131,5 +132,3 @@ export function RitualPanel({ title = "Today's rituals", variant = 'default' }: 
     </div>
   )
 }
-
-

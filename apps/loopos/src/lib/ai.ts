@@ -2,9 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { env } from './env'
 
 // Initialize Anthropic client (optional - only if API key is configured)
-const anthropic = env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
-  : null
+const anthropic = env.ANTHROPIC_API_KEY ? new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }) : null
 
 export interface Message {
   role: 'user' | 'assistant'

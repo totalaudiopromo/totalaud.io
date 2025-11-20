@@ -94,5 +94,3 @@ export const DEMO_STEPS: DemoStep[] = [
 ]
 
 export const DEMO_ACTIVE_STEPS = DEMO_STEPS.filter((step) => step.id !== 'end')
-
-

@@ -8,19 +8,13 @@ import { useOptionalDemo } from '@/components/demo/DemoOrchestrator'
 import { registerXpController } from '@/components/demo/director/DirectorEngine'
 import { useAgentTeams } from '@/components/agents/teams/AgentTeamOrchestrator'
 
-const processes = [
-  'audio.engine',
-  'xp.window.manager',
-  'xp.taskbar',
-  'theme.daemon',
-] as const
+const processes = ['audio.engine', 'xp.window.manager', 'xp.taskbar', 'theme.daemon'] as const
 
 export function XPProcessViewer() {
   const { runs, activeRunId, setActiveRun } = useAgentKernel()
   const demo = useOptionalDemo()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const orderedRuns = useMemo(
     () =>
@@ -28,7 +22,7 @@ export function XPProcessViewer() {
         if (a.createdAt === b.createdAt) return 0
         return a.createdAt < b.createdAt ? 1 : -1
       }),
-    [runs],
+    [runs]
   )
 
   const activeRun = orderedRuns.find((run) => run.id === activeRunId) ?? null
@@ -41,7 +35,7 @@ export function XPProcessViewer() {
         if (a.createdAt === b.createdAt) return 0
         return a.createdAt < b.createdAt ? 1 : -1
       }),
-    [teamRuns],
+    [teamRuns]
   )
 
   useEffect(() => {
@@ -131,16 +125,10 @@ export function XPProcessViewer() {
               </ul>
             </div>
           )}
-          <AgentRunList
-            runs={orderedRuns}
-            activeRunId={activeRunId}
-            onSelectRun={setActiveRun}
-          />
+          <AgentRunList runs={orderedRuns} activeRunId={activeRunId} onSelectRun={setActiveRun} />
           <AgentRunDetails run={activeRun} />
         </div>
       </div>
     </div>
   )
 }
-
-

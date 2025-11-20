@@ -3,9 +3,9 @@
  * Exports boot sequence components and utilities
  */
 
-export { BootScreen } from './components/BootScreen';
-export { SignalScreen } from './components/SignalScreen';
-export { ReadyScreen } from './components/ReadyScreen';
+export { BootScreen } from './components/BootScreen'
+export { SignalScreen } from './components/SignalScreen'
+export { ReadyScreen } from './components/ReadyScreen'
 
 export {
   executeBootChecks,
@@ -14,4 +14,4 @@ export {
   type BootPhase,
   type BootCheck,
   type BootState,
-} from './bootSequence';
+} from './bootSequence'

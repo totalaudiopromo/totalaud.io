@@ -3,39 +3,39 @@
  * Toast notification stack
  */
 
-'use client';
+'use client'
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
-import { useOperatorStore } from '../state/operatorStore';
-import { themes } from '../themes';
-import { notificationVariants } from '../utils/animations';
+import React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X, Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react'
+import { useOperatorStore } from '../state/operatorStore'
+import { themes } from '../themes'
+import { notificationVariants } from '../utils/animations'
 
 const notificationIcons = {
   info: Info,
   success: CheckCircle,
   warning: AlertTriangle,
   error: XCircle,
-};
+}
 
 const notificationColors = {
   info: '#3AA9BE',
   success: '#10b981',
   warning: '#f59e0b',
   error: '#ef4444',
-};
+}
 
 export function OperatorNotifications() {
-  const { activeTheme, notifications, dismissNotification } = useOperatorStore();
-  const theme = themes[activeTheme];
+  const { activeTheme, notifications, dismissNotification } = useOperatorStore()
+  const theme = themes[activeTheme]
 
   return (
     <div className="fixed top-20 right-6 z-[9999] flex flex-col gap-3 max-w-md">
       <AnimatePresence>
         {notifications.map((notification) => {
-          const Icon = notificationIcons[notification.type];
-          const color = notificationColors[notification.type];
+          const Icon = notificationIcons[notification.type]
+          const color = notificationColors[notification.type]
 
           return (
             <motion.div
@@ -56,10 +56,7 @@ export function OperatorNotifications() {
 
               {/* Message */}
               <div className="flex-1 min-w-0">
-                <p
-                  className="text-sm break-words"
-                  style={{ color: theme.text.primary }}
-                >
+                <p className="text-sm break-words" style={{ color: theme.text.primary }}>
                   {notification.message}
                 </p>
               </div>
@@ -70,18 +67,18 @@ export function OperatorNotifications() {
                 className="p-1 rounded hover:bg-opacity-20 transition-colors flex-shrink-0"
                 style={{ color: theme.text.muted }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme.dock.itemHover;
+                  e.currentTarget.style.background = theme.dock.itemHover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.background = 'transparent'
                 }}
               >
                 <X size={16} />
               </button>
             </motion.div>
-          );
+          )
         })}
       </AnimatePresence>
     </div>
-  );
+  )
 }

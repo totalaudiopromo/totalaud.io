@@ -117,8 +117,7 @@ function AquaPreview({ prefersReducedMotion }: { prefersReducedMotion: boolean }
           aria-hidden
           className="pointer-events-none absolute inset-[2px] rounded-full"
           style={{
-            background:
-              'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.9), transparent 55%)',
+            background: 'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.9), transparent 55%)',
           }}
         />
       </motion.div>
@@ -281,9 +280,7 @@ function StudioPreview({ prefersReducedMotion }: { prefersReducedMotion: boolean
             <span className="h-2 w-2 rounded-full bg-sky-400/80 shadow-[0_0_10px_rgba(56,189,248,0.9)]" />
             <span className="h-2 w-2 rounded-full bg-fuchsia-400/80 shadow-[0_0_10px_rgba(244,114,182,0.9)]" />
           </div>
-          <p className="text-[10px] uppercase tracking-[0.22em] text-slate-300">
-            loops in orbit
-          </p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-slate-300">loops in orbit</p>
         </div>
       </div>
     </div>
@@ -399,7 +396,7 @@ export function OSCard({ os, title, subtitle, preview }: OSCardProps) {
           ? undefined
           : {
               y: -4,
-            scale: hoverScale,
+              scale: hoverScale,
             }
       }
       whileTap={
@@ -429,9 +426,7 @@ export function OSCard({ os, title, subtitle, preview }: OSCardProps) {
           <div className="text-[10px] font-semibold uppercase tracking-[0.26em] text-slate-400">
             Creative OS
           </div>
-          <h2 className="text-lg font-semibold tracking-tight text-slate-50 md:text-xl">
-            {title}
-          </h2>
+          <h2 className="text-lg font-semibold tracking-tight text-slate-50 md:text-xl">{title}</h2>
           <p className="max-w-xs text-sm text-slate-300/90">{subtitle}</p>
         </div>
 
@@ -440,6 +435,3 @@ export function OSCard({ os, title, subtitle, preview }: OSCardProps) {
     </motion.button>
   )
 }
-
-
-

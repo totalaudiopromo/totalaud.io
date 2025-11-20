@@ -1,13 +1,6 @@
 'use client'
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { DemoStep, DemoStepId } from './DemoScript'
 import { DEMO_STEPS } from './DemoScript'
@@ -66,9 +59,8 @@ export function DemoOrchestrator({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    // Expose a simple global flag for demo-aware components
+    if (typeof window === 'undefined')
+      return // Expose a simple global flag for demo-aware components
     ;(window as any).__TA_DEMO__ = true
 
     return () => {
@@ -108,7 +100,7 @@ export function DemoOrchestrator({ children }: { children: React.ReactNode }) {
         router.push('/os')
       },
     }),
-    [activeStep, baseNextStep, goToStep, prevStep, router],
+    [activeStep, baseNextStep, goToStep, prevStep, router]
   )
 
   return (
@@ -120,5 +112,3 @@ export function DemoOrchestrator({ children }: { children: React.ReactNode }) {
     </DemoContext.Provider>
   )
 }
-
-

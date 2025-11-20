@@ -30,9 +30,7 @@ export function DAWToggle({ label, initialOn }: DawToggleProps) {
       <span className="uppercase tracking-[0.18em] text-slate-500">{label}</span>
       <motion.span
         className={`flex h-4 w-8 items-center rounded-full border px-[3px] ${
-          on
-            ? 'border-cyan-400/90 bg-cyan-500/20'
-            : 'border-slate-600/80 bg-slate-900/80'
+          on ? 'border-cyan-400/90 bg-cyan-500/20' : 'border-slate-600/80 bg-slate-900/80'
         }`}
         layout
         transition={
@@ -48,14 +46,10 @@ export function DAWToggle({ label, initialOn }: DawToggleProps) {
         <motion.span
           layout
           className={`h-3 w-3 rounded-full ${
-            on
-              ? 'bg-cyan-400 shadow-[0_0_8px_rgba(58,169,190,0.9)]'
-              : 'bg-slate-400/80'
+            on ? 'bg-cyan-400 shadow-[0_0_8px_rgba(58,169,190,0.9)]' : 'bg-slate-400/80'
           }`}
         />
       </motion.span>
     </button>
   )
 }
-
-

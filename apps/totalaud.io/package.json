@@ -1,5 +1,5 @@
 {
-  "name": "totalaud-io",
+  "name": "@total-audio/totalaud.io",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,7 +12,6 @@
   "dependencies": {
     "@total-audio/operator-os": "workspace:*",
     "@total-audio/operator-boot": "workspace:*",
-    "@total-audio/operator-services": "workspace:*",
     "next": "15.3.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

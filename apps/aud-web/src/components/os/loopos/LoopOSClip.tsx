@@ -256,9 +256,7 @@ export function LoopOSClip({
             {hasBlocked && (
               <p className="whitespace-nowrap">
                 <span className="mr-1">🔒 Blocked by:</span>
-                <span className="font-medium">
-                  {blockedByReasons.join(', ')}
-                </span>
+                <span className="font-medium">{blockedByReasons.join(', ')}</span>
               </p>
             )}
           </div>
@@ -267,5 +265,3 @@ export function LoopOSClip({
     </motion.div>
   )
 }
-
-

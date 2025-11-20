@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@total-audio/core-db": "*"
+    "@total-audio/schemas-database": "*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

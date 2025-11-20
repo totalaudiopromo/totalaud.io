@@ -33,5 +33,3 @@ export function useMood(): MoodContextValue {
 export function useOptionalMood(): MoodContextValue | null {
   return useContext(MoodContext)
 }
-
-

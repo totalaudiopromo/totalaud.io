@@ -12,7 +12,10 @@ import {
   useLoopOSLocalStore,
 } from '@/components/os/loopos'
 import { consumeOSBridges } from '@/components/os/navigation/OSBridges'
-import { DEFAULT_TIMELINE_UNITS, BASE_UNIT_WIDTH } from '@/components/os/loopos/engines/timelineMath'
+import {
+  DEFAULT_TIMELINE_UNITS,
+  BASE_UNIT_WIDTH,
+} from '@/components/os/loopos/engines/timelineMath'
 import type { Database } from '@total-audio/schemas-database'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useOptionalDemo } from '@/components/demo/DemoOrchestrator'
@@ -24,8 +27,7 @@ import { useProjectLoopPrefs } from '@/components/projects/useProjectLoopPrefs'
 export default function LoopOSPage() {
   const demo = useOptionalDemo()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const {
     activeLoopId,
@@ -274,27 +276,31 @@ export default function LoopOSPage() {
         const existingIds = new Set((existingClips ?? []).map((clip) => clip.id))
         const localIds = new Set(clips.map((clip) => clip.id))
 
-        const clipsToInsert = clips.filter((clip) => !existingIds.has(clip.id)).map((clip) => ({
-          id: clip.id,
-          loop_id: loopId,
-          lane: clip.lane,
-          start: clip.start,
-          length: clip.length,
-          name: clip.name,
-          notes: clip.notes,
-          loopos_ready: clip.loopOSReady,
-        }))
+        const clipsToInsert = clips
+          .filter((clip) => !existingIds.has(clip.id))
+          .map((clip) => ({
+            id: clip.id,
+            loop_id: loopId,
+            lane: clip.lane,
+            start: clip.start,
+            length: clip.length,
+            name: clip.name,
+            notes: clip.notes,
+            loopos_ready: clip.loopOSReady,
+          }))
 
-        const clipsToUpdate = clips.filter((clip) => existingIds.has(clip.id)).map((clip) => ({
-          id: clip.id,
-          loop_id: loopId,
-          lane: clip.lane,
-          start: clip.start,
-          length: clip.length,
-          name: clip.name,
-          notes: clip.notes,
-          loopos_ready: clip.loopOSReady,
-        }))
+        const clipsToUpdate = clips
+          .filter((clip) => existingIds.has(clip.id))
+          .map((clip) => ({
+            id: clip.id,
+            loop_id: loopId,
+            lane: clip.lane,
+            start: clip.start,
+            length: clip.length,
+            name: clip.name,
+            notes: clip.notes,
+            loopos_ready: clip.loopOSReady,
+          }))
 
         const idsToDelete = Array.from(existingIds).filter((id) => !localIds.has(id))
 
@@ -364,7 +370,7 @@ export default function LoopOSPage() {
     const startPx = Math.max(0, Math.min(DEFAULT_TIMELINE_UNITS * scale, targetUnit * scale))
 
     const container = document.querySelector<HTMLDivElement>(
-      '[data-loopos-timeline-scroll-container="true"]',
+      '[data-loopos-timeline-scroll-container="true"]'
     )
 
     if (container) {
@@ -544,8 +550,8 @@ export default function LoopOSPage() {
 
   const handleSetActiveLoop = useCallback(
     async (id: string) => {
-    if (isDemoMode) return
-    if (!id) return
+      if (isDemoMode) return
+      if (!id) return
 
       try {
         const { data: loop, error: loopError } = await supabase
@@ -591,7 +597,7 @@ export default function LoopOSPage() {
         console.warn('[LoopOS] switch loop failed', error)
       }
     },
-    [currentProject?.id, isDemoMode, loadFromPersisted, setLastLoopId, supabase],
+    [currentProject?.id, isDemoMode, loadFromPersisted, setLastLoopId, supabase]
   )
 
   const handleRenameLoop = async (id: string, newName: string) => {
@@ -600,10 +606,7 @@ export default function LoopOSPage() {
     if (!trimmed) return
 
     try {
-      const { error } = await supabase
-        .from('loopos_loops')
-        .update({ name: trimmed })
-        .eq('id', id)
+      const { error } = await supabase.from('loopos_loops').update({ name: trimmed }).eq('id', id)
 
       if (error) {
         // eslint-disable-next-line no-console
@@ -756,5 +759,3 @@ export default function LoopOSPage() {
     </LoopOSContainer>
   )
 }
-
-

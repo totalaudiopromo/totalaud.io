@@ -40,7 +40,7 @@ const DEMO_LANA_RITUALS: Ritual[] = [
   },
   {
     id: 'idea_spark',
-    title: "Backstage idea sweep",
+    title: 'Backstage idea sweep',
     description:
       'In Analogue, scan Lana’s scribbled ideas. Pick one weird note and turn it into a concrete next move for this release.',
     os: 'analogue',
@@ -66,7 +66,11 @@ function selectDailyRituals(opts: {
   const boosted = baseRituals.map((ritual) => {
     let momentumBoost = 1
     if (loopMomentumScore > 0.6) {
-      if (ritual.id === 'micro_promo' || ritual.id === 'pitch_polish' || ritual.id === 'loop_constellation') {
+      if (
+        ritual.id === 'micro_promo' ||
+        ritual.id === 'pitch_polish' ||
+        ritual.id === 'loop_constellation'
+      ) {
         momentumBoost = 1.4
       }
     } else if (loopMomentumScore < 0.3) {
@@ -157,7 +161,7 @@ export function RitualEngineProvider({ children }: RitualEngineProviderProps) {
 
       setIsLoading(false)
     },
-    [currentProjectId, isDemoMode, loopMomentumScore, moodScore],
+    [currentProjectId, isDemoMode, loopMomentumScore, moodScore]
   )
 
   useEffect(() => {
@@ -209,10 +213,8 @@ export function RitualEngineProvider({ children }: RitualEngineProviderProps) {
       isLoading,
       generateDailyRituals,
     }),
-    [dailyRituals, generateDailyRituals, isLoading, lastGenerated],
+    [dailyRituals, generateDailyRituals, isLoading, lastGenerated]
   )
 
   return <RitualsContext.Provider value={value}>{children}</RitualsContext.Provider>
 }
-
-

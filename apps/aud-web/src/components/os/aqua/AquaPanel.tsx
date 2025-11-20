@@ -49,8 +49,7 @@ export function AquaPanel({ children, className = '', floatDelay = 0 }: AquaPane
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
-          background:
-            'radial-gradient(circle at top, rgba(255,255,255,0.45), transparent 60%)',
+          background: 'radial-gradient(circle at top, rgba(255,255,255,0.45), transparent 60%)',
         }}
       />
 
@@ -58,5 +57,3 @@ export function AquaPanel({ children, className = '', floatDelay = 0 }: AquaPane
     </motion.div>
   )
 }
-
-

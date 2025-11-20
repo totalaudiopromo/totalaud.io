@@ -3,13 +3,13 @@
  * Initial boot screen with ASCII-style animation
  */
 
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface BootScreenProps {
-  onComplete: () => void;
+  onComplete: () => void
 }
 
 const BOOT_TEXT = [
@@ -18,27 +18,27 @@ const BOOT_TEXT = [
   'Initialising operator environment...',
   'Loading core systems...',
   'Establishing signal connection...',
-];
+]
 
 export function BootScreen({ onComplete }: BootScreenProps) {
-  const [visibleLines, setVisibleLines] = useState(0);
+  const [visibleLines, setVisibleLines] = useState(0)
 
   useEffect(() => {
     // Show lines one by one
     const interval = setInterval(() => {
-      setVisibleLines(prev => {
+      setVisibleLines((prev) => {
         if (prev >= BOOT_TEXT.length) {
-          clearInterval(interval);
+          clearInterval(interval)
           // Wait a bit then transition to next phase
-          setTimeout(onComplete, 500);
-          return prev;
+          setTimeout(onComplete, 500)
+          return prev
         }
-        return prev + 1;
-      });
-    }, 200);
+        return prev + 1
+      })
+    }, 200)
 
-    return () => clearInterval(interval);
-  }, [onComplete]);
+    return () => clearInterval(interval)
+  }, [onComplete])
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center font-['JetBrains_Mono']">
@@ -66,5 +66,5 @@ export function BootScreen({ onComplete }: BootScreenProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

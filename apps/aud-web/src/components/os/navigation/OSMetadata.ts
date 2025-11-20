@@ -79,7 +79,7 @@ export const OS_CONFIG_MAP: Record<OSSlug, OSConfig> = OS_CONFIGS.reduce(
     acc[config.slug] = config
     return acc
   },
-  {} as Record<OSSlug, OSConfig>,
+  {} as Record<OSSlug, OSConfig>
 )
 
 export const DEFAULT_OS_SLUG: OSSlug = 'ascii'
@@ -89,5 +89,3 @@ export const DEFAULT_OS_CONFIG: OSConfig = OS_CONFIG_MAP[DEFAULT_OS_SLUG]
 export function getOSConfig(slug: OSSlug): OSConfig {
   return OS_CONFIG_MAP[slug] ?? DEFAULT_OS_CONFIG
 }
-
-

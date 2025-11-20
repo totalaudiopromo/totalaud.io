@@ -89,5 +89,3 @@ export function clearLoopIdForProject(projectId: string, loopId: string): void {
 
   saveProjectLoopPrefs(next)
 }
-
-

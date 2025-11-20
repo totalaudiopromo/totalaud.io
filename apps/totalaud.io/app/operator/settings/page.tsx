@@ -4,18 +4,18 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { LayoutPreferencesSection } from './components/LayoutPreferencesSection';
-import { AppPreferencesSection } from './components/AppPreferencesSection';
+import { useState } from 'react'
+import { LayoutPreferencesSection } from './components/LayoutPreferencesSection'
+import { AppPreferencesSection } from './components/AppPreferencesSection'
 
 export default function OperatorSettingsPage() {
-  const [activeTab, setActiveTab] = useState<'layouts' | 'apps'>('layouts');
+  const [activeTab, setActiveTab] = useState<'layouts' | 'apps'>('layouts')
 
   // TODO: Get user/workspace IDs from auth context
-  const userId = 'temp-user-id';
-  const workspaceId = 'temp-workspace-id';
+  const userId = 'temp-user-id'
+  const workspaceId = 'temp-workspace-id'
 
   return (
     <div className="min-h-screen bg-[#05070A] text-white">
@@ -65,5 +65,5 @@ export default function OperatorSettingsPage() {
         )}
       </div>
     </div>
-  );
+  )
 }

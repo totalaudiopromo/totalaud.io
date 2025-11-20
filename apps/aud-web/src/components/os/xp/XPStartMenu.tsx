@@ -105,5 +105,3 @@ export function XPStartMenu({ isOpen, onClose }: XPStartMenuProps) {
     </div>
   )
 }
-
-

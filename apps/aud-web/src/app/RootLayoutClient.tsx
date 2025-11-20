@@ -1,7 +1,7 @@
 /**
  * Root Layout Client Component
  * Handles route-based conditional rendering for OS routes
- * 
+ *
  * OS routes bypass FlowCoreThemeProvider and get black background
  * Other routes use standard FlowCore layout
  */
@@ -32,4 +32,3 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   // Normal routes use FlowCore + global chrome
   return <FlowCoreThemeProvider>{children}</FlowCoreThemeProvider>
 }
-

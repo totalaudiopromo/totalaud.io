@@ -44,9 +44,7 @@ export function ExportToConsoleModal({ nodes, onClose }: ExportToConsoleModalPro
         <div className="flex items-centre justify-between p-6 border-b border-border">
           <div>
             <h2 className="text-xl font-semibold">Export to Console</h2>
-            <p className="text-sm text-foreground/60 mt-1">
-              Convert your nodes into Console tasks
-            </p>
+            <p className="text-sm text-foreground/60 mt-1">Convert your nodes into Console tasks</p>
           </div>
           <button
             onClick={onClose}

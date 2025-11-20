@@ -42,5 +42,3 @@ export const PERSONA_PRESETS: Record<PersonaId, PersonaPreset> = {
 export function getPersonaPreset(id: PersonaId): PersonaPreset | null {
   return PERSONA_PRESETS[id] ?? null
 }
-
-

@@ -35,20 +35,21 @@ export function AquaAppIcon({
   const { play } = useThemeAudio()
   const prefersReducedMotion = useReducedMotion()
 
-  const computedLabel =
-    label ??
-    (app === 'studio' ? 'Studio' : app === 'notes' ? 'Notes' : 'Flow')
+  const computedLabel = label ?? (app === 'studio' ? 'Studio' : app === 'notes' ? 'Notes' : 'Flow')
 
   let baseScale = 1
-  if (!prefersReducedMotion && typeof activeDockIndex === 'number' && typeof proximity === 'number') {
+  if (
+    !prefersReducedMotion &&
+    typeof activeDockIndex === 'number' &&
+    typeof proximity === 'number'
+  ) {
     if (proximity === 0) baseScale = 1.4
     else if (proximity === 1) baseScale = 1.2
     else if (proximity === 2) baseScale = 1.06
     else baseScale = 1
   }
 
-  const accentColor =
-    app === 'studio' ? '#22d3ee' : app === 'notes' ? '#a855f7' : '#22c55e'
+  const accentColor = app === 'studio' ? '#22d3ee' : app === 'notes' ? '#a855f7' : '#22c55e'
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -58,8 +59,7 @@ export function AquaAppIcon({
         style={{
           background: 'rgba(255,255,255,0.20)',
           borderColor: 'rgba(255,255,255,0.25)',
-          boxShadow:
-            '0 10px 30px rgba(15,23,42,0.85), 0 0 0 1px rgba(148,163,184,0.6)',
+          boxShadow: '0 10px 30px rgba(15,23,42,0.85), 0 0 0 1px rgba(148,163,184,0.6)',
         }}
         onMouseEnter={onDockHover}
         onMouseLeave={onDockLeave}
@@ -80,8 +80,7 @@ export function AquaAppIcon({
           prefersReducedMotion
             ? undefined
             : {
-                boxShadow:
-                  '0 16px 40px rgba(15,23,42,0.95), 0 0 25px rgba(56,189,248,0.9)',
+                boxShadow: '0 16px 40px rgba(15,23,42,0.95), 0 0 25px rgba(56,189,248,0.9)',
               }
         }
         aria-label={computedLabel}
@@ -141,5 +140,3 @@ export function AquaAppIcon({
     </div>
   )
 }
-
-

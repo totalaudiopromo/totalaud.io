@@ -3,12 +3,12 @@
  * Top bar with OS branding, status, and controls
  */
 
-'use client';
+'use client'
 
-import React from 'react';
-import { Search, User, Palette, Bell } from 'lucide-react';
-import { useOperatorStore } from '../state/operatorStore';
-import { themes } from '../themes';
+import React from 'react'
+import { Search, User, Palette, Bell } from 'lucide-react'
+import { useOperatorStore } from '../state/operatorStore'
+import { themes } from '../themes'
 
 const personaLabels = {
   default: 'Default',
@@ -16,7 +16,7 @@ const personaLabels = {
   producer: 'Producer',
   campaign: 'Campaign',
   dev: 'Developer',
-};
+}
 
 export function OperatorTopBar() {
   const {
@@ -26,10 +26,10 @@ export function OperatorTopBar() {
     notifications,
     windows,
     focusedWindowId,
-  } = useOperatorStore();
+  } = useOperatorStore()
 
-  const theme = themes[activeTheme];
-  const focusedWindow = windows.find(w => w.id === focusedWindowId);
+  const theme = themes[activeTheme]
+  const focusedWindow = windows.find((w) => w.id === focusedWindowId)
 
   return (
     <div
@@ -53,17 +53,12 @@ export function OperatorTopBar() {
           >
             OS
           </div>
-          <span className="font-['JetBrains_Mono'] font-semibold text-sm">
-            OperatorOS
-          </span>
+          <span className="font-['JetBrains_Mono'] font-semibold text-sm">OperatorOS</span>
         </div>
 
         {focusedWindow && (
           <>
-            <div
-              className="w-px h-6"
-              style={{ background: theme.border }}
-            />
+            <div className="w-px h-6" style={{ background: theme.border }} />
             <span className="text-sm" style={{ color: theme.text.secondary }}>
               {focusedWindow.title}
             </span>
@@ -74,7 +69,10 @@ export function OperatorTopBar() {
       {/* Right: Controls */}
       <div className="flex items-center gap-3">
         {/* Persona */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: theme.dock.itemHover }}>
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+          style={{ background: theme.dock.itemHover }}
+        >
           <User size={16} style={{ color: theme.accent }} />
           <span className="text-xs font-medium font-['JetBrains_Mono']">
             {personaLabels[operatorPersona]}
@@ -86,10 +84,10 @@ export function OperatorTopBar() {
           className="p-2 rounded-lg hover:bg-opacity-20 transition-colors"
           style={{ color: theme.text.secondary }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = theme.dock.itemHover;
+            e.currentTarget.style.background = theme.dock.itemHover
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.background = 'transparent'
           }}
           title={`Theme: ${theme.name}`}
         >
@@ -101,10 +99,10 @@ export function OperatorTopBar() {
           className="relative p-2 rounded-lg hover:bg-opacity-20 transition-colors"
           style={{ color: theme.text.secondary }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = theme.dock.itemHover;
+            e.currentTarget.style.background = theme.dock.itemHover
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.background = 'transparent'
           }}
         >
           <Bell size={18} />
@@ -125,10 +123,10 @@ export function OperatorTopBar() {
             border: `1px solid ${theme.border}`,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = theme.dock.itemHover;
+            e.currentTarget.style.background = theme.dock.itemHover
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.background = 'transparent'
           }}
         >
           <Search size={16} />
@@ -136,5 +134,5 @@ export function OperatorTopBar() {
         </button>
       </div>
     </div>
-  );
+  )
 }

@@ -51,9 +51,7 @@ export const journalDb = {
 
   async update(
     entryId: string,
-    updates: Partial<
-      Omit<JournalEntry, 'id' | 'workspace_id' | 'user_id' | 'created_at'>
-    >
+    updates: Partial<Omit<JournalEntry, 'id' | 'workspace_id' | 'user_id' | 'created_at'>>
   ): Promise<JournalEntry> {
     const { data, error } = await supabase
       .from('loopos_journal_entries')
@@ -67,10 +65,7 @@ export const journalDb = {
   },
 
   async delete(entryId: string): Promise<void> {
-    const { error } = await supabase
-      .from('loopos_journal_entries')
-      .delete()
-      .eq('id', entryId)
+    const { error } = await supabase.from('loopos_journal_entries').delete().eq('id', entryId)
 
     if (error) throw error
   },

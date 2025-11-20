@@ -6,7 +6,7 @@ function getOpenAIClient(): OpenAI {
 
   if (!apiKey) {
     throw new Error(
-      'OPENAI_API_KEY is missing or empty. Set it in your environment to use the OpenAI provider.',
+      'OPENAI_API_KEY is missing or empty. Set it in your environment to use the OpenAI provider.'
     )
   }
 
@@ -17,7 +17,7 @@ function getOpenAIClient(): OpenAI {
 
 export async function completeWithOpenAI(
   messages: AIMessage[],
-  options: AICompletionOptions = {},
+  options: AICompletionOptions = {}
 ): Promise<AICompletionResult> {
   const model = options.model || 'gpt-4o'
   const openai = getOpenAIClient()

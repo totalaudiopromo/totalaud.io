@@ -57,4 +57,3 @@ export function DawContainer({ children }: DawContainerProps) {
     </div>
   )
 }
-

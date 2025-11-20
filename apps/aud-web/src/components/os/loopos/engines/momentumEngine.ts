@@ -45,13 +45,13 @@ export function computeMomentum(clips: SequencedClip[]): MomentumResult {
       promo: 0,
       analysis: 0,
       refine: 0,
-    },
+    }
   )
 
   const laneWeights: Record<LoopOSLane, number> =
     totalLength > 0
       ? (Object.fromEntries(
-          ALL_LANES.map((lane) => [lane, laneLengths[lane] / totalLength]),
+          ALL_LANES.map((lane) => [lane, laneLengths[lane] / totalLength])
         ) as Record<LoopOSLane, number>)
       : {
           creative: 0,
@@ -64,8 +64,7 @@ export function computeMomentum(clips: SequencedClip[]): MomentumResult {
   const reasons: string[] = []
 
   const clipCount = clips.length
-  const base =
-    clipCount >= 8 ? 0.6 : clamp((clipCount / 8) * 0.6, 0.1, 0.6) // 1–7 clips ramp up towards 0.6
+  const base = clipCount >= 8 ? 0.6 : clamp((clipCount / 8) * 0.6, 0.1, 0.6) // 1–7 clips ramp up towards 0.6
 
   const usedLanes = ALL_LANES.filter((lane) => laneLengths[lane] > 0)
   const diversityBonus = clamp(Math.max(0, usedLanes.length - 1) * 0.1, 0, 0.3)
@@ -84,7 +83,7 @@ export function computeMomentum(clips: SequencedClip[]): MomentumResult {
     const entries = ALL_LANES.map((lane) => [lane, laneWeights[lane]] as const)
     const [dominantLane, dominantShare] = entries.reduce(
       (best, current) => (current[1] > best[1] ? current : best),
-      entries[0],
+      entries[0]
     )
 
     if (dominantShare > 0.6) {
@@ -114,7 +113,11 @@ export function computeMomentum(clips: SequencedClip[]): MomentumResult {
     reasons.push('Several conflicts detected')
   }
 
-  const rawScore = clamp(base + diversityBonus + readyBonus - balancePenalty - conflictPenalty, 0, 1)
+  const rawScore = clamp(
+    base + diversityBonus + readyBonus - balancePenalty - conflictPenalty,
+    0,
+    1
+  )
 
   const label: MomentumResult['label'] =
     rawScore < 0.3 ? 'low' : rawScore <= 0.7 ? 'medium' : 'high'
@@ -126,5 +129,3 @@ export function computeMomentum(clips: SequencedClip[]): MomentumResult {
     laneWeights,
   }
 }
-
-

@@ -61,8 +61,7 @@ export function StudioContainer({ children }: StudioContainerProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.65) 70%)',
+          background: 'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.65) 70%)',
         }}
       />
 
@@ -82,5 +81,3 @@ export function StudioContainer({ children }: StudioContainerProps) {
     </div>
   )
 }
-
-

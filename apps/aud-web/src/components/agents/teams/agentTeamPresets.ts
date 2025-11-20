@@ -2,11 +2,7 @@
 
 import type { AgentOriginOS, AgentRole } from '../AgentTypes'
 
-export type AgentTeamId =
-  | 'creative_team'
-  | 'promo_team'
-  | 'analysis_team'
-  | 'loopos_team'
+export type AgentTeamId = 'creative_team' | 'promo_team' | 'analysis_team' | 'loopos_team'
 
 export interface AgentTeamWhenConditions {
   os?: AgentOriginOS[]
@@ -64,5 +60,3 @@ export const AGENT_TEAM_PRESETS: Record<AgentTeamId, AgentTeamPreset> = {
 export function getAgentTeamPreset(teamId: AgentTeamId): AgentTeamPreset | null {
   return AGENT_TEAM_PRESETS[teamId] ?? null
 }
-
-

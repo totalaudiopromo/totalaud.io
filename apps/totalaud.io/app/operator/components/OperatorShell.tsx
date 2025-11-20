@@ -3,28 +3,28 @@
  * Manages boot sequence and OperatorOS mounting
  */
 
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import { BootScreen, SignalScreen, ReadyScreen } from '@total-audio/operator-boot';
-import { OperatorDesktop } from '@total-audio/operator-os';
+import React, { useState } from 'react'
+import { BootScreen, SignalScreen, ReadyScreen } from '@total-audio/operator-boot'
+import { OperatorDesktop } from '@total-audio/operator-os'
 
-type BootPhase = 'operator' | 'signal' | 'ready' | 'complete';
+type BootPhase = 'operator' | 'signal' | 'ready' | 'complete'
 
 export function OperatorShell() {
-  const [phase, setPhase] = useState<BootPhase>('operator');
+  const [phase, setPhase] = useState<BootPhase>('operator')
 
   const handleOperatorComplete = () => {
-    setPhase('signal');
-  };
+    setPhase('signal')
+  }
 
   const handleSignalComplete = () => {
-    setPhase('ready');
-  };
+    setPhase('ready')
+  }
 
   const handleReadyComplete = () => {
-    setPhase('complete');
-  };
+    setPhase('complete')
+  }
 
   return (
     <>
@@ -33,5 +33,5 @@ export function OperatorShell() {
       {phase === 'ready' && <ReadyScreen onComplete={handleReadyComplete} />}
       {phase === 'complete' && <OperatorDesktop />}
     </>
-  );
+  )
 }

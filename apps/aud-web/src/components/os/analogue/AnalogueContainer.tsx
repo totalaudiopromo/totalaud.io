@@ -52,8 +52,7 @@ export function AnalogueContainer({ children }: AnalogueContainerProps) {
         className="pointer-events-none absolute inset-0"
         style={{
           opacity: warmthOverlayOpacity,
-          background:
-            'radial-gradient(circle at bottom, rgba(248,181,102,0.6), transparent 55%)',
+          background: 'radial-gradient(circle at bottom, rgba(248,181,102,0.6), transparent 55%)',
           mixBlendMode: 'soft-light',
         }}
       />
@@ -64,8 +63,7 @@ export function AnalogueContainer({ children }: AnalogueContainerProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.6) 70%)',
+          background: 'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.6) 70%)',
           mixBlendMode: 'multiply',
         }}
         animate={
@@ -85,12 +83,8 @@ export function AnalogueContainer({ children }: AnalogueContainerProps) {
 
       {/* Foreground content */}
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="flex w-full max-w-6xl items-stretch gap-6 lg:gap-10">
-          {children}
-        </div>
+        <div className="flex w-full max-w-6xl items-stretch gap-6 lg:gap-10">{children}</div>
       </div>
     </div>
   )
 }
-
-

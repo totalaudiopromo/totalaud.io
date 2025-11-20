@@ -30,9 +30,7 @@ export function LoopCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold tracking-tight text-slate-50">
-            {name}
-          </p>
+          <p className="truncate text-[13px] font-semibold tracking-tight text-slate-50">{name}</p>
           {createdAtLabel && (
             <p className="mt-[2px] text-[10px] text-slate-500">{createdAtLabel}</p>
           )}
@@ -88,5 +86,3 @@ export function LoopCard({
     </button>
   )
 }
-
-

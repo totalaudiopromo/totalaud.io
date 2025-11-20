@@ -1,7 +1,7 @@
 /**
  * ASCII Window Component
  * Terminal-style window with monospace borders and title bar
- * 
+ *
  * Features:
  * - ASCII art borders (box-drawing characters)
  * - Title bar with controls
@@ -66,4 +66,3 @@ export function AsciiWindow({ title, children, className = '' }: AsciiWindowProp
     </div>
   )
 }
-

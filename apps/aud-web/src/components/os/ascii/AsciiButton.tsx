@@ -1,7 +1,7 @@
 /**
  * ASCII Button Component
  * Terminal-style button with bracket styling
- * 
+ *
  * Features:
  * - Bracket-style appearance [ BUTTON ]
  * - Hover glow effect
@@ -22,12 +22,12 @@ interface AsciiButtonProps {
   className?: string
 }
 
-export function AsciiButton({ 
-  children, 
-  onClick, 
+export function AsciiButton({
+  children,
+  onClick,
   variant = 'primary',
   disabled = false,
-  className = '' 
+  className = '',
 }: AsciiButtonProps) {
   const { play } = useThemeAudio()
   const prefersReducedMotion = useReducedMotion()
@@ -53,15 +53,23 @@ export function AsciiButton({
         disabled:opacity-50 disabled:cursor-not-allowed
         ${className}
       `}
-      whileHover={!disabled && !prefersReducedMotion ? { 
-        scale: 1.02,
-        textShadow: '0 0 8px rgba(0, 255, 153, 0.6)'
-      } : undefined}
-      whileTap={!disabled && !prefersReducedMotion ? { 
-        scale: 0.98 
-      } : undefined}
+      whileHover={
+        !disabled && !prefersReducedMotion
+          ? {
+              scale: 1.02,
+              textShadow: '0 0 8px rgba(0, 255, 153, 0.6)',
+            }
+          : undefined
+      }
+      whileTap={
+        !disabled && !prefersReducedMotion
+          ? {
+              scale: 0.98,
+            }
+          : undefined
+      }
       style={{
-        color: baseColor
+        color: baseColor,
       }}
       onMouseEnter={(e) => {
         if (!disabled) {
@@ -74,10 +82,10 @@ export function AsciiButton({
     >
       {/* Opening bracket */}
       <span className="mr-2">[</span>
-      
+
       {/* Button text */}
       <span>{children}</span>
-      
+
       {/* Closing bracket */}
       <span className="ml-2">]</span>
 
@@ -87,10 +95,9 @@ export function AsciiButton({
         initial={{ opacity: 0 }}
         whileHover={!disabled ? { opacity: 1 } : undefined}
         style={{
-          boxShadow: '0 0 12px rgba(0, 255, 153, 0.3)'
+          boxShadow: '0 0 12px rgba(0, 255, 153, 0.3)',
         }}
       />
     </motion.button>
   )
 }
-

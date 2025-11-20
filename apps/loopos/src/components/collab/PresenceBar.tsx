@@ -8,7 +8,15 @@ import { useState } from 'react'
 
 interface PresenceBarProps {
   workspaceId: string
-  location: 'dashboard' | 'timeline' | 'designer' | 'coach' | 'journal' | 'packs' | 'playbook' | 'export'
+  location:
+    | 'dashboard'
+    | 'timeline'
+    | 'designer'
+    | 'coach'
+    | 'journal'
+    | 'packs'
+    | 'playbook'
+    | 'export'
   className?: string
 }
 
@@ -138,14 +146,10 @@ function ParticipantAvatar({ participant, isExpanded, onToggle }: ParticipantAva
               <div className="text-xs text-foreground/60 capitalize mt-0.5">
                 {participant.location.replace('_', ' ')}
               </div>
-              {idle && (
-                <div className="text-xs text-foreground/40 mt-1">Idle</div>
-              )}
+              {idle && <div className="text-xs text-foreground/40 mt-1">Idle</div>}
             </div>
             {/* Arrow */}
-            <div
-              className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-background border-l border-t border-accent/20"
-            />
+            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-background border-l border-t border-accent/20" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -3,7 +3,7 @@
  * Terminal / retro aesthetic with monospace heavy design
  */
 
-import type { ThemeTokens } from '../types';
+import type { ThemeTokens } from '../types'
 
 export const asciiTheme: ThemeTokens = {
   name: 'ASCII',
@@ -33,4 +33,4 @@ export const asciiTheme: ThemeTokens = {
 
   border: '#3AA9BE',
   shadow: 'none',
-};
+}

@@ -12,13 +12,7 @@ export default function StudioOSPage() {
   const router = useRouter()
   const demo = useOptionalDemo()
 
-  const {
-    availableLoops,
-    activeLoopId,
-    clips,
-    momentum,
-    setActiveLoopId,
-  } = useLoopOSLocalStore()
+  const { availableLoops, activeLoopId, clips, momentum, setActiveLoopId } = useLoopOSLocalStore()
 
   const isDemoMode =
     demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
@@ -50,9 +44,7 @@ export default function StudioOSPage() {
 
           const ordered = Object.entries(laneCounts).sort((a, b) => b[1] - a[1])
           const topTwo = ordered.slice(0, 2)
-          laneSummary = topTwo
-            .map(([lane, count]) => `${count} ${lane}`)
-            .join(' • ')
+          laneSummary = topTwo.map(([lane, count]) => `${count} ${lane}`).join(' • ')
         }
       }
 
@@ -136,5 +128,3 @@ export default function StudioOSPage() {
     </StudioContainer>
   )
 }
-
-

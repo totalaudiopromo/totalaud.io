@@ -10,7 +10,7 @@ import type {
   ContradictionNode,
   DriftReport,
   MeshSystem,
-} from './types';
+} from './types'
 
 // ──────────────────────────────────────
 // CONTRADICTION DETECTION
@@ -21,7 +21,7 @@ import type {
  * In production, this would analyze actual system data
  */
 async function detectSystemContradictions(): Promise<ContradictionEdge[]> {
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
 
   // Mock contradictions for demonstration
   const contradictions: ContradictionEdge[] = [
@@ -90,9 +90,9 @@ async function detectSystemContradictions(): Promise<ContradictionEdge[]> {
         'MIG: Suggesting follow-up email to Contact A',
       ],
     },
-  ];
+  ]
 
-  return contradictions;
+  return contradictions
 }
 
 // ──────────────────────────────────────
@@ -104,43 +104,46 @@ async function detectSystemContradictions(): Promise<ContradictionEdge[]> {
  */
 function buildContradictionGraph(edges: ContradictionEdge[]): MeshContradictionGraph {
   // Build nodes: aggregate contradictions per system
-  const systemMap = new Map<MeshSystem, { count: number; maxSeverity: ContradictionEdge['severity'] }>();
+  const systemMap = new Map<
+    MeshSystem,
+    { count: number; maxSeverity: ContradictionEdge['severity'] }
+  >()
 
   edges.forEach((edge) => {
     // Track "from" system
-    const fromData = systemMap.get(edge.from) || { count: 0, maxSeverity: 'low' as const };
-    fromData.count++;
+    const fromData = systemMap.get(edge.from) || { count: 0, maxSeverity: 'low' as const }
+    fromData.count++
     if (getSeverityWeight(edge.severity) > getSeverityWeight(fromData.maxSeverity)) {
-      fromData.maxSeverity = edge.severity;
+      fromData.maxSeverity = edge.severity
     }
-    systemMap.set(edge.from, fromData);
+    systemMap.set(edge.from, fromData)
 
     // Track "to" system
-    const toData = systemMap.get(edge.to) || { count: 0, maxSeverity: 'low' as const };
-    toData.count++;
+    const toData = systemMap.get(edge.to) || { count: 0, maxSeverity: 'low' as const }
+    toData.count++
     if (getSeverityWeight(edge.severity) > getSeverityWeight(toData.maxSeverity)) {
-      toData.maxSeverity = edge.severity;
+      toData.maxSeverity = edge.severity
     }
-    systemMap.set(edge.to, toData);
-  });
+    systemMap.set(edge.to, toData)
+  })
 
   const nodes: ContradictionNode[] = Array.from(systemMap.entries()).map(([system, data]) => ({
     system,
     contradictionCount: data.count,
     severity: data.maxSeverity,
-  }));
+  }))
 
   return {
     nodes,
     edges,
     generatedAt: new Date().toISOString(),
     totalContradictions: edges.length,
-  };
+  }
 }
 
 function getSeverityWeight(severity: ContradictionEdge['severity']): number {
-  const weights = { low: 1, medium: 2, high: 3, critical: 4 };
-  return weights[severity];
+  const weights = { low: 1, medium: 2, high: 3, critical: 4 }
+  return weights[severity]
 }
 
 // ──────────────────────────────────────
@@ -161,7 +164,7 @@ export function driftReportsToContradictions(reports: DriftReport[]): Contradict
       humanSummary: report.humanSummary,
       detectedAt: report.detectedAt,
       examples: report.details?.examples,
-    }));
+    }))
 }
 
 // ──────────────────────────────────────
@@ -172,21 +175,21 @@ export function driftReportsToContradictions(reports: DriftReport[]): Contradict
  * Get current contradiction graph snapshot
  */
 export async function getContradictionGraphSnapshot(): Promise<MeshContradictionGraph> {
-  console.log('[MeshOS DriftGraph] Building contradiction graph...');
+  console.log('[MeshOS DriftGraph] Building contradiction graph...')
 
   // In production, this would:
   // 1. Read from mesh_drift_reports
   // 2. Query system states for real-time contradictions
   // 3. Analyze cross-system data patterns
 
-  const contradictions = await detectSystemContradictions();
-  const graph = buildContradictionGraph(contradictions);
+  const contradictions = await detectSystemContradictions()
+  const graph = buildContradictionGraph(contradictions)
 
   console.log(
     `[MeshOS DriftGraph] Graph built: ${graph.nodes.length} systems, ${graph.totalContradictions} contradictions`
-  );
+  )
 
-  return graph;
+  return graph
 }
 
 /**
@@ -209,12 +212,12 @@ export async function saveContradictionGraph(
         examples: edge.examples,
         graphGenerated: graph.generatedAt,
       },
-    };
+    }
 
-    await saveFn(report);
+    await saveFn(report)
   }
 
-  console.log(`[MeshOS DriftGraph] Saved ${graph.edges.length} drift reports`);
+  console.log(`[MeshOS DriftGraph] Saved ${graph.edges.length} drift reports`)
 }
 
 /**
@@ -224,24 +227,32 @@ export function filterGraphBySeverity(
   graph: MeshContradictionGraph,
   minSeverity: ContradictionEdge['severity']
 ): MeshContradictionGraph {
-  const severityWeight = getSeverityWeight(minSeverity);
-  const filteredEdges = graph.edges.filter((e) => getSeverityWeight(e.severity) >= severityWeight);
+  const severityWeight = getSeverityWeight(minSeverity)
+  const filteredEdges = graph.edges.filter((e) => getSeverityWeight(e.severity) >= severityWeight)
 
-  return buildContradictionGraph(filteredEdges);
+  return buildContradictionGraph(filteredEdges)
 }
 
 /**
  * Get systems with highest contradiction counts
  */
-export function getTopConflictSystems(graph: MeshContradictionGraph, limit: number = 5): ContradictionNode[] {
-  return [...graph.nodes].sort((a, b) => b.contradictionCount - a.contradictionCount).slice(0, limit);
+export function getTopConflictSystems(
+  graph: MeshContradictionGraph,
+  limit: number = 5
+): ContradictionNode[] {
+  return [...graph.nodes]
+    .sort((a, b) => b.contradictionCount - a.contradictionCount)
+    .slice(0, limit)
 }
 
 /**
  * Get most severe contradictions
  */
-export function getTopSevereContradictions(graph: MeshContradictionGraph, limit: number = 5): ContradictionEdge[] {
+export function getTopSevereContradictions(
+  graph: MeshContradictionGraph,
+  limit: number = 5
+): ContradictionEdge[] {
   return [...graph.edges]
     .sort((a, b) => getSeverityWeight(b.severity) - getSeverityWeight(a.severity))
-    .slice(0, limit);
+    .slice(0, limit)
 }

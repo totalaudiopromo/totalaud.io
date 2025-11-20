@@ -87,9 +87,7 @@ export function AgentKernelProvider({ children }: { children: React.ReactNode })
           : input
 
       const effectiveInput =
-        personaPrefix != null
-          ? `${personaPrefix}\n\n${inputWithCompanion}`
-          : inputWithCompanion
+        personaPrefix != null ? `${personaPrefix}\n\n${inputWithCompanion}` : inputWithCompanion
 
       const baseRun: AgentRun = {
         id,
@@ -162,7 +160,7 @@ export function AgentKernelProvider({ children }: { children: React.ReactNode })
         return { id, output: null }
       }
     },
-    [companion, persona, play, updateRun],
+    [companion, persona, play, updateRun]
   )
 
   const setActiveRun = useCallback((id: string | null) => {
@@ -180,8 +178,7 @@ export function AgentKernelProvider({ children }: { children: React.ReactNode })
         previous.activeRunId &&
         previous.runs.some(
           (run) =>
-            run.id === previous.activeRunId &&
-            (run.status === 'running' || run.status === 'queued'),
+            run.id === previous.activeRunId && (run.status === 'running' || run.status === 'queued')
         )
           ? previous.activeRunId
           : null,
@@ -197,7 +194,7 @@ export function AgentKernelProvider({ children }: { children: React.ReactNode })
       updateRun,
       clearCompletedRuns,
     }),
-    [state.runs, state.activeRunId, spawnAgentRun, setActiveRun, updateRun, clearCompletedRuns],
+    [state.runs, state.activeRunId, spawnAgentRun, setActiveRun, updateRun, clearCompletedRuns]
   )
 
   return <AgentKernelContext.Provider value={value}>{children}</AgentKernelContext.Provider>
@@ -210,5 +207,3 @@ export function useAgentKernelContext(): AgentKernelContextValue {
   }
   return ctx
 }
-
-

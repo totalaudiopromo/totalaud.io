@@ -138,10 +138,7 @@ export function ProjectEngineProvider({ children }: { children: React.ReactNode 
 
     try {
       window.localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(state.projects))
-      window.localStorage.setItem(
-        CURRENT_PROJECT_STORAGE_KEY,
-        state.currentProjectId ?? '',
-      )
+      window.localStorage.setItem(CURRENT_PROJECT_STORAGE_KEY, state.currentProjectId ?? '')
     } catch {
       // Best-effort persistence; ignore errors (e.g. private mode)
     }
@@ -205,7 +202,7 @@ export function ProjectEngineProvider({ children }: { children: React.ReactNode 
 
       return project
     },
-    [isDemoMode, state.projects.length],
+    [isDemoMode, state.projects.length]
   )
 
   const setProject = useCallback((id: string) => {
@@ -233,25 +230,28 @@ export function ProjectEngineProvider({ children }: { children: React.ReactNode 
               ...project,
               name: trimmedName,
             }
-          : project,
+          : project
       ),
     }))
   }, [])
 
-  const deleteProject = useCallback((id: string) => {
-    if (isDemoMode) return
-    setState((previous) => {
-      const remainingProjects = previous.projects.filter((project) => project.id !== id)
-      let nextCurrentId = previous.currentProjectId
-      if (previous.currentProjectId === id) {
-        nextCurrentId = remainingProjects[0]?.id ?? null
-      }
-      return {
-        currentProjectId: nextCurrentId,
-        projects: remainingProjects,
-      }
-    })
-  }, [isDemoMode])
+  const deleteProject = useCallback(
+    (id: string) => {
+      if (isDemoMode) return
+      setState((previous) => {
+        const remainingProjects = previous.projects.filter((project) => project.id !== id)
+        let nextCurrentId = previous.currentProjectId
+        if (previous.currentProjectId === id) {
+          nextCurrentId = remainingProjects[0]?.id ?? null
+        }
+        return {
+          currentProjectId: nextCurrentId,
+          projects: remainingProjects,
+        }
+      })
+    },
+    [isDemoMode]
+  )
 
   const currentProject = useMemo(() => {
     if (isDemoMode) {
@@ -290,7 +290,7 @@ export function ProjectEngineProvider({ children }: { children: React.ReactNode 
       setProject,
       state.currentProjectId,
       state.projects,
-    ],
+    ]
   )
 
   return (
@@ -313,5 +313,3 @@ export function useProjectEngineContext(): ProjectEngineContextValue {
   }
   return context
 }
-
-

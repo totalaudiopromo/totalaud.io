@@ -4,10 +4,10 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useOperatorStore } from '../state/operatorStore';
+import { useState, useEffect } from 'react'
+import { useOperatorStore } from '../state/operatorStore'
 import {
   listLayouts,
   loadLayout,
@@ -19,13 +19,13 @@ import {
   importLayoutFromJson,
   type OperatorLayoutSummary,
   type OperatorLayout,
-} from '../state/layoutPersistence';
+} from '../state/layoutPersistence'
 
 interface OperatorLayoutManagerProps {
-  userId: string;
-  workspaceId: string;
-  isOpen: boolean;
-  onClose: () => void;
+  userId: string
+  workspaceId: string
+  isOpen: boolean
+  onClose: () => void
 }
 
 export function OperatorLayoutManager({
@@ -34,249 +34,249 @@ export function OperatorLayoutManager({
   isOpen,
   onClose,
 }: OperatorLayoutManagerProps) {
-  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedLayout, setSelectedLayout] = useState<string | null>(null);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [createMode, setCreateMode] = useState<'current' | 'blank' | 'persona'>('current');
-  const [newLayoutName, setNewLayoutName] = useState('');
-  const [renaming, setRenaming] = useState<string | null>(null);
-  const [renameValue, setRenameValue] = useState('');
+  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([])
+  const [loading, setLoading] = useState(false)
+  const [selectedLayout, setSelectedLayout] = useState<string | null>(null)
+  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [createMode, setCreateMode] = useState<'current' | 'blank' | 'persona'>('current')
+  const [newLayoutName, setNewLayoutName] = useState('')
+  const [renaming, setRenaming] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
 
-  const operatorStore = useOperatorStore();
+  const operatorStore = useOperatorStore()
 
   useEffect(() => {
     if (isOpen) {
-      refreshLayouts();
+      refreshLayouts()
     }
-  }, [isOpen, userId, workspaceId]);
+  }, [isOpen, userId, workspaceId])
 
   const refreshLayouts = async () => {
     try {
-      setLoading(true);
-      const layoutList = await listLayouts(userId, workspaceId);
-      setLayouts(layoutList);
+      setLoading(true)
+      const layoutList = await listLayouts(userId, workspaceId)
+      setLayouts(layoutList)
     } catch (error) {
-      console.error('Error loading layouts:', error);
+      console.error('Error loading layouts:', error)
       operatorStore.pushNotification({
         message: 'Failed to load layouts',
         type: 'error',
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleApplyLayout = async (layoutName: string) => {
     try {
-      const layout = await loadLayout(userId, workspaceId, layoutName);
+      const layout = await loadLayout(userId, workspaceId, layoutName)
       if (!layout) {
         operatorStore.pushNotification({
           message: 'Layout not found',
           type: 'error',
-        });
-        return;
+        })
+        return
       }
 
-      applyLayoutToStore(layout, useOperatorStore.setState);
+      applyLayoutToStore(layout, useOperatorStore.setState)
 
       operatorStore.pushNotification({
         message: `Applied "${layoutName}" layout`,
         type: 'success',
-      });
+      })
 
-      onClose();
+      onClose()
     } catch (error) {
-      console.error('Error applying layout:', error);
+      console.error('Error applying layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to apply layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleDuplicateLayout = async (layoutName: string) => {
     try {
-      const layout = await loadLayout(userId, workspaceId, layoutName);
-      if (!layout) return;
+      const layout = await loadLayout(userId, workspaceId, layoutName)
+      if (!layout) return
 
-      const copyName = `${layoutName} (copy)`;
+      const copyName = `${layoutName} (copy)`
       await saveLayout(userId, workspaceId, {
         ...layout,
         layout_name: copyName,
-      });
+      })
 
       operatorStore.pushNotification({
         message: `Duplicated as "${copyName}"`,
         type: 'success',
-      });
+      })
 
-      await refreshLayouts();
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error duplicating layout:', error);
+      console.error('Error duplicating layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to duplicate layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleDeleteLayout = async (layoutName: string) => {
-    if (!confirm(`Delete layout "${layoutName}"?`)) return;
+    if (!confirm(`Delete layout "${layoutName}"?`)) return
 
     try {
-      await deleteLayout(userId, workspaceId, layoutName);
+      await deleteLayout(userId, workspaceId, layoutName)
 
       operatorStore.pushNotification({
         message: `Deleted "${layoutName}"`,
         type: 'success',
-      });
+      })
 
-      await refreshLayouts();
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error deleting layout:', error);
+      console.error('Error deleting layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to delete layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleRenameLayout = async (oldName: string, newName: string) => {
     if (!newName.trim() || newName === oldName) {
-      setRenaming(null);
-      return;
+      setRenaming(null)
+      return
     }
 
     try {
-      const layout = await loadLayout(userId, workspaceId, oldName);
-      if (!layout) return;
+      const layout = await loadLayout(userId, workspaceId, oldName)
+      if (!layout) return
 
       // Save with new name
       await saveLayout(userId, workspaceId, {
         ...layout,
         layout_name: newName,
-      });
+      })
 
       // Delete old (unless it's default)
       if (oldName !== 'default') {
-        await deleteLayout(userId, workspaceId, oldName);
+        await deleteLayout(userId, workspaceId, oldName)
       }
 
       operatorStore.pushNotification({
         message: `Renamed to "${newName}"`,
         type: 'success',
-      });
+      })
 
-      setRenaming(null);
-      await refreshLayouts();
+      setRenaming(null)
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error renaming layout:', error);
+      console.error('Error renaming layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to rename layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleCreateLayout = async () => {
     if (!newLayoutName.trim()) {
-      alert('Please enter a layout name');
-      return;
+      alert('Please enter a layout name')
+      return
     }
 
     try {
-      const currentState = useOperatorStore.getState();
-      let layout: OperatorLayout;
+      const currentState = useOperatorStore.getState()
+      let layout: OperatorLayout
 
       if (createMode === 'current') {
-        layout = extractLayoutFromStore(currentState, newLayoutName.trim());
+        layout = extractLayoutFromStore(currentState, newLayoutName.trim())
       } else if (createMode === 'blank') {
         layout = {
           layout_name: newLayoutName.trim(),
           windows: [],
           theme: currentState.activeTheme,
           persona: currentState.operatorPersona,
-        };
+        }
       } else {
         // persona mode - will be implemented with persona presets
-        layout = extractLayoutFromStore(currentState, newLayoutName.trim());
+        layout = extractLayoutFromStore(currentState, newLayoutName.trim())
       }
 
-      await saveLayout(userId, workspaceId, layout);
+      await saveLayout(userId, workspaceId, layout)
 
       operatorStore.pushNotification({
         message: `Created "${newLayoutName}"`,
         type: 'success',
-      });
+      })
 
-      setNewLayoutName('');
-      setShowCreateDialog(false);
-      await refreshLayouts();
+      setNewLayoutName('')
+      setShowCreateDialog(false)
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error creating layout:', error);
+      console.error('Error creating layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to create layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleExportLayout = async (layoutName: string) => {
     try {
-      const layout = await loadLayout(userId, workspaceId, layoutName);
-      if (!layout) return;
+      const layout = await loadLayout(userId, workspaceId, layoutName)
+      if (!layout) return
 
-      const json = exportLayoutToJson(layout);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${layoutName}.operator-layout.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const json = exportLayoutToJson(layout)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${layoutName}.operator-layout.json`
+      a.click()
+      URL.revokeObjectURL(url)
 
       operatorStore.pushNotification({
         message: `Exported "${layoutName}"`,
         type: 'success',
-      });
+      })
     } catch (error) {
-      console.error('Error exporting layout:', error);
+      console.error('Error exporting layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to export layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleImportLayout = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const file = event.target.files?.[0]
+    if (!file) return
 
     try {
-      const text = await file.text();
-      const layout = importLayoutFromJson(text);
+      const text = await file.text()
+      const layout = importLayoutFromJson(text)
 
-      await saveLayout(userId, workspaceId, layout);
+      await saveLayout(userId, workspaceId, layout)
 
       operatorStore.pushNotification({
         message: `Imported "${layout.layout_name}"`,
         type: 'success',
-      });
+      })
 
-      await refreshLayouts();
-      event.target.value = '';
+      await refreshLayouts()
+      event.target.value = ''
     } catch (error: any) {
-      console.error('Error importing layout:', error);
+      console.error('Error importing layout:', error)
       operatorStore.pushNotification({
         message: error.message || 'Failed to import layout',
         type: 'error',
-      });
-      event.target.value = '';
+      })
+      event.target.value = ''
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#05070A]/95 backdrop-blur-sm">
@@ -308,12 +308,7 @@ export function OperatorLayoutManager({
 
           <label className="px-4 py-2 bg-[#151A22] border border-white/6 text-white rounded-lg hover:border-[#3AA9BE]/50 transition-all duration-200 cursor-pointer font-medium">
             Import JSON
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportLayout}
-              className="hidden"
-            />
+            <input type="file" accept=".json" onChange={handleImportLayout} className="hidden" />
           </label>
 
           <button
@@ -364,9 +359,9 @@ export function OperatorLayoutManager({
                         onBlur={() => handleRenameLayout(layout.layout_name, renameValue)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            handleRenameLayout(layout.layout_name, renameValue);
+                            handleRenameLayout(layout.layout_name, renameValue)
                           } else if (e.key === 'Escape') {
-                            setRenaming(null);
+                            setRenaming(null)
                           }
                         }}
                         autoFocus
@@ -377,8 +372,8 @@ export function OperatorLayoutManager({
                         className="text-lg font-semibold text-white mb-2 capitalize font-mono"
                         onDoubleClick={() => {
                           if (layout.layout_name !== 'default') {
-                            setRenaming(layout.layout_name);
-                            setRenameValue(layout.layout_name);
+                            setRenaming(layout.layout_name)
+                            setRenameValue(layout.layout_name)
                           }
                         }}
                       >
@@ -410,8 +405,8 @@ export function OperatorLayoutManager({
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleApplyLayout(layout.layout_name);
+                        e.stopPropagation()
+                        handleApplyLayout(layout.layout_name)
                       }}
                       className="px-3 py-1.5 bg-[#3AA9BE] text-white text-sm rounded-lg hover:bg-[#3AA9BE]/80 transition-all duration-200 font-medium"
                     >
@@ -420,8 +415,8 @@ export function OperatorLayoutManager({
 
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleExportLayout(layout.layout_name);
+                        e.stopPropagation()
+                        handleExportLayout(layout.layout_name)
                       }}
                       className="px-3 py-1.5 bg-[#151A22] border border-white/10 text-gray-300 text-sm rounded-lg hover:border-[#3AA9BE]/50 hover:text-white transition-all duration-200"
                     >
@@ -430,8 +425,8 @@ export function OperatorLayoutManager({
 
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleDuplicateLayout(layout.layout_name);
+                        e.stopPropagation()
+                        handleDuplicateLayout(layout.layout_name)
                       }}
                       className="px-3 py-1.5 bg-[#151A22] border border-white/10 text-gray-300 text-sm rounded-lg hover:border-[#3AA9BE]/50 hover:text-white transition-all duration-200"
                     >
@@ -441,8 +436,8 @@ export function OperatorLayoutManager({
                     {layout.layout_name !== 'default' && (
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteLayout(layout.layout_name);
+                          e.stopPropagation()
+                          handleDeleteLayout(layout.layout_name)
                         }}
                         className="px-3 py-1.5 bg-red-900/20 border border-red-500/30 text-red-300 text-sm rounded-lg hover:bg-red-900/40 transition-all duration-200"
                       >
@@ -473,7 +468,7 @@ export function OperatorLayoutManager({
                     className="w-full px-3 py-2 bg-black/50 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#3AA9BE] font-mono"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        handleCreateLayout();
+                        handleCreateLayout()
                       }
                     }}
                   />
@@ -520,7 +515,9 @@ export function OperatorLayoutManager({
                       />
                       <div>
                         <div className="text-sm font-medium text-white">Persona Template</div>
-                        <div className="text-xs text-gray-400">Use current persona's recommended setup</div>
+                        <div className="text-xs text-gray-400">
+                          Use current persona's recommended setup
+                        </div>
                       </div>
                     </label>
                   </div>
@@ -535,8 +532,8 @@ export function OperatorLayoutManager({
                   </button>
                   <button
                     onClick={() => {
-                      setShowCreateDialog(false);
-                      setNewLayoutName('');
+                      setShowCreateDialog(false)
+                      setNewLayoutName('')
                     }}
                     className="px-4 py-2 bg-[#151A22] border border-white/10 text-white rounded-lg hover:border-white/20 transition-all duration-200"
                   >
@@ -558,11 +555,13 @@ export function OperatorLayoutManager({
             <div className="flex items-center gap-4">
               <span>Double-click layout name to rename</span>
               <span>·</span>
-              <span>{layouts.length} {layouts.length === 1 ? 'layout' : 'layouts'}</span>
+              <span>
+                {layouts.length} {layouts.length === 1 ? 'layout' : 'layouts'}
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

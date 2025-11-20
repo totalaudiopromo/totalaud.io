@@ -55,5 +55,3 @@ export function XPTaskbarWindowIcon({ window, isFocused }: XPTaskbarWindowIconPr
     </motion.button>
   )
 }
-
-

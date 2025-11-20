@@ -61,11 +61,11 @@ export function XPClipboardApp() {
           Copy last line to ASCII (stub)
         </button>
         <span className="text-[10px] text-slate-500">
-          {lastLine ? `Last line: “${lastLine.slice(0, 40)}${lastLine.length > 40 ? '…' : ''}` : 'No lines yet'}
+          {lastLine
+            ? `Last line: “${lastLine.slice(0, 40)}${lastLine.length > 40 ? '…' : ''}`
+            : 'No lines yet'}
         </span>
       </div>
     </div>
   )
 }
-
-

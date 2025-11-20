@@ -158,9 +158,12 @@ export function AmbientEngineProvider({ children }: AmbientEngineProviderProps) 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const id = window.setInterval(() => {
-      setTimeOfDay(getTimeOfDay())
-    }, 5 * 60 * 1000)
+    const id = window.setInterval(
+      () => {
+        setTimeOfDay(getTimeOfDay())
+      },
+      5 * 60 * 1000
+    )
 
     return () => {
       window.clearInterval(id)
@@ -208,7 +211,7 @@ export function AmbientEngineProvider({ children }: AmbientEngineProviderProps) 
 
   const preset = useMemo(
     () => AMBIENT_PRESETS.find((item) => item.id === presetId) ?? AMBIENT_PRESETS[0],
-    [presetId],
+    [presetId]
   )
 
   const osAccent = useMemo(() => {
@@ -228,7 +231,7 @@ export function AmbientEngineProvider({ children }: AmbientEngineProviderProps) 
       const clamped = Math.min(1, Math.max(0, value))
       return clamped * effectiveIntensity
     },
-    [effectiveIntensity],
+    [effectiveIntensity]
   )
 
   const value: AmbientContextValue = useMemo(
@@ -259,10 +262,8 @@ export function AmbientEngineProvider({ children }: AmbientEngineProviderProps) 
       setPresetId,
       setEnabled,
       timeOfDay,
-    ],
+    ]
   )
 
   return <AmbientContext.Provider value={value}>{children}</AmbientContext.Provider>
 }
-
-

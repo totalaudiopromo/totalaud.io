@@ -8,11 +8,7 @@ interface ProjectHotkeysProps {
   onClose: () => void
 }
 
-export function ProjectHotkeys({
-  isProjectSwitchOpen,
-  onOpen,
-  onClose,
-}: ProjectHotkeysProps) {
+export function ProjectHotkeys({ isProjectSwitchOpen, onOpen, onClose }: ProjectHotkeysProps) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isMetaCombo = (event.metaKey || event.ctrlKey) && event.shiftKey
@@ -46,5 +42,3 @@ export function ProjectHotkeys({
 
   return null
 }
-
-

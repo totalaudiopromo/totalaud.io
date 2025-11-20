@@ -24,8 +24,14 @@ export function useProjectEngine() {
       renameProject,
       deleteProject,
     }),
-    [currentProject, currentProjectId, createProject, deleteProject, projects, renameProject, setProject],
+    [
+      currentProject,
+      currentProjectId,
+      createProject,
+      deleteProject,
+      projects,
+      renameProject,
+      setProject,
+    ]
   )
 }
-
-

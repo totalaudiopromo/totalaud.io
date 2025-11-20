@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       {
         output,
       },
-      { status: 200 },
+      { status: 200 }
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
           error: 'Invalid request',
           details: error.errors,
         },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         error: 'Agent run failed',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
@@ -132,5 +132,3 @@ async function runSimpleAgent(params: {
 
   return result.content.trim()
 }
-
-

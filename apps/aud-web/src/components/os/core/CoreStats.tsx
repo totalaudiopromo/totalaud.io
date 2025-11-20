@@ -13,7 +13,7 @@ export function CoreStats() {
   const ambient = useOptionalAmbient()
 
   const activeAgents = runs.filter(
-    (run) => run.status === 'queued' || run.status === 'running',
+    (run) => run.status === 'queued' || run.status === 'running'
   ).length
   const erroredAgents = runs.filter((run) => run.status === 'error').length
 
@@ -60,9 +60,7 @@ export function CoreStats() {
       </div>
 
       <div className="mt-2 border-t border-slate-800/80 pt-2 text-[10px] text-slate-400">
-        <p className="mb-1 font-semibold uppercase tracking-[0.18em] text-slate-500">
-          OS activity
-        </p>
+        <p className="mb-1 font-semibold uppercase tracking-[0.18em] text-slate-500">OS activity</p>
         <div className="flex flex-wrap gap-2">
           {Object.entries(osActivityCounts).map(([slug, count]) => (
             <span
@@ -80,5 +78,3 @@ export function CoreStats() {
     </div>
   )
 }
-
-

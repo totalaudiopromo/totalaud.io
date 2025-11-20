@@ -47,9 +47,7 @@ export function LoopOSMiniMap({
   return (
     <div className="pointer-events-auto fixed right-4 top-[72px] z-20 hidden w-72 rounded-xl border border-slate-800/90 bg-slate-950/90 px-3 py-2 text-[10px] text-slate-300 shadow-[0_18px_40px_rgba(0,0,0,0.85)] lg:block">
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
-          Loop map
-        </span>
+        <span className="text-[10px] uppercase tracking-[0.22em] text-slate-400">Loop map</span>
         <span className="text-[9px] text-slate-500">Scrub to navigate</span>
       </div>
 
@@ -110,5 +108,3 @@ export function LoopOSMiniMap({
     </div>
   )
 }
-
-

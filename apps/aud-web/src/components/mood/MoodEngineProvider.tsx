@@ -61,7 +61,7 @@ export function MoodEngineProvider({ children }: MoodEngineProviderProps) {
     const interaction = clamp01(interactionRate)
 
     const nextScore = clamp01(
-      0.4 * loop + 0.3 * agentSuccess + 0.2 * ambientValue + 0.1 * interaction,
+      0.4 * loop + 0.3 * agentSuccess + 0.2 * ambientValue + 0.1 * interaction
     )
 
     const nextMood = resolveMood(nextScore, loop, interaction)
@@ -148,14 +148,16 @@ export function MoodEngineProvider({ children }: MoodEngineProviderProps) {
       recentAgentSuccessRate,
       score,
       setLoopMomentum,
-    ],
+    ]
   )
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
     const isDevOrDemo =
-      pathname?.startsWith('/dev') || pathname?.startsWith('/demo') || pathname?.startsWith('/console')
+      pathname?.startsWith('/dev') ||
+      pathname?.startsWith('/demo') ||
+      pathname?.startsWith('/console')
 
     if (!isDevOrDemo) return undefined
 
@@ -198,5 +200,3 @@ export function MoodEngineProvider({ children }: MoodEngineProviderProps) {
     </MoodContext.Provider>
   )
 }
-
-

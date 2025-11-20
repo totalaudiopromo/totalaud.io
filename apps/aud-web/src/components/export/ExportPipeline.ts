@@ -17,7 +17,7 @@ interface MomentumLike {
 export function buildPitchDraft(
   loop: LoopLike | null,
   momentum: MomentumLike | null,
-  agentOutput?: string,
+  agentOutput?: string
 ): ExportArtifact {
   const loopName = loop?.name ?? 'Untitled campaign loop'
   const bpm = loop?.bpm ?? null
@@ -46,7 +46,10 @@ export function buildPitchDraft(
   })
 }
 
-export function buildCreativeBrief(analogueCards: { title: string; body: string; tag?: string }[], loop: LoopLike | null): ExportArtifact {
+export function buildCreativeBrief(
+  analogueCards: { title: string; body: string; tag?: string }[],
+  loop: LoopLike | null
+): ExportArtifact {
   const loopName = loop?.name ?? 'Untitled campaign loop'
   const lines: string[] = [`Creative brief for ${loopName}`, '']
 
@@ -65,7 +68,7 @@ export function buildCreativeBrief(analogueCards: { title: string; body: string;
 
 export function buildLoopSummary(
   loop: LoopLike | null,
-  agentInsights?: { headline?: string; details?: string },
+  agentInsights?: { headline?: string; details?: string }
 ): ExportArtifact {
   const body = buildLoopSummaryBody(
     {
@@ -76,7 +79,7 @@ export function buildLoopSummary(
       momentumLabel: agentInsights?.headline ?? null,
       momentumScore: null,
     },
-    agentInsights,
+    agentInsights
   )
 
   return buildBaseExport({
@@ -87,10 +90,7 @@ export function buildLoopSummary(
   })
 }
 
-export function buildCampaignSnapshot(
-  loop: LoopLike | null,
-  xpClipboard: string,
-): ExportArtifact {
+export function buildCampaignSnapshot(loop: LoopLike | null, xpClipboard: string): ExportArtifact {
   const loopName = loop?.name ?? 'Campaign loop'
   const bodyLines: string[] = [
     `Campaign snapshot – ${loopName}`,
@@ -110,7 +110,7 @@ export function buildCampaignSnapshot(
 export function buildStoryFragment(
   aquaStory: string,
   loop: LoopLike | null,
-  agents?: string[],
+  agents?: string[]
 ): ExportArtifact {
   const loopName = loop?.name ?? 'Campaign loop'
 
@@ -131,5 +131,3 @@ export function buildStoryFragment(
     tags: ['story', 'fragment'],
   })
 }
-
-

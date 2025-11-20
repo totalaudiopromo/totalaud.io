@@ -116,9 +116,7 @@ export function CompanionPicker({
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-[11px] font-semibold">{companion.name}</p>
-                  <p className="truncate text-[10px] text-slate-400">
-                    {companion.tone}
-                  </p>
+                  <p className="truncate text-[10px] text-slate-400">{companion.tone}</p>
                 </div>
               </div>
               {isActive && (
@@ -133,5 +131,3 @@ export function CompanionPicker({
     </div>
   )
 }
-
-

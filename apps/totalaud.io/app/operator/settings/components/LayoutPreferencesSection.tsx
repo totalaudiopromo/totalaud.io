@@ -4,73 +4,70 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { listLayouts, type OperatorLayoutSummary } from '@total-audio/operator-os';
-import { getAllPersonaPresets, type PersonaPreset } from '@total-audio/operator-services';
+import { useState, useEffect } from 'react'
+import { listLayouts, type OperatorLayoutSummary } from '@total-audio/operator-os'
+import { getAllPersonaPresets, type PersonaPreset } from '@total-audio/operator-services'
 
 interface LayoutPreferencesSectionProps {
-  userId: string;
-  workspaceId: string;
+  userId: string
+  workspaceId: string
 }
 
-export function LayoutPreferencesSection({
-  userId,
-  workspaceId,
-}: LayoutPreferencesSectionProps) {
-  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([]);
-  const [defaultLayout, setDefaultLayout] = useState<string>('default');
-  const [personaDefaults, setPersonaDefaults] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferencesSectionProps) {
+  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([])
+  const [defaultLayout, setDefaultLayout] = useState<string>('default')
+  const [personaDefaults, setPersonaDefaults] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(true)
 
-  const personas = getAllPersonaPresets();
+  const personas = getAllPersonaPresets()
 
   useEffect(() => {
-    loadLayoutsAndPreferences();
-  }, [userId, workspaceId]);
+    loadLayoutsAndPreferences()
+  }, [userId, workspaceId])
 
   const loadLayoutsAndPreferences = async () => {
     try {
-      setLoading(true);
-      const layoutList = await listLayouts(userId, workspaceId);
-      setLayouts(layoutList);
+      setLoading(true)
+      const layoutList = await listLayouts(userId, workspaceId)
+      setLayouts(layoutList)
 
       // TODO: Load saved preferences from app_profiles or other mechanism
       // For now, use recommended layouts from presets
-      const defaults: Record<string, string> = {};
+      const defaults: Record<string, string> = {}
       personas.forEach((preset) => {
-        defaults[preset.persona] = preset.recommendedLayoutName;
-      });
-      setPersonaDefaults(defaults);
+        defaults[preset.persona] = preset.recommendedLayoutName
+      })
+      setPersonaDefaults(defaults)
     } catch (error) {
-      console.error('Error loading layouts:', error);
+      console.error('Error loading layouts:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleDefaultLayoutChange = (layoutName: string) => {
-    setDefaultLayout(layoutName);
+    setDefaultLayout(layoutName)
     // TODO: Save to backend if there's a mechanism for global preferences
-    console.log('Default layout changed to:', layoutName);
-  };
+    console.log('Default layout changed to:', layoutName)
+  }
 
   const handlePersonaDefaultChange = (persona: string, layoutName: string) => {
     setPersonaDefaults((prev) => ({
       ...prev,
       [persona]: layoutName,
-    }));
+    }))
     // TODO: Save to backend if there's a mechanism for persona preferences
-    console.log(`Persona ${persona} default layout changed to:`, layoutName);
-  };
+    console.log(`Persona ${persona} default layout changed to:`, layoutName)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-400">Loading preferences...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -91,7 +88,8 @@ export function LayoutPreferencesSection({
             <option value="">No default (empty desktop)</option>
             {layouts.map((layout) => (
               <option key={layout.layout_name} value={layout.layout_name}>
-                {layout.layout_name} ({layout.window_count} windows · {layout.theme} · {layout.persona})
+                {layout.layout_name} ({layout.window_count} windows · {layout.theme} ·{' '}
+                {layout.persona})
               </option>
             ))}
           </select>
@@ -102,7 +100,8 @@ export function LayoutPreferencesSection({
       <div>
         <h2 className="text-xl font-semibold mb-4">Per-Persona Default Layouts</h2>
         <p className="text-sm text-gray-400 mb-4">
-          Set a default layout for each persona. When you switch personas, OperatorOS can suggest these layouts.
+          Set a default layout for each persona. When you switch personas, OperatorOS can suggest
+          these layouts.
         </p>
 
         <div className="grid gap-4">
@@ -140,10 +139,11 @@ export function LayoutPreferencesSection({
       {/* Info Note */}
       <div className="p-4 bg-[#3AA9BE]/10 border border-[#3AA9BE]/30 rounded-xl">
         <div className="text-sm text-[#3AA9BE]">
-          <span className="font-medium">Note:</span> Layout preferences are stored per-user and will be available across all your sessions.
-          Use the Layout Manager (⌘L) to create and manage layouts.
+          <span className="font-medium">Note:</span> Layout preferences are stored per-user and will
+          be available across all your sessions. Use the Layout Manager (⌘L) to create and manage
+          layouts.
         </div>
       </div>
     </div>
-  );
+  )
 }

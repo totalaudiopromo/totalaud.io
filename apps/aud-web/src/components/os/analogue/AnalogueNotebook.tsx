@@ -29,8 +29,7 @@ export function AnalogueNotebook({ children }: AnalogueNotebookProps) {
         aria-hidden
         className="pointer-events-none absolute inset-x-4 bottom-4 h-10 rounded-[32px] opacity-60 blur-xl"
         style={{
-          background:
-            'radial-gradient(circle at center, rgba(0,0,0,0.65) 0, transparent 60%)',
+          background: 'radial-gradient(circle at center, rgba(0,0,0,0.65) 0, transparent 60%)',
         }}
       />
 
@@ -78,5 +77,3 @@ export function AnalogueNotebook({ children }: AnalogueNotebookProps) {
     </div>
   )
 }
-
-

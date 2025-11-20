@@ -73,12 +73,11 @@ export function LoopOSInspector({
   const companion = useOptionalCompanion()
 
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const selectedClip = useMemo(
     () => clips.find((clip) => clip.id === selectedClipId) ?? null,
-    [clips, selectedClipId],
+    [clips, selectedClipId]
   )
 
   useEffect(() => {
@@ -231,11 +230,9 @@ export function LoopOSInspector({
           lanes: clips.map((clip) => clip.lane),
         },
         {
-          headline: momentum?.label
-            ? `Momentum: ${momentum.label}`
-            : undefined,
+          headline: momentum?.label ? `Momentum: ${momentum.label}` : undefined,
           details: fallbackText,
-        },
+        }
       )
 
       queueOSBridge('aqua', {
@@ -278,15 +275,12 @@ export function LoopOSInspector({
           lanes: clips.map((clip) => clip.lane),
         },
         {
-          headline: momentum?.label
-            ? `Momentum: ${momentum.label}`
-            : undefined,
+          headline: momentum?.label ? `Momentum: ${momentum.label}` : undefined,
           details: fallbackText,
-        },
+        }
       )
 
-      const tag: 'idea' | 'campaign' =
-        momentum && momentum.score > 0.6 ? 'campaign' : 'idea'
+      const tag: 'idea' | 'campaign' = momentum && momentum.score > 0.6 ? 'campaign' : 'idea'
 
       queueOSBridge('analogue', {
         kind: 'loopos-to-analogue',
@@ -329,11 +323,9 @@ export function LoopOSInspector({
           lanes: clips.map((clip) => clip.lane),
         },
         {
-          headline: momentum?.label
-            ? `Momentum: ${momentum.label}`
-            : undefined,
+          headline: momentum?.label ? `Momentum: ${momentum.label}` : undefined,
           details: fallbackText,
-        },
+        }
       )
 
       queueOSBridge('xp', {
@@ -415,9 +407,7 @@ export function LoopOSInspector({
             </div>
           </div>
 
-          {aiError && (
-            <p className="mt-1 text-[10px] text-amber-300">{aiError}</p>
-          )}
+          {aiError && <p className="mt-1 text-[10px] text-amber-300">{aiError}</p>}
 
           {aiSuggestions.clips.length > 0 ? (
             <ul className="mt-2 space-y-2">
@@ -443,16 +433,11 @@ export function LoopOSInspector({
                       {clip.lane}
                     </span>
                     <span className="text-[9px] text-slate-400">
-                      {clip.start.toFixed(1)}u →{' '}
-                      {(clip.start + clip.length).toFixed(1)}u
+                      {clip.start.toFixed(1)}u → {(clip.start + clip.length).toFixed(1)}u
                     </span>
                   </div>
-                  <p className="mt-1 truncate text-[11px] font-medium text-slate-50">
-                    {clip.name}
-                  </p>
-                  <p className="mt-1 line-clamp-3 text-[10px] text-slate-300">
-                    {clip.notes}
-                  </p>
+                  <p className="mt-1 truncate text-[11px] font-medium text-slate-50">{clip.name}</p>
+                  <p className="mt-1 line-clamp-3 text-[10px] text-slate-300">{clip.notes}</p>
                   <div className="mt-2 flex items-center justify-end gap-2">
                     <button
                       type="button"
@@ -538,9 +523,7 @@ export function LoopOSInspector({
               </p>
               <p className="flex items-center justify-between">
                 <span className="text-slate-400">Label</span>
-                <span className="uppercase tracking-[0.18em] text-slate-200">
-                  {momentum.label}
-                </span>
+                <span className="uppercase tracking-[0.18em] text-slate-200">{momentum.label}</span>
               </p>
               {momentum.reasons.length > 0 && (
                 <ul className="mt-1 list-disc space-y-[2px] pl-4 text-[10px] text-slate-400">
@@ -562,8 +545,8 @@ export function LoopOSInspector({
             Ask an agent
           </p>
           <p className="mt-1 text-[10px] text-slate-500">
-            Route this loop into the multi-agent brain without leaving LoopOS. Results land in the XP
-            Agent Monitor.
+            Route this loop into the multi-agent brain without leaving LoopOS. Results land in the
+            XP Agent Monitor.
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <label className="text-[10px] text-slate-400">
@@ -591,9 +574,7 @@ export function LoopOSInspector({
               </select>
             </label>
           </div>
-          {agentError && (
-            <p className="mt-1 text-[10px] text-amber-300">{agentError}</p>
-          )}
+          {agentError && <p className="mt-1 text-[10px] text-amber-300">{agentError}</p>}
           <div className="mt-2 grid grid-cols-1 gap-2">
             <button
               type="button"
@@ -741,9 +722,7 @@ export function LoopOSInspector({
         <div className="rounded-md border border-slate-800/80 bg-slate-950/70 p-2">
           <p className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
             <span>Next actions</span>
-            <span className="text-slate-500">
-              Playhead @ {playhead.toFixed(1)}u
-            </span>
+            <span className="text-slate-500">Playhead @ {playhead.toFixed(1)}u</span>
           </p>
           {nextActionClips.length ? (
             <ul className="mt-1 space-y-1">
@@ -813,95 +792,92 @@ export function LoopOSInspector({
 
         {selectedClip ? (
           <div className="space-y-3 border-t border-slate-800/80 pt-2">
-          <div className="space-y-1">
-            <label className="block text-[11px] text-slate-400">Name</label>
-            <input
-              className="w-full rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 placeholder:text-slate-500 focus:border-[#3AA9BE]"
-              value={selectedClip.name}
-              onChange={(event) =>
-                onUpdateClip(selectedClip.id, { name: event.target.value })
-              }
-            />
-          </div>
+            <div className="space-y-1">
+              <label className="block text-[11px] text-slate-400">Name</label>
+              <input
+                className="w-full rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 placeholder:text-slate-500 focus:border-[#3AA9BE]"
+                value={selectedClip.name}
+                onChange={(event) => onUpdateClip(selectedClip.id, { name: event.target.value })}
+              />
+            </div>
 
-          <div className="space-y-1">
-            <label className="block text-[11px] text-slate-400">Lane</label>
-            <select
-              className="w-full rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 focus:border-[#3AA9BE]"
-              value={selectedClip.lane}
-              onChange={(event) => handleLaneChange(event.target.value as LoopOSLane)}
-            >
-              <option value="creative">Creative</option>
-              <option value="action">Action</option>
-              <option value="promo">Promo</option>
-              <option value="analysis">Analysis</option>
-              <option value="refine">Refine</option>
-            </select>
-          </div>
+            <div className="space-y-1">
+              <label className="block text-[11px] text-slate-400">Lane</label>
+              <select
+                className="w-full rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 focus:border-[#3AA9BE]"
+                value={selectedClip.lane}
+                onChange={(event) => handleLaneChange(event.target.value as LoopOSLane)}
+              >
+                <option value="creative">Creative</option>
+                <option value="action">Action</option>
+                <option value="promo">Promo</option>
+                <option value="analysis">Analysis</option>
+                <option value="refine">Refine</option>
+              </select>
+            </div>
 
-          <div className="space-y-1">
-            <label className="block text-[11px] text-slate-400">Notes</label>
-            <textarea
-              className="min-h-[80px] w-full resize-none rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 placeholder:text-slate-500 focus:border-[#3AA9BE]"
-              placeholder="What happens in this segment of the loop? Content, actions, checks, or analysis."
-              value={selectedClip.notes}
-              onChange={(event) =>
-                onUpdateClip(selectedClip.id, { notes: event.target.value })
-              }
-            />
-          </div>
+            <div className="space-y-1">
+              <label className="block text-[11px] text-slate-400">Notes</label>
+              <textarea
+                className="min-h-[80px] w-full resize-none rounded-md border border-slate-700 bg-slate-950/90 px-2 py-1 text-xs text-slate-50 outline-none ring-0 placeholder:text-slate-500 focus:border-[#3AA9BE]"
+                placeholder="What happens in this segment of the loop? Content, actions, checks, or analysis."
+                value={selectedClip.notes}
+                onChange={(event) => onUpdateClip(selectedClip.id, { notes: event.target.value })}
+              />
+            </div>
 
-          <button
-            type="button"
-            onClick={handleMarkLoopOSReady}
-            className={`w-full rounded-md border px-2 py-1 text-[11px] font-medium ${
-              selectedClip.loopOSReady
-                ? 'border-emerald-400/80 bg-emerald-500/20 text-emerald-200'
-                : 'border-[#3AA9BE]/80 bg-[#020617] text-[#E5F9FF]'
-            }`}
-          >
-            {selectedClip.loopOSReady ? 'Unmark LoopOS-ready' : 'Mark for LoopOS'}
-          </button>
-
-          <div className="space-y-2 border-t border-slate-800/80 pt-2">
             <button
               type="button"
-              onClick={handleSendToAqua}
-              className="w-full rounded-md border border-sky-400/70 bg-sky-500/20 px-2 py-1 text-[11px] font-medium text-sky-50 hover:bg-sky-500/30"
+              onClick={handleMarkLoopOSReady}
+              className={`w-full rounded-md border px-2 py-1 text-[11px] font-medium ${
+                selectedClip.loopOSReady
+                  ? 'border-emerald-400/80 bg-emerald-500/20 text-emerald-200'
+                  : 'border-[#3AA9BE]/80 bg-[#020617] text-[#E5F9FF]'
+              }`}
             >
-              Send to Aqua
+              {selectedClip.loopOSReady ? 'Unmark LoopOS-ready' : 'Mark for LoopOS'}
             </button>
-            <button
-              type="button"
-              onClick={handleSendToAnalogue}
-              className="w-full rounded-md border border-amber-400/70 bg-amber-500/20 px-2 py-1 text-[11px] font-medium text-amber-50 hover:bg-amber-500/30"
-            >
-              Send to Analogue
-            </button>
-            <button
-              type="button"
-              onClick={handleSendToXP}
-              className="w-full rounded-md border border-indigo-400/70 bg-indigo-500/20 px-2 py-1 text-[11px] font-medium text-indigo-50 hover:bg-indigo-500/30"
-            >
-              Send to XP
-            </button>
-          </div>
 
-          <div className="space-y-2 border-t border-slate-800/80 pt-2">
-            <button
-              type="button"
-              onClick={handleDeleteClip}
-              className="w-full rounded-md border border-red-500/70 bg-red-600/20 px-2 py-1 text-[11px] font-medium text-red-100 hover:bg-red-600/30"
-            >
-              Delete clip
-            </button>
-          </div>
+            <div className="space-y-2 border-t border-slate-800/80 pt-2">
+              <button
+                type="button"
+                onClick={handleSendToAqua}
+                className="w-full rounded-md border border-sky-400/70 bg-sky-500/20 px-2 py-1 text-[11px] font-medium text-sky-50 hover:bg-sky-500/30"
+              >
+                Send to Aqua
+              </button>
+              <button
+                type="button"
+                onClick={handleSendToAnalogue}
+                className="w-full rounded-md border border-amber-400/70 bg-amber-500/20 px-2 py-1 text-[11px] font-medium text-amber-50 hover:bg-amber-500/30"
+              >
+                Send to Analogue
+              </button>
+              <button
+                type="button"
+                onClick={handleSendToXP}
+                className="w-full rounded-md border border-indigo-400/70 bg-indigo-500/20 px-2 py-1 text-[11px] font-medium text-indigo-50 hover:bg-indigo-500/30"
+              >
+                Send to XP
+              </button>
+            </div>
+
+            <div className="space-y-2 border-t border-slate-800/80 pt-2">
+              <button
+                type="button"
+                onClick={handleDeleteClip}
+                className="w-full rounded-md border border-red-500/70 bg-red-600/20 px-2 py-1 text-[11px] font-medium text-red-100 hover:bg-red-600/30"
+              >
+                Delete clip
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-2 text-[11px] text-slate-400">
             <p>Select a clip on any lane to edit its details.</p>
             <p className="text-slate-500">
-              Engines are already sequencing clips and scoring momentum – this panel will deepen in later phases.
+              Engines are already sequencing clips and scoring momentum – this panel will deepen in
+              later phases.
             </p>
           </div>
         )}
@@ -909,5 +885,3 @@ export function LoopOSInspector({
     </aside>
   )
 }
-
-

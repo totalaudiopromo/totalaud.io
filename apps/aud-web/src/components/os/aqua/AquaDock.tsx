@@ -28,11 +28,7 @@ export function AquaDock({ children, onSelectApp }: AquaDockProps) {
           boxShadow:
             '0 18px 80px rgba(15,23,42,0.9), 0 0 0 1px rgba(148,163,184,0.6), 0 0 50px rgba(56,189,248,0.35)',
         }}
-        initial={
-          prefersReducedMotion
-            ? { opacity: 1, y: 0 }
-            : { opacity: 0, y: 30 }
-        }
+        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={
           prefersReducedMotion
@@ -58,8 +54,7 @@ export function AquaDock({ children, onSelectApp }: AquaDockProps) {
           {React.Children.map(children, (child, index) => {
             if (!React.isValidElement(child)) return child
 
-            const distance =
-              activeIndex === null ? Infinity : Math.abs(activeIndex - index)
+            const distance = activeIndex === null ? Infinity : Math.abs(activeIndex - index)
 
             return React.cloneElement(child as React.ReactElement, {
               dockIndex: index,
@@ -77,5 +72,3 @@ export function AquaDock({ children, onSelectApp }: AquaDockProps) {
     </div>
   )
 }
-
-

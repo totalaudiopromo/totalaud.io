@@ -131,6 +131,3 @@ export function subscribeOSBridgeEvents(listener: BridgeListener): () => void {
     bridgeListeners.delete(listener)
   }
 }
-
-
-

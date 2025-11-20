@@ -18,6 +18,3 @@ export function pushXPClipboardUpdate(text: string, mode: XPClipboardUpdateMode)
     listener(text, mode)
   })
 }
-
-
-

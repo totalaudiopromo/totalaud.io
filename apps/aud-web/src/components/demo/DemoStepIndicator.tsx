@@ -11,11 +11,8 @@ export function DemoStepIndicator() {
   return (
     <div className="flex items-center gap-2">
       <div className="hidden text-[11px] uppercase tracking-[0.18em] text-slate-400/80 sm:block">
-        step{' '}
-        {activeIndex === -1
-          ? DEMO_ACTIVE_STEPS.length
-          : Math.max(1, activeIndex + 1)}
-        /{DEMO_ACTIVE_STEPS.length}
+        step {activeIndex === -1 ? DEMO_ACTIVE_STEPS.length : Math.max(1, activeIndex + 1)}/
+        {DEMO_ACTIVE_STEPS.length}
       </div>
       <div className="flex items-center gap-1">
         {DEMO_ACTIVE_STEPS.map((step) => {
@@ -35,5 +32,3 @@ export function DemoStepIndicator() {
     </div>
   )
 }
-
-

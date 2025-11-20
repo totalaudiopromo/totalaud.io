@@ -36,10 +36,7 @@ export function OfflineIndicator() {
             <CheckCircle2 className="w-5 h-5 text-green-500" />
             <div>
               <p className="text-sm font-medium">Back online</p>
-              <button
-                onClick={processQueue}
-                className="text-xs text-accent hover:underline"
-              >
+              <button onClick={processQueue} className="text-xs text-accent hover:underline">
                 Sync {queueCount} changes
               </button>
             </div>

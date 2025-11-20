@@ -3,7 +3,7 @@
  * Digital Audio Workstation vibe with tracks and grid lines
  */
 
-import type { ThemeTokens } from '../types';
+import type { ThemeTokens } from '../types'
 
 export const dawTheme: ThemeTokens = {
   name: 'DAW',
@@ -33,5 +33,6 @@ export const dawTheme: ThemeTokens = {
 
   border: 'rgba(58, 169, 190, 0.4)',
   shadow: '0 4px 24px rgba(0, 0, 0, 0.5)',
-  noise: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(58, 169, 190, 0.02) 2px, rgba(58, 169, 190, 0.02) 4px)',
-};
+  noise:
+    'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(58, 169, 190, 0.02) 2px, rgba(58, 169, 190, 0.02) 4px)',
+}

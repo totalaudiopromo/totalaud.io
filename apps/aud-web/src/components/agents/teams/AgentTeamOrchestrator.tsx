@@ -56,7 +56,7 @@ function createTeamRunId() {
 function shouldRunForContext(
   preset: AgentTeamPreset,
   contextOS: AgentOriginOS | null,
-  loopMomentum: number | undefined,
+  loopMomentum: number | undefined
 ): boolean {
   if (!preset.when) return true
   const { os, loopMomentumMin } = preset.when
@@ -77,7 +77,7 @@ function buildTeamInstruction(
   baseInstruction: string,
   teamId: AgentTeamId,
   role: AgentRole,
-  previousOutputs: string[],
+  previousOutputs: string[]
 ): string {
   const historyBlock =
     previousOutputs.length > 0
@@ -107,7 +107,7 @@ export function AgentTeamOrchestratorProvider({ children }: { children: React.Re
       const preset = getAgentTeamPreset(teamId)
       if (!preset) return
 
-      const contextOS: AgentOriginOS | null = originOS ?? (currentOS?.slug ?? null)
+      const contextOS: AgentOriginOS | null = originOS ?? currentOS?.slug ?? null
       if (!shouldRunForContext(preset, contextOS, loopMomentum)) {
         return
       }
@@ -163,10 +163,10 @@ export function AgentTeamOrchestratorProvider({ children }: { children: React.Re
               return {
                 ...existing,
                 steps: existing.steps.map((step) =>
-                  step.index === index ? { ...step, runId, status: 'done' } : step,
+                  step.index === index ? { ...step, runId, status: 'done' } : step
                 ),
               }
-            }),
+            })
           )
 
           const output = result?.output ?? null
@@ -212,18 +212,18 @@ export function AgentTeamOrchestratorProvider({ children }: { children: React.Re
 
         setTeamRuns((previous) =>
           previous.map((existing) =>
-            existing.teamRunId === teamRunId ? { ...existing, status: 'done' } : existing,
-          ),
+            existing.teamRunId === teamRunId ? { ...existing, status: 'done' } : existing
+          )
         )
       } catch {
         setTeamRuns((previous) =>
           previous.map((existing) =>
-            existing.teamRunId === teamRunId ? { ...existing, status: 'error' } : existing,
-          ),
+            existing.teamRunId === teamRunId ? { ...existing, status: 'error' } : existing
+          )
         )
       }
     },
-    [currentOS?.slug, spawnAgentRun],
+    [currentOS?.slug, spawnAgentRun]
   )
 
   const value: AgentTeamsContextValue = useMemo(
@@ -231,7 +231,7 @@ export function AgentTeamOrchestratorProvider({ children }: { children: React.Re
       teamRuns,
       runTeam,
     }),
-    [runTeam, teamRuns],
+    [runTeam, teamRuns]
   )
 
   return <AgentTeamsContext.Provider value={value}>{children}</AgentTeamsContext.Provider>
@@ -244,5 +244,3 @@ export function useAgentTeams(): AgentTeamsContextValue {
   }
   return ctx
 }
-
-

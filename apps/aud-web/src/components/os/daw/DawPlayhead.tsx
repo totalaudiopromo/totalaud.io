@@ -46,4 +46,3 @@ export function DawPlayhead({ positionPercent = 26, isPlaying }: DawPlayheadProp
     </motion.div>
   )
 }
-

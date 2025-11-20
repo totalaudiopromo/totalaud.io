@@ -30,8 +30,7 @@ export default function AnalogueOSPage() {
   const { play } = useThemeAudio()
   const demo = useOptionalDemo()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
   const [activeTab, setActiveTab] = useState<AnalogueTabId>('Today')
   const [showCompleted, setShowCompleted] = useState(true)
   const [activityLog, setActivityLog] = useState<
@@ -178,8 +177,8 @@ export default function AnalogueOSPage() {
                   ...card,
                   highlighted: true,
                 }
-              : card,
-          ),
+              : card
+          )
         )
       },
     })
@@ -253,7 +252,7 @@ export default function AnalogueOSPage() {
         if (!showCompleted && card.completed) return false
         return true
       }),
-    [cards, activeTab, showCompleted],
+    [cards, activeTab, showCompleted]
   )
 
   const handleTabChange = (tab: AnalogueTabId) => {
@@ -287,8 +286,8 @@ export default function AnalogueOSPage() {
               ...card,
               highlighted: !card.highlighted,
             }
-          : card,
-      ),
+          : card
+      )
     )
   }
 
@@ -300,8 +299,8 @@ export default function AnalogueOSPage() {
               ...card,
               starred: !card.starred,
             }
-          : card,
-      ),
+          : card
+      )
     )
   }
 
@@ -320,14 +319,14 @@ export default function AnalogueOSPage() {
               ...existing,
               sentTo: next,
             }
-          : existing,
-      ),
+          : existing
+      )
     )
 
     appendActivity(
       `Card "${card.title}" marked for ${target === 'aqua' ? 'Aqua' : 'DAW'}${
         next === 'both' ? ' (and the other surface)' : ''
-      }.`,
+      }.`
     )
   }
 
@@ -344,7 +343,9 @@ export default function AnalogueOSPage() {
     setOS('aqua')
   }
 
-  const mapAnalogueTagToDawLane = (tag: AnalogueCardData['tag']): 'creative' | 'promo' | 'analysis' => {
+  const mapAnalogueTagToDawLane = (
+    tag: AnalogueCardData['tag']
+  ): 'creative' | 'promo' | 'analysis' => {
     if (tag === 'campaign') return 'promo'
     if (tag === 'note') return 'analysis'
     return 'creative'
@@ -466,8 +467,8 @@ export default function AnalogueOSPage() {
             ))}
             {visibleCards.length === 0 && (
               <div className="mt-6 rounded-[14px] border border-dashed border-[#d1b89b] bg-[#f5e8d7]/70 px-4 py-3 text-[12px] text-[#7b5a3a]">
-                Nothing on this page yet. Drop a quick card to park an idea and get it out of
-                your head.
+                Nothing on this page yet. Drop a quick card to park an idea and get it out of your
+                head.
               </div>
             )}
           </main>
@@ -498,8 +499,8 @@ export default function AnalogueOSPage() {
             <div className="mt-1 max-h-28 space-y-1 overflow-y-auto pr-1">
               {activityLog.length === 0 ? (
                 <p className="text-[10px] text-[#9a7450]">
-                  When you mark cards for Aqua or DAW, those moves will show up here. For now it&apos;s
-                  just a local journal of what you&apos;re planning to send downstream.
+                  When you mark cards for Aqua or DAW, those moves will show up here. For now
+                  it&apos;s just a local journal of what you&apos;re planning to send downstream.
                 </p>
               ) : (
                 activityLog.map((entry) => (
@@ -518,5 +519,3 @@ export default function AnalogueOSPage() {
     </AnalogueContainer>
   )
 }
-
-

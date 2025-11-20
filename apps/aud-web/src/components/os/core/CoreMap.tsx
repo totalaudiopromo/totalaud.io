@@ -90,7 +90,7 @@ export function CoreMap() {
             const isActive = activeEdges.some(
               (event) =>
                 (event.from === edge.from && event.to === edge.to) ||
-                (event.from === edge.to && event.to === edge.from),
+                (event.from === edge.to && event.to === edge.from)
             )
 
             return (
@@ -139,5 +139,3 @@ export function CoreMap() {
     </div>
   )
 }
-
-

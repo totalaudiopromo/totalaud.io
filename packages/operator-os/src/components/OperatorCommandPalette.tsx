@@ -3,15 +3,15 @@
  * Command palette with fuzzy search (⌘K)
  */
 
-'use client';
+'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search } from 'lucide-react';
-import { useOperatorStore } from '../state/operatorStore';
-import { themes } from '../themes';
-import { commandPaletteVariants } from '../utils/animations';
-import type { OperatorCommand, OperatorAppID, OperatorOSTheme, OperatorPersona } from '../types';
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search } from 'lucide-react'
+import { useOperatorStore } from '../state/operatorStore'
+import { themes } from '../themes'
+import { commandPaletteVariants } from '../utils/animations'
+import type { OperatorCommand, OperatorAppID, OperatorOSTheme, OperatorPersona } from '../types'
 
 const appLabels: Record<OperatorAppID, string> = {
   dashboard: 'Dashboard',
@@ -28,7 +28,7 @@ const appLabels: Record<OperatorAppID, string> = {
   anr: 'Analytics & Reports',
   settings: 'Settings',
   terminal: 'Terminal',
-};
+}
 
 const themeLabels: Record<OperatorOSTheme, string> = {
   xp: 'Windows XP',
@@ -36,7 +36,7 @@ const themeLabels: Record<OperatorOSTheme, string> = {
   daw: 'DAW',
   ascii: 'ASCII',
   analogue: 'Analogue',
-};
+}
 
 const personaLabels: Record<OperatorPersona, string> = {
   default: 'Default',
@@ -44,7 +44,7 @@ const personaLabels: Record<OperatorPersona, string> = {
   producer: 'Producer',
   campaign: 'Campaign',
   dev: 'Developer',
-};
+}
 
 export function OperatorCommandPalette() {
   const {
@@ -56,105 +56,108 @@ export function OperatorCommandPalette() {
     setOperatorPersona,
     pushNotification,
     addToHistory,
-  } = useOperatorStore();
+  } = useOperatorStore()
 
-  const theme = themes[activeTheme];
-  const [search, setSearch] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const theme = themes[activeTheme]
+  const [search, setSearch] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Generate commands
   const commands: OperatorCommand[] = [
     // Open apps
-    ...(Object.keys(appLabels) as OperatorAppID[]).map(appId => ({
+    ...(Object.keys(appLabels) as OperatorAppID[]).map((appId) => ({
       id: `open-${appId}`,
       label: `Open ${appLabels[appId]}`,
       description: `Launch ${appLabels[appId]}`,
       keywords: ['open', 'launch', appLabels[appId].toLowerCase()],
       handler: () => {
-        openApp(appId);
-        addToHistory(`Open ${appLabels[appId]}`);
-        pushNotification({ message: `Opened ${appLabels[appId]}`, type: 'info' });
+        openApp(appId)
+        addToHistory(`Open ${appLabels[appId]}`)
+        pushNotification({ message: `Opened ${appLabels[appId]}`, type: 'info' })
       },
     })),
 
     // Change theme
-    ...(Object.keys(themeLabels) as OperatorOSTheme[]).map(themeId => ({
+    ...(Object.keys(themeLabels) as OperatorOSTheme[]).map((themeId) => ({
       id: `theme-${themeId}`,
       label: `Change theme to ${themeLabels[themeId]}`,
       description: `Switch to ${themeLabels[themeId]} theme`,
       keywords: ['theme', 'change', themeLabels[themeId].toLowerCase()],
       handler: () => {
-        setTheme(themeId);
-        addToHistory(`Change theme to ${themeLabels[themeId]}`);
-        pushNotification({ message: `Theme changed to ${themeLabels[themeId]}`, type: 'success' });
+        setTheme(themeId)
+        addToHistory(`Change theme to ${themeLabels[themeId]}`)
+        pushNotification({ message: `Theme changed to ${themeLabels[themeId]}`, type: 'success' })
       },
     })),
 
     // Change persona
-    ...(Object.keys(personaLabels) as OperatorPersona[]).map(persona => ({
+    ...(Object.keys(personaLabels) as OperatorPersona[]).map((persona) => ({
       id: `persona-${persona}`,
       label: `Switch to ${personaLabels[persona]} persona`,
       description: `Change operator persona to ${personaLabels[persona]}`,
       keywords: ['persona', 'switch', personaLabels[persona].toLowerCase()],
       handler: () => {
-        setOperatorPersona(persona);
-        addToHistory(`Switch to ${personaLabels[persona]} persona`);
-        pushNotification({ message: `Persona changed to ${personaLabels[persona]}`, type: 'success' });
+        setOperatorPersona(persona)
+        addToHistory(`Switch to ${personaLabels[persona]} persona`)
+        pushNotification({
+          message: `Persona changed to ${personaLabels[persona]}`,
+          type: 'success',
+        })
       },
     })),
-  ];
+  ]
 
   // Filter commands based on search
   const filteredCommands = search
-    ? commands.filter(cmd => {
-        const searchLower = search.toLowerCase();
+    ? commands.filter((cmd) => {
+        const searchLower = search.toLowerCase()
         return (
           cmd.label.toLowerCase().includes(searchLower) ||
           cmd.description?.toLowerCase().includes(searchLower) ||
-          cmd.keywords?.some(kw => kw.includes(searchLower))
-        );
+          cmd.keywords?.some((kw) => kw.includes(searchLower))
+        )
       })
-    : commands;
+    : commands
 
   // Reset selection when filtered commands change
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [search]);
+    setSelectedIndex(0)
+  }, [search])
 
   // Focus input when palette opens
   useEffect(() => {
     if (isCommandPaletteOpen) {
-      inputRef.current?.focus();
-      setSearch('');
+      inputRef.current?.focus()
+      setSearch('')
     }
-  }, [isCommandPaletteOpen]);
+  }, [isCommandPaletteOpen])
 
   // Handle keyboard navigation
   useEffect(() => {
-    if (!isCommandPaletteOpen) return;
+    if (!isCommandPaletteOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex(prev => Math.min(prev + 1, filteredCommands.length - 1));
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1))
       } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(prev => Math.max(prev - 1, 0));
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.max(prev - 1, 0))
       } else if (e.key === 'Enter') {
-        e.preventDefault();
+        e.preventDefault()
         if (filteredCommands[selectedIndex]) {
-          filteredCommands[selectedIndex].handler();
-          closeCommandPalette();
+          filteredCommands[selectedIndex].handler()
+          closeCommandPalette()
         }
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCommandPaletteOpen, filteredCommands, selectedIndex, closeCommandPalette]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isCommandPaletteOpen, filteredCommands, selectedIndex, closeCommandPalette])
 
-  if (!isCommandPaletteOpen) return null;
+  if (!isCommandPaletteOpen) return null
 
   return (
     <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-32">
@@ -182,7 +185,10 @@ export function OperatorCommandPalette() {
           }}
         >
           {/* Search Input */}
-          <div className="flex items-center gap-3 p-4 border-b" style={{ borderColor: theme.border }}>
+          <div
+            className="flex items-center gap-3 p-4 border-b"
+            style={{ borderColor: theme.border }}
+          >
             <Search size={20} style={{ color: theme.accent }} />
             <input
               ref={inputRef}
@@ -209,8 +215,8 @@ export function OperatorCommandPalette() {
                 <button
                   key={cmd.id}
                   onClick={() => {
-                    cmd.handler();
-                    closeCommandPalette();
+                    cmd.handler()
+                    closeCommandPalette()
                   }}
                   className="w-full flex flex-col items-start gap-1 p-4 transition-colors text-left"
                   style={{
@@ -247,5 +253,5 @@ export function OperatorCommandPalette() {
         </motion.div>
       </AnimatePresence>
     </div>
-  );
+  )
 }

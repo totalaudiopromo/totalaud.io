@@ -66,18 +66,12 @@ export const packsDb = {
   },
 
   async delete(packId: string): Promise<void> {
-    const { error } = await supabase
-      .from('loopos_creative_packs')
-      .delete()
-      .eq('id', packId)
+    const { error } = await supabase.from('loopos_creative_packs').delete().eq('id', packId)
 
     if (error) throw error
   },
 
-  async listByCategory(
-    workspaceId: string | null,
-    category: string
-  ): Promise<CreativePack[]> {
+  async listByCategory(workspaceId: string | null, category: string): Promise<CreativePack[]> {
     const { data, error } = await supabase
       .from('loopos_creative_packs')
       .select('*')

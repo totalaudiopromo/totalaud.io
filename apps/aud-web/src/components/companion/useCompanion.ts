@@ -24,5 +24,3 @@ export function useCompanion(): CompanionContextValue {
 export function useOptionalCompanion(): CompanionContextValue | null {
   return useContext(CompanionContext)
 }
-
-

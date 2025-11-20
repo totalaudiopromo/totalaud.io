@@ -24,5 +24,3 @@ export function computePlayheadAdvance(bpm: number, deltaMs: number): number {
 
   return seconds * unitsPerSecond
 }
-
-

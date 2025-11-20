@@ -23,10 +23,7 @@ import { useOptionalDemo } from '@/components/demo/DemoOrchestrator'
 import { registerAsciiController } from '@/components/demo/director/DirectorEngine'
 import { useAgentTeams } from '@/components/agents/teams/AgentTeamOrchestrator'
 import type { AgentTeamId } from '@/components/agents/teams/agentTeamPresets'
-import {
-  useOptionalNarrative,
-  type NarrativeFlags,
-} from '@/components/narrative/useNarrative'
+import { useOptionalNarrative, type NarrativeFlags } from '@/components/narrative/useNarrative'
 import { usePersona } from '@/components/persona/usePersona'
 import { PERSONA_PRESETS, type PersonaId } from '@/components/persona/personaPresets'
 import { useCompanion } from '@/components/companion/useCompanion'
@@ -88,8 +85,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
   const demo = useOptionalDemo()
   const narrative = useOptionalNarrative()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const inputRef = useRef('')
   const persona = usePersona()
@@ -97,27 +93,24 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
   const { currentProject, projects, createProject, setProject } = useProjectEngine()
   const companion = useCompanion()
 
-  const appendLog = useCallback(
-    (lines: string | string[], kind: LogKind = 'system') => {
-      const arr = Array.isArray(lines) ? lines : [lines]
-      const timestamp = new Date().toLocaleTimeString(undefined, {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
+  const appendLog = useCallback((lines: string | string[], kind: LogKind = 'system') => {
+    const arr = Array.isArray(lines) ? lines : [lines]
+    const timestamp = new Date().toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
 
-      setLog((prev) => [
-        ...prev,
-        ...arr.map((text) => ({
-          id: logIdCounter++,
-          text,
-          kind,
-          timestamp,
-        })),
-      ])
-    },
-    [],
-  )
+    setLog((prev) => [
+      ...prev,
+      ...arr.map((text) => ({
+        id: logIdCounter++,
+        text,
+        kind,
+        timestamp,
+      })),
+    ])
+  }, [])
 
   const handleCreateNote = useCallback(
     (rawText: string) => {
@@ -133,7 +126,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
       setNotes((prev) => [...prev, { id, text, createdAt }])
       appendLog(`Captured note #${id}.`, 'note')
     },
-    [appendLog],
+    [appendLog]
   )
 
   const runCommand = useCallback(
@@ -190,7 +183,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             'Tip: press ⌘⇧O from anywhere to open the OS launcher and jump.',
             'Or type: os <slug> (e.g. os aqua)',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -203,7 +196,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             '- projects use <id>',
             '- projects new "<name>"',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -222,7 +215,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             '',
             `Current companion: ${active.name} (${active.id})`,
             `Tone: ${active.tone}`,
-            `Traits: ${active.traits.join(', ')}`,
+            `Traits: ${active.traits.join(', ')}`
           )
         } else {
           lines.push('', 'Current companion: none (using default agent tone).')
@@ -246,7 +239,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             '',
             'Usage: companion use <id>',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -271,7 +264,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             `Tone: ${target.tone}`,
             `Traits: ${target.traits.join(', ')}`,
           ],
-          'system',
+          'system'
         )
         return
       }
@@ -280,7 +273,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
         if (isDemoMode) {
           appendLog(
             'Project management is disabled in demo mode. This session uses the Lana Glass demo project only.',
-            'info',
+            'info'
           )
           return
         }
@@ -296,7 +289,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
                     'Run onboarding again or use projects new "<name>" to seed a saved project.',
                   ]
                 : 'No projects yet. Complete onboarding or run: projects new "<name>".',
-              'info',
+              'info'
             )
             return
           }
@@ -346,12 +339,15 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
               `Id: ${project.id}`,
               'Tip: use projects use <id> to switch context later.',
             ],
-            'system',
+            'system'
           )
           return
         }
 
-        appendLog('Unknown projects subcommand. Try: projects list | use <id> | new "<name>"', 'error')
+        appendLog(
+          'Unknown projects subcommand. Try: projects list | use <id> | new "<name>"',
+          'error'
+        )
         return
       }
 
@@ -388,7 +384,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             'Loop summary export lives in LoopOS inspector.',
             'Open LoopOS and use the Export loop summary actions to send artifacts into Aqua, Analogue, and XP.',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -399,7 +395,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           count === 0
             ? 'No notes to export yet. Capture something with: note <your idea>'
             : `Exported ${count} note${count === 1 ? '' : 's'} to Analogue (stub).`,
-          'info',
+          'info'
         )
         return
       }
@@ -468,7 +464,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             '',
             'Usage: persona <id>',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -488,7 +484,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             `Tone: ${preset.tone}`,
             `Traits: ${preset.traits.join(', ')}`,
           ],
-          'system',
+          'system'
         )
         return
       }
@@ -498,14 +494,15 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
 
         if (sub === 'status') {
           const total = runs.length
-          const running = runs.filter((run) => run.status === 'queued' || run.status === 'running')
-            .length
+          const running = runs.filter(
+            (run) => run.status === 'queued' || run.status === 'running'
+          ).length
           const done = runs.filter((run) => run.status === 'done').length
           const errored = runs.filter((run) => run.status === 'error').length
 
           appendLog(
             `Agent kernel: ${total} run${total === 1 ? '' : 's'} · ${running} running · ${done} done · ${errored} error${errored === 1 ? '' : 's'}.`,
-            'info',
+            'info'
           )
           return
         }
@@ -523,11 +520,8 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
               : lastDone.output || '(no output)'
 
           appendLog(
-            [
-              `Last completed agent [${lastDone.role} from ${lastDone.originOS}]:`,
-              preview,
-            ],
-            'info',
+            [`Last completed agent [${lastDone.role} from ${lastDone.originOS}]:`, preview],
+            'info'
           )
           return
         }
@@ -538,7 +532,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           if (firstSpaceIndex === -1) {
             appendLog(
               'Usage: agent team <id> "<instruction>" (ids: creative_team, promo_team, analysis_team, loopos_team)',
-              'info',
+              'info'
             )
             return
           }
@@ -556,20 +550,22 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           if (!validTeamIds.includes(teamIdToken as AgentTeamId)) {
             appendLog(
               'Unknown team id. Use one of: creative_team, promo_team, analysis_team, loopos_team.',
-              'error',
+              'error'
             )
             return
           }
 
           const instruction =
-            instructionRaw.startsWith('"') && instructionRaw.endsWith('"') && instructionRaw.length > 1
+            instructionRaw.startsWith('"') &&
+            instructionRaw.endsWith('"') &&
+            instructionRaw.length > 1
               ? instructionRaw.slice(1, -1)
               : instructionRaw
 
           if (!instruction) {
             appendLog(
               'Usage: agent team <id> "<instruction>" (ids: creative_team, promo_team, analysis_team, loopos_team)',
-              'info',
+              'info'
             )
             return
           }
@@ -583,9 +579,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           })
 
           const preview =
-            instruction.length > 80
-              ? `${instruction.slice(0, 77).trimEnd()}…`
-              : instruction
+            instruction.length > 80 ? `${instruction.slice(0, 77).trimEnd()}…` : instruction
           appendLog(`Spawned agent team [${teamIdToken}]: ${preview}`, 'system')
           return
         }
@@ -596,7 +590,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           if (firstSpaceIndex === -1) {
             appendLog(
               'Usage: agent run <role> "<instruction>" (roles: scout, coach, tracker, insight)',
-              'info',
+              'info'
             )
             return
           }
@@ -610,22 +604,21 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             roleToken !== 'tracker' &&
             roleToken !== 'insight'
           ) {
-            appendLog(
-              'Unknown agent role. Use one of: scout, coach, tracker, insight.',
-              'error',
-            )
+            appendLog('Unknown agent role. Use one of: scout, coach, tracker, insight.', 'error')
             return
           }
 
           const instruction =
-            instructionRaw.startsWith('"') && instructionRaw.endsWith('"') && instructionRaw.length > 1
+            instructionRaw.startsWith('"') &&
+            instructionRaw.endsWith('"') &&
+            instructionRaw.length > 1
               ? instructionRaw.slice(1, -1)
               : instructionRaw
 
           if (!instruction) {
             appendLog(
               'Usage: agent run <role> "<instruction>" (roles: scout, coach, tracker, insight)',
-              'info',
+              'info'
             )
             return
           }
@@ -639,9 +632,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
           })
 
           const preview =
-            instruction.length > 80
-              ? `${instruction.slice(0, 77).trimEnd()}…`
-              : instruction
+            instruction.length > 80 ? `${instruction.slice(0, 77).trimEnd()}…` : instruction
           appendLog(`Spawned ${roleToken} agent: ${preview}`, 'system')
           return
         }
@@ -653,7 +644,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
             '- agent status',
             '- agent last',
           ],
-          'info',
+          'info'
         )
         return
       }
@@ -689,7 +680,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
       runs,
       setProject,
       spawnAgentRun,
-    ],
+    ]
   )
 
   const handleKeyDown = useCallback(
@@ -745,10 +736,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
 
     const coachCommand = buildLanaCoachCommand(narrative?.flags ?? null)
 
-    appendLog(
-      ['Welcome to the LANA GLASS demo session.', `Try: ${coachCommand}`],
-      'system',
-    )
+    appendLog(['Welcome to the LANA GLASS demo session.', `Try: ${coachCommand}`], 'system')
   }, [appendLog, isDemoMode, narrative?.flags])
 
   useEffect(() => {
@@ -799,8 +787,7 @@ export function AsciiCommandBar({ onSetOS }: AsciiCommandBarProps) {
       {/* Notes summary */}
       <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-[#00ff99]/70">
         <span>
-          notes: {notes.length.toString().padStart(2, '0')}{' '}
-          {notes.length === 0 ? '(empty)' : ''}
+          notes: {notes.length.toString().padStart(2, '0')} {notes.length === 0 ? '(empty)' : ''}
         </span>
         {notePreview && (
           <span className="max-w-[60%] truncate text-[10px] normal-case tracking-normal text-[#00ff99]/80">

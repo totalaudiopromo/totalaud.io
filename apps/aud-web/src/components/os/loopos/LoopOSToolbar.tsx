@@ -89,9 +89,7 @@ export function LoopOSToolbar({
             >
               −
             </button>
-            <span className="w-10 text-center tabular-nums text-slate-200">
-              {zoom.toFixed(1)}x
-            </span>
+            <span className="w-10 text-center tabular-nums text-slate-200">{zoom.toFixed(1)}x</span>
             <button
               type="button"
               onClick={() => onZoomChange(Math.min(2, zoom + 0.1))}
@@ -159,5 +157,3 @@ export function LoopOSToolbar({
     </header>
   )
 }
-
-

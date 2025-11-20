@@ -11,8 +11,7 @@ import {
 export function useProjectLoopPrefs() {
   const demo = useOptionalDemo()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const [prefs, setPrefs] = useState<ProjectLoopPrefs>({})
 
@@ -31,7 +30,7 @@ export function useProjectLoopPrefs() {
       const entry = prefs[projectId]
       return entry?.lastLoopId ?? null
     },
-    [isDemoMode, prefs],
+    [isDemoMode, prefs]
   )
 
   const setLastLoopId = useCallback(
@@ -51,7 +50,7 @@ export function useProjectLoopPrefs() {
         return next
       })
     },
-    [isDemoMode],
+    [isDemoMode]
   )
 
   const clearLoopId = useCallback(
@@ -78,10 +77,8 @@ export function useProjectLoopPrefs() {
         return next
       })
     },
-    [isDemoMode],
+    [isDemoMode]
   )
 
   return { prefs, getLastLoopId, setLastLoopId, clearLoopId }
 }
-
-

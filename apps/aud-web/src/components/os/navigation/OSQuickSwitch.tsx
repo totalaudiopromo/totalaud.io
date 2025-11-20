@@ -34,7 +34,7 @@ export function OSQuickSwitch() {
           color: config.color,
         }
       }),
-    [],
+    []
   )
 
   useEffect(() => {
@@ -223,5 +223,3 @@ export function OSQuickSwitch() {
     </AnimatePresence>
   )
 }
-
-

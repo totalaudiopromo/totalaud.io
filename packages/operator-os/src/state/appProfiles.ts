@@ -3,25 +3,25 @@
  * Manage app-specific preferences (launch mode, pinning, etc.)
  */
 
-import type { OperatorAppID, OperatorWindow } from '../types';
+import type { OperatorAppID, OperatorWindow } from '../types'
 
-export type LaunchMode = 'maximized' | 'floating' | 'last_state';
+export type LaunchMode = 'maximized' | 'floating' | 'last_state'
 
 export interface AppProfile {
-  id?: string;
-  user_id?: string;
-  workspace_id?: string;
-  app_id: string;
-  preferred_layout_name?: string;
-  launch_mode: LaunchMode;
-  pinned: boolean;
+  id?: string
+  user_id?: string
+  workspace_id?: string
+  app_id: string
+  preferred_layout_name?: string
+  launch_mode: LaunchMode
+  pinned: boolean
   metadata: {
-    last_position?: { x: number; y: number };
-    last_size?: { width: number; height: number };
-    [key: string]: any;
-  };
-  created_at?: string;
-  updated_at?: string;
+    last_position?: { x: number; y: number }
+    last_size?: { width: number; height: number }
+    [key: string]: any
+  }
+  created_at?: string
+  updated_at?: string
 }
 
 /**
@@ -38,24 +38,24 @@ export async function getAppProfile(
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
 
     if (!response.ok) {
       if (response.status === 404) {
-        return null;
+        return null
       }
-      throw new Error(`Failed to get app profile: ${response.statusText}`);
+      throw new Error(`Failed to get app profile: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok || !data.data) {
-      return null;
+      return null
     }
 
-    return data.data as AppProfile;
+    return data.data as AppProfile
   } catch (error) {
-    console.error('Error getting app profile:', error);
-    return null;
+    console.error('Error getting app profile:', error)
+    return null
   }
 }
 
@@ -78,50 +78,47 @@ export async function setAppProfile(
         app_id: appId,
         ...profilePartial,
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Failed to set app profile: ${response.statusText}`);
+      throw new Error(`Failed to set app profile: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok) {
-      throw new Error(data.error || 'Failed to set app profile');
+      throw new Error(data.error || 'Failed to set app profile')
     }
   } catch (error) {
-    console.error('Error setting app profile:', error);
-    throw error;
+    console.error('Error setting app profile:', error)
+    throw error
   }
 }
 
 /**
  * Get all pinned apps
  */
-export async function getPinnedApps(
-  userId: string,
-  workspaceId: string
-): Promise<AppProfile[]> {
+export async function getPinnedApps(userId: string, workspaceId: string): Promise<AppProfile[]> {
   try {
     const response = await fetch('/api/operator/app-profiles?pinned=true', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`Failed to get pinned apps: ${response.statusText}`);
+      throw new Error(`Failed to get pinned apps: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     if (!data.ok || !data.data) {
-      return [];
+      return []
     }
 
-    return data.data as AppProfile[];
+    return data.data as AppProfile[]
   } catch (error) {
-    console.error('Error getting pinned apps:', error);
-    return [];
+    console.error('Error getting pinned apps:', error)
+    return []
   }
 }
 
@@ -140,11 +137,11 @@ export function resolveInitialWindowState(
     size: { width: 1000, height: 700 },
     isMaximised: false,
     ...defaultState,
-  };
+  }
 
   // No profile = use defaults
   if (!profile) {
-    return defaults;
+    return defaults
   }
 
   // Handle launch mode
@@ -153,7 +150,7 @@ export function resolveInitialWindowState(
       return {
         ...defaults,
         isMaximised: true,
-      };
+      }
 
     case 'last_state':
       // Use last known position/size if available
@@ -162,13 +159,13 @@ export function resolveInitialWindowState(
           ...defaults,
           position: profile.metadata.last_position,
           size: profile.metadata.last_size,
-        };
+        }
       }
-      return defaults;
+      return defaults
 
     case 'floating':
     default:
-      return defaults;
+      return defaults
   }
 }
 
@@ -182,7 +179,7 @@ export async function updateAppProfileWithWindowState(
   window: OperatorWindow
 ): Promise<void> {
   try {
-    const profile = await getAppProfile(userId, workspaceId, window.appId);
+    const profile = await getAppProfile(userId, workspaceId, window.appId)
 
     await setAppProfile(userId, workspaceId, window.appId, {
       launch_mode: profile?.launch_mode || 'last_state',
@@ -192,9 +189,9 @@ export async function updateAppProfileWithWindowState(
         last_position: window.position,
         last_size: window.size,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error updating app profile with window state:', error);
+    console.error('Error updating app profile with window state:', error)
     // Don't throw - this is a non-critical background operation
   }
 }
@@ -208,18 +205,18 @@ export async function toggleAppPinning(
   appId: OperatorAppID
 ): Promise<boolean> {
   try {
-    const profile = await getAppProfile(userId, workspaceId, appId);
-    const newPinnedState = !profile?.pinned;
+    const profile = await getAppProfile(userId, workspaceId, appId)
+    const newPinnedState = !profile?.pinned
 
     await setAppProfile(userId, workspaceId, appId, {
       launch_mode: profile?.launch_mode || 'floating',
       pinned: newPinnedState,
       metadata: profile?.metadata || {},
-    });
+    })
 
-    return newPinnedState;
+    return newPinnedState
   } catch (error) {
-    console.error('Error toggling app pinning:', error);
-    throw error;
+    console.error('Error toggling app pinning:', error)
+    throw error
   }
 }

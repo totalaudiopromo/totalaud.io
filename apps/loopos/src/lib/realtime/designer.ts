@@ -21,7 +21,11 @@ export interface DesignerScene {
   updated_at: string
 }
 
-export type DesignerEventType = 'scene_updated' | 'scene_created' | 'scene_deleted' | 'scene_activated'
+export type DesignerEventType =
+  | 'scene_updated'
+  | 'scene_created'
+  | 'scene_deleted'
+  | 'scene_activated'
 
 export interface DesignerEvent {
   type: DesignerEventType

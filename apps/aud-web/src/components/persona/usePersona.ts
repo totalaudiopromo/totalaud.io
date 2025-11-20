@@ -25,5 +25,3 @@ export function usePersona(): PersonaContextValue {
 export function useOptionalPersona(): PersonaContextValue | null {
   return useContext(PersonaContext)
 }
-
-

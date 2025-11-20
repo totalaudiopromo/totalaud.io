@@ -4,64 +4,64 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useOperatorStore } from '../state/operatorStore';
-import { getPersonaPreset, suggestPersonaForApps } from '@total-audio/operator-services';
-import type { OperatorPersona } from '../types';
+import { useState, useEffect } from 'react'
+import { useOperatorStore } from '../state/operatorStore'
+import { getPersonaPreset, suggestPersonaForApps } from '@total-audio/operator-services'
+import type { OperatorPersona } from '../types'
 
 interface OperatorPersonaSuggestionStripProps {
-  onOpenLayoutManager?: () => void;
+  onOpenLayoutManager?: () => void
 }
 
 export function OperatorPersonaSuggestionStrip({
   onOpenLayoutManager,
 }: OperatorPersonaSuggestionStripProps) {
-  const [suggestedPersona, setSuggestedPersona] = useState<OperatorPersona | null>(null);
-  const [dismissed, setDismissed] = useState(false);
+  const [suggestedPersona, setSuggestedPersona] = useState<OperatorPersona | null>(null)
+  const [dismissed, setDismissed] = useState(false)
 
-  const windows = useOperatorStore((state) => state.windows);
-  const operatorPersona = useOperatorStore((state) => state.operatorPersona);
-  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona);
-  const pushNotification = useOperatorStore((state) => state.pushNotification);
+  const windows = useOperatorStore((state) => state.windows)
+  const operatorPersona = useOperatorStore((state) => state.operatorPersona)
+  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona)
+  const pushNotification = useOperatorStore((state) => state.pushNotification)
 
-  const currentPreset = getPersonaPreset(operatorPersona);
+  const currentPreset = getPersonaPreset(operatorPersona)
 
   // Check if we should suggest a different persona based on open apps
   useEffect(() => {
-    const openAppIds = windows.map((w) => w.appId);
-    const suggested = suggestPersonaForApps(openAppIds);
+    const openAppIds = windows.map((w) => w.appId)
+    const suggested = suggestPersonaForApps(openAppIds)
 
     if (suggested && suggested !== operatorPersona && !dismissed) {
-      setSuggestedPersona(suggested);
+      setSuggestedPersona(suggested)
     } else {
-      setSuggestedPersona(null);
+      setSuggestedPersona(null)
     }
-  }, [windows, operatorPersona, dismissed]);
+  }, [windows, operatorPersona, dismissed])
 
   const handleAcceptSuggestion = () => {
-    if (!suggestedPersona) return;
+    if (!suggestedPersona) return
 
-    setOperatorPersona(suggestedPersona);
-    setSuggestedPersona(null);
-    setDismissed(false);
+    setOperatorPersona(suggestedPersona)
+    setSuggestedPersona(null)
+    setDismissed(false)
 
-    const preset = getPersonaPreset(suggestedPersona);
+    const preset = getPersonaPreset(suggestedPersona)
     pushNotification({
       message: `Switched to ${preset.displayName} persona`,
       type: 'success',
-    });
-  };
+    })
+  }
 
   const handleDismissSuggestion = () => {
-    setDismissed(true);
-    setSuggestedPersona(null);
-  };
+    setDismissed(true)
+    setSuggestedPersona(null)
+  }
 
   // Show suggestion if we have one
   if (suggestedPersona) {
-    const suggestedPreset = getPersonaPreset(suggestedPersona);
+    const suggestedPreset = getPersonaPreset(suggestedPersona)
 
     return (
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0D12] border-t border-[#3AA9BE]/30 backdrop-blur-sm">
@@ -72,9 +72,7 @@ export function OperatorPersonaSuggestionStrip({
               <div className="text-sm font-medium text-white">
                 Switch to {suggestedPreset.displayName} persona?
               </div>
-              <div className="text-xs text-gray-400">
-                Your open apps match this workflow better
-              </div>
+              <div className="text-xs text-gray-400">Your open apps match this workflow better</div>
             </div>
           </div>
 
@@ -94,7 +92,7 @@ export function OperatorPersonaSuggestionStrip({
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Show current persona strip with quick actions
@@ -107,9 +105,7 @@ export function OperatorPersonaSuggestionStrip({
             <span className="font-medium text-white">{currentPreset.displayName}</span>
           </div>
           <span className="hidden md:block">·</span>
-          <span className="hidden md:block">
-            Try: {currentPreset.recommendedLayoutName} layout
-          </span>
+          <span className="hidden md:block">Try: {currentPreset.recommendedLayoutName} layout</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -133,5 +129,5 @@ export function OperatorPersonaSuggestionStrip({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -4,19 +4,19 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import type { OperatorAppID } from '../types';
-import type { LaunchMode, AppProfile } from '../state/appProfiles';
-import { getAppMetadata } from '@total-audio/operator-services';
+import { useState, useEffect } from 'react'
+import type { OperatorAppID } from '../types'
+import type { LaunchMode, AppProfile } from '../state/appProfiles'
+import { getAppMetadata } from '@total-audio/operator-services'
 
 interface AppProfilePopoverProps {
-  appId: OperatorAppID;
-  currentProfile: AppProfile | null;
-  onUpdateProfile: (updates: Partial<AppProfile>) => Promise<void>;
-  onClose: () => void;
-  position: { x: number; y: number };
+  appId: OperatorAppID
+  currentProfile: AppProfile | null
+  onUpdateProfile: (updates: Partial<AppProfile>) => Promise<void>
+  onClose: () => void
+  position: { x: number; y: number }
 }
 
 export function AppProfilePopover({
@@ -28,53 +28,50 @@ export function AppProfilePopover({
 }: AppProfilePopoverProps) {
   const [launchMode, setLaunchMode] = useState<LaunchMode>(
     currentProfile?.launch_mode || 'floating'
-  );
-  const [pinned, setPinned] = useState(currentProfile?.pinned || false);
-  const [saving, setSaving] = useState(false);
+  )
+  const [pinned, setPinned] = useState(currentProfile?.pinned || false)
+  const [saving, setSaving] = useState(false)
 
-  const appMetadata = getAppMetadata(appId);
+  const appMetadata = getAppMetadata(appId)
 
   useEffect(() => {
-    setLaunchMode(currentProfile?.launch_mode || 'floating');
-    setPinned(currentProfile?.pinned || false);
-  }, [currentProfile]);
+    setLaunchMode(currentProfile?.launch_mode || 'floating')
+    setPinned(currentProfile?.pinned || false)
+  }, [currentProfile])
 
   const handleLaunchModeChange = async (mode: LaunchMode) => {
     try {
-      setSaving(true);
-      setLaunchMode(mode);
-      await onUpdateProfile({ launch_mode: mode });
+      setSaving(true)
+      setLaunchMode(mode)
+      await onUpdateProfile({ launch_mode: mode })
     } catch (error) {
-      console.error('Error updating launch mode:', error);
+      console.error('Error updating launch mode:', error)
       // Revert on error
-      setLaunchMode(currentProfile?.launch_mode || 'floating');
+      setLaunchMode(currentProfile?.launch_mode || 'floating')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const handlePinnedToggle = async () => {
     try {
-      setSaving(true);
-      const newPinnedState = !pinned;
-      setPinned(newPinnedState);
-      await onUpdateProfile({ pinned: newPinnedState });
+      setSaving(true)
+      const newPinnedState = !pinned
+      setPinned(newPinnedState)
+      await onUpdateProfile({ pinned: newPinnedState })
     } catch (error) {
-      console.error('Error toggling pin:', error);
+      console.error('Error toggling pin:', error)
       // Revert on error
-      setPinned(currentProfile?.pinned || false);
+      setPinned(currentProfile?.pinned || false)
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-50" onClick={onClose} />
 
       {/* Popover */}
       <div
@@ -174,5 +171,5 @@ export function AppProfilePopover({
         </div>
       </div>
     </>
-  );
+  )
 }

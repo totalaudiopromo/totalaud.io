@@ -55,5 +55,3 @@ export interface AgentKernelActions {
 }
 
 export type AgentKernelContextValue = AgentKernelState & AgentKernelActions
-
-

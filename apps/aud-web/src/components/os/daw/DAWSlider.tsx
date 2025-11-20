@@ -34,7 +34,10 @@ export function DAWSlider({ ariaLabel, value, onChange, glow }: DawSliderProps) 
         <div
           aria-hidden
           className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-500/80 via-cyan-400/80 to-sky-400/80"
-          style={{ width: `${value * 100}%`, boxShadow: glow ? '0 0 18px rgba(58,169,190,0.7)' : undefined }}
+          style={{
+            width: `${value * 100}%`,
+            boxShadow: glow ? '0 0 18px rgba(58,169,190,0.7)' : undefined,
+          }}
         />
         <motion.div
           aria-hidden
@@ -55,5 +58,3 @@ export function DAWSlider({ ariaLabel, value, onChange, glow }: DawSliderProps) 
     </div>
   )
 }
-
-

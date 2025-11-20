@@ -40,10 +40,10 @@ function applyConflictRules(clips: SequencedClip[]): void {
 function hasPrereqBefore(
   clips: SequencedClip[],
   target: SequencedClip,
-  lanes: LoopOSLane[],
+  lanes: LoopOSLane[]
 ): boolean {
   return clips.some(
-    (clip) => lanes.includes(clip.lane) && clip.end <= target.start && clip.id !== target.id,
+    (clip) => lanes.includes(clip.lane) && clip.end <= target.start && clip.id !== target.id
   )
 }
 
@@ -82,7 +82,7 @@ export function computeSequencedClips(clips: LoopOSClipData[]): SequencedClip[] 
 export function getNextActionClips(
   sequenced: SequencedClip[],
   playhead: number,
-  limit = 6,
+  limit = 6
 ): SequencedClip[] {
   return sequenced
     .filter((clip) => clip.start >= playhead && !clip.conflicts && clip.blockedBy.length === 0)
@@ -97,7 +97,7 @@ export interface ClipValidationResult {
 
 export function validateClipChange(
   existingClips: LoopOSClipData[],
-  updatedClip: LoopOSClipData,
+  updatedClip: LoopOSClipData
 ): ClipValidationResult {
   const reasons: string[] = []
 
@@ -121,8 +121,8 @@ export function validateClipChange(
     if (overlapAmount > overlapThreshold) {
       reasons.push(
         `Overlaps with clip "${clip.name}" in lane ${clip.lane} by more than ${overlapThreshold.toFixed(
-          1,
-        )} units.`,
+          1
+        )} units.`
       )
     }
   })
@@ -132,5 +132,3 @@ export function validateClipChange(
     reasons,
   }
 }
-
-

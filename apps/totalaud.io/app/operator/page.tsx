@@ -3,10 +3,10 @@
  * Full experimental OperatorOS environment
  */
 
-'use client';
+'use client'
 
-import { OperatorShell } from './components/OperatorShell';
+import { OperatorShell } from './components/OperatorShell'
 
 export default function OperatorPage() {
-  return <OperatorShell />;
+  return <OperatorShell />
 }

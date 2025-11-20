@@ -53,7 +53,7 @@ export function CompanionEngineProvider({ children }: CompanionEngineProps) {
         // Ignore storage failures – never block the session
       }
     },
-    [currentProjectId, isDemoMode],
+    [currentProjectId, isDemoMode]
   )
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export function CompanionEngineProvider({ children }: CompanionEngineProps) {
 
       return lines.join('\n')
     },
-    [activeCompanionId],
+    [activeCompanionId]
   )
 
   const value = useMemo(
@@ -125,10 +125,8 @@ export function CompanionEngineProvider({ children }: CompanionEngineProps) {
       setCompanion,
       injectIntoPrompt,
     }),
-    [activeCompanionId, setCompanion, injectIntoPrompt],
+    [activeCompanionId, setCompanion, injectIntoPrompt]
   )
 
   return <CompanionContext.Provider value={value}>{children}</CompanionContext.Provider>
 }
-
-

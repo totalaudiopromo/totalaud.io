@@ -14,7 +14,13 @@ interface DawButtonProps {
   onClick?: () => void
 }
 
-export function DAWButton({ label, variant = 'secondary', active, ariaLabel, onClick }: DawButtonProps) {
+export function DAWButton({
+  label,
+  variant = 'secondary',
+  active,
+  ariaLabel,
+  onClick,
+}: DawButtonProps) {
   const { play } = useThemeAudio()
   const prefersReducedMotion = useReducedMotion()
 
@@ -49,5 +55,3 @@ export function DAWButton({ label, variant = 'secondary', active, ariaLabel, onC
     </motion.button>
   )
 }
-
-

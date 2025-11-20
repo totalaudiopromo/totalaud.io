@@ -12,8 +12,6 @@ export function useProjectSwitcher() {
       openProjectSwitch,
       closeProjectSwitch,
     }),
-    [closeProjectSwitch, isProjectSwitchOpen, openProjectSwitch],
+    [closeProjectSwitch, isProjectSwitchOpen, openProjectSwitch]
   )
 }
-
-

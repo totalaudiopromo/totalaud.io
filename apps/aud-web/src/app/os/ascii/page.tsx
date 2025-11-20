@@ -1,7 +1,7 @@
 /**
  * ASCII OS Theme - Terminal-Inspired Creative Workspace
  * Route: /os/ascii
- * 
+ *
  * A full-screen terminal-style operating system surface with:
  * - Scanline and glow effects
  * - Blinking cursor
@@ -35,4 +35,3 @@ export default function AsciiOSPage() {
 
   return <AsciiOSContainer onSetOS={setOS} />
 }
-

@@ -62,8 +62,7 @@ export function AnalogueCard({
     yellow:
       'border-[#e1c96b] bg-[#fff7c9] text-[#433319] shadow-[0_16px_32px_rgba(146,118,52,0.45)]',
     blue: 'border-[#92b5d9] bg-[#e4f0ff] text-[#213049] shadow-[0_16px_32px_rgba(71,104,147,0.45)]',
-    pink:
-      'border-[#e29ab3] bg-[#ffe5f0] text-[#4e2231] shadow-[0_16px_32px_rgba(153,79,106,0.45)]',
+    pink: 'border-[#e29ab3] bg-[#ffe5f0] text-[#4e2231] shadow-[0_16px_32px_rgba(153,79,106,0.45)]',
   }
 
   const ring = card.highlighted
@@ -71,11 +70,7 @@ export function AnalogueCard({
     : 'ring-0'
 
   const pinColour =
-    accent === 'yellow'
-      ? 'bg-[#f97316]'
-      : accent === 'blue'
-        ? 'bg-[#3b82f6]'
-        : 'bg-[#ec4899]'
+    accent === 'yellow' ? 'bg-[#f97316]' : accent === 'blue' ? 'bg-[#3b82f6]' : 'bg-[#ec4899]'
 
   return (
     <motion.div
@@ -136,9 +131,7 @@ export function AnalogueCard({
       <div className="relative z-10 space-y-1.5">
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-0.5">
-            <h3 className="text-[13px] font-semibold tracking-[0.12em] uppercase">
-              {card.title}
-            </h3>
+            <h3 className="text-[13px] font-semibold tracking-[0.12em] uppercase">{card.title}</h3>
             {card.tag && (
               <span className="inline-flex items-center rounded-full bg-black/5 px-2 py-[1px] text-[10px] uppercase tracking-[0.16em] text-black/55">
                 {card.tag}
@@ -241,8 +234,8 @@ export function AnalogueCard({
               {card.sentTo === 'both'
                 ? 'Marked for Aqua + DAW'
                 : card.sentTo === 'aqua'
-                ? 'Marked for Aqua'
-                : 'Marked for DAW'}
+                  ? 'Marked for Aqua'
+                  : 'Marked for DAW'}
             </span>
           )}
         </div>
@@ -250,5 +243,3 @@ export function AnalogueCard({
     </motion.div>
   )
 }
-
-

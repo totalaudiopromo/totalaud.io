@@ -61,16 +61,14 @@ export const DIRECTOR_SCRIPT: DirectorAction[] = [
     stepId: 'ascii_agent_run',
     kind: 'SHOW_NOTE',
     delayMs: 600,
-    payload:
-      'In ASCII OS we talk to agents directly – no UI chrome, just commands and logs.',
+    payload: 'In ASCII OS we talk to agents directly – no UI chrome, just commands and logs.',
   },
   {
     id: 'ascii-type-command',
     stepId: 'ascii_agent_run',
     kind: 'TYPE_ASCII',
     delayMs: 900,
-    payload:
-      'agent run coach "Suggest an announcement plan for the ‘Midnight Signals’ EP."',
+    payload: 'agent run coach "Suggest an announcement plan for the ‘Midnight Signals’ EP."',
   },
   {
     id: 'ascii-run-command',
@@ -170,5 +168,3 @@ export const DIRECTOR_SCRIPT: DirectorAction[] = [
       'Ideas → agents → loops → pitches. That’s the totalaud.io constellation in one quick run.',
   },
 ]
-
-

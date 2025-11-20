@@ -57,5 +57,3 @@ export function getCompanionPreset(id: CompanionId | null): CompanionPreset | nu
   if (!id) return null
   return COMPANION_PRESETS.find((companion) => companion.id === id) ?? null
 }
-
-

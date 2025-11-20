@@ -50,5 +50,3 @@ export function XPStartButton({ onClick }: XPStartButtonProps) {
     </motion.button>
   )
 }
-
-

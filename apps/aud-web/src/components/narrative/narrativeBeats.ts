@@ -115,5 +115,3 @@ export function getNarrativeBeatById(id: NarrativeBeatId): NarrativeBeat | undef
 export function getNarrativeBeatByStepId(stepId: DemoStepId): NarrativeBeat | undefined {
   return NARRATIVE_BEATS.find((beat) => beat.stepId === stepId)
 }
-
-

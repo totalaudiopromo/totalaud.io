@@ -58,9 +58,6 @@ export function useOS(): UseOSResult {
       toggleQuickSwitch,
       transitions.isTransitioning,
       transitions.type,
-    ],
+    ]
   )
 }
-
-
-

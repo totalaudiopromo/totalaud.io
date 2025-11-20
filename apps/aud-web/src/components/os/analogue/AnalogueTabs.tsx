@@ -88,5 +88,3 @@ export function AnalogueTabs({ tabs, activeTab, onTabChange }: AnalogueTabsProps
     </div>
   )
 }
-
-

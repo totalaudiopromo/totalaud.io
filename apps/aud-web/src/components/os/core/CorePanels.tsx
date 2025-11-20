@@ -52,16 +52,14 @@ export function CorePanels() {
             <div className="space-y-1 text-[10px] text-slate-300">
               <p className="text-slate-200">{persona.persona.tone}</p>
               {persona.personaTraits.length > 0 && (
-                <p className="text-slate-400">
-                  Traits: {persona.personaTraits.join(', ')}
-                </p>
+                <p className="text-slate-400">Traits: {persona.personaTraits.join(', ')}</p>
               )}
             </div>
           ) : (
             <p className="text-[10px] text-slate-500">
               No persona locked in. Use the ASCII command{' '}
-              <span className="font-mono text-emerald-300">persona lana_glass</span> to activate
-              the demo persona.
+              <span className="font-mono text-emerald-300">persona lana_glass</span> to activate the
+              demo persona.
             </p>
           )}
         </div>
@@ -73,5 +71,3 @@ export function CorePanels() {
     </div>
   )
 }
-
-

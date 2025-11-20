@@ -11,7 +11,7 @@ import type {
   PlanSummary,
   DriftReport,
   MeshSystem,
-} from './types';
+} from './types'
 
 // ──────────────────────────────────────
 // MOCK DATA FETCHERS
@@ -49,7 +49,10 @@ async function fetchRecentOpportunities(days: number): Promise<CrossSystemOpport
       opportunityType: 'relationship_building',
       impact: 'medium',
       description: 'Untapped connections in electronic music scene',
-      recommendedActions: ['Attend 2 electronic music events this month', 'Engage with scene leaders'],
+      recommendedActions: [
+        'Attend 2 electronic music events this month',
+        'Engage with scene leaders',
+      ],
     },
     {
       id: 'opp-004',
@@ -67,10 +70,10 @@ async function fetchRecentOpportunities(days: number): Promise<CrossSystemOpport
       description: 'Cross-platform content repurposing potential',
       recommendedActions: ['Create content templates for multi-platform distribution'],
     },
-  ];
+  ]
 
   // Filter by recency (mock)
-  return days >= 7 ? baseOpportunities : baseOpportunities.slice(0, 3);
+  return days >= 7 ? baseOpportunities : baseOpportunities.slice(0, 3)
 }
 
 async function fetchRecentConflicts(days: number): Promise<CrossSystemConflict[]> {
@@ -113,7 +116,10 @@ async function fetchRecentConflicts(days: number): Promise<CrossSystemConflict[]
       conflictType: 'relationship_outreach_fatigue',
       severity: 'medium',
       description: 'Continuing outreach to contacts showing fatigue signals',
-      resolutionSuggestions: ['Implement relationship cooling-off periods', 'Respect "needs space" signals'],
+      resolutionSuggestions: [
+        'Implement relationship cooling-off periods',
+        'Respect "needs space" signals',
+      ],
     },
     {
       id: 'conflict-005',
@@ -123,9 +129,9 @@ async function fetchRecentConflicts(days: number): Promise<CrossSystemConflict[]
       description: 'Content strategy not showcasing strongest skills',
       resolutionSuggestions: ['Rebalance content to highlight production expertise'],
     },
-  ];
+  ]
 
-  return days >= 7 ? baseConflicts : baseConflicts.slice(0, 3);
+  return days >= 7 ? baseConflicts : baseConflicts.slice(0, 3)
 }
 
 async function fetchRecentPlans(days: number): Promise<PlanSummary[]> {
@@ -179,10 +185,10 @@ async function fetchRecentPlans(days: number): Promise<PlanSummary[]> {
       createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       priority: 'low',
     },
-  ];
+  ]
 
-  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-  return basePlans.filter((p) => new Date(p.createdAt) >= cutoffDate);
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  return basePlans.filter((p) => new Date(p.createdAt) >= cutoffDate)
 }
 
 async function fetchRecentDrifts(days: number): Promise<DriftReport[]> {
@@ -212,10 +218,10 @@ async function fetchRecentDrifts(days: number): Promise<DriftReport[]> {
       humanSummary: 'Resource allocation mismatched with actual scene activity',
       detectedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     },
-  ];
+  ]
 
-  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-  return baseDrifts.filter((d) => new Date(d.detectedAt) >= cutoffDate);
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  return baseDrifts.filter((d) => new Date(d.detectedAt) >= cutoffDate)
 }
 
 // ──────────────────────────────────────
@@ -223,31 +229,41 @@ async function fetchRecentDrifts(days: number): Promise<DriftReport[]> {
 // ──────────────────────────────────────
 
 export async function generateDailySummary(date: Date = new Date()): Promise<DailySummary> {
-  const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+  const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD
 
-  console.log(`[MeshOS Insights] Generating daily summary for ${dateStr}...`);
+  console.log(`[MeshOS Insights] Generating daily summary for ${dateStr}...`)
 
   // Fetch data in parallel
-  const [opportunities7d, opportunities30d, opportunities90d, conflicts, plans7d, plans30d, plans90d, drifts] =
-    await Promise.all([
-      fetchRecentOpportunities(7),
-      fetchRecentOpportunities(30),
-      fetchRecentOpportunities(90),
-      fetchRecentConflicts(7),
-      fetchRecentPlans(7),
-      fetchRecentPlans(30),
-      fetchRecentPlans(90),
-      fetchRecentDrifts(7),
-    ]);
+  const [
+    opportunities7d,
+    opportunities30d,
+    opportunities90d,
+    conflicts,
+    plans7d,
+    plans30d,
+    plans90d,
+    drifts,
+  ] = await Promise.all([
+    fetchRecentOpportunities(7),
+    fetchRecentOpportunities(30),
+    fetchRecentOpportunities(90),
+    fetchRecentConflicts(7),
+    fetchRecentPlans(7),
+    fetchRecentPlans(30),
+    fetchRecentPlans(90),
+    fetchRecentDrifts(7),
+  ])
 
   // Get top opportunities (max 5)
-  const topOpportunities = opportunities7d.slice(0, 5);
+  const topOpportunities = opportunities7d.slice(0, 5)
 
   // Get top conflicts (max 5)
-  const topConflicts = conflicts.slice(0, 5);
+  const topConflicts = conflicts.slice(0, 5)
 
   // Calculate metrics
-  const criticalIssues = [...drifts, ...conflicts].filter((item) => item.severity === 'critical').length;
+  const criticalIssues = [...drifts, ...conflicts].filter(
+    (item) => item.severity === 'critical'
+  ).length
 
   const summary: DailySummary = {
     date: dateStr,
@@ -267,11 +283,13 @@ export async function generateDailySummary(date: Date = new Date()): Promise<Dai
       totalDrifts: drifts.length,
       criticalIssues,
     },
-  };
+  }
 
-  console.log(`[MeshOS Insights] Summary generated: ${summary.metrics.totalOpportunities} opps, ${summary.metrics.totalConflicts} conflicts, ${summary.metrics.totalPlans} plans, ${summary.metrics.totalDrifts} drifts`);
+  console.log(
+    `[MeshOS Insights] Summary generated: ${summary.metrics.totalOpportunities} opps, ${summary.metrics.totalConflicts} conflicts, ${summary.metrics.totalPlans} plans, ${summary.metrics.totalDrifts} drifts`
+  )
 
-  return summary;
+  return summary
 }
 
 // ──────────────────────────────────────
@@ -279,17 +297,17 @@ export async function generateDailySummary(date: Date = new Date()): Promise<Dai
 // ──────────────────────────────────────
 
 export function getDailySummaryStateKey(date: Date): string {
-  const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-  return `daily_summary:${dateStr}`;
+  const dateStr = date.toISOString().split('T')[0] // YYYY-MM-DD
+  return `daily_summary:${dateStr}`
 }
 
 export async function saveDailySummary(
   summary: DailySummary,
   saveFn: (key: string, value: any) => Promise<void>
 ): Promise<void> {
-  const key = getDailySummaryStateKey(new Date(summary.date));
-  await saveFn(key, summary);
-  console.log(`[MeshOS Insights] Saved daily summary to mesh_state: ${key}`);
+  const key = getDailySummaryStateKey(new Date(summary.date))
+  await saveFn(key, summary)
+  console.log(`[MeshOS Insights] Saved daily summary to mesh_state: ${key}`)
 }
 
 // ──────────────────────────────────────
@@ -299,40 +317,43 @@ export async function saveDailySummary(
 /**
  * Get top opportunities by impact
  */
-export function getTopOpportunities(summary: DailySummary, limit: number = 5): CrossSystemOpportunity[] {
-  const impactWeight = { low: 1, medium: 2, high: 3 };
+export function getTopOpportunities(
+  summary: DailySummary,
+  limit: number = 5
+): CrossSystemOpportunity[] {
+  const impactWeight = { low: 1, medium: 2, high: 3 }
   return [...summary.opportunities]
     .sort((a, b) => impactWeight[b.impact] - impactWeight[a.impact])
-    .slice(0, limit);
+    .slice(0, limit)
 }
 
 /**
  * Get top conflicts by severity
  */
 export function getTopConflicts(summary: DailySummary, limit: number = 5): CrossSystemConflict[] {
-  const severityWeight = { low: 1, medium: 2, high: 3, critical: 4 };
+  const severityWeight = { low: 1, medium: 2, high: 3, critical: 4 }
   return [...summary.conflicts]
     .sort((a, b) => severityWeight[b.severity] - severityWeight[a.severity])
-    .slice(0, limit);
+    .slice(0, limit)
 }
 
 /**
  * Get active plans (status = 'active' or 'pending')
  */
 export function getActivePlans(summary: DailySummary): PlanSummary[] {
-  return summary.plans.last7d.filter((p) => p.status === 'active' || p.status === 'pending');
+  return summary.plans.last7d.filter((p) => p.status === 'active' || p.status === 'pending')
 }
 
 /**
  * Get high-priority plans
  */
 export function getHighPriorityPlans(summary: DailySummary): PlanSummary[] {
-  return summary.plans.last7d.filter((p) => p.priority === 'high');
+  return summary.plans.last7d.filter((p) => p.priority === 'high')
 }
 
 /**
  * Check if there are critical issues requiring immediate attention
  */
 export function hasCriticalIssues(summary: DailySummary): boolean {
-  return summary.metrics.criticalIssues > 0;
+  return summary.metrics.criticalIssues > 0
 }

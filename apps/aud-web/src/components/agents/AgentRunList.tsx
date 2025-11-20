@@ -150,5 +150,3 @@ export function AgentRunList({ runs, activeRunId, onSelectRun }: AgentRunListPro
     </div>
   )
 }
-
-

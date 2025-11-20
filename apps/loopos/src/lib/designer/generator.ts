@@ -87,7 +87,10 @@ Return JSON in this format:
   return basePrompt
 }
 
-function parseSceneResponse(response: string, type: SceneType): Omit<Scene, 'id' | 'type' | 'generated_at'> {
+function parseSceneResponse(
+  response: string,
+  type: SceneType
+): Omit<Scene, 'id' | 'type' | 'generated_at'> {
   try {
     // Try to extract JSON from response
     const jsonMatch = response.match(/\{[\s\S]*\}/)
@@ -180,7 +183,8 @@ function releaseStrategyTemplate(context: DesignerContext): Omit<Scene, 'id' | '
   return {
     type: 'release-strategy',
     title: 'Three-Act Release Strategy',
-    narrative: 'Your campaign follows a three-act structure: building anticipation, launching with impact, and sustaining momentum through strategic follow-through.',
+    narrative:
+      'Your campaign follows a three-act structure: building anticipation, launching with impact, and sustaining momentum through strategic follow-through.',
     elements,
     arcs,
     recommendations: [
@@ -245,7 +249,8 @@ function audienceDevelopmentTemplate(context: DesignerContext): Omit<Scene, 'id'
   return {
     type: 'audience-development',
     title: 'Audience Funnel',
-    narrative: 'Build your audience through a three-stage funnel: attract attention, deepen engagement, and cultivate advocacy.',
+    narrative:
+      'Build your audience through a three-stage funnel: attract attention, deepen engagement, and cultivate advocacy.',
     elements,
     arcs,
     recommendations: [
@@ -315,7 +320,8 @@ function epkStructureTemplate(context: DesignerContext): Omit<Scene, 'id' | 'gen
   return {
     type: 'epk-structure',
     title: 'EPK Core Structure',
-    narrative: 'Your electronic press kit centres on three pillars: compelling story, strong music, and social proof.',
+    narrative:
+      'Your electronic press kit centres on three pillars: compelling story, strong music, and social proof.',
     elements,
     arcs: [],
     recommendations: [
@@ -361,7 +367,8 @@ function creativeIdentityTemplate(context: DesignerContext): Omit<Scene, 'id' | 
   return {
     type: 'creative-identity',
     title: 'Brand Identity Map',
-    narrative: 'Your creative identity emerges from the intersection of sonic, visual, and narrative elements.',
+    narrative:
+      'Your creative identity emerges from the intersection of sonic, visual, and narrative elements.',
     elements,
     arcs: [],
     recommendations: [

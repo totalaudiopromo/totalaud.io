@@ -68,5 +68,3 @@ export const RITUAL_PRESETS: Ritual[] = [
     weight: 0.85,
   },
 ]
-
-

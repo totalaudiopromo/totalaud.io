@@ -3,20 +3,23 @@
  * Display and change operator persona with optional layout suggestions
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useOperatorStore } from '../state/operatorStore';
-import type { OperatorPersona } from '../types';
-import { loadLayout, applyLayoutToStore } from '../state/layoutPersistence';
+import { useState } from 'react'
+import { useOperatorStore } from '../state/operatorStore'
+import type { OperatorPersona } from '../types'
+import { loadLayout, applyLayoutToStore } from '../state/layoutPersistence'
 
 interface OperatorPersonaIndicatorProps {
-  userId?: string;
-  workspaceId?: string;
-  compact?: boolean;
+  userId?: string
+  workspaceId?: string
+  compact?: boolean
 }
 
-const personaInfo: Record<OperatorPersona, { label: string; icon: string; description: string; suggestedLayout?: string }> = {
+const personaInfo: Record<
+  OperatorPersona,
+  { label: string; icon: string; description: string; suggestedLayout?: string }
+> = {
   default: {
     label: 'Default',
     icon: '⚡',
@@ -45,75 +48,75 @@ const personaInfo: Record<OperatorPersona, { label: string; icon: string; descri
     icon: '⌨️',
     description: 'System tools and terminal access',
   },
-};
+}
 
 export function OperatorPersonaIndicator({
   userId,
   workspaceId,
   compact = false,
 }: OperatorPersonaIndicatorProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showLayoutSuggestion, setShowLayoutSuggestion] = useState(false);
-  const [suggestedLayout, setSuggestedLayout] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [showLayoutSuggestion, setShowLayoutSuggestion] = useState(false)
+  const [suggestedLayout, setSuggestedLayout] = useState<string | null>(null)
 
-  const operatorPersona = useOperatorStore((state) => state.operatorPersona);
-  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona);
-  const pushNotification = useOperatorStore((state) => state.pushNotification);
+  const operatorPersona = useOperatorStore((state) => state.operatorPersona)
+  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona)
+  const pushNotification = useOperatorStore((state) => state.pushNotification)
 
-  const currentPersonaInfo = personaInfo[operatorPersona];
+  const currentPersonaInfo = personaInfo[operatorPersona]
 
   const handlePersonaChange = (newPersona: OperatorPersona) => {
-    setOperatorPersona(newPersona);
+    setOperatorPersona(newPersona)
 
     pushNotification({
       message: `Switched to ${personaInfo[newPersona].label} persona`,
       type: 'success',
-    });
+    })
 
     // Check if there's a suggested layout
-    const suggested = personaInfo[newPersona].suggestedLayout;
+    const suggested = personaInfo[newPersona].suggestedLayout
     if (suggested && userId && workspaceId) {
-      setSuggestedLayout(suggested);
-      setShowLayoutSuggestion(true);
+      setSuggestedLayout(suggested)
+      setShowLayoutSuggestion(true)
 
       // Auto-hide suggestion after 10 seconds
       setTimeout(() => {
-        setShowLayoutSuggestion(false);
-      }, 10000);
+        setShowLayoutSuggestion(false)
+      }, 10000)
     }
 
-    setIsOpen(false);
-  };
+    setIsOpen(false)
+  }
 
   const handleApplySuggestedLayout = async () => {
-    if (!suggestedLayout || !userId || !workspaceId) return;
+    if (!suggestedLayout || !userId || !workspaceId) return
 
     try {
-      const layout = await loadLayout(userId, workspaceId, suggestedLayout);
+      const layout = await loadLayout(userId, workspaceId, suggestedLayout)
       if (!layout) {
         pushNotification({
           message: `Layout "${suggestedLayout}" not found`,
           type: 'warning',
-        });
-        return;
+        })
+        return
       }
 
-      applyLayoutToStore(layout, useOperatorStore.setState);
+      applyLayoutToStore(layout, useOperatorStore.setState)
 
       pushNotification({
         message: `Applied recommended ${suggestedLayout} layout`,
         type: 'success',
-      });
+      })
 
-      setShowLayoutSuggestion(false);
+      setShowLayoutSuggestion(false)
     } catch (error) {
-      console.error('Error applying suggested layout:', error);
+      console.error('Error applying suggested layout:', error)
       pushNotification({
         message: 'Failed to apply layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   if (compact) {
     return (
@@ -146,7 +149,7 @@ export function OperatorPersonaIndicator({
           </div>
         )}
       </div>
-    );
+    )
   }
 
   return (
@@ -220,12 +223,7 @@ export function OperatorPersonaIndicator({
       )}
 
       {/* Click Outside Handler */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
     </div>
-  );
+  )
 }

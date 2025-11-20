@@ -3,13 +3,13 @@
  * Tests for save/load/import/export of layouts
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
   extractLayoutFromStore,
   exportLayoutToJson,
   importLayoutFromJson,
   type OperatorLayout,
-} from '../src/state/layoutPersistence';
+} from '../src/state/layoutPersistence'
 
 describe('layoutPersistence', () => {
   const mockState = {
@@ -44,19 +44,19 @@ describe('layoutPersistence', () => {
     notifications: [],
     isCommandPaletteOpen: false,
     focusedWindowId: 'window-1',
-  };
+  }
 
   describe('extractLayoutFromStore', () => {
     it('should extract layout from store state', () => {
-      const layout = extractLayoutFromStore(mockState, 'test-layout');
+      const layout = extractLayoutFromStore(mockState, 'test-layout')
 
       expect(layout).toMatchObject({
         layout_name: 'test-layout',
         theme: 'daw',
         persona: 'strategist',
-      });
+      })
 
-      expect(layout.windows).toHaveLength(2);
+      expect(layout.windows).toHaveLength(2)
       expect(layout.windows[0]).toMatchObject({
         appId: 'intel',
         x: 100,
@@ -66,15 +66,15 @@ describe('layoutPersistence', () => {
         zIndex: 1,
         isMinimised: false,
         isMaximised: false,
-      });
-    });
+      })
+    })
 
     it('should preserve window maximized state', () => {
-      const layout = extractLayoutFromStore(mockState, 'test');
+      const layout = extractLayoutFromStore(mockState, 'test')
 
-      expect(layout.windows[1].isMaximised).toBe(true);
-    });
-  });
+      expect(layout.windows[1].isMaximised).toBe(true)
+    })
+  })
 
   describe('exportLayoutToJson', () => {
     it('should export layout as JSON string', () => {
@@ -93,17 +93,17 @@ describe('layoutPersistence', () => {
         ],
         theme: 'aqua',
         persona: 'producer',
-      };
+      }
 
-      const json = exportLayoutToJson(layout);
-      const parsed = JSON.parse(json);
+      const json = exportLayoutToJson(layout)
+      const parsed = JSON.parse(json)
 
-      expect(parsed.layout_name).toBe('creative');
-      expect(parsed.theme).toBe('aqua');
-      expect(parsed.persona).toBe('producer');
-      expect(parsed.windows).toHaveLength(1);
-      expect(parsed.exported_at).toBeDefined();
-    });
+      expect(parsed.layout_name).toBe('creative')
+      expect(parsed.theme).toBe('aqua')
+      expect(parsed.persona).toBe('producer')
+      expect(parsed.windows).toHaveLength(1)
+      expect(parsed.exported_at).toBeDefined()
+    })
 
     it('should produce valid JSON', () => {
       const layout: OperatorLayout = {
@@ -111,13 +111,13 @@ describe('layoutPersistence', () => {
         windows: [],
         theme: 'daw',
         persona: 'default',
-      };
+      }
 
-      const json = exportLayoutToJson(layout);
+      const json = exportLayoutToJson(layout)
 
-      expect(() => JSON.parse(json)).not.toThrow();
-    });
-  });
+      expect(() => JSON.parse(json)).not.toThrow()
+    })
+  })
 
   describe('importLayoutFromJson', () => {
     it('should import layout from JSON string', () => {
@@ -137,31 +137,31 @@ describe('layoutPersistence', () => {
         theme: 'xp',
         persona: 'campaign',
         exported_at: '2025-11-18T00:00:00.000Z',
-      };
+      }
 
-      const layout = importLayoutFromJson(JSON.stringify(jsonData));
+      const layout = importLayoutFromJson(JSON.stringify(jsonData))
 
-      expect(layout.layout_name).toBe('imported');
-      expect(layout.theme).toBe('xp');
-      expect(layout.persona).toBe('campaign');
-      expect(layout.windows).toHaveLength(1);
-    });
+      expect(layout.layout_name).toBe('imported')
+      expect(layout.theme).toBe('xp')
+      expect(layout.persona).toBe('campaign')
+      expect(layout.windows).toHaveLength(1)
+    })
 
     it('should throw error for invalid JSON', () => {
-      expect(() => importLayoutFromJson('not valid json')).toThrow();
-    });
+      expect(() => importLayoutFromJson('not valid json')).toThrow()
+    })
 
     it('should throw error for missing required fields', () => {
       const invalidLayout = {
         layout_name: 'test',
         theme: 'daw',
         // Missing windows and persona
-      };
+      }
 
       expect(() => importLayoutFromJson(JSON.stringify(invalidLayout))).toThrow(
         'missing required fields'
-      );
-    });
+      )
+    })
 
     it('should throw error for invalid theme', () => {
       const invalidLayout = {
@@ -169,12 +169,10 @@ describe('layoutPersistence', () => {
         windows: [],
         theme: 'invalid-theme',
         persona: 'default',
-      };
+      }
 
-      expect(() => importLayoutFromJson(JSON.stringify(invalidLayout))).toThrow(
-        'Invalid theme'
-      );
-    });
+      expect(() => importLayoutFromJson(JSON.stringify(invalidLayout))).toThrow('Invalid theme')
+    })
 
     it('should throw error for invalid persona', () => {
       const invalidLayout = {
@@ -182,13 +180,11 @@ describe('layoutPersistence', () => {
         windows: [],
         theme: 'daw',
         persona: 'invalid-persona',
-      };
+      }
 
-      expect(() => importLayoutFromJson(JSON.stringify(invalidLayout))).toThrow(
-        'Invalid persona'
-      );
-    });
-  });
+      expect(() => importLayoutFromJson(JSON.stringify(invalidLayout))).toThrow('Invalid persona')
+    })
+  })
 
   describe('save/load roundtrip', () => {
     it('should preserve layout through export and import', () => {
@@ -218,17 +214,17 @@ describe('layoutPersistence', () => {
         ],
         theme: 'analogue',
         persona: 'dev',
-      };
+      }
 
-      const json = exportLayoutToJson(originalLayout);
-      const importedLayout = importLayoutFromJson(json);
+      const json = exportLayoutToJson(originalLayout)
+      const importedLayout = importLayoutFromJson(json)
 
-      expect(importedLayout.layout_name).toBe(originalLayout.layout_name);
-      expect(importedLayout.theme).toBe(originalLayout.theme);
-      expect(importedLayout.persona).toBe(originalLayout.persona);
-      expect(importedLayout.windows).toHaveLength(originalLayout.windows.length);
-      expect(importedLayout.windows[0]).toMatchObject(originalLayout.windows[0]);
-      expect(importedLayout.windows[1]).toMatchObject(originalLayout.windows[1]);
-    });
-  });
-});
+      expect(importedLayout.layout_name).toBe(originalLayout.layout_name)
+      expect(importedLayout.theme).toBe(originalLayout.theme)
+      expect(importedLayout.persona).toBe(originalLayout.persona)
+      expect(importedLayout.windows).toHaveLength(originalLayout.windows.length)
+      expect(importedLayout.windows[0]).toMatchObject(originalLayout.windows[0])
+      expect(importedLayout.windows[1]).toMatchObject(originalLayout.windows[1])
+    })
+  })
+})

@@ -3,35 +3,35 @@
  * Shows loading of core systems with progress indicators
  */
 
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Loader2, X } from 'lucide-react';
-import { executeBootChecks, type BootCheck } from '../bootSequence';
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check, Loader2, X } from 'lucide-react'
+import { executeBootChecks, type BootCheck } from '../bootSequence'
 
 interface SignalScreenProps {
-  onComplete: () => void;
+  onComplete: () => void
 }
 
 export function SignalScreen({ onComplete }: SignalScreenProps) {
-  const [checks, setChecks] = useState<BootCheck[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [checks, setChecks] = useState<BootCheck[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     executeBootChecks(setChecks)
-      .then(result => {
+      .then((result) => {
         if (result.success) {
           // Wait a moment then transition to Ready
-          setTimeout(onComplete, 500);
+          setTimeout(onComplete, 500)
         } else {
-          setError(result.error || 'Boot failed');
+          setError(result.error || 'Boot failed')
         }
       })
-      .catch(err => {
-        setError(err.message);
-      });
-  }, [onComplete]);
+      .catch((err) => {
+        setError(err.message)
+      })
+  }, [onComplete])
 
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-black to-[#0a0e12] flex items-center justify-center">
@@ -42,12 +42,8 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 text-center"
         >
-          <h1 className="text-3xl font-bold text-[#3AA9BE] font-['JetBrains_Mono'] mb-2">
-            SIGNAL
-          </h1>
-          <p className="text-sm text-[#7ec8d3]">
-            Wiring in platform capabilities
-          </p>
+          <h1 className="text-3xl font-bold text-[#3AA9BE] font-['JetBrains_Mono'] mb-2">SIGNAL</h1>
+          <p className="text-sm text-[#7ec8d3]">Wiring in platform capabilities</p>
         </motion.div>
 
         {/* Checks Grid */}
@@ -68,12 +64,8 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
                 {check.status === 'checking' && (
                   <Loader2 className="w-4 h-4 text-[#3AA9BE] animate-spin" />
                 )}
-                {check.status === 'success' && (
-                  <Check className="w-4 h-4 text-[#10b981]" />
-                )}
-                {check.status === 'error' && (
-                  <X className="w-4 h-4 text-[#ef4444]" />
-                )}
+                {check.status === 'success' && <Check className="w-4 h-4 text-[#10b981]" />}
+                {check.status === 'error' && <X className="w-4 h-4 text-[#ef4444]" />}
               </div>
 
               {/* Name */}
@@ -82,9 +74,7 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
                   {check.name}
                 </div>
                 {check.message && (
-                  <div className="text-xs text-[#7ec8d3] mt-0.5">
-                    {check.message}
-                  </div>
+                  <div className="text-xs text-[#7ec8d3] mt-0.5">{check.message}</div>
                 )}
               </div>
             </motion.div>
@@ -98,9 +88,7 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
             animate={{ opacity: 1 }}
             className="mt-6 p-4 bg-[#ef4444]/10 border border-[#ef4444] rounded text-center"
           >
-            <p className="text-[#ef4444] text-sm font-['JetBrains_Mono']">
-              {error}
-            </p>
+            <p className="text-[#ef4444] text-sm font-['JetBrains_Mono']">{error}</p>
           </motion.div>
         )}
 
@@ -117,7 +105,7 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
                 className="h-full bg-[#3AA9BE]"
                 initial={{ width: '0%' }}
                 animate={{
-                  width: `${(checks.filter(c => c.status === 'success').length / checks.length) * 100}%`,
+                  width: `${(checks.filter((c) => c.status === 'success').length / checks.length) * 100}%`,
                 }}
                 transition={{ duration: 0.3 }}
               />
@@ -126,5 +114,5 @@ export function SignalScreen({ onComplete }: SignalScreenProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

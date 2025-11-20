@@ -150,5 +150,3 @@ export function AgentRunDetails({ run }: AgentRunDetailsProps) {
     </div>
   )
 }
-
-

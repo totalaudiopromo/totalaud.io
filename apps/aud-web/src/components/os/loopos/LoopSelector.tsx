@@ -28,7 +28,7 @@ export function LoopSelector({
 
   const activeLoop = useMemo(
     () => availableLoops.find((loop) => loop.id === activeLoopId) ?? null,
-    [activeLoopId, availableLoops],
+    [activeLoopId, availableLoops]
   )
 
   const handleCreate = () => {
@@ -134,5 +134,3 @@ export function LoopSelector({
     </div>
   )
 }
-
-

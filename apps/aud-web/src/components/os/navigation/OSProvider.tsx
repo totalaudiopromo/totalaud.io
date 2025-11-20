@@ -110,7 +110,7 @@ export function OSProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [currentOS.slug],
+    [currentOS.slug]
   )
 
   const openQuickSwitch = useCallback(() => {
@@ -152,7 +152,7 @@ export function OSProvider({ children }: { children: React.ReactNode }) {
       setHistory((prev) => [...prev, nextOS.slug])
       setCurrentOS(nextOS)
     },
-    [currentOS, play],
+    [currentOS, play]
   )
 
   useEffect(() => {
@@ -194,7 +194,7 @@ export function OSProvider({ children }: { children: React.ReactNode }) {
 
       router.push(`/os/${slug}`)
     },
-    [closeQuickSwitch, currentOS.slug, router],
+    [closeQuickSwitch, currentOS.slug, router]
   )
 
   const value: OSContextValue = useMemo(
@@ -221,7 +221,7 @@ export function OSProvider({ children }: { children: React.ReactNode }) {
       setOS,
       toggleQuickSwitch,
       transitions,
-    ],
+    ]
   )
 
   return (
@@ -244,5 +244,3 @@ export function useOSContext(): OSContextValue {
   }
   return ctx
 }
-
-

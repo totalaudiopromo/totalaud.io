@@ -27,18 +27,12 @@ export const audioIntelApi = {
   // RECOMMENDATIONS
   // ============================================================================
 
-  async getBlogRecommendations(
-    artistName: string,
-    genre?: string
-  ): Promise<TAPRecommendation[]> {
+  async getBlogRecommendations(artistName: string, genre?: string): Promise<TAPRecommendation[]> {
     const insights = await this.getAudienceInsights(artistName, genre)
     return insights.recommendations.blogs
   },
 
-  async getRadioRecommendations(
-    artistName: string,
-    genre?: string
-  ): Promise<TAPRecommendation[]> {
+  async getRadioRecommendations(artistName: string, genre?: string): Promise<TAPRecommendation[]> {
     const insights = await this.getAudienceInsights(artistName, genre)
     return insights.recommendations.radio_stations
   },
@@ -66,7 +60,10 @@ export const audioIntelApi = {
   /**
    * Enrich LoopOS campaign with audience insights
    */
-  async enrichCampaign(artistName: string, genre?: string): Promise<{
+  async enrichCampaign(
+    artistName: string,
+    genre?: string
+  ): Promise<{
     insights: TAPAudienceInsight
     suggestedActions: string[]
   }> {
@@ -76,8 +73,9 @@ export const audioIntelApi = {
     const suggestedActions: string[] = []
 
     // Top platforms
-    const topPlatform = Object.entries(insights.listening_habits.platforms)
-      .sort(([, a], [, b]) => b - a)[0]
+    const topPlatform = Object.entries(insights.listening_habits.platforms).sort(
+      ([, a], [, b]) => b - a
+    )[0]
     if (topPlatform) {
       suggestedActions.push(`Focus on ${topPlatform[0]} - ${topPlatform[1]}% of audience`)
     }
@@ -89,10 +87,10 @@ export const audioIntelApi = {
 
     // High-relevance recommendations
     const topBlogs = insights.recommendations.blogs
-      .filter(b => b.relevance_score > 0.7)
+      .filter((b) => b.relevance_score > 0.7)
       .slice(0, 3)
     if (topBlogs.length > 0) {
-      suggestedActions.push(`Pitch to: ${topBlogs.map(b => b.name).join(', ')}`)
+      suggestedActions.push(`Pitch to: ${topBlogs.map((b) => b.name).join(', ')}`)
     }
 
     return { insights, suggestedActions }

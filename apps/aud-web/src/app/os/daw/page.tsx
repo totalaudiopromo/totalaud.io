@@ -170,13 +170,16 @@ export default function DawPage() {
 
   const selectedClip = useMemo(
     () => clips.find((clip) => clip.id === selectedClipId) ?? null,
-    [clips, selectedClipId],
+    [clips, selectedClipId]
   )
 
-  const handleUpdateSelectedClip = <K extends keyof SequenceClip>(field: K, value: SequenceClip[K]) => {
+  const handleUpdateSelectedClip = <K extends keyof SequenceClip>(
+    field: K,
+    value: SequenceClip[K]
+  ) => {
     if (!selectedClipId) return
     setClips((prev) =>
-      prev.map((clip) => (clip.id === selectedClipId ? { ...clip, [field]: value } : clip)),
+      prev.map((clip) => (clip.id === selectedClipId ? { ...clip, [field]: value } : clip))
     )
   }
 
@@ -184,8 +187,8 @@ export default function DawPage() {
     if (!selectedClipId) return
     setClips((prev) =>
       prev.map((clip) =>
-        clip.id === selectedClipId ? { ...clip, loopOSReady: !clip.loopOSReady } : clip,
-      ),
+        clip.id === selectedClipId ? { ...clip, loopOSReady: !clip.loopOSReady } : clip
+      )
     )
   }
 
@@ -357,4 +360,3 @@ export default function DawPage() {
     </DawContainer>
   )
 }
-

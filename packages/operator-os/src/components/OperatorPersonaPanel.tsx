@@ -4,22 +4,22 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useOperatorStore } from '../state/operatorStore';
+import { useState } from 'react'
+import { useOperatorStore } from '../state/operatorStore'
 import {
   loadLayout,
   saveLayout,
   applyLayoutToStore,
   extractLayoutFromStore,
-} from '../state/layoutPersistence';
-import { getPersonaPreset, type PersonaPreset } from '@total-audio/operator-services';
+} from '../state/layoutPersistence'
+import { getPersonaPreset, type PersonaPreset } from '@total-audio/operator-services'
 
 interface OperatorPersonaPanelProps {
-  userId: string;
-  workspaceId: string;
-  compact?: boolean;
+  userId: string
+  workspaceId: string
+  compact?: boolean
 }
 
 export function OperatorPersonaPanel({
@@ -27,86 +27,86 @@ export function OperatorPersonaPanel({
   workspaceId,
   compact = false,
 }: OperatorPersonaPanelProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const operatorPersona = useOperatorStore((state) => state.operatorPersona);
-  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona);
-  const setTheme = useOperatorStore((state) => state.setTheme);
-  const pushNotification = useOperatorStore((state) => state.pushNotification);
+  const operatorPersona = useOperatorStore((state) => state.operatorPersona)
+  const setOperatorPersona = useOperatorStore((state) => state.setOperatorPersona)
+  const setTheme = useOperatorStore((state) => state.setTheme)
+  const pushNotification = useOperatorStore((state) => state.pushNotification)
 
-  const preset = getPersonaPreset(operatorPersona);
+  const preset = getPersonaPreset(operatorPersona)
 
   const handleApplyRecommendedLayout = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
       // Try to load the recommended layout
-      const layout = await loadLayout(userId, workspaceId, preset.recommendedLayoutName);
+      const layout = await loadLayout(userId, workspaceId, preset.recommendedLayoutName)
 
       if (layout) {
         // Layout exists, apply it
-        applyLayoutToStore(layout, useOperatorStore.setState);
+        applyLayoutToStore(layout, useOperatorStore.setState)
 
         pushNotification({
           message: `Applied ${preset.displayName} layout`,
           type: 'success',
-        });
+        })
       } else {
         // Layout doesn't exist, create it from current state
-        const currentState = useOperatorStore.getState();
-        const newLayout = extractLayoutFromStore(currentState, preset.recommendedLayoutName);
+        const currentState = useOperatorStore.getState()
+        const newLayout = extractLayoutFromStore(currentState, preset.recommendedLayoutName)
 
         // Apply recommended theme
-        newLayout.theme = preset.recommendedTheme;
-        newLayout.persona = preset.persona;
+        newLayout.theme = preset.recommendedTheme
+        newLayout.persona = preset.persona
 
-        await saveLayout(userId, workspaceId, newLayout);
+        await saveLayout(userId, workspaceId, newLayout)
 
         pushNotification({
           message: `Created and applied ${preset.displayName} layout`,
           type: 'success',
-        });
+        })
       }
 
       // Apply recommended theme
-      setTheme(preset.recommendedTheme);
+      setTheme(preset.recommendedTheme)
     } catch (error) {
-      console.error('Error applying recommended layout:', error);
+      console.error('Error applying recommended layout:', error)
       pushNotification({
         message: 'Failed to apply recommended layout',
         type: 'error',
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSaveAsPersonaDefault = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      const currentState = useOperatorStore.getState();
-      const layout = extractLayoutFromStore(currentState, preset.recommendedLayoutName);
+      const currentState = useOperatorStore.getState()
+      const layout = extractLayoutFromStore(currentState, preset.recommendedLayoutName)
 
       // Ensure persona matches
-      layout.persona = preset.persona;
+      layout.persona = preset.persona
 
-      await saveLayout(userId, workspaceId, layout);
+      await saveLayout(userId, workspaceId, layout)
 
       pushNotification({
         message: `Saved current layout as ${preset.displayName} default`,
         type: 'success',
-      });
+      })
     } catch (error) {
-      console.error('Error saving persona default:', error);
+      console.error('Error saving persona default:', error)
       pushNotification({
         message: 'Failed to save layout',
         type: 'error',
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (compact) {
     return (
@@ -126,7 +126,7 @@ export function OperatorPersonaPanel({
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -201,11 +201,13 @@ export function OperatorPersonaPanel({
       {/* Layout Hint */}
       <div className="mt-4 p-3 bg-black/30 border border-white/6 rounded-lg">
         <div className="text-xs text-gray-400">
-          <span className="font-medium text-gray-300">Layout hint:</span> {preset.layoutHints.suggestedArrangement}
+          <span className="font-medium text-gray-300">Layout hint:</span>{' '}
+          {preset.layoutHints.suggestedArrangement}
           {' · '}
-          Typically {preset.layoutHints.defaultWindowCount} {preset.layoutHints.defaultWindowCount === 1 ? 'window' : 'windows'}
+          Typically {preset.layoutHints.defaultWindowCount}{' '}
+          {preset.layoutHints.defaultWindowCount === 1 ? 'window' : 'windows'}
         </div>
       </div>
     </div>
-  );
+  )
 }

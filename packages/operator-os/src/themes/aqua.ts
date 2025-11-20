@@ -3,7 +3,7 @@
  * Subtle glass-like theme reminiscent of Mac OS X Aqua
  */
 
-import type { ThemeTokens } from '../types';
+import type { ThemeTokens } from '../types'
 
 export const aquaTheme: ThemeTokens = {
   name: 'Aqua',
@@ -33,4 +33,4 @@ export const aquaTheme: ThemeTokens = {
 
   border: 'rgba(58, 169, 190, 0.25)',
   shadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 64px rgba(58, 169, 190, 0.05)',
-};
+}

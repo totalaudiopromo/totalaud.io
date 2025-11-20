@@ -32,7 +32,7 @@ const defaultConfig: Record<XPWindowType, { title: string; size: { w: number; h:
     size: { w: 480, h: 320 },
   },
   processes: {
-  title: 'Agent Monitor',
+    title: 'Agent Monitor',
     size: { w: 420, h: 260 },
   },
   clipboard: {
@@ -76,7 +76,8 @@ export const useXPWindowStore = create<XPWindowState>((set, get) => ({
     set((state) => {
       const windows = state.windows.filter((w) => w.id !== id)
       const zOrder = state.zOrder.filter((wid) => wid !== id)
-      const focusedWindowId = state.focusedWindowId === id ? zOrder[zOrder.length - 1] ?? null : state.focusedWindowId
+      const focusedWindowId =
+        state.focusedWindowId === id ? (zOrder[zOrder.length - 1] ?? null) : state.focusedWindowId
 
       return {
         windows,
@@ -115,5 +116,3 @@ export const useXPWindowStore = create<XPWindowState>((set, get) => ({
       windows: state.windows.map((w) => (w.id === id ? { ...w, position } : w)),
     })),
 }))
-
-

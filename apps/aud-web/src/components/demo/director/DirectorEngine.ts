@@ -98,8 +98,7 @@ export function executeDirectorAction(action: DirectorAction, deps: DirectorExec
     }
     case 'HIGHLIGHT_ANALOGUE_CARD': {
       if (!analogueController) break
-      const title =
-        typeof payload === 'string' ? payload : (payload as any)?.title ?? undefined
+      const title = typeof payload === 'string' ? payload : ((payload as any)?.title ?? undefined)
       if (!title) break
       analogueController.highlightCardByTitle(title)
       break
@@ -130,8 +129,7 @@ export function executeDirectorAction(action: DirectorAction, deps: DirectorExec
       break
     }
     case 'SET_AMBIENT_INTENSITY': {
-      const value =
-        typeof payload === 'number' ? payload : (payload as any)?.value ?? undefined
+      const value = typeof payload === 'number' ? payload : ((payload as any)?.value ?? undefined)
       if (typeof value === 'number') {
         deps.setAmbientIntensityOverride?.(value)
       }
@@ -141,5 +139,3 @@ export function executeDirectorAction(action: DirectorAction, deps: DirectorExec
       break
   }
 }
-
-

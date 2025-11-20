@@ -101,10 +101,8 @@ export function AquaAppWindow({
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-t-3xl"
           style={{
-            background:
-              'linear-gradient(135deg, rgba(56,189,248,0.65), rgba(30,64,175,0.8))',
-            boxShadow:
-              '0 0 18px rgba(56,189,248,0.7), 0 0 40px rgba(37,99,235,0.6)',
+            background: 'linear-gradient(135deg, rgba(56,189,248,0.65), rgba(30,64,175,0.8))',
+            boxShadow: '0 0 18px rgba(56,189,248,0.7), 0 0 40px rgba(37,99,235,0.6)',
           }}
         />
 
@@ -114,9 +112,7 @@ export function AquaAppWindow({
             <span className="h-1 w-4 rounded-full bg-sky-100/70" />
             <span>AQUA SURFACE</span>
           </div>
-          <span className="text-[11px] font-medium tracking-wide text-sky-50/95">
-            {title}
-          </span>
+          <span className="text-[11px] font-medium tracking-wide text-sky-50/95">{title}</span>
         </div>
 
         {onClose && (
@@ -149,5 +145,3 @@ export function AquaAppWindow({
     </motion.div>
   )
 }
-
-

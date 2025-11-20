@@ -57,5 +57,3 @@ export function XPButton({ label, onClick, className = '' }: XPButtonProps) {
     </motion.button>
   )
 }
-
-

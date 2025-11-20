@@ -28,6 +28,3 @@ export function OSGrid({ children }: OSGridProps) {
     </motion.section>
   )
 }
-
-
-

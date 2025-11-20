@@ -66,15 +66,14 @@ export function LoopOSTrack({
         <div className="relative h-full">
           {clips.map((clip) => {
             const isActive = playhead >= clip.start && playhead < clip.end
-            const conflictReasons =
-              clip.conflicts
-                ? clips
-                    .filter((other) => {
-                      if (!other.conflicts || other.id === clip.id) return false
-                      return rangesOverlap(clip.start, clip.end, other.start, other.end)
-                    })
-                    .map((other) => other.name)
-                : []
+            const conflictReasons = clip.conflicts
+              ? clips
+                  .filter((other) => {
+                    if (!other.conflicts || other.id === clip.id) return false
+                    return rangesOverlap(clip.start, clip.end, other.start, other.end)
+                  })
+                  .map((other) => other.name)
+              : []
 
             const blockedByReasons = clip.blockedBy.map((code) => {
               if (code === 'prereq:creative-or-action') {
@@ -109,5 +108,3 @@ export function LoopOSTrack({
     </div>
   )
 }
-
-

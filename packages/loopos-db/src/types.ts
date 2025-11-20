@@ -163,12 +163,7 @@ export interface FlowSession {
 // AGENT EXECUTION TYPES
 // ============================================================================
 
-export const AgentExecutionStatusSchema = z.enum([
-  'pending',
-  'running',
-  'completed',
-  'failed',
-])
+export const AgentExecutionStatusSchema = z.enum(['pending', 'running', 'completed', 'failed'])
 export type AgentExecutionStatus = z.infer<typeof AgentExecutionStatusSchema>
 
 export interface AgentExecution {
@@ -206,13 +201,7 @@ export interface AutoChain {
 // EXPORT TYPES
 // ============================================================================
 
-export const ExportTypeSchema = z.enum([
-  'pdf',
-  'docx',
-  'json',
-  'zip',
-  'presentation',
-])
+export const ExportTypeSchema = z.enum(['pdf', 'docx', 'json', 'zip', 'presentation'])
 export type ExportType = z.infer<typeof ExportTypeSchema>
 
 export const ExportStatusSchema = z.enum(['pending', 'processing', 'completed', 'failed'])

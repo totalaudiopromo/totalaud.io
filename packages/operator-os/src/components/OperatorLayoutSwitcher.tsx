@@ -3,10 +3,10 @@
  * Manage and switch between desktop layouts
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useOperatorStore } from '../state/operatorStore';
+import { useState, useEffect } from 'react'
+import { useOperatorStore } from '../state/operatorStore'
 import {
   listLayouts,
   loadLayout,
@@ -15,12 +15,12 @@ import {
   applyLayoutToStore,
   extractLayoutFromStore,
   type OperatorLayoutSummary,
-} from '../state/layoutPersistence';
+} from '../state/layoutPersistence'
 
 interface OperatorLayoutSwitcherProps {
-  userId: string;
-  workspaceId: string;
-  onClose?: () => void;
+  userId: string
+  workspaceId: string
+  onClose?: () => void
 }
 
 export function OperatorLayoutSwitcher({
@@ -28,137 +28,137 @@ export function OperatorLayoutSwitcher({
   workspaceId,
   onClose,
 }: OperatorLayoutSwitcherProps) {
-  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [newLayoutName, setNewLayoutName] = useState('');
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [newLayoutName, setNewLayoutName] = useState('')
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
 
-  const operatorStore = useOperatorStore();
+  const operatorStore = useOperatorStore()
 
   // Load layouts on mount
   useEffect(() => {
-    refreshLayouts();
-  }, [userId, workspaceId]);
+    refreshLayouts()
+  }, [userId, workspaceId])
 
   const refreshLayouts = async () => {
     try {
-      setLoading(true);
-      const layoutList = await listLayouts(userId, workspaceId);
-      setLayouts(layoutList);
+      setLoading(true)
+      const layoutList = await listLayouts(userId, workspaceId)
+      setLayouts(layoutList)
     } catch (error) {
-      console.error('Error loading layouts:', error);
+      console.error('Error loading layouts:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleApplyLayout = async (layoutName: string) => {
     try {
-      const layout = await loadLayout(userId, workspaceId, layoutName);
+      const layout = await loadLayout(userId, workspaceId, layoutName)
       if (!layout) {
-        alert('Layout not found');
-        return;
+        alert('Layout not found')
+        return
       }
 
-      applyLayoutToStore(layout, useOperatorStore.setState);
+      applyLayoutToStore(layout, useOperatorStore.setState)
 
       operatorStore.pushNotification({
         message: `Layout "${layoutName}" applied`,
         type: 'success',
-      });
+      })
 
-      if (onClose) onClose();
+      if (onClose) onClose()
     } catch (error) {
-      console.error('Error applying layout:', error);
+      console.error('Error applying layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to apply layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleSaveCurrentAs = async () => {
     if (!newLayoutName.trim()) {
-      alert('Please enter a layout name');
-      return;
+      alert('Please enter a layout name')
+      return
     }
 
     try {
-      setSaving(true);
-      const currentState = useOperatorStore.getState();
-      const layout = extractLayoutFromStore(currentState, newLayoutName.trim());
+      setSaving(true)
+      const currentState = useOperatorStore.getState()
+      const layout = extractLayoutFromStore(currentState, newLayoutName.trim())
 
-      await saveLayout(userId, workspaceId, layout);
+      await saveLayout(userId, workspaceId, layout)
 
       operatorStore.pushNotification({
         message: `Layout "${newLayoutName}" saved`,
         type: 'success',
-      });
+      })
 
-      setNewLayoutName('');
-      setShowSaveDialog(false);
-      await refreshLayouts();
+      setNewLayoutName('')
+      setShowSaveDialog(false)
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error saving layout:', error);
+      console.error('Error saving layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to save layout',
         type: 'error',
-      });
+      })
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const handleSetAsDefault = async (layoutName: string) => {
     try {
       // Load the layout
-      const layout = await loadLayout(userId, workspaceId, layoutName);
-      if (!layout) return;
+      const layout = await loadLayout(userId, workspaceId, layoutName)
+      if (!layout) return
 
       // Save it as "default"
       await saveLayout(userId, workspaceId, {
         ...layout,
         layout_name: 'default',
-      });
+      })
 
       operatorStore.pushNotification({
         message: `"${layoutName}" set as default`,
         type: 'success',
-      });
+      })
 
-      await refreshLayouts();
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error setting default layout:', error);
+      console.error('Error setting default layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to set default layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   const handleDeleteLayout = async (layoutName: string) => {
     if (!confirm(`Delete layout "${layoutName}"?`)) {
-      return;
+      return
     }
 
     try {
-      await deleteLayout(userId, workspaceId, layoutName);
+      await deleteLayout(userId, workspaceId, layoutName)
 
       operatorStore.pushNotification({
         message: `Layout "${layoutName}" deleted`,
         type: 'success',
-      });
+      })
 
-      await refreshLayouts();
+      await refreshLayouts()
     } catch (error) {
-      console.error('Error deleting layout:', error);
+      console.error('Error deleting layout:', error)
       operatorStore.pushNotification({
         message: 'Failed to delete layout',
         type: 'error',
-      });
+      })
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -203,7 +203,7 @@ export function OperatorLayoutSwitcher({
                 className="flex-1 px-3 py-2 bg-black/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#3AA9BE]"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    handleSaveCurrentAs();
+                    handleSaveCurrentAs()
                   }
                 }}
               />
@@ -235,9 +235,7 @@ export function OperatorLayoutSwitcher({
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium text-white capitalize">
-                        {layout.layout_name}
-                      </h3>
+                      <h3 className="font-medium text-white capitalize">{layout.layout_name}</h3>
                       {layout.layout_name === 'default' && (
                         <span className="px-2 py-0.5 bg-[#3AA9BE]/20 text-[#3AA9BE] text-xs rounded">
                           Default
@@ -245,7 +243,8 @@ export function OperatorLayoutSwitcher({
                       )}
                     </div>
                     <div className="text-sm text-gray-400">
-                      {layout.window_count} windows • {layout.theme} theme • {layout.persona} persona
+                      {layout.window_count} windows • {layout.theme} theme • {layout.persona}{' '}
+                      persona
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
                       Updated: {new Date(layout.updated_at).toLocaleDateString()}
@@ -283,5 +282,5 @@ export function OperatorLayoutSwitcher({
         )}
       </div>
     </div>
-  );
+  )
 }

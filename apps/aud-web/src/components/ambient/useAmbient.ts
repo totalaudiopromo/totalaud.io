@@ -52,5 +52,3 @@ export function useAmbient(): AmbientContextValue {
 export function useOptionalAmbient(): AmbientContextValue | null {
   return useContext(AmbientContext)
 }
-
-

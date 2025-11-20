@@ -3,7 +3,7 @@
  * Nostalgic Windows XP vibe with modern Flow State aesthetics
  */
 
-import type { ThemeTokens } from '../types';
+import type { ThemeTokens } from '../types'
 
 export const xpTheme: ThemeTokens = {
   name: 'Windows XP',
@@ -33,4 +33,4 @@ export const xpTheme: ThemeTokens = {
 
   border: 'rgba(58, 169, 190, 0.3)',
   shadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-};
+}

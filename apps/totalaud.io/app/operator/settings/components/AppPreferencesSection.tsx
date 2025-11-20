@@ -4,53 +4,46 @@
  * Phase 3 - Desktop Experience Layer
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { getAllApps, useAppProfiles, type OperatorAppID } from '@total-audio/operator-services';
-import type { LaunchMode } from '@total-audio/operator-os';
+import { useState, useEffect } from 'react'
+import { getAllApps, useAppProfiles, type OperatorAppID } from '@total-audio/operator-services'
+import type { LaunchMode } from '@total-audio/operator-os'
 
 interface AppPreferencesSectionProps {
-  userId: string;
-  workspaceId: string;
+  userId: string
+  workspaceId: string
 }
 
-export function AppPreferencesSection({
-  userId,
-  workspaceId,
-}: AppPreferencesSectionProps) {
-  const allApps = getAllApps();
-  const {
-    profiles,
-    loading,
-    updateProfile,
-    togglePin,
-    isPinned,
-    getLaunchMode,
-  } = useAppProfiles(userId, workspaceId);
+export function AppPreferencesSection({ userId, workspaceId }: AppPreferencesSectionProps) {
+  const allApps = getAllApps()
+  const { profiles, loading, updateProfile, togglePin, isPinned, getLaunchMode } = useAppProfiles(
+    userId,
+    workspaceId
+  )
 
   const handleLaunchModeChange = async (appId: OperatorAppID, mode: LaunchMode) => {
     try {
-      await updateProfile(appId, { launch_mode: mode });
+      await updateProfile(appId, { launch_mode: mode })
     } catch (error) {
-      console.error('Error updating launch mode:', error);
+      console.error('Error updating launch mode:', error)
     }
-  };
+  }
 
   const handlePinToggle = async (appId: OperatorAppID) => {
     try {
-      await togglePin(appId);
+      await togglePin(appId)
     } catch (error) {
-      console.error('Error toggling pin:', error);
+      console.error('Error toggling pin:', error)
     }
-  };
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-400">Loading app preferences...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -75,14 +68,11 @@ export function AppPreferencesSection({
           </thead>
           <tbody className="divide-y divide-white/6">
             {allApps.map((app) => {
-              const appIsPinned = isPinned(app.appId);
-              const launchMode = getLaunchMode(app.appId);
+              const appIsPinned = isPinned(app.appId)
+              const launchMode = getLaunchMode(app.appId)
 
               return (
-                <tr
-                  key={app.appId}
-                  className="hover:bg-white/5 transition-colors"
-                >
+                <tr key={app.appId} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4">
                     <div>
                       <div className="font-medium text-white">{app.name}</div>
@@ -99,7 +89,9 @@ export function AppPreferencesSection({
                   <td className="px-6 py-4">
                     <select
                       value={launchMode}
-                      onChange={(e) => handleLaunchModeChange(app.appId, e.target.value as LaunchMode)}
+                      onChange={(e) =>
+                        handleLaunchModeChange(app.appId, e.target.value as LaunchMode)
+                      }
                       className="px-3 py-1.5 bg-[#151A22] border border-white/10 rounded text-white text-sm focus:outline-none focus:border-[#3AA9BE] transition-colors"
                     >
                       <option value="floating">Floating</option>
@@ -123,7 +115,7 @@ export function AppPreferencesSection({
                     </button>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -133,33 +125,27 @@ export function AppPreferencesSection({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-[#10141A] border border-white/6 rounded-xl">
           <div className="text-sm font-medium text-white mb-1">Floating</div>
-          <div className="text-xs text-gray-400">
-            Opens at default size and position
-          </div>
+          <div className="text-xs text-gray-400">Opens at default size and position</div>
         </div>
 
         <div className="p-4 bg-[#10141A] border border-white/6 rounded-xl">
           <div className="text-sm font-medium text-white mb-1">Maximized</div>
-          <div className="text-xs text-gray-400">
-            Always opens fullscreen
-          </div>
+          <div className="text-xs text-gray-400">Always opens fullscreen</div>
         </div>
 
         <div className="p-4 bg-[#10141A] border border-white/6 rounded-xl">
           <div className="text-sm font-medium text-white mb-1">Last State</div>
-          <div className="text-xs text-gray-400">
-            Remembers position and size from last session
-          </div>
+          <div className="text-xs text-gray-400">Remembers position and size from last session</div>
         </div>
       </div>
 
       {/* Pinning Info */}
       <div className="p-4 bg-[#3AA9BE]/10 border border-[#3AA9BE]/30 rounded-xl">
         <div className="text-sm text-[#3AA9BE]">
-          <span className="font-medium">Tip:</span> Pinned apps stay visible in the dock even when closed.
-          Right-click any dock icon for quick access to these settings.
+          <span className="font-medium">Tip:</span> Pinned apps stay visible in the dock even when
+          closed. Right-click any dock icon for quick access to these settings.
         </div>
       </div>
     </div>
-  );
+  )
 }

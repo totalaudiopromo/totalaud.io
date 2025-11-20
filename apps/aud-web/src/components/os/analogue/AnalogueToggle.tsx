@@ -34,9 +34,7 @@ export function AnalogueToggle({ label, checked, onChange }: AnalogueToggleProps
       <span>{label}</span>
       <motion.span
         className={`flex h-5 w-9 items-center rounded-full border px-[3px] ${
-          checked
-            ? 'border-[#e29a5a] bg-[#fce2c4]'
-            : 'border-[#c3a58a] bg-[#f3e3d1]'
+          checked ? 'border-[#e29a5a] bg-[#fce2c4]' : 'border-[#c3a58a] bg-[#f3e3d1]'
         }`}
         layout
         transition={
@@ -59,5 +57,3 @@ export function AnalogueToggle({ label, checked, onChange }: AnalogueToggleProps
     </button>
   )
 }
-
-

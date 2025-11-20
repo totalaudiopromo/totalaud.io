@@ -1,7 +1,7 @@
 /**
  * ASCII Toggle Component
  * Terminal-style toggle switch
- * 
+ *
  * Features:
  * - ON/OFF text display
  * - Bracket-style appearance
@@ -41,12 +41,20 @@ export function AsciiToggle({ label, value, onChange, disabled = false }: AsciiT
         transition-all duration-200
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
-      whileHover={!disabled && !prefersReducedMotion ? { 
-        scale: 1.02 
-      } : undefined}
-      whileTap={!disabled && !prefersReducedMotion ? { 
-        scale: 0.98 
-      } : undefined}
+      whileHover={
+        !disabled && !prefersReducedMotion
+          ? {
+              scale: 1.02,
+            }
+          : undefined
+      }
+      whileTap={
+        !disabled && !prefersReducedMotion
+          ? {
+              scale: 0.98,
+            }
+          : undefined
+      }
     >
       {/* Label */}
       <span className="text-[#00ff9966]">{label}</span>
@@ -54,7 +62,7 @@ export function AsciiToggle({ label, value, onChange, disabled = false }: AsciiT
       {/* Toggle visual */}
       <div className="flex items-center gap-1">
         <span className="text-[#00ff99]">[</span>
-        <span 
+        <span
           className={`
             px-2 transition-all duration-200
             ${value ? 'text-[#00ff99]' : 'text-[#00ff9933]'}
@@ -68,4 +76,3 @@ export function AsciiToggle({ label, value, onChange, disabled = false }: AsciiT
     </motion.button>
   )
 }
-

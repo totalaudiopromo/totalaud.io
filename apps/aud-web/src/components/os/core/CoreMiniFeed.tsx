@@ -111,9 +111,9 @@ export function CoreMiniFeed() {
     setItems((previous) => {
       const next: FeedItem[] = [
         {
-            id: `persona-${persona.activePersonaId}-${timestamp}`,
+          id: `persona-${persona.activePersonaId}-${timestamp}`,
           kind: 'persona',
-            message: `Persona → ${currentPersona.name}`,
+          message: `Persona → ${currentPersona.name}`,
           timestamp,
         },
         ...previous,
@@ -179,5 +179,3 @@ export function CoreMiniFeed() {
     </div>
   )
 }
-
-

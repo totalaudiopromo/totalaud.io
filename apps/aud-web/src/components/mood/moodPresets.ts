@@ -35,5 +35,3 @@ export const MOOD_PRESETS: Record<GlobalMood, MoodPreset> = {
     description: 'Engines are idling. Nothing wrong, just quiet.',
   },
 }
-
-

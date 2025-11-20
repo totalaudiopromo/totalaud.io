@@ -13,7 +13,7 @@ interface SuggestNextClipsInput {
 
 export async function suggestNextClips(
   sequencedClips: LoopOSClipData[],
-  momentum: MomentumResult | null,
+  momentum: MomentumResult | null
 ): Promise<SuggestedClipData[]> {
   const messages: AIMessage[] = [
     {
@@ -63,7 +63,7 @@ export async function suggestNextClips(
 
 export async function suggestMomentumFixes(
   sequencedClips: LoopOSClipData[],
-  momentum: MomentumResult | null,
+  momentum: MomentumResult | null
 ): Promise<string[]> {
   const messages: AIMessage[] = [
     {
@@ -144,5 +144,3 @@ export async function summariseLoop({
     return ''
   }
 }
-
-

@@ -52,7 +52,7 @@ export function AquaContainer({ children }: AquaContainerProps) {
       mouseX.set(x)
       mouseY.set(y)
     },
-    [mouseX, mouseY, prefersReducedMotion],
+    [mouseX, mouseY, prefersReducedMotion]
   )
 
   return (
@@ -64,8 +64,7 @@ export function AquaContainer({ children }: AquaContainerProps) {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage:
-            `radial-gradient(circle at top, ${haloColor}, transparent 60%), radial-gradient(circle at bottom, rgba(45,212,191,0.3), transparent 55%)`,
+          backgroundImage: `radial-gradient(circle at top, ${haloColor}, transparent 60%), radial-gradient(circle at bottom, rgba(45,212,191,0.3), transparent 55%)`,
         }}
       />
 
@@ -123,12 +122,8 @@ export function AquaContainer({ children }: AquaContainerProps) {
               }
         }
       >
-        <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10">
-          {children}
-        </div>
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10">{children}</div>
       </motion.div>
     </div>
   )
 }
-
-

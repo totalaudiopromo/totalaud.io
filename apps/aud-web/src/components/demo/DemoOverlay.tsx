@@ -53,9 +53,7 @@ export function DemoOverlay() {
       {/* Header label */}
       <div className="flex items-start justify-between px-4 pt-4 sm:px-6">
         <div className="rounded-full border border-white/10 bg-black/70 px-3 py-1 text-[11px] font-medium text-slate-50 shadow-lg shadow-black/60 backdrop-blur-sm">
-          <span className="uppercase tracking-[0.18em] text-slate-400">
-            totalaud.io
-          </span>{' '}
+          <span className="uppercase tracking-[0.18em] text-slate-400">totalaud.io</span>{' '}
           <span className="text-slate-100/90">— Artist journey: </span>
           <span className="font-semibold text-slate-50">LANA GLASS</span>
         </div>
@@ -94,9 +92,7 @@ export function DemoOverlay() {
                 </div>
               )}
               {director?.note && (
-                <p className="text-[11px] leading-relaxed text-slate-200">
-                  {director.note}
-                </p>
+                <p className="text-[11px] leading-relaxed text-slate-200">{director.note}</p>
               )}
             </div>
 
@@ -179,5 +175,3 @@ export function DemoOverlay() {
     </div>
   )
 }
-
-

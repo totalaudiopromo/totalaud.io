@@ -46,10 +46,10 @@ export function DawTrack({ name, variant, clips, selectedClipId, onSelectClip }:
           {variant === 'creative'
             ? 'Ideas lane'
             : variant === 'promo'
-            ? 'Campaign lane'
-            : variant === 'analysis'
-            ? 'Insight lane'
-            : 'Refinement lane'}
+              ? 'Campaign lane'
+              : variant === 'analysis'
+                ? 'Insight lane'
+                : 'Refinement lane'}
         </p>
       </div>
 
@@ -72,5 +72,3 @@ export function DawTrack({ name, variant, clips, selectedClipId, onSelectClip }:
     </div>
   )
 }
-
-

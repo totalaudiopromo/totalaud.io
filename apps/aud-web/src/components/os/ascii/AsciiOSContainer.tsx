@@ -1,7 +1,7 @@
 /**
  * ASCII OS Container
  * Full-screen terminal-style creative workspace
- * 
+ *
  * Features:
  * - Matte black background with scanlines
  * - Terminal green accent colors
@@ -58,8 +58,7 @@ export function AsciiOSContainer({ onSetOS }: AsciiOSContainerProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.9) 70%)',
+          background: 'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.9) 70%)',
         }}
         animate={
           prefersReducedMotion
@@ -146,4 +145,3 @@ export function AsciiOSContainer({ onSetOS }: AsciiOSContainerProps) {
     </div>
   )
 }
-

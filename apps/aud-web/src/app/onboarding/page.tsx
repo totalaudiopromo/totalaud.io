@@ -38,8 +38,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   const demo = useOptionalDemo()
   const isDemoMode =
-    demo?.isDemoMode ||
-    (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
+    demo?.isDemoMode || (typeof window !== 'undefined' && (window as any).__TA_DEMO__ === true)
 
   const { play } = useThemeAudio()
   const { createProject } = useProjectEngine()
@@ -415,5 +414,3 @@ export default function OnboardingPage() {
     </div>
   )
 }
-
-

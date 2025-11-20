@@ -14,5 +14,3 @@ export interface ExportArtifact {
   tags: string[]
   lane?: string
 }
-
-

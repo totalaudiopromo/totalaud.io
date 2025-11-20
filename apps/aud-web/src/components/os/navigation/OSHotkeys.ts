@@ -46,5 +46,3 @@ export function OSHotkeys({
 
   return null
 }
-
-

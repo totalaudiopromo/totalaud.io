@@ -43,9 +43,7 @@ export function StudioSidebar() {
           <div className="mt-2 space-y-1 text-[10px] text-slate-400">
             <div className="flex items-center justify-between">
               <span>Score</span>
-              <span className="tabular-nums text-slate-100">
-                {(mood.score * 100).toFixed(0)}%
-              </span>
+              <span className="tabular-nums text-slate-100">{(mood.score * 100).toFixed(0)}%</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Loop momentum</span>
@@ -67,5 +65,3 @@ export function StudioSidebar() {
     </aside>
   )
 }
-
-
