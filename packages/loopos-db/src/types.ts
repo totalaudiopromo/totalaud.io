@@ -49,7 +49,6 @@ export interface Node {
   position_x: number
   position_y: number
   metadata: Record<string, unknown>
-  version?: number
   created_at: string
   updated_at: string
 }

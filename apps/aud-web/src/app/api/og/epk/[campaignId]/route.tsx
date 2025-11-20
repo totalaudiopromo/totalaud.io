@@ -1,8 +1,6 @@
 /**
  * OG Image Route for EPK
- * Phase 18: Consistency pass
- *
- * PUBLIC ROUTE - No authentication required
+ * Phase 15.2-D: Full Agent UI Integration
  *
  * Purpose:
  * - Generate Open Graph images for EPK social sharing
@@ -10,9 +8,6 @@
  * - FlowCore branding
  *
  * Route: /api/og/epk/[campaignId]
- *
- * Note: Runs on Edge runtime, uses console.error for logging (not logger)
- * Note: Uses service role via getEpkCampaign() for public EPK data
  */
 
 import { ImageResponse } from 'next/og'
@@ -31,8 +26,7 @@ const flowCoreColours = {
   borderGrey: '#2A2D2F',
 }
 
-export async function GET(req: NextRequest, context: { params: Promise<{ campaignId: string }> }) {
-  const params = await context.params
+export async function GET(req: NextRequest, { params }: { params: { campaignId: string } }) {
   const { campaignId } = params
 
   try {

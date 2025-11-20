@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { X, Upload } from 'lucide-react'
-import { consoleApi } from '@/integrations/console/api'
+import { consoleApi } from '@/integrations'
 import type { Node } from '@total-audio/loopos-db'
 import { toast } from 'sonner'
 

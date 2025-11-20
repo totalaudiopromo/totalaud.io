@@ -12,7 +12,6 @@
 'use client'
 
 export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'

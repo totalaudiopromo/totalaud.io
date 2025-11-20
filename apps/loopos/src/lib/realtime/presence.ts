@@ -72,7 +72,7 @@ export async function updatePresence(
     return
   }
 
-  const current = currentState[myKey]?.[0] as unknown as PresenceState | undefined
+  const current = currentState[myKey]?.[0] as PresenceState | undefined
 
   if (!current) {
     console.warn('Current presence state not found')
@@ -106,7 +106,7 @@ export function getPresenceParticipants(channel: RealtimeChannel): PresenceParti
 
   Object.values(state).forEach((presences) => {
     presences.forEach((presence) => {
-      participants.push(presence as unknown as PresenceParticipant)
+      participants.push(presence as PresenceParticipant)
     })
   })
 

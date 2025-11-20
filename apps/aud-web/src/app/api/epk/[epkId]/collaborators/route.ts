@@ -23,7 +23,7 @@ interface InviteRow {
   created_at: string
 }
 
-export async function GET(_request: NextRequest, context: { params: Promise<{ epkId: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const supabase = createRouteSupabaseClient()
     const {
@@ -40,7 +40,6 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ ep
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const params = await context.params
     const campaignId = params.epkId
 
     const { data: collaboratorRowsData, error: collaboratorError } = await supabase
@@ -109,7 +108,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ ep
   }
 }
 
-export async function POST(request: NextRequest, context: { params: Promise<{ epkId: string }> }) {
+export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const body = (await request.json()) as { email?: string; role?: string; message?: string }
     const { email, role = 'viewer' } = body
@@ -133,7 +132,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ep
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const params = await context.params
     const campaignId = params.epkId
 
     const { data: ownerRecord, error: roleError } = await supabase

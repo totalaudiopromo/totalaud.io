@@ -1,6 +1,6 @@
 /**
  * FlowCanvas 2.0
- * Phase 18: Added node duplication, search, and agent debug drawer
+ * Phase 16: FlowCore Recovery & Auth Reconnection
  *
  * React Flow powered canvas with Zustand state and Supabase persistence.
  */
@@ -29,11 +29,9 @@ import { logger } from '@/lib/logger'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { getNodeByKind } from '@/components/features/flow/node-registry'
 import type { NodeKind } from '@/types/console'
-import { useFlowCanvasStore, useFlowCanvasStoreFactory } from '@/store/flowCanvasStore'
+import { useFlowCanvasStore } from '@/store/flowCanvasStore'
 import { createBrowserSupabaseClient } from '@aud-web/lib/supabase/client'
 import { playAssetAttachSound, playAssetDetachSound } from '@/lib/asset-sounds'
-import { NodeSearch } from './NodeSearch'
-import { AgentDebugDrawer } from './AgentDebugDrawer'
 
 const log = logger.scope('FlowCanvas')
 
@@ -78,64 +76,18 @@ const AUTO_SAVE_INTERVAL_MS = 60_000
 let spawnOffset = 0
 
 export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
-  // Early return during SSR to prevent hydration issues
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   const prefersReducedMotion = useReducedMotion()
-
-  // Use the store hook - ensures client-side only creation
-  const {
-    nodes,
-    edges,
-    selectedNodeIds,
-    setNodes,
-    setEdges,
-    setSelectedNodeIds,
-    duplicateNode,
-    reset,
-  } = useFlowCanvasStore((state) => ({
+  const { nodes, edges, setNodes, setEdges, reset } = useFlowCanvasStore((state) => ({
     nodes: state.nodes,
     edges: state.edges,
-    selectedNodeIds: state.selectedNodeIds,
     setNodes: state.setNodes,
     setEdges: state.setEdges,
-    setSelectedNodeIds: state.setSelectedNodeIds,
-    duplicateNode: state.duplicateNode,
     reset: state.reset,
   }))
-
-  // Don't render ReactFlow during SSR
-  if (!isMounted) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          minHeight: '600px',
-          position: 'relative',
-          backgroundColor: flowCoreColours.matteBlack,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: flowCoreColours.textSecondary,
-          fontSize: '13px',
-          fontFamily: 'var(--flowcore-font-mono)',
-        }}
-      >
-        loading canvas...
-      </div>
-    )
-  }
   const [sceneId, setSceneId] = useState<string | null>(null)
   const [isHydrating, setIsHydrating] = useState(true)
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [debugNodeId, setDebugNodeId] = useState<string | null>(null)
 
   const pendingSaveRef = useRef(false)
   const skipNextSaveRef = useRef(false)
@@ -343,26 +295,23 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      const currentNodes = store.getState().nodes
-      setNodes(applyNodeChanges(changes, currentNodes))
+      setNodes((current) => applyNodeChanges(changes, current))
     },
-    [setNodes, store]
+    [setNodes]
   )
 
   const handleEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      const currentEdges = store.getState().edges
-      setEdges(applyEdgeChanges(changes, currentEdges))
+      setEdges((current) => applyEdgeChanges(changes, current))
     },
-    [setEdges, store]
+    [setEdges]
   )
 
   const handleConnect = useCallback(
     (connection: Connection) => {
-      const currentEdges = store.getState().edges
-      setEdges(addEdge(connection, currentEdges))
+      setEdges((current) => addEdge(connection, current))
     },
-    [setEdges, store]
+    [setEdges]
   )
 
   const handleNodesDelete = useCallback((deleted: Node[]) => {
@@ -374,44 +323,6 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
       }
     }
   }, [])
-
-  const handleSelectionChange = useCallback(
-    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
-      setSelectedNodeIds(selectedNodes.map((n) => n.id))
-    },
-    [setSelectedNodeIds]
-  )
-
-  // Keyboard shortcuts: ⌘D (duplicate) and ⌘F (search)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isMod = e.metaKey || e.ctrlKey
-
-      // ⌘D - Duplicate selected node
-      if (isMod && e.key === 'd') {
-        e.preventDefault()
-        if (selectedNodeIds.length === 1) {
-          const duplicated = duplicateNode(selectedNodeIds[0])
-          if (duplicated) {
-            try {
-              playAssetAttachSound()
-            } catch (error) {
-              log.debug('Failed to play attach sound', { error })
-            }
-          }
-        }
-      }
-
-      // ⌘F - Open node search
-      if (isMod && e.key === 'f') {
-        e.preventDefault()
-        setIsSearchOpen(true)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedNodeIds, duplicateNode])
 
   return (
     <div
@@ -431,7 +342,6 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
         onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
         onNodesDelete={handleNodesDelete}
-        onSelectionChange={handleSelectionChange}
         fitView
         fitViewOptions={{ duration: prefersReducedMotion ? 0 : 240, padding: 0.2 }}
         minZoom={0.25}
@@ -502,16 +412,6 @@ export function FlowCanvas({ campaignId, userId, children }: FlowCanvasProps) {
           auto-saved {new Date(lastSavedAt).toLocaleTimeString()}
         </div>
       )}
-
-      {/* Node Search Modal (⌘F) */}
-      <NodeSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-      {/* Agent Debug Drawer (read-only) */}
-      <AgentDebugDrawer
-        nodeId={debugNodeId}
-        isOpen={debugNodeId !== null}
-        onClose={() => setDebugNodeId(null)}
-      />
     </div>
   )
 }
@@ -520,12 +420,6 @@ export function spawnFlowNode(
   kind: NodeKind,
   options: { campaignId?: string; userId?: string }
 ): string {
-  // Only works on client-side (browser environment)
-  if (typeof window === 'undefined') {
-    log.warn('spawnFlowNode called during SSR, skipping', { kind })
-    return ''
-  }
-
   const id = `${kind}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
   const positionOffset = (spawnOffset++ % 8) * 32
 
@@ -543,9 +437,7 @@ export function spawnFlowNode(
     },
   }
 
-  // Use store factory for imperative access (client-side only)
-  const storeInstance = useFlowCanvasStoreFactory()
-  storeInstance.getState().addNode(node)
+  useFlowCanvasStore.getState().addNode(node)
 
   try {
     playAssetAttachSound()

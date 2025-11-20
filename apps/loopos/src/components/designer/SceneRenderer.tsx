@@ -84,7 +84,7 @@ export function SceneRenderer({ scene, onRefine }: SceneRendererProps) {
 
           {/* Arcs */}
           <svg className="absolute inset-0 pointer-events-none">
-            {scene.arcs.map((arc, index) => {
+            {scene.arcs.map((arc) => {
               const fromElement = scene.elements.find((e) => e.id === arc.from)
               const toElement = scene.elements.find((e) => e.id === arc.to)
 

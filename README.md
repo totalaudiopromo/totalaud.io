@@ -1,296 +1,215 @@
-# TotalAud.io
+# TotalAud.io Monorepo
 
-**Experimental creative OS for AI-powered music marketing**
-
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://aud-web-production.up.railway.app)
-[![Phase 15.5](https://img.shields.io/badge/phase-15.5-blue)](docs/TOTALAUD_IO_CONTEXT.md)
-
-> "Marketing your music should be as creative as making it."
+AI-powered music marketing platform combining professional tools with experimental creative interface.
 
 ---
 
-## 🎯 What is TotalAud.io?
+## 🚀 Quick Start for Cursor Users
 
-TotalAud.io is an **experimental creative interface** for music marketing campaigns. It's a research and development playground where we test breakthrough features using:
+**Using Cursor IDE? Start here:** [CURSOR_QUICK_START.md](CURSOR_QUICK_START.md)
 
-- **Five OS themes** (ascii, xp, aqua, daw, analogue)
-- **Multi-agent collaboration** (scout, coach, tracker, insight)
-- **Visual flow orchestration** with React Flow
-- **Cinematic animations** powered by Framer Motion
-- **Real-time analytics** via Supabase Realtime
-- **Skills-based AI** using YAML-defined capabilities
+Just open Cursor and say "Ready to work" - Claude Code handles all git operations automatically.
 
-This is **not a production app**. It's an innovation sandbox where proven features eventually migrate to the production Total Audio Promo suite.
+---
 
-## 🚀 Quick Start
+**🚀 Live Demo**: https://aud-web-production.up.railway.app
 
-### For Cursor Users
+## 🎵 What is TotalAud.io?
 
-Using Cursor IDE? [Start here →](CURSOR_QUICK_START.md)
+**Total Audio Promo** → Professional toolkit for PRs, labels, and artists  
+**TotalAud.io** → Experimental creative studio  
+**Together** → One unified AI-powered ecosystem
 
-Just say **"Ready to work"** and Claude Code handles all git operations automatically.
-
-### Standard Setup
-
-```bash
-# Clone and install
-git clone <repo-url>
-cd totalaud.io
-pnpm install
-
-# Start local development
-pnpm dev                    # Starts aud-web on localhost:3000
-
-# Optional: Run local Supabase
-pnpm db:start              # Requires Docker
-pnpm db:migrate            # Run migrations
-pnpm db:types              # Generate TypeScript types
-```
-
-**Live Demo**: https://aud-web-production.up.railway.app
+> "Marketing your music should be as creative as making it."
 
 ## 📁 Project Structure
 
 ```
 totalaud.io/
 ├── apps/
-│   ├── aud-web/                 # Main experimental interface (Next.js 15)
-│   └── aud-experimental/        # Prototype workspace
+│   ├── aud-web/              # TotalAud.io creative interface
+│   └── totalaudiopromo/      # Professional tools (to be migrated)
 ├── packages/
-│   ├── core/
-│   │   ├── agent-executor/     # Multi-agent execution engine
-│   │   ├── skills-engine/      # YAML skill loader
-│   │   ├── supabase/           # Database client
-│   │   └── theme-engine/       # Dynamic theming system
-│   └── schemas/
-│       └── database/           # TypeScript types from Supabase
-├── docs/                       # Full documentation
-├── skills/                     # YAML skill definitions
-└── supabase/                   # Database migrations
+│   ├── core/                 # Shared business logic
+│   │   ├── supabase/        # Database client
+│   │   ├── ai-provider/     # AI abstraction layer
+│   │   ├── skills-engine/   # Skill execution system
+│   │   └── agent-executor/  # Agent orchestration
+│   ├── ui/                   # Shared React components
+│   └── schemas/              # TypeScript types
+├── skills/                   # YAML skill definitions
+│   ├── scout/               # Research skills
+│   ├── coach/               # Generation skills
+│   └── tracker/             # Analysis skills
+└── supabase/                # Database migrations
 ```
 
-## 🎨 Key Features
+## 🚀 Getting Started
 
-### 1. Five OS Themes
+### Prerequisites
 
-Each theme has a distinct personality, motion system, and sound design:
+- Node.js 18+
+- pnpm 8+
+- Supabase CLI
+- Docker (for local Supabase)
 
-- **ascii** — "type. test. repeat." — Minimalist terminal aesthetic
-- **xp** — "click. bounce. smile." — Nostalgic Windows XP vibes
-- **aqua** — "craft with clarity." — macOS Aqua glass and blur
-- **daw** — "sync. sequence. create." — 120 BPM tempo-synced UI
-- **analogue** — "touch the signal." — Lo-fi warmth and tactile feedback
-
-### 2. Multi-Agent System
-
-Spawn AI agents with distinct roles:
-
-- **Scout** — Research contacts, discover opportunities
-- **Coach** — Generate pitches, craft follow-ups
-- **Tracker** — Monitor campaigns, analyse results
-- **Insight** — Pattern detection, recommendations
-
-Each agent is powered by **reusable skills** defined in YAML.
-
-### 3. Cinematic Onboarding
-
-Four-phase boot sequence:
-
-1. **Operator** — Terminal boot + name input
-2. **Selection** — Arrow-key theme picker
-3. **Transition** — Animated boot sequence
-4. **Signal** — Flow Studio workspace
-
-Skip with `?skip_onboarding=true`
-
-### 4. Real-time Analytics
-
-- Campaign dashboard (7/30-day metrics)
-- EPK analytics (region/device grouping)
-- Supabase Realtime subscriptions
-- SWR pattern for auto-revalidation
-
-### 5. Flow Canvas (React Flow)
-
-Visual orchestration of agent workflows:
-
-- Node-based campaign design
-- Agent spawning on canvas
-- Real-time collaboration
-- Autosave + hydration
-
-## 🛠️ Development
-
-### Commands
+### Installation
 
 ```bash
-# Development
-pnpm dev                    # Start all apps
-pnpm dev:aud-web            # Start only aud-web
+# Install dependencies
+pnpm install
 
-# Quality Checks
-pnpm typecheck              # TypeScript validation
-pnpm lint                   # ESLint check
-pnpm lint:fix               # Auto-fix linting issues
-pnpm format                 # Prettier formatting
+# Start Supabase locally
+pnpm db:start
 
-# Database
-pnpm db:start               # Start Supabase (requires Docker)
-pnpm db:stop                # Stop Supabase
-pnpm db:migrate             # Run migrations
-pnpm db:reset               # Reset database
-pnpm db:types               # Generate TypeScript types
+# Run migrations
+pnpm db:migrate
 
-# Testing
-cd apps/aud-web
-pnpm test                   # Run tests (15/15 passing)
-pnpm test:ui                # Visual test UI
-pnpm test:coverage          # Coverage report
+# Generate TypeScript types
+pnpm db:types
+
+# Start development servers
+pnpm dev
 ```
 
-### Tech Stack
+Visit:
+- **aud-web**: http://localhost:3000
+- **Supabase Studio**: http://localhost:54323
 
-- **Framework**: Next.js 15.0.3 (App Router)
-- **React**: 18.3.1
-- **TypeScript**: 5.6.3 (strict mode)
-- **Styling**: Tailwind CSS 3.4.1
-- **Animation**: Framer Motion 11.11.17
-- **State**: Zustand 5.0.2
-- **Database**: Supabase (PostgreSQL)
-- **Flow Canvas**: React Flow 11.11.4
-- **Build System**: Turborepo + pnpm workspaces
-- **Deployment**: Railway
+### Environment Setup
+
+```bash
+# Copy example environment file
+cp .env.example .env.local
+
+# Edit .env.local with your keys:
+# - Supabase URL and keys
+# - OpenAI API key
+# - Anthropic API key
+```
+
+## 🏗️ Architecture
+
+### Agent System
+
+Modular AI agents powered by reusable skills:
+
+- **Scout Agent** → Research contacts, discover opportunities
+- **Coach Agent** → Generate pitches, craft messages
+- **Tracker Agent** → Monitor campaigns, analyze results
+- **Insight Agent** → Pattern detection, recommendations
+
+### Skills
+
+YAML-defined capabilities that agents can use:
+
+```yaml
+name: research-contacts
+category: research
+provider: custom
+input:
+  query: string
+  type: enum
+  genres: string[]
+output:
+  contacts: Contact[]
+```
+
+### Dual Interface
+
+**aud-web** (TotalAud.io)
+- Command Palette (⌘K)
+- Flow Canvas
+- Agent Bubbles
+- Creative, experimental
+
+**totalaudiopromo**
+- Traditional forms
+- Campaign CRM
+- Professional, stable
+
+Both share the same backend and agent system.
 
 ## 📚 Documentation
 
-**Start here**: [Complete Context →](docs/TOTALAUD_IO_CONTEXT.md)
+- `ARCHITECTURE_MERGE_PLAN.md` — Complete migration strategy
+- `TOTALAUD_TECH_AUDIT.md` — Technical audit
+- `totalaudio-overview.md` — Product vision
 
-**Documentation Index**: [docs/_index.md](docs/_index.md)
-
-Key docs:
-
-- [Agent System Overview](docs/AGENT_SYSTEM_OVERVIEW.md)
-- [Flow Canvas Overview](docs/FLOW_CANVAS_OVERVIEW.md)
-- [Theme Engine Overview](docs/THEME_ENGINE_OVERVIEW.md)
-- [Visual Identity Layer](docs/VISUAL_IDENTITY_LAYER.md)
-- [UX Flow Studio Guide](docs/UX_FLOW_STUDIO_GUIDE.md)
-
-## 🚀 Deployment
-
-**Platform**: Railway  
-**Live URL**: https://aud-web-production.up.railway.app
-
-Railway was chosen for its native support of Next.js 15 + pnpm workspaces + Turborepo monorepos.
+## 🛠️ Development Commands
 
 ```bash
-railway up                  # Deploy to Railway
-railway status              # Check deployment status
-railway logs                # View deployment logs
-railway open                # Open Railway dashboard
+# Development
+pnpm dev                # Start all apps
+pnpm build              # Build all packages
+pnpm typecheck          # Type check all packages
+pnpm lint               # Lint all packages
+
+# Database
+pnpm db:start           # Start Supabase
+pnpm db:stop            # Stop Supabase
+pnpm db:migrate         # Run migrations
+pnpm db:reset           # Reset database
+pnpm db:types           # Generate TypeScript types
+
+# Deployment (Railway)
+railway up              # Deploy to Railway
+railway status          # Check deployment status
+railway logs            # View deployment logs
+railway domain          # Generate/view public domain
+railway open            # Open project in Railway dashboard
+
+# Cleanup
+pnpm clean              # Clean all build artifacts
 ```
 
-See [railway.json](railway.json) for configuration.
+## 🌐 Deployment
 
-## 🎯 Development Philosophy
+**Platform**: Railway
+**Live URL**: https://aud-web-production.up.railway.app
+**Config**: See `railway.json` in repository root
 
-### Core Principles
+Railway was chosen over Vercel due to better support for Next.js 15 + pnpm workspace + Turborepo monorepo structures.
 
-1. **British English**: colour, behaviour, optimise, analyse (except framework conventions)
-2. **Framer Motion Only**: No CSS transitions or animations
-3. **Mobile-First**: Tailwind responsive utilities (`sm:`, `md:`, `lg:`)
-4. **Type Safety**: Strict TypeScript, no `any` types
-5. **Structured Logging**: Use `logger.ts`, not `console.log`
-6. **Test Coverage**: Write tests for new features
+## 🗺️ Roadmap
 
-### Motion Tokens
+- [x] Week 1: Foundation (monorepo, migrations)
+- [ ] Week 2: Skills system
+- [ ] Week 3: Agent orchestrator
+- [ ] Week 4: UI foundation
+- [ ] Week 5: Integration & testing
+- [ ] Week 6: Beta launch
 
-- **120ms** — Micro interactions (hover, focus)
-- **240ms** — Transitions (theme switch, panel slide)
-- **400ms** — Ambient effects (pulse, glow)
+## 📦 Packages
 
-### Git Workflow
+### Core Packages
 
-**Branch Naming**:
-```
-feat/{scope}-{description}   → feat/landing-scrollflow
-fix/{bug-summary}            → fix/api-auth-headers
-refactor/{area}              → refactor/presence-hook
-```
+- `@total-audio/core-supabase` — Database client & auth
+- `@total-audio/core-ai-provider` — OpenAI/Anthropic abstraction
+- `@total-audio/core-skills-engine` — YAML skill loader & executor
+- `@total-audio/core-agent-executor` — Agent orchestration
+- `@total-audio/core-contacts` — Contact management
 
-**Commit Messages** (UK spelling, no emojis):
-```
-type(scope): short summary
+### UI Packages
 
-Examples:
-feat(landing): add scrollflow cinematic transitions
-fix(api): resolve supabase auth token issue
-refactor(hooks): extract presence logic to custom hook
-```
+- `@total-audio/ui` — Shared React components
 
-See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for full guidelines.
+### Schema Packages
+
+- `@total-audio/schemas-database` — Supabase types
+- `@total-audio/schemas-skills` — Skill type definitions
 
 ## 🧪 Testing
 
 ```bash
-cd apps/aud-web
-pnpm test                   # 15/15 tests passing
+# Run all tests
+pnpm test
+
+# Run specific package tests
+pnpm --filter @total-audio/core-skills-engine test
 ```
-
-Coverage:
-- Environment validation (type-safe env vars)
-- Structured logging (scoped loggers)
-- API input validation (Zod schemas)
-
-## 🌐 Browser Automation
-
-Dual MCP setup for visual context and automation:
-
-- **Chrome DevTools MCP** — Screenshots, DOM snapshots, console logs
-- **Puppeteer MCP** — Navigation, clicks, form fills, JavaScript execution
-
-See [docs/BROWSER_AUTOMATION.md](docs/BROWSER_AUTOMATION.md)
-
-## 📈 Success Metrics
-
-**Technical Quality**:
-- ✅ 15/15 tests passing
-- ✅ TypeScript strict mode
-- ✅ ESLint + Prettier configured
-- ✅ WCAG AA accessibility
-- ✅ Railway deployment successful
-
-**Innovation Goals**:
-- Validate agent collaboration patterns
-- Test cinematic onboarding flows
-- Experiment with theme-based UX
-- Prove real-time analytics architecture
-
-## 🗺️ Roadmap
-
-- [x] Phase 1-14: Foundation (monorepo, agents, themes)
-- [x] Phase 15.4: FlowCore design system
-- [x] Phase 15.5: Real-time analytics
-- [ ] Phase 16: Multi-agent workflows
-- [ ] Phase 17: Skills registry UI
-- [ ] Phase 18: Stabilisation + polish
-
-See [docs/TOTALAUD_IO_CONTEXT.md](docs/TOTALAUD_IO_CONTEXT.md) for detailed phase history.
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Key Rules**:
-- British English in all user-facing text
-- Framer Motion for all animations
-- TypeScript strict mode, no `any` types
-- Test new features
-- Follow commit conventions
 
 ## 📝 License
 
 Proprietary — © 2025 Total Audio
 
----
-
-**TotalAud.io is where innovation happens. Proven features migrate to Total Audio Promo production suite.**

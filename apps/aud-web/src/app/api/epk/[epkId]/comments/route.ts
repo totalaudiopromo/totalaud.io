@@ -14,7 +14,7 @@ interface CommentRow {
   updated_at?: string | null
 }
 
-export async function GET(_request: NextRequest, context: { params: Promise<{ epkId: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const supabase = createRouteSupabaseClient()
     const {
@@ -31,7 +31,6 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ ep
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const params = await context.params
     const epkId = params.epkId
 
     const { data: collaborators, error: collaboratorsError } = await supabase
@@ -103,7 +102,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ ep
   }
 }
 
-export async function POST(request: NextRequest, context: { params: Promise<{ epkId: string }> }) {
+export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
   try {
     const body = (await request.json()) as { body?: string; parentId?: string | null }
     if (!body.body || !body.body.trim()) {
@@ -125,7 +124,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ep
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const params = await context.params
     const epkId = params.epkId
     const parentId = body.parentId ?? null
 

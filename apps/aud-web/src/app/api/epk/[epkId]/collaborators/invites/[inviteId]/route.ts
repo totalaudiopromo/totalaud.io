@@ -6,7 +6,7 @@ const log = logger.scope('EpkInviteAPI')
 
 export async function DELETE(
   _request: Request,
-  context: { params: Promise<{ epkId: string; inviteId: string }> }
+  { params }: { params: { epkId: string; inviteId: string } }
 ) {
   try {
     const supabase = createRouteSupabaseClient()
@@ -24,7 +24,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const params = await context.params
     const campaignId = params.epkId
     const inviteId = params.inviteId
 
