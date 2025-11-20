@@ -220,7 +220,7 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
           exit={{ opacity: 0 }}
           transition={{
             duration: prefersReducedMotion ? 0 : 0.24,
-            ease: 'easeOut'
+            ease: 'easeOut',
           }}
           className="absolute inset-0 backdrop-blur-sm"
           style={{ backgroundColor: flowCoreColours.overlayStrong }}
@@ -277,7 +277,8 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                     className="px-3 py-1.5 text-sm rounded lowercase font-mono transition-all"
                     style={{
                       backgroundColor: period === p ? flowCoreColours.slateCyan : 'transparent',
-                      color: period === p ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
+                      color:
+                        period === p ? flowCoreColours.matteBlack : flowCoreColours.textSecondary,
                       transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
                       transitionTimingFunction: 'ease-out',
                     }}
@@ -318,8 +319,12 @@ export function FlowHubDashboard({ isOpen, onClose }: FlowHubDashboardProps) {
                 onClick={() => handleTabChange(tab.id)}
                 className="px-4 py-2 text-sm lowercase font-mono transition-all border-b-2"
                 style={{
-                  color: activeTab === tab.id ? flowCoreColours.slateCyan : flowCoreColours.textSecondary,
-                  borderBottomColor: activeTab === tab.id ? flowCoreColours.slateCyan : 'transparent',
+                  color:
+                    activeTab === tab.id
+                      ? flowCoreColours.slateCyan
+                      : flowCoreColours.textSecondary,
+                  borderBottomColor:
+                    activeTab === tab.id ? flowCoreColours.slateCyan : 'transparent',
                   transitionDuration: `${prefersReducedMotion ? 0 : 240}ms`,
                   transitionTimingFunction: 'ease-out',
                 }}
@@ -456,10 +461,7 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
                   >
                     #{index + 1}
                   </span>
-                  <span
-                    className="font-mono"
-                    style={{ color: flowCoreColours.textPrimary }}
-                  >
+                  <span className="font-mono" style={{ color: flowCoreColours.textPrimary }}>
                     epk {epk.epk_id.slice(0, 8)}...
                   </span>
                 </div>
@@ -504,10 +506,7 @@ function TopPerformers({ summary }: { summary: FlowHubSummary }) {
                   >
                     #{index + 1}
                   </span>
-                  <span
-                    className="font-mono"
-                    style={{ color: flowCoreColours.textPrimary }}
-                  >
+                  <span className="font-mono" style={{ color: flowCoreColours.textPrimary }}>
                     {agent.agent_type || 'agent'}
                   </span>
                 </div>
@@ -591,10 +590,7 @@ function AIBriefPanel({
           >
             {brief.title}
           </h3>
-          <p
-            className="text-sm mb-4 font-mono"
-            style={{ color: flowCoreColours.textSecondary }}
-          >
+          <p className="text-sm mb-4 font-mono" style={{ color: flowCoreColours.textSecondary }}>
             {brief.summary}
           </p>
         </div>
