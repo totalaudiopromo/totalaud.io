@@ -119,7 +119,7 @@ export default function OnboardingPage() {
     }
 
     play('success')
-    router.push(`/os/${startSurface}`)
+    router.push('/workspace')
   }
 
   return (
