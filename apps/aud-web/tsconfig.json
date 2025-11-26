@@ -10,6 +10,7 @@
     ],
     "paths": {
       "@aud-web/*": ["./src/*"],
+      "@/stores/*": ["./src/stores/*"],
       "@/components/*": ["./src/components/*"],
       "@/features/*": ["./src/components/features/*"],
       "@/layouts/*": ["./src/components/layouts/*"],
