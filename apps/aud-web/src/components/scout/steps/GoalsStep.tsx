@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import type { ScoutWizardState, GoalOption } from '../ScoutWizard'
 
 interface GoalsStepProps {
@@ -8,36 +7,31 @@ interface GoalsStepProps {
   updateState: (updates: Partial<ScoutWizardState>) => void
 }
 
-const GOALS: { id: GoalOption; label: string; description: string; icon: string }[] = [
+const GOALS: { id: GoalOption; label: string; description: string }[] = [
   {
     id: 'playlist',
     label: 'Playlist Curators',
     description: 'Spotify, Apple Music, and independent playlist placements',
-    icon: '📻',
   },
   {
     id: 'blog',
     label: 'Music Blogs',
     description: 'Reviews, features, and premiere opportunities',
-    icon: '✍️',
   },
   {
     id: 'radio',
     label: 'Radio Stations',
     description: 'BBC, community radio, and online stations',
-    icon: '📡',
   },
   {
     id: 'youtube',
     label: 'YouTube Channels',
     description: 'Music channels, reaction videos, and tastemakers',
-    icon: '▶️',
   },
   {
     id: 'podcast',
     label: 'Podcasts',
     description: 'Music podcasts and interview opportunities',
-    icon: '🎙️',
   },
 ]
 
@@ -56,7 +50,6 @@ export function GoalsStep({ state, updateState }: GoalsStepProps) {
   const toggleRegion = (region: string) => {
     const current = state.targetRegions
     if (current.includes(region)) {
-      // Don't allow removing all regions
       if (current.length > 1) {
         updateState({ targetRegions: current.filter((r) => r !== region) })
       }
@@ -66,53 +59,51 @@ export function GoalsStep({ state, updateState }: GoalsStepProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Step 3 of 5</p>
-        <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-100">
+        <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#6B7280]">
+          Step 3 of 5
+        </p>
+        <h2 className="mt-3 text-[18px] font-semibold tracking-[-0.01em] text-[#E8EAED]">
           What are you looking for?
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-2 text-[14px] leading-relaxed text-[#A9B3BF]">
           Tell Scout what kinds of opportunities you want to discover.
         </p>
       </div>
 
       {/* Goals selection */}
       <div className="space-y-3">
-        <label className="block text-[11px] font-medium uppercase tracking-[0.15em] text-slate-400">
-          Opportunity types <span className="text-rose-400">*</span>
-          <span className="ml-2 normal-case tracking-normal text-slate-500">
-            (select at least one)
-          </span>
+        <label className="block text-[13px] font-medium text-[#A9B3BF]">
+          Opportunity types <span className="text-[#C45252]">*</span>
+          <span className="ml-2 font-normal text-[#6B7280]">(select at least one)</span>
         </label>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {GOALS.map((goal) => {
             const isSelected = state.goals.includes(goal.id)
             return (
-              <motion.button
+              <button
                 key={goal.id}
                 type="button"
                 onClick={() => toggleGoal(goal.id)}
-                className={`flex items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+                className={`rounded-[6px] border p-4 text-left transition-all duration-[120ms] ${
                   isSelected
-                    ? 'border-sky-500 bg-sky-500/10'
-                    : 'border-slate-700 bg-slate-900/50 hover:border-slate-500'
+                    ? 'border-[#3AA9BE] bg-[rgba(58,169,190,0.08)]'
+                    : 'border-[#1F2327] bg-[#131619] hover:border-[#2A2E33]'
                 }`}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
               >
-                <span className="text-xl">{goal.icon}</span>
-                <div>
-                  <p
-                    className={`text-sm font-medium ${
-                      isSelected ? 'text-sky-100' : 'text-slate-200'
-                    }`}
-                  >
-                    {goal.label}
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-slate-400">{goal.description}</p>
-                </div>
-              </motion.button>
+                <p
+                  className={`text-[14px] font-medium ${
+                    isSelected ? 'text-[#3AA9BE]' : 'text-[#E8EAED]'
+                  }`}
+                >
+                  {goal.label}
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#6B7280]">
+                  {goal.description}
+                </p>
+              </button>
             )
           })}
         </div>
@@ -120,9 +111,7 @@ export function GoalsStep({ state, updateState }: GoalsStepProps) {
 
       {/* Region selection */}
       <div className="space-y-3">
-        <label className="block text-[11px] font-medium uppercase tracking-[0.15em] text-slate-400">
-          Target regions
-        </label>
+        <label className="block text-[13px] font-medium text-[#A9B3BF]">Target regions</label>
         <div className="flex flex-wrap gap-2">
           {REGIONS.map((region) => {
             const isSelected = state.targetRegions.includes(region)
@@ -131,10 +120,10 @@ export function GoalsStep({ state, updateState }: GoalsStepProps) {
                 key={region}
                 type="button"
                 onClick={() => toggleRegion(region)}
-                className={`rounded-full px-3 py-1.5 text-[11px] font-medium transition-all ${
+                className={`rounded-[4px] px-3 py-1.5 text-[13px] font-medium transition-all duration-[120ms] ${
                   isSelected
-                    ? 'border border-emerald-500 bg-emerald-500/20 text-emerald-100'
-                    : 'border border-slate-700 bg-slate-900/70 text-slate-300 hover:border-slate-500'
+                    ? 'border border-[#49A36C] bg-[rgba(73,163,108,0.15)] text-[#49A36C]'
+                    : 'border border-[#1F2327] bg-[#1A1D21] text-[#A9B3BF] hover:border-[#2A2E33]'
                 }`}
               >
                 {region}
@@ -146,11 +135,11 @@ export function GoalsStep({ state, updateState }: GoalsStepProps) {
 
       {/* Summary */}
       {state.goals.length > 0 && (
-        <div className="rounded-lg border border-dashed border-slate-700 bg-slate-900/30 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
+        <div className="rounded-[6px] border border-[#1F2327] bg-[#131619] px-4 py-3">
+          <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#6B7280]">
             Scout will search for
           </p>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="mt-1 text-[14px] text-[#A9B3BF]">
             {state.goals.map((g) => GOALS.find((x) => x.id === g)?.label).join(', ')} in{' '}
             {state.targetRegions.join(', ')}
           </p>

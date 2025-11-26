@@ -79,10 +79,10 @@ export function ExportOptions({ opportunities }: ExportOptionsProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 rounded-full border border-sky-500/50 bg-sky-500/10 px-3 py-1.5 text-[11px] font-medium text-sky-300 transition-colors hover:bg-sky-500/20"
+        className="flex items-center gap-1.5 rounded-[4px] border border-[#3AA9BE]/40 bg-[rgba(58,169,190,0.08)] px-3 py-1.5 text-[12px] font-medium text-[#3AA9BE] transition-all duration-[120ms] hover:border-[#3AA9BE]/60 hover:bg-[rgba(58,169,190,0.12)]"
       >
         <span>Export</span>
-        <span className="text-[10px]">▼</span>
+        <span className="text-[9px]">v</span>
       </button>
 
       <AnimatePresence>
@@ -97,23 +97,23 @@ export function ExportOptions({ opportunities }: ExportOptionsProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -5, scale: 0.95 }}
               transition={{ duration: 0.12 }}
-              className="absolute right-0 top-full z-20 mt-1 w-48 rounded-lg border border-slate-700 bg-slate-900 p-1 shadow-xl"
+              className="absolute right-0 top-full z-20 mt-1 w-44 rounded-[6px] border border-[#1F2327] bg-[#131619] p-1 shadow-xl"
             >
               <button
                 type="button"
                 onClick={downloadCSV}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-[13px] text-[#A9B3BF] transition-colors duration-[120ms] hover:bg-[#1A1D21] hover:text-[#E8EAED]"
               >
-                <span>📄</span>
-                <span>Download CSV</span>
+                <span className="text-[11px] text-[#6B7280]">CSV</span>
+                <span>Download</span>
               </button>
               <button
                 type="button"
                 onClick={copyToClipboard}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-[13px] text-[#A9B3BF] transition-colors duration-[120ms] hover:bg-[#1A1D21] hover:text-[#E8EAED]"
               >
-                <span>{copied ? '✓' : '📋'}</span>
-                <span>{copied ? 'Copied!' : 'Copy to clipboard'}</span>
+                <span className="text-[11px] text-[#6B7280]">{copied ? '+' : 'TXT'}</span>
+                <span>{copied ? 'Copied' : 'Copy to clipboard'}</span>
               </button>
             </motion.div>
           </>

@@ -126,7 +126,7 @@ export default function OnboardingPage() {
     <div className="flex flex-1 flex-col">
       <header className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">TotalAud.io OS</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">totalaud.io OS</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">
             Set up your project
           </h1>

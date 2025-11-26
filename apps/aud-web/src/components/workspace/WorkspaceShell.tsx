@@ -10,16 +10,18 @@ interface WorkspaceShellProps {
 }
 
 export function WorkspaceShell({ children }: WorkspaceShellProps) {
-  const { modeLabel, modeDescription } = useMode()
+  const { modeDescription } = useMode()
 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/50 px-4 py-3 sm:px-6 sm:py-4">
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1F2327] px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className="text-sm font-semibold tracking-tight text-slate-100">TotalAud.io</h1>
-            <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Workspace</p>
+            <h1 className="text-[14px] font-semibold tracking-[-0.01em] text-[#E8EAED]">
+              totalaud.io
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[#4B5563]">Workspace</p>
           </div>
         </div>
 
@@ -27,7 +29,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
 
         {/* Hide description on mobile */}
         <div className="hidden items-center gap-3 sm:flex">
-          <span className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
+          <span className="text-[10px] uppercase tracking-[0.1em] text-[#6B7280]">
             {modeDescription}
           </span>
         </div>
@@ -35,7 +37,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
 
       {/* Main content area */}
       <motion.main
-        className="flex-1 overflow-hidden"
+        className="flex-1 overflow-hidden bg-[#0F1113]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}

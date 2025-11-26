@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import type { ScoutWizardState, Opportunity, GoalOption } from '../ScoutWizard'
+import type { ScoutWizardState, GoalOption } from '../ScoutWizard'
 import { OpportunityCard } from '../results/OpportunityCard'
 import { ExportOptions } from '../results/ExportOptions'
 
@@ -60,13 +60,16 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Step 5 of 5</p>
-          <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-100">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#6B7280]">
+            Step 5 of 5
+          </p>
+          <h2 className="mt-3 text-[18px] font-semibold tracking-[-0.01em] text-[#E8EAED]">
             Your opportunities
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-2 text-[14px] leading-relaxed text-[#A9B3BF]">
             Found {state.opportunities.length} matches for "{state.trackTitle}"
           </p>
         </div>
@@ -74,7 +77,7 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
         <button
           type="button"
           onClick={onReset}
-          className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400 hover:border-slate-500 hover:text-slate-200"
+          className="rounded-[4px] border border-[#1F2327] bg-[#1A1D21] px-3 py-1.5 text-[12px] font-medium text-[#A9B3BF] transition-all duration-[120ms] hover:border-[#2A2E33] hover:text-[#E8EAED]"
         >
           New search
         </button>
@@ -85,10 +88,10 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
         <button
           type="button"
           onClick={() => setFilterType('all')}
-          className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+          className={`rounded-[4px] px-3 py-1.5 text-[13px] font-medium transition-all duration-[120ms] ${
             filterType === 'all'
-              ? 'bg-slate-700 text-slate-100'
-              : 'bg-slate-800/50 text-slate-400 hover:text-slate-200'
+              ? 'border border-[#3AA9BE] bg-[rgba(58,169,190,0.1)] text-[#3AA9BE]'
+              : 'border border-[#1F2327] bg-[#1A1D21] text-[#A9B3BF] hover:border-[#2A2E33]'
           }`}
         >
           All ({state.opportunities.length})
@@ -98,10 +101,10 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
             key={type}
             type="button"
             onClick={() => setFilterType(type as GoalOption)}
-            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+            className={`rounded-[4px] px-3 py-1.5 text-[13px] font-medium transition-all duration-[120ms] ${
               filterType === type
-                ? 'bg-slate-700 text-slate-100'
-                : 'bg-slate-800/50 text-slate-400 hover:text-slate-200'
+                ? 'border border-[#3AA9BE] bg-[rgba(58,169,190,0.1)] text-[#3AA9BE]'
+                : 'border border-[#1F2327] bg-[#1A1D21] text-[#A9B3BF] hover:border-[#2A2E33]'
             }`}
           >
             {TYPE_LABELS[type as GoalOption]} ({count})
@@ -110,17 +113,17 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
       </div>
 
       {/* Selection controls */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex items-center justify-between border-b border-[#1F2327] pb-3">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={selectedIds.size > 0 ? deselectAll : selectAll}
-            className="text-[11px] text-sky-400 hover:text-sky-300"
+            className="text-[13px] text-[#3AA9BE] transition-colors duration-[120ms] hover:text-[#4FBDD0]"
           >
             {selectedIds.size > 0 ? 'Deselect all' : 'Select all'}
           </button>
           {selectedIds.size > 0 && (
-            <span className="text-[11px] text-slate-400">{selectedIds.size} selected</span>
+            <span className="text-[12px] text-[#6B7280]">{selectedIds.size} selected</span>
           )}
         </div>
 
@@ -130,7 +133,7 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
       {/* Results list */}
       {filteredOpportunities.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-slate-400">No opportunities found</p>
+          <p className="text-[14px] text-[#6B7280]">No opportunities found</p>
         </div>
       ) : (
         <motion.div

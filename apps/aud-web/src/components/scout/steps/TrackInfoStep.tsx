@@ -9,24 +9,25 @@ interface TrackInfoStepProps {
 
 export function TrackInfoStep({ state, updateState }: TrackInfoStepProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Step 1 of 5</p>
-        <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-100">
+        <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#6B7280]">
+          Step 1 of 5
+        </p>
+        <h2 className="mt-3 text-[18px] font-semibold tracking-[-0.01em] text-[#E8EAED]">
           Tell us about your track
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-2 text-[14px] leading-relaxed text-[#A9B3BF]">
           Scout needs to understand what you're promoting to find the right opportunities.
         </p>
       </div>
 
-      <div className="space-y-4">
+      {/* Form */}
+      <div className="space-y-5">
         <div className="space-y-2">
-          <label
-            htmlFor="trackTitle"
-            className="block text-[11px] font-medium uppercase tracking-[0.15em] text-slate-400"
-          >
-            Track title <span className="text-rose-400">*</span>
+          <label htmlFor="trackTitle" className="block text-[13px] font-medium text-[#A9B3BF]">
+            Track title <span className="text-[#C45252]">*</span>
           </label>
           <input
             id="trackTitle"
@@ -34,16 +35,16 @@ export function TrackInfoStep({ state, updateState }: TrackInfoStepProps) {
             value={state.trackTitle}
             onChange={(e) => updateState({ trackTitle: e.target.value })}
             placeholder="e.g. Midnight Signals"
-            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+            className="w-full rounded-[4px] border border-[#1F2327] bg-[#131619] px-3 py-2.5 text-[14px] text-[#E8EAED] outline-none transition-colors placeholder:text-[#4B5563] focus:border-[#3AA9BE] focus:bg-[#151719]"
           />
         </div>
 
         <div className="space-y-2">
           <label
             htmlFor="trackDescription"
-            className="block text-[11px] font-medium uppercase tracking-[0.15em] text-slate-400"
+            className="block text-[13px] font-medium text-[#A9B3BF]"
           >
-            Description (optional)
+            Description <span className="text-[#6B7280]">(optional)</span>
           </label>
           <textarea
             id="trackDescription"
@@ -51,16 +52,13 @@ export function TrackInfoStep({ state, updateState }: TrackInfoStepProps) {
             onChange={(e) => updateState({ trackDescription: e.target.value })}
             placeholder="A brief description of your track - the vibe, story, or anything that makes it stand out..."
             rows={3}
-            className="w-full resize-none rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+            className="w-full resize-none rounded-[4px] border border-[#1F2327] bg-[#131619] px-3 py-2.5 text-[14px] text-[#E8EAED] outline-none transition-colors placeholder:text-[#4B5563] focus:border-[#3AA9BE] focus:bg-[#151719]"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="spotifyUrl"
-            className="block text-[11px] font-medium uppercase tracking-[0.15em] text-slate-400"
-          >
-            Spotify / streaming link (optional)
+          <label htmlFor="spotifyUrl" className="block text-[13px] font-medium text-[#A9B3BF]">
+            Spotify / streaming link <span className="text-[#6B7280]">(optional)</span>
           </label>
           <input
             id="spotifyUrl"
@@ -68,9 +66,9 @@ export function TrackInfoStep({ state, updateState }: TrackInfoStepProps) {
             value={state.spotifyUrl}
             onChange={(e) => updateState({ spotifyUrl: e.target.value })}
             placeholder="https://open.spotify.com/track/..."
-            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+            className="w-full rounded-[4px] border border-[#1F2327] bg-[#131619] px-3 py-2.5 text-[14px] text-[#E8EAED] outline-none transition-colors placeholder:text-[#4B5563] focus:border-[#3AA9BE] focus:bg-[#151719]"
           />
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[12px] text-[#6B7280]">
             Adding a link helps Scout match you with curators who playlist similar tracks.
           </p>
         </div>

@@ -107,7 +107,7 @@ export function ScoutWizard() {
   return (
     <div className="flex h-full flex-col">
       {/* Progress indicator */}
-      <div className="border-b border-slate-800/50 px-6 py-3">
+      <div className="border-b border-[#1F2327] px-6 py-3">
         <ScoutProgress currentStep={step} totalSteps={TOTAL_STEPS} />
       </div>
 
@@ -135,13 +135,13 @@ export function ScoutWizard() {
 
       {/* Navigation footer */}
       {step < 3 && (
-        <footer className="flex items-center justify-between border-t border-slate-800/50 px-6 py-4">
+        <footer className="flex items-center justify-between border-t border-[#1F2327] px-6 py-4">
           <div>
             {step > 0 && (
               <button
                 type="button"
                 onClick={handleBack}
-                className="rounded-full border border-slate-700 bg-slate-900/60 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-slate-300 transition-colors hover:border-slate-500 hover:text-slate-100"
+                className="rounded-[4px] border border-[#1F2327] bg-[#1A1D21] px-4 py-2 text-[12px] font-medium text-[#A9B3BF] transition-all duration-[120ms] hover:border-[#2A2E33] hover:text-[#E8EAED]"
               >
                 Back
               </button>
@@ -152,10 +152,10 @@ export function ScoutWizard() {
             type="button"
             onClick={handleNext}
             disabled={!canProceed()}
-            className={`rounded-full px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] transition-all ${
+            className={`rounded-[4px] px-5 py-2 text-[12px] font-semibold transition-all duration-[120ms] ${
               canProceed()
-                ? 'border border-sky-500 bg-sky-500/20 text-sky-100 hover:border-sky-400 hover:bg-sky-500/30'
-                : 'cursor-not-allowed border border-slate-700 bg-slate-800/50 text-slate-500'
+                ? 'border border-[#3AA9BE] bg-[rgba(58,169,190,0.15)] text-[#3AA9BE] hover:border-[#4FBDD0] hover:bg-[rgba(58,169,190,0.2)]'
+                : 'cursor-not-allowed border border-[#1F2327] bg-[#1A1D21] text-[#4B5563]'
             }`}
           >
             {step === 2 ? 'Start Scout' : 'Continue'}

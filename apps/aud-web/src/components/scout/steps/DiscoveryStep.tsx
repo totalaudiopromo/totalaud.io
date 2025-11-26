@@ -76,10 +76,12 @@ export function DiscoveryStep({ state, updateState, onComplete }: DiscoveryStepP
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <div className="text-center">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Step 4 of 5</p>
-        <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-100">
+        <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#6B7280]">
+          Step 4 of 5
+        </p>
+        <h2 className="mt-3 text-[18px] font-semibold tracking-[-0.01em] text-[#E8EAED]">
           {state.status === 'discovering' && 'Scout is searching...'}
-          {state.status === 'complete' && 'Discovery complete!'}
+          {state.status === 'complete' && 'Discovery complete'}
           {state.status === 'error' && 'Something went wrong'}
         </h2>
       </div>
@@ -87,13 +89,13 @@ export function DiscoveryStep({ state, updateState, onComplete }: DiscoveryStepP
       {/* Progress indicator */}
       {state.status === 'discovering' && (
         <div className="mt-8 w-full max-w-md">
-          <div className="mb-2 flex items-center justify-between text-[10px] text-slate-400">
+          <div className="mb-2 flex items-center justify-between text-[11px] text-[#6B7280]">
             <span>Searching {state.goals.length} opportunity types...</span>
             <span>{Math.round(state.progress)}%</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+          <div className="h-1 overflow-hidden rounded-[2px] bg-[#1F2327]">
             <motion.div
-              className="h-full bg-gradient-to-r from-sky-500 to-emerald-500"
+              className="h-full bg-[#3AA9BE]"
               initial={{ width: 0 }}
               animate={{ width: `${state.progress}%` }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -108,14 +110,14 @@ export function DiscoveryStep({ state, updateState, onComplete }: DiscoveryStepP
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.2 }}
-                className="flex items-center gap-2 text-sm text-slate-400"
+                className="flex items-center gap-2 text-[13px] text-[#A9B3BF]"
               >
                 <motion.span
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="inline-block"
+                  className="inline-block text-[#3AA9BE]"
                 >
-                  ◌
+                  +
                 </motion.span>
                 <span className="capitalize">{goal} curators...</span>
               </motion.div>
@@ -131,29 +133,28 @@ export function DiscoveryStep({ state, updateState, onComplete }: DiscoveryStepP
           animate={{ scale: 1, opacity: 1 }}
           className="mt-8 text-center"
         >
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20">
-            <span className="text-3xl">✓</span>
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[6px] border border-[#49A36C]/30 bg-[rgba(73,163,108,0.1)]">
+            <span className="text-[16px] font-medium text-[#49A36C]">Done</span>
           </div>
-          <p className="mt-4 text-sm text-slate-300">
-            Found{' '}
-            <span className="font-semibold text-emerald-400">{state.opportunities.length}</span>{' '}
+          <p className="mt-4 text-[14px] text-[#A9B3BF]">
+            Found <span className="font-semibold text-[#49A36C]">{state.opportunities.length}</span>{' '}
             opportunities
           </p>
-          <p className="mt-1 text-[11px] text-slate-500">Loading results...</p>
+          <p className="mt-1 text-[12px] text-[#6B7280]">Loading results...</p>
         </motion.div>
       )}
 
       {/* Error state */}
       {state.status === 'error' && (
         <div className="mt-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/20">
-            <span className="text-3xl">✗</span>
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[6px] border border-[#C45252]/30 bg-[rgba(196,82,82,0.1)]">
+            <span className="text-[16px] font-medium text-[#C45252]">Error</span>
           </div>
-          <p className="mt-4 text-sm text-rose-300">{state.error}</p>
+          <p className="mt-4 text-[14px] text-[#C45252]">{state.error}</p>
           <button
             type="button"
             onClick={() => updateState({ status: 'idle' })}
-            className="mt-4 rounded-full border border-slate-600 bg-slate-800 px-4 py-1.5 text-[11px] font-medium text-slate-200 hover:border-slate-500"
+            className="mt-4 rounded-[4px] border border-[#1F2327] bg-[#1A1D21] px-4 py-2 text-[13px] font-medium text-[#A9B3BF] transition-all duration-[120ms] hover:border-[#2A2E33] hover:text-[#E8EAED]"
           >
             Try again
           </button>

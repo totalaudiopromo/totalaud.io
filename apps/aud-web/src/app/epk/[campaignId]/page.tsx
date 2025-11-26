@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: EPKPageProps): Promise<Metada
   if (!campaign) {
     return {
       title: 'Electronic Press Kit',
-      description: 'Live campaign press assets powered by TotalAud.io.',
+      description: 'Live campaign press assets powered by totalaud.io.',
     }
   }
 
