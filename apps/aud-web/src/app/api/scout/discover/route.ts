@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
+import { getSupabaseServiceRoleClient } from '@/lib/supabase/serviceRole'
 
 interface ScoutDiscoverRequest {
   trackInfo: {
@@ -128,7 +128,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'At least one goal is required' }, { status: 400 })
     }
 
-    const supabase = createRouteSupabaseClient()
+    // Use service role client to bypass RLS - contacts are a shared database
+    const supabase = getSupabaseServiceRoleClient()
 
     // Build the query to find matching contacts
     // We'll look for contacts whose type matches the selected goals
@@ -139,12 +140,20 @@ export async function POST(request: NextRequest) {
     let opportunities: Opportunity[] = []
 
     try {
-      // Try to query the contacts table
-      const { data: contacts, error } = await supabase
+      // Build query for contacts table
+      let query = supabase
         .from('contacts')
         .select('*')
         .or(typeFilters.map((t) => `type.ilike.%${t}%`).join(','))
-        .limit(maxResults * 2) // Get extra for filtering
+
+      // Filter by region if specified (default UK)
+      if (targetRegions.length > 0 && !targetRegions.includes('Global')) {
+        query = query.or(
+          targetRegions.map((r) => `region.ilike.%${r}%`).join(',') + ',region.eq.Global'
+        )
+      }
+
+      const { data: contacts, error } = await query.limit(maxResults * 2)
 
       if (error) {
         console.warn('Supabase query error:', error.message)

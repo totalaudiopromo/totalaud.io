@@ -11,6 +11,8 @@ interface ResultsStepProps {
   onReset: () => void
 }
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 const TYPE_LABELS: Record<GoalOption, string> = {
   playlist: 'Playlists',
   blog: 'Blogs',
@@ -22,6 +24,8 @@ const TYPE_LABELS: Record<GoalOption, string> = {
 export function ResultsStep({ state, onReset }: ResultsStepProps) {
   const [filterType, setFilterType] = useState<GoalOption | 'all'>('all')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const filteredOpportunities = state.opportunities.filter(
     (opp) => filterType === 'all' || opp.type === filterType
@@ -57,6 +61,51 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
   )
 
   const selectedOpportunities = state.opportunities.filter((o) => selectedIds.has(o.id))
+
+  const handleSave = useCallback(async () => {
+    if (selectedIds.size === 0) return
+
+    setSaveStatus('saving')
+    setSaveError(null)
+
+    try {
+      const response = await fetch('/api/scout/opportunities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opportunities: selectedOpportunities.map((opp) => ({
+            contactId: opp.id.startsWith('mock-') ? null : opp.id,
+            searchTrackTitle: state.trackTitle,
+            searchGenres: state.genres,
+            searchGoals: state.goals,
+            searchVibe: state.vibe,
+            type: opp.type,
+            name: opp.name,
+            contactName: opp.contact.name,
+            contactEmail: opp.contact.email,
+            contactSubmissionUrl: opp.contact.submissionUrl,
+            relevanceScore: opp.relevanceScore,
+            genres: opp.genres,
+            pitchTips: opp.pitchTips,
+            source: opp.source,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to save')
+      }
+
+      setSaveStatus('saved')
+      // Reset to idle after showing success
+      setTimeout(() => setSaveStatus('idle'), 3000)
+    } catch (error) {
+      console.error('Save error:', error)
+      setSaveError(error instanceof Error ? error.message : 'Failed to save opportunities')
+      setSaveStatus('error')
+    }
+  }, [selectedIds, selectedOpportunities, state])
 
   return (
     <div className="space-y-6">
@@ -127,8 +176,46 @@ export function ResultsStep({ state, onReset }: ResultsStepProps) {
           )}
         </div>
 
-        {selectedIds.size > 0 && <ExportOptions opportunities={selectedOpportunities} />}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-2">
+            {/* Save button */}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saveStatus === 'saving'}
+              className={`flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-[12px] font-medium transition-all duration-[120ms] ${
+                saveStatus === 'saved'
+                  ? 'border border-[#49A36C]/40 bg-[rgba(73,163,108,0.08)] text-[#49A36C]'
+                  : saveStatus === 'error'
+                    ? 'border border-[#C45252]/40 bg-[rgba(196,82,82,0.08)] text-[#C45252]'
+                    : 'border border-[#49A36C]/40 bg-[rgba(73,163,108,0.08)] text-[#49A36C] hover:border-[#49A36C]/60 hover:bg-[rgba(73,163,108,0.12)]'
+              }`}
+            >
+              {saveStatus === 'saving' && <span className="inline-block animate-spin">+</span>}
+              {saveStatus === 'saved' && <span>+</span>}
+              {saveStatus === 'error' && <span>!</span>}
+              <span>
+                {saveStatus === 'saving'
+                  ? 'Saving...'
+                  : saveStatus === 'saved'
+                    ? 'Saved'
+                    : saveStatus === 'error'
+                      ? 'Error'
+                      : 'Save selected'}
+              </span>
+            </button>
+
+            <ExportOptions opportunities={selectedOpportunities} />
+          </div>
+        )}
       </div>
+
+      {/* Save error message */}
+      {saveError && (
+        <div className="rounded-[4px] border border-[#C45252]/30 bg-[rgba(196,82,82,0.08)] px-3 py-2 text-[12px] text-[#C45252]">
+          {saveError}
+        </div>
+      )}
 
       {/* Results list */}
       {filteredOpportunities.length === 0 ? (
