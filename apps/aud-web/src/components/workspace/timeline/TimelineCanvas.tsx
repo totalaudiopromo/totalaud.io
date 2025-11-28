@@ -12,103 +12,10 @@
 
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
-
-// Types
-interface TimelineEvent {
-  id: string
-  lane: LaneType
-  title: string
-  date: Date
-  colour: string
-  description?: string
-}
-
-type LaneType = 'pre-release' | 'release' | 'promo' | 'content' | 'analytics'
-
-interface Lane {
-  id: LaneType
-  label: string
-  colour: string
-}
-
-// Lane definitions
-const LANES: Lane[] = [
-  { id: 'pre-release', label: 'Pre-release', colour: '#8B5CF6' },
-  { id: 'release', label: 'Release', colour: '#3AA9BE' },
-  { id: 'promo', label: 'Promo', colour: '#F59E0B' },
-  { id: 'content', label: 'Content', colour: '#EC4899' },
-  { id: 'analytics', label: 'Analytics', colour: '#10B981' },
-]
-
-// Sample events for demo
-const SAMPLE_EVENTS: TimelineEvent[] = [
-  {
-    id: '1',
-    lane: 'pre-release',
-    title: 'Finalise master',
-    date: new Date(2025, 0, 15),
-    colour: '#8B5CF6',
-    description: 'Send to mastering engineer',
-  },
-  {
-    id: '2',
-    lane: 'pre-release',
-    title: 'Submit to distributors',
-    date: new Date(2025, 0, 22),
-    colour: '#8B5CF6',
-    description: 'DistroKid / TuneCore submission',
-  },
-  {
-    id: '3',
-    lane: 'release',
-    title: 'Release Day',
-    date: new Date(2025, 1, 14),
-    colour: '#3AA9BE',
-    description: 'Single drops on all platforms',
-  },
-  {
-    id: '4',
-    lane: 'promo',
-    title: 'Radio pitching',
-    date: new Date(2025, 0, 28),
-    colour: '#F59E0B',
-    description: 'BBC Radio 1, 6 Music outreach',
-  },
-  {
-    id: '5',
-    lane: 'promo',
-    title: 'Playlist pitching',
-    date: new Date(2025, 1, 1),
-    colour: '#F59E0B',
-    description: 'Spotify editorial submissions',
-  },
-  {
-    id: '6',
-    lane: 'content',
-    title: 'Music video shoot',
-    date: new Date(2025, 1, 7),
-    colour: '#EC4899',
-    description: 'One-day shoot in London',
-  },
-  {
-    id: '7',
-    lane: 'content',
-    title: 'Social teasers',
-    date: new Date(2025, 1, 10),
-    colour: '#EC4899',
-    description: '15s clips for TikTok/Reels',
-  },
-  {
-    id: '8',
-    lane: 'analytics',
-    title: 'Week 1 review',
-    date: new Date(2025, 1, 21),
-    colour: '#10B981',
-    description: 'Analyse streaming data',
-  },
-]
+import { useTimelineStore } from '@/stores/useTimelineStore'
+import { LANES } from '@/types/timeline'
 
 // Helper to get weeks array
 function getWeeksInRange(start: Date, weeks: number): Date[] {
@@ -129,7 +36,8 @@ function formatWeek(date: Date): string {
 }
 
 export function TimelineCanvas() {
-  const [events] = useState<TimelineEvent[]>(SAMPLE_EVENTS)
+  // Use the Timeline store
+  const events = useTimelineStore((state) => state.events)
   const [hoveredEvent, setHoveredEvent] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -138,11 +46,19 @@ export function TimelineCanvas() {
   const weeks = getWeeksInRange(startDate, 12)
   const weekWidth = 120
 
+  // Convert ISO date strings to Date objects for positioning
+  const eventsWithDates = useMemo(
+    () =>
+      events.map((event) => ({
+        ...event,
+        dateObj: new Date(event.date),
+      })),
+    [events]
+  )
+
   // Calculate event position
-  const getEventPosition = (event: TimelineEvent): number => {
-    const daysDiff = Math.floor(
-      (event.date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    )
+  const getEventPosition = (date: Date): number => {
+    const daysDiff = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
     return (daysDiff / 7) * weekWidth + 16
   }
 
@@ -285,7 +201,7 @@ export function TimelineCanvas() {
               }}
             >
               {/* Events in this lane */}
-              {events
+              {eventsWithDates
                 .filter((e) => e.lane === lane.id)
                 .map((event) => (
                   <motion.div
@@ -298,7 +214,7 @@ export function TimelineCanvas() {
                     style={{
                       position: 'absolute',
                       top: 12,
-                      left: getEventPosition(event),
+                      left: getEventPosition(event.dateObj),
                       padding: '8px 12px',
                       backgroundColor: `${event.colour}15`,
                       border: `1px solid ${event.colour}40`,
@@ -331,7 +247,7 @@ export function TimelineCanvas() {
                         color: 'rgba(255, 255, 255, 0.4)',
                       }}
                     >
-                      {event.date.toLocaleDateString('en-GB', {
+                      {event.dateObj.toLocaleDateString('en-GB', {
                         day: 'numeric',
                         month: 'short',
                       })}

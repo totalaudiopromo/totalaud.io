@@ -1,14 +1,13 @@
 /**
  * Workspace Page
  *
- * Phase 6: MVP Pivot - Unified Workspace
+ * Calm Creative Workspace (November 2025 Pivot)
  *
- * A calm, modern workspace with mode-switching tabs:
- * - Scout (discovery)
- * - Ideas (canvas)
- * - Timeline (planner)
- * - Pitch (story builder)
- * - Analytics (dashboard)
+ * A calm, minimal workspace with four core modes:
+ * - Ideas (capture and organise creative/marketing ideas)
+ * - Scout (discover real opportunities - playlists, blogs, radio, press)
+ * - Timeline (plan release and creative actions visually)
+ * - Pitch (craft narratives, descriptions, and bios)
  */
 
 'use client'
@@ -20,16 +19,15 @@ import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ide
 import { useIdeasStore } from '@/stores/useIdeasStore'
 import { TimelineCanvas, TimelineToolbar } from '@/components/workspace/timeline'
 import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
-import { AnalyticsCanvas, AnalyticsToolbar } from '@/components/workspace/analytics'
+import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
 
-type WorkspaceMode = 'scout' | 'ideas' | 'timeline' | 'pitch' | 'analytics'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
 const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
-  { key: 'scout', label: 'Scout', available: false },
   { key: 'ideas', label: 'Ideas', available: true },
+  { key: 'scout', label: 'Scout', available: true },
   { key: 'timeline', label: 'Timeline', available: true },
   { key: 'pitch', label: 'Pitch', available: true },
-  { key: 'analytics', label: 'Analytics', available: true },
 ]
 
 function WorkspaceContent() {
@@ -88,72 +86,12 @@ function WorkspaceContent() {
           </div>
         )
 
-      case 'analytics':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <AnalyticsToolbar />
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <AnalyticsCanvas />
-            </div>
-          </div>
-        )
-
       case 'scout':
         return (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px dashed rgba(58, 169, 190, 0.3)',
-                borderRadius: 12,
-              }}
-            >
-              <div
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  backgroundColor: '#3AA9BE',
-                  opacity: 0.5,
-                }}
-              />
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                {MODES.find((m) => m.key === mode)?.label}
-              </h2>
-              <p
-                style={{
-                  margin: '8px 0 0',
-                  fontSize: 14,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                Coming soon
-              </p>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <ScoutToolbar />
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <ScoutGrid />
             </div>
           </div>
         )

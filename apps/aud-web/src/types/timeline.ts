@@ -1,0 +1,192 @@
+/**
+ * Timeline Types
+ *
+ * Phase 3: MVP Pivot - Timeline Store
+ *
+ * Types for timeline events across 5 swim lanes:
+ * - Pre-release (preparation)
+ * - Release (launch day)
+ * - Promo (promotion activities)
+ * - Content (social/video content)
+ * - Analytics (tracking & insights)
+ */
+
+// ============================================================================
+// Lane Types
+// ============================================================================
+
+export type LaneType = 'pre-release' | 'release' | 'promo' | 'content' | 'analytics'
+
+export interface Lane {
+  id: LaneType
+  label: string
+  colour: string
+}
+
+/**
+ * Lane definitions with colours matching the existing design system.
+ */
+export const LANES: Lane[] = [
+  { id: 'pre-release', label: 'Pre-release', colour: '#8B5CF6' },
+  { id: 'release', label: 'Release', colour: '#3AA9BE' },
+  { id: 'promo', label: 'Promo', colour: '#F59E0B' },
+  { id: 'content', label: 'Content', colour: '#EC4899' },
+  { id: 'analytics', label: 'Analytics', colour: '#10B981' },
+]
+
+/**
+ * Lookup map for lane data by ID.
+ */
+export const LANE_MAP: Record<LaneType, Lane> = LANES.reduce(
+  (acc, lane) => {
+    acc[lane.id] = lane
+    return acc
+  },
+  {} as Record<LaneType, Lane>
+)
+
+// ============================================================================
+// Event Types
+// ============================================================================
+
+export interface TimelineEvent {
+  id: string
+  lane: LaneType
+  title: string
+  date: string // ISO string for persistence
+  colour: string
+  description?: string
+  /** Reference to source opportunity (from Scout) */
+  opportunityId?: string
+  /** Source of the event */
+  source: 'manual' | 'scout' | 'sample'
+  createdAt: string
+  updatedAt: string
+}
+
+/**
+ * For creating new events (without id and timestamps).
+ */
+export type NewTimelineEvent = Omit<TimelineEvent, 'id' | 'createdAt' | 'updatedAt'>
+
+/**
+ * For updating events (all fields optional except id).
+ */
+export type TimelineEventUpdate = Partial<Omit<TimelineEvent, 'id' | 'createdAt'>>
+
+// ============================================================================
+// Sample Events
+// ============================================================================
+
+/**
+ * Sample events for demo purposes.
+ * These are loaded as initial state but can be cleared.
+ */
+export const SAMPLE_EVENTS: TimelineEvent[] = [
+  {
+    id: 'sample-1',
+    lane: 'pre-release',
+    title: 'Finalise master',
+    date: new Date(2025, 0, 15).toISOString(),
+    colour: '#8B5CF6',
+    description: 'Send to mastering engineer',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-2',
+    lane: 'pre-release',
+    title: 'Submit to distributors',
+    date: new Date(2025, 0, 22).toISOString(),
+    colour: '#8B5CF6',
+    description: 'DistroKid / TuneCore submission',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-3',
+    lane: 'release',
+    title: 'Release Day',
+    date: new Date(2025, 1, 14).toISOString(),
+    colour: '#3AA9BE',
+    description: 'Single drops on all platforms',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-4',
+    lane: 'promo',
+    title: 'Radio pitching',
+    date: new Date(2025, 0, 28).toISOString(),
+    colour: '#F59E0B',
+    description: 'BBC Radio 1, 6 Music outreach',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-5',
+    lane: 'promo',
+    title: 'Playlist pitching',
+    date: new Date(2025, 1, 1).toISOString(),
+    colour: '#F59E0B',
+    description: 'Spotify editorial submissions',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-6',
+    lane: 'content',
+    title: 'Music video shoot',
+    date: new Date(2025, 1, 7).toISOString(),
+    colour: '#EC4899',
+    description: 'One-day shoot in London',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-7',
+    lane: 'content',
+    title: 'Social teasers',
+    date: new Date(2025, 1, 10).toISOString(),
+    colour: '#EC4899',
+    description: '15s clips for TikTok/Reels',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sample-8',
+    lane: 'analytics',
+    title: 'Week 1 review',
+    date: new Date(2025, 1, 21).toISOString(),
+    colour: '#10B981',
+    description: 'Analyse streaming data',
+    source: 'sample',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+]
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Get the default colour for a lane.
+ */
+export function getLaneColour(lane: LaneType): string {
+  return LANE_MAP[lane]?.colour ?? '#6B7280'
+}
+
+/**
+ * Generate a unique event ID.
+ */
+export function generateEventId(): string {
+  return `evt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
