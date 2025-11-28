@@ -16,7 +16,8 @@
 import { useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IdeasCanvas, IdeasToolbar } from '@/components/workspace/ideas'
+import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ideas'
+import { useIdeasStore } from '@/stores/useIdeasStore'
 import { TimelineCanvas, TimelineToolbar } from '@/components/workspace/timeline'
 import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
 import { AnalyticsCanvas, AnalyticsToolbar } from '@/components/workspace/analytics'
@@ -52,6 +53,9 @@ function WorkspaceContent() {
     [router]
   )
 
+  // Get view mode from Ideas store
+  const ideasViewMode = useIdeasStore((state) => state.viewMode)
+
   const renderModeContent = () => {
     switch (mode) {
       case 'ideas':
@@ -59,7 +63,7 @@ function WorkspaceContent() {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <IdeasToolbar />
             <div style={{ flex: 1, minHeight: 0 }}>
-              <IdeasCanvas />
+              {ideasViewMode === 'canvas' ? <IdeasCanvas /> : <IdeasList />}
             </div>
           </div>
         )

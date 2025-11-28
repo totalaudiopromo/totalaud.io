@@ -11,6 +11,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
+export type SortMode = 'newest' | 'oldest' | 'alpha'
+export type ViewMode = 'canvas' | 'list'
 
 export interface IdeaCard {
   id: string
@@ -25,6 +27,9 @@ interface IdeasState {
   cards: IdeaCard[]
   filter: IdeaTag | null
   selectedCardId: string | null
+  searchQuery: string
+  sortMode: SortMode
+  viewMode: ViewMode
 
   // Actions
   addCard: (content: string, tag: IdeaTag, position?: { x: number; y: number }) => string
@@ -34,6 +39,9 @@ interface IdeasState {
   setFilter: (tag: IdeaTag | null) => void
   selectCard: (id: string | null) => void
   clearAllCards: () => void
+  setSearchQuery: (query: string) => void
+  setSortMode: (mode: SortMode) => void
+  setViewMode: (mode: ViewMode) => void
 }
 
 function generateId(): string {
@@ -54,6 +62,9 @@ export const useIdeasStore = create<IdeasState>()(
       cards: [],
       filter: null,
       selectedCardId: null,
+      searchQuery: '',
+      sortMode: 'newest' as SortMode,
+      viewMode: 'canvas' as ViewMode,
 
       addCard: (content, tag, position) => {
         const id = generateId()
@@ -125,20 +136,61 @@ export const useIdeasStore = create<IdeasState>()(
           selectedCardId: null,
         })
       },
+
+      setSearchQuery: (query) => {
+        set({ searchQuery: query })
+      },
+
+      setSortMode: (mode) => {
+        set({ sortMode: mode })
+      },
+
+      setViewMode: (mode) => {
+        set({ viewMode: mode })
+      },
     }),
     {
       name: 'totalaud-ideas-store',
-      version: 1,
+      version: 2,
     }
   )
 )
 
 // Selector helpers
 export const selectFilteredCards = (state: IdeasState): IdeaCard[] => {
-  if (state.filter === null) {
-    return state.cards
+  let cards = state.cards
+
+  // Tag filter
+  if (state.filter !== null) {
+    cards = cards.filter((card) => card.tag === state.filter)
   }
-  return state.cards.filter((card) => card.tag === state.filter)
+
+  // Search filter
+  if (state.searchQuery.trim()) {
+    const query = state.searchQuery.toLowerCase()
+    cards = cards.filter((card) => card.content.toLowerCase().includes(query))
+  }
+
+  // Sort
+  switch (state.sortMode) {
+    case 'newest':
+      cards = [...cards].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      break
+    case 'oldest':
+      cards = [...cards].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      )
+      break
+    case 'alpha':
+      cards = [...cards].sort((a, b) =>
+        a.content.toLowerCase().localeCompare(b.content.toLowerCase())
+      )
+      break
+  }
+
+  return cards
 }
 
 export const selectSelectedCard = (state: IdeasState): IdeaCard | null => {
@@ -158,4 +210,35 @@ export const selectCardCountByTag = (state: IdeasState): Record<IdeaTag, number>
     },
     { content: 0, brand: 0, music: 0, promo: 0 } as Record<IdeaTag, number>
   )
+}
+
+// Export helpers
+export function buildMarkdownExport(ideas: IdeaCard[]): string {
+  if (ideas.length === 0) return 'No ideas to export.'
+
+  return ideas
+    .map((idea) => {
+      const date = new Date(idea.createdAt).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+      return `## ${idea.tag.charAt(0).toUpperCase() + idea.tag.slice(1)}\n\n${idea.content}\n\n*Created: ${date}*\n\n---`
+    })
+    .join('\n\n')
+}
+
+export function buildPlainTextExport(ideas: IdeaCard[]): string {
+  if (ideas.length === 0) return 'No ideas to export.'
+
+  return ideas
+    .map((idea) => {
+      const date = new Date(idea.createdAt).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+      return `[${idea.tag.toUpperCase()}] ${idea.content}\n(${date})`
+    })
+    .join('\n\n')
 }
