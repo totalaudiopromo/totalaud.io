@@ -17,15 +17,18 @@ import { useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IdeasCanvas, IdeasToolbar } from '@/components/workspace/ideas'
+import { TimelineCanvas, TimelineToolbar } from '@/components/workspace/timeline'
+import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
+import { AnalyticsCanvas, AnalyticsToolbar } from '@/components/workspace/analytics'
 
 type WorkspaceMode = 'scout' | 'ideas' | 'timeline' | 'pitch' | 'analytics'
 
-const MODES: { key: WorkspaceMode; label: string; icon: string; available: boolean }[] = [
-  { key: 'scout', label: 'Scout', icon: '🔍', available: false },
-  { key: 'ideas', label: 'Ideas', icon: '💡', available: true },
-  { key: 'timeline', label: 'Timeline', icon: '📅', available: false },
-  { key: 'pitch', label: 'Pitch', icon: '📝', available: false },
-  { key: 'analytics', label: 'Analytics', icon: '📊', available: false },
+const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
+  { key: 'scout', label: 'Scout', available: false },
+  { key: 'ideas', label: 'Ideas', available: true },
+  { key: 'timeline', label: 'Timeline', available: true },
+  { key: 'pitch', label: 'Pitch', available: true },
+  { key: 'analytics', label: 'Analytics', available: true },
 ]
 
 function WorkspaceContent() {
@@ -61,10 +64,37 @@ function WorkspaceContent() {
           </div>
         )
 
-      case 'scout':
       case 'timeline':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <TimelineToolbar />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <TimelineCanvas />
+            </div>
+          </div>
+        )
+
       case 'pitch':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <PitchToolbar />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <PitchCanvas />
+            </div>
+          </div>
+        )
+
       case 'analytics':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <AnalyticsToolbar />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <AnalyticsCanvas />
+            </div>
+          </div>
+        )
+
+      case 'scout':
         return (
           <div
             style={{
@@ -78,18 +108,25 @@ function WorkspaceContent() {
           >
             <div
               style={{
-                width: 64,
-                height: 64,
+                width: 48,
+                height: 48,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'rgba(58, 169, 190, 0.1)',
                 border: '1px dashed rgba(58, 169, 190, 0.3)',
-                borderRadius: 16,
-                fontSize: 28,
+                borderRadius: 12,
               }}
             >
-              {MODES.find((m) => m.key === mode)?.icon}
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: '#3AA9BE',
+                  opacity: 0.5,
+                }}
+              />
             </div>
             <div style={{ textAlign: 'center' }}>
               <h2
@@ -98,17 +135,17 @@ function WorkspaceContent() {
                   fontSize: 18,
                   fontWeight: 600,
                   color: 'rgba(255, 255, 255, 0.9)',
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 }}
               >
-                {MODES.find((m) => m.key === mode)?.label} Mode
+                {MODES.find((m) => m.key === mode)?.label}
               </h2>
               <p
                 style={{
                   margin: '8px 0 0',
                   fontSize: 14,
                   color: 'rgba(255, 255, 255, 0.5)',
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 }}
               >
                 Coming soon
@@ -137,24 +174,26 @@ function WorkspaceContent() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 24px',
+          padding: '0 16px',
           height: 56,
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           backgroundColor: 'rgba(15, 17, 19, 0.95)',
           backdropFilter: 'blur(8px)',
+          gap: 12,
         }}
       >
-        {/* Logo */}
+        {/* Logo - hidden on mobile to save space */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
+            gap: 8,
+            flexShrink: 0,
           }}
         >
           <span
             style={{
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: 700,
               color: '#3AA9BE',
               fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
@@ -162,29 +201,20 @@ function WorkspaceContent() {
           >
             totalaud.io
           </span>
-          <span
-            style={{
-              fontSize: 11,
-              padding: '2px 8px',
-              backgroundColor: 'rgba(58, 169, 190, 0.15)',
-              border: '1px solid rgba(58, 169, 190, 0.2)',
-              borderRadius: 4,
-              color: '#3AA9BE',
-              fontWeight: 500,
-              textTransform: 'lowercase',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
-          >
-            workspace
-          </span>
         </div>
 
-        {/* Mode tabs */}
+        {/* Mode tabs - scrollable on mobile */}
         <nav
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 2,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            flex: 1,
+            justifyContent: 'center',
           }}
         >
           {MODES.map((modeConfig) => (
@@ -196,7 +226,7 @@ function WorkspaceContent() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '8px 16px',
+                padding: '8px 12px',
                 backgroundColor:
                   mode === modeConfig.key ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
                 border: 'none',
@@ -212,6 +242,8 @@ function WorkspaceContent() {
                 transition: 'all 0.12s ease',
                 fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
                 position: 'relative',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               {modeConfig.label}
@@ -234,9 +266,6 @@ function WorkspaceContent() {
             </button>
           ))}
         </nav>
-
-        {/* Spacer for balance */}
-        <div style={{ width: 120 }} />
       </header>
 
       {/* Main content */}

@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'TotalAud.io Console',
-  description: 'FlowCore console for TotalAud.io',
+  title: 'totalaud.io - Helping indie artists get heard',
+  description:
+    'Intelligent tools that simplify discovery, planning, pitching and creative direction for independent musicians.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
