@@ -9,6 +9,8 @@
  * - Promo (promotion activities)
  * - Content (social/video content)
  * - Analytics (tracking & insights)
+ *
+ * Integrates with TAP Tracker for optional campaign logging.
  */
 
 // ============================================================================
@@ -56,12 +58,38 @@ export interface TimelineEvent {
   date: string // ISO string for persistence
   colour: string
   description?: string
+  /** Link to opportunity or external resource */
+  url?: string
+  /** Tags for categorisation and filtering */
+  tags?: string[]
   /** Reference to source opportunity (from Scout) */
   opportunityId?: string
   /** Source of the event */
   source: 'manual' | 'scout' | 'sample'
   createdAt: string
   updatedAt: string
+
+  // TAP Tracker integration (optional)
+  /** ID of the campaign in TAP Tracker */
+  trackerCampaignId?: string
+  /** When this event was synced to TAP Tracker */
+  trackerSyncedAt?: string
+}
+
+// ============================================================================
+// TAP Tracker Sync Types
+// ============================================================================
+
+export type TrackerSyncStatus = 'idle' | 'syncing' | 'synced' | 'error'
+
+/**
+ * State for tracking sync status of individual events
+ */
+export interface TrackerSyncState {
+  status: TrackerSyncStatus
+  error?: string
+  campaignId?: string
+  syncedAt?: string
 }
 
 /**

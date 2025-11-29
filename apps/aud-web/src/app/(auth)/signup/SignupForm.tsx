@@ -1,16 +1,49 @@
 /**
  * Signup Form Component
- * 2025 Brand Pivot - Cinematic Editorial
+ * Phase 6: Auth + Landing Page
+ *
+ * Supabase email/password signup with instant access (no email verification).
+ * User metadata includes display_name for personalisation.
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+
+// Feature-specific contextual headers
+const FEATURE_HEADERS: Record<string, { title: string; subtitle: string }> = {
+  validate: {
+    title: 'Create a free account',
+    subtitle: 'to validate contacts with TAP Intel',
+  },
+  'pitch-generator': {
+    title: 'Create a free account',
+    subtitle: 'to generate pitches with AI',
+  },
+  'tracker-sync': {
+    title: 'Create a free account',
+    subtitle: 'to log submissions to TAP Tracker',
+  },
+}
+
+const DEFAULT_HEADER = {
+  title: 'Create your account',
+  subtitle: 'Start building your music career',
+}
 
 export function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const supabase = useMemo(() => createBrowserSupabaseClient(), [])
+
+  // Get feature from URL params for contextual messaging
+  const feature = searchParams.get('feature')
+  const headerContent =
+    feature && FEATURE_HEADERS[feature] ? FEATURE_HEADERS[feature] : DEFAULT_HEADER
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,10 +56,38 @@ export function SignupForm() {
     setIsLoading(true)
 
     try {
-      // TODO: Integrate with Supabase auth
-      // For now, redirect to workspace
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      router.push('/workspace')
+      // Sign up with Supabase (email verification disabled in Supabase dashboard)
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            display_name: name,
+          },
+        },
+      })
+
+      if (signUpError) {
+        // Handle specific error cases
+        if (signUpError.message.includes('already registered')) {
+          setError('This email is already registered. Try signing in instead.')
+        } else if (signUpError.message.includes('password')) {
+          setError('Password must be at least 8 characters.')
+        } else {
+          setError(signUpError.message)
+        }
+        return
+      }
+
+      // Check if user was created successfully
+      if (data.user) {
+        // Redirect to workspace on successful signup
+        router.push('/workspace')
+      } else {
+        // This shouldn't happen with email verification disabled
+        setError('Account created. Please check your email to verify.')
+      }
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -65,7 +126,7 @@ export function SignupForm() {
         fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
       }}
     >
-      {/* Header */}
+      {/* Header - Contextual based on ?feature= param */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <h1
           style={{
@@ -76,16 +137,17 @@ export function SignupForm() {
             letterSpacing: '-0.02em',
           }}
         >
-          Create your account
+          {headerContent.title}
         </h1>
         <p
           style={{
             fontSize: '16px',
-            color: 'rgba(255, 255, 255, 0.6)',
+            color: feature ? '#3AA9BE' : 'rgba(255, 255, 255, 0.6)',
             lineHeight: 1.5,
+            fontWeight: feature ? 500 : 400,
           }}
         >
-          Start building your music career
+          {headerContent.subtitle}
         </p>
       </div>
 

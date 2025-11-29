@@ -11,7 +11,8 @@
 
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import type { Opportunity } from '@/types/scout'
+import { useRouter } from 'next/navigation'
+import type { Opportunity, EnrichedContact, EnrichmentStatus } from '@/types/scout'
 import {
   TYPE_ICONS,
   TYPE_LABELS,
@@ -19,24 +20,70 @@ import {
   AUDIENCE_SIZE_LABELS,
   AUDIENCE_SIZE_COLOURS,
 } from '@/types/scout'
+import { useAuthGate } from '@/components/auth'
 
 interface OpportunityCardProps {
   opportunity: Opportunity
   isAddedToTimeline: boolean
+  enrichedData: EnrichedContact | null
+  enrichmentStatus: EnrichmentStatus
+  enrichmentError: string | null
   onSelect: () => void
   onAddToTimeline: () => void
   onCopyEmail: () => void
+  onValidateContact: () => void
 }
 
 export function OpportunityCard({
   opportunity,
   isAddedToTimeline,
+  enrichedData,
+  enrichmentStatus,
+  enrichmentError,
   onSelect,
   onAddToTimeline,
   onCopyEmail,
+  onValidateContact,
 }: OpportunityCardProps) {
+  const router = useRouter()
+  const { canAccess: isAuthenticated, requireAuth } = useAuthGate()
   const [copyFeedback, setCopyFeedback] = useState(false)
   const [addFeedback, setAddFeedback] = useState(false)
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false)
+
+  // Confidence badge colour
+  const getConfidenceColour = (confidence: string | undefined) => {
+    switch (confidence) {
+      case 'High':
+        return { bg: 'rgba(73, 163, 108, 0.15)', text: '#49A36C' }
+      case 'Medium':
+        return { bg: 'rgba(196, 160, 82, 0.15)', text: '#C4A052' }
+      case 'Low':
+        return { bg: 'rgba(249, 115, 22, 0.15)', text: '#F97316' }
+      default:
+        return { bg: 'rgba(255, 255, 255, 0.06)', text: 'rgba(255, 255, 255, 0.5)' }
+    }
+  }
+
+  const handleValidate = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (enrichmentStatus === 'loading' || enrichmentStatus === 'success') return
+
+      // Gate behind auth - redirect to signup if not authenticated
+      if (!requireAuth(() => setShowAuthPrompt(true))) {
+        // Show brief prompt, then redirect
+        setTimeout(() => {
+          setShowAuthPrompt(false)
+          router.push('/signup?feature=validate')
+        }, 1500)
+        return
+      }
+
+      onValidateContact()
+    },
+    [enrichmentStatus, onValidateContact, requireAuth, router]
+  )
 
   const typeColour = TYPE_COLOURS[opportunity.type]
 
@@ -122,18 +169,44 @@ export function OpportunityCard({
           {TYPE_LABELS[opportunity.type]}
         </div>
 
-        {/* Audience size indicator */}
-        <div
-          style={{
-            fontSize: 10,
-            fontWeight: 500,
-            color: AUDIENCE_SIZE_COLOURS[opportunity.audienceSize],
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-          }}
-        >
-          {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
+        {/* Right side: Enrichment badge + Audience size */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Enrichment confidence badge */}
+          {enrichedData?.researchConfidence && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '2px 8px',
+                backgroundColor: getConfidenceColour(enrichedData.researchConfidence).bg,
+                borderRadius: 10,
+                fontSize: 9,
+                fontWeight: 600,
+                color: getConfidenceColour(enrichedData.researchConfidence).text,
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              }}
+              title={enrichedData.contactIntelligence || 'Validated contact'}
+            >
+              ✓ {enrichedData.researchConfidence}
+            </div>
+          )}
+
+          {/* Audience size indicator */}
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 500,
+              color: AUDIENCE_SIZE_COLOURS[opportunity.audienceSize],
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            }}
+          >
+            {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
+          </div>
         </div>
       </div>
 
@@ -227,6 +300,55 @@ export function OpportunityCard({
           marginTop: 'auto',
         }}
       >
+        {/* Validate contact button - only show if has email and not yet validated */}
+        {opportunity.contactEmail && enrichmentStatus !== 'success' && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleValidate}
+            disabled={enrichmentStatus === 'loading'}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              padding: '8px 12px',
+              backgroundColor: showAuthPrompt ? 'rgba(249, 115, 22, 0.1)' : 'transparent',
+              border: `1px solid ${showAuthPrompt ? 'rgba(249, 115, 22, 0.3)' : 'rgba(58, 169, 190, 0.3)'}`,
+              borderRadius: 4,
+              fontSize: 11,
+              fontWeight: 500,
+              color: showAuthPrompt
+                ? '#F97316'
+                : enrichmentStatus === 'loading'
+                  ? 'rgba(58, 169, 190, 0.5)'
+                  : enrichmentStatus === 'error'
+                    ? '#F97316'
+                    : '#3AA9BE',
+              cursor: enrichmentStatus === 'loading' ? 'wait' : 'pointer',
+              transition: 'all 0.16s ease',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              minWidth: 70,
+            }}
+            title={
+              showAuthPrompt
+                ? 'Sign up to validate contacts'
+                : !isAuthenticated
+                  ? 'Sign up to validate contacts with TAP Intel'
+                  : enrichmentError || 'Validate contact with TAP Intel'
+            }
+          >
+            {showAuthPrompt
+              ? 'Sign up to unlock'
+              : enrichmentStatus === 'loading'
+                ? 'Validating…'
+                : enrichmentStatus === 'error'
+                  ? 'Retry'
+                  : !isAuthenticated
+                    ? '🔒 Validate'
+                    : 'Validate'}
+          </motion.button>
+        )}
+
         {/* Copy email button */}
         {opportunity.contactEmail && (
           <motion.button

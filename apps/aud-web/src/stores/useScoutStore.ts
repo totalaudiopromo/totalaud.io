@@ -9,162 +9,27 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Opportunity, OpportunityType, AudienceSize, ScoutFilters } from '@/types/scout'
+import type {
+  Opportunity,
+  OpportunityType,
+  AudienceSize,
+  ScoutFilters,
+  EnrichedContact,
+  EnrichmentStatus,
+} from '@/types/scout'
 import { DEFAULT_FILTERS } from '@/types/scout'
 
 // ============================================================================
-// Mock Data (for MVP development) - Must be defined before store
+// API Response Type
 // ============================================================================
 
-const MOCK_OPPORTUNITIES: Opportunity[] = [
-  {
-    id: 'opp-1',
-    name: 'BBC Radio 6 Music',
-    type: 'radio',
-    genres: ['Alternative', 'Indie', 'Electronic'],
-    vibes: ['Experimental', 'Underground'],
-    audienceSize: 'large',
-    link: 'https://www.bbc.co.uk/6music',
-    contactEmail: 'music@bbc.co.uk',
-    contactName: 'Steve Lamacq',
-    description:
-      'UK national radio station for alternative and indie music. Weekly reach: 2.5M listeners.',
-    source: 'airtable',
-    createdAt: '2025-01-15T10:00:00Z',
-    updatedAt: '2025-01-15T10:00:00Z',
-  },
-  {
-    id: 'opp-2',
-    name: 'NME New Music',
-    type: 'blog',
-    genres: ['Rock', 'Indie', 'Alternative'],
-    vibes: ['Energetic', 'Mainstream'],
-    audienceSize: 'large',
-    link: 'https://www.nme.com',
-    contactEmail: 'tips@nme.com',
-    contactName: 'Music Editor',
-    description: 'Leading UK music publication covering new releases and emerging artists.',
-    source: 'manual',
-    createdAt: '2025-01-14T09:00:00Z',
-    updatedAt: '2025-01-14T09:00:00Z',
-  },
-  {
-    id: 'opp-3',
-    name: 'Spotify Fresh Finds',
-    type: 'playlist',
-    genres: ['Pop', 'Indie', 'Electronic'],
-    vibes: ['Uplifting', 'Chill'],
-    audienceSize: 'large',
-    link: 'https://open.spotify.com/playlist/37i9dQZF1DWWjGdmeTyeJ6',
-    description: 'Official Spotify editorial playlist for emerging artists. 500K+ followers.',
-    source: 'manual',
-    createdAt: '2025-01-13T14:00:00Z',
-    updatedAt: '2025-01-13T14:00:00Z',
-  },
-  {
-    id: 'opp-4',
-    name: 'Amazing Radio',
-    type: 'radio',
-    genres: ['Indie', 'Alternative', 'Folk'],
-    vibes: ['Underground', 'Emotional'],
-    audienceSize: 'medium',
-    link: 'https://www.amazingradio.com',
-    contactEmail: 'music@amazingradio.com',
-    contactName: 'Charlie Ashcroft',
-    description: 'Independent radio station championing unsigned and emerging artists.',
-    source: 'airtable',
-    createdAt: '2025-01-12T11:00:00Z',
-    updatedAt: '2025-01-12T11:00:00Z',
-  },
-  {
-    id: 'opp-5',
-    name: 'The Line of Best Fit',
-    type: 'blog',
-    genres: ['Indie', 'Electronic', 'Folk'],
-    vibes: ['Chill', 'Emotional'],
-    audienceSize: 'medium',
-    link: 'https://www.thelineofbestfit.com',
-    contactEmail: 'submissions@thelineofbestfit.com',
-    description:
-      'UK music blog known for discovering new talent. Strong Spotify playlist influence.',
-    source: 'manual',
-    createdAt: '2025-01-11T16:00:00Z',
-    updatedAt: '2025-01-11T16:00:00Z',
-  },
-  {
-    id: 'opp-6',
-    name: 'Chilled Cow',
-    type: 'curator',
-    genres: ['Electronic', 'Ambient', 'Jazz'],
-    vibes: ['Chill', 'Dark'],
-    audienceSize: 'large',
-    link: 'https://www.youtube.com/c/ChilledCow',
-    contactEmail: 'submit@chilledcow.com',
-    description: 'Lo-fi and chill beats curator. 10M+ YouTube subscribers.',
-    source: 'discovery',
-    createdAt: '2025-01-10T08:00:00Z',
-    updatedAt: '2025-01-10T08:00:00Z',
-  },
-  {
-    id: 'opp-7',
-    name: 'DIY Magazine',
-    type: 'press',
-    genres: ['Rock', 'Indie', 'Pop'],
-    vibes: ['Energetic', 'Mainstream'],
-    audienceSize: 'medium',
-    link: 'https://diymag.com',
-    contactEmail: 'music@diymag.com',
-    contactName: 'Features Desk',
-    description: 'UK music magazine covering new releases, interviews, and live reviews.',
-    source: 'manual',
-    createdAt: '2025-01-09T13:00:00Z',
-    updatedAt: '2025-01-09T13:00:00Z',
-  },
-  {
-    id: 'opp-8',
-    name: "Phoebe's Lo-Fi Garden",
-    type: 'playlist',
-    genres: ['Electronic', 'Ambient', 'Jazz'],
-    vibes: ['Chill', 'Emotional'],
-    audienceSize: 'small',
-    link: 'https://open.spotify.com/playlist/example',
-    contactEmail: 'phoebe@lofi.garden',
-    contactName: 'Phoebe',
-    description:
-      'Independent curator focusing on lo-fi, ambient, and chill electronic. 15K followers.',
-    source: 'discovery',
-    createdAt: '2025-01-08T19:00:00Z',
-    updatedAt: '2025-01-08T19:00:00Z',
-  },
-  {
-    id: 'opp-9',
-    name: 'XFM Manchester',
-    type: 'radio',
-    genres: ['Alternative', 'Indie', 'Rock'],
-    vibes: ['Energetic', 'Underground'],
-    audienceSize: 'small',
-    link: 'https://www.xfm.co.uk',
-    contactEmail: 'music@xfm.co.uk',
-    description: 'Regional alternative radio station. Good for breaking local artists.',
-    source: 'airtable',
-    createdAt: '2025-01-07T10:00:00Z',
-    updatedAt: '2025-01-07T10:00:00Z',
-  },
-  {
-    id: 'opp-10',
-    name: 'Indie Shuffle',
-    type: 'blog',
-    genres: ['Indie', 'Electronic', 'Pop'],
-    vibes: ['Uplifting', 'Chill'],
-    audienceSize: 'medium',
-    link: 'https://www.indieshuffle.com',
-    contactEmail: 'submit@indieshuffle.com',
-    description: 'Music discovery blog with strong social media presence. Free submission.',
-    source: 'manual',
-    createdAt: '2025-01-06T15:00:00Z',
-    updatedAt: '2025-01-06T15:00:00Z',
-  },
-]
+interface ScoutAPIResponse {
+  success: boolean
+  opportunities: Opportunity[]
+  total: number
+  limit: number
+  offset: number
+}
 
 // ============================================================================
 // Store Interface
@@ -175,6 +40,8 @@ interface ScoutState {
   opportunities: Opportunity[]
   loading: boolean
   error: string | null
+  total: number
+  hasFetched: boolean
 
   // Filters (persisted)
   filters: ScoutFilters
@@ -185,7 +52,13 @@ interface ScoutState {
   // Track which opportunities have been added to timeline
   addedToTimeline: Set<string>
 
+  // TAP Intel Enrichment State
+  enrichedById: Record<string, EnrichedContact>
+  enrichmentStatusById: Record<string, EnrichmentStatus>
+  enrichmentErrorById: Record<string, string>
+
   // Actions
+  fetchOpportunities: () => Promise<void>
   setOpportunities: (opportunities: Opportunity[]) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
@@ -193,6 +66,11 @@ interface ScoutState {
   resetFilters: () => void
   selectOpportunity: (id: string | null) => void
   markAddedToTimeline: (id: string) => void
+
+  // TAP Intel Actions
+  validateContact: (opportunityId: string) => Promise<void>
+  getEnrichmentStatus: (opportunityId: string) => EnrichmentStatus
+  getEnrichedData: (opportunityId: string) => EnrichedContact | null
 }
 
 // ============================================================================
@@ -201,28 +79,108 @@ interface ScoutState {
 
 export const useScoutStore = create<ScoutState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // Initial state
-      opportunities: MOCK_OPPORTUNITIES,
+      opportunities: [],
       loading: false,
       error: null,
+      total: 0,
+      hasFetched: false,
       filters: DEFAULT_FILTERS,
       selectedOpportunityId: null,
       addedToTimeline: new Set<string>(),
 
+      // TAP Intel Enrichment State
+      enrichedById: {},
+      enrichmentStatusById: {},
+      enrichmentErrorById: {},
+
       // Actions
+      fetchOpportunities: async () => {
+        const state = get()
+
+        // Don't fetch if already loading
+        if (state.loading) return
+
+        set({ loading: true, error: null })
+
+        try {
+          // Build query params from filters
+          const params = new URLSearchParams()
+
+          if (state.filters.type) {
+            params.set('type', state.filters.type)
+          }
+
+          // For now, just use the first genre/vibe if multiple selected
+          if (state.filters.genres.length > 0) {
+            params.set('genre', state.filters.genres[0])
+          }
+
+          if (state.filters.vibes.length > 0) {
+            params.set('vibe', state.filters.vibes[0])
+          }
+
+          if (state.filters.audienceSize) {
+            params.set('size', state.filters.audienceSize)
+          }
+
+          if (state.filters.searchQuery.trim()) {
+            params.set('q', state.filters.searchQuery.trim())
+          }
+
+          params.set('limit', '100')
+
+          const response = await fetch(`/api/scout?${params.toString()}`)
+          const data = await response.json()
+
+          // Handle authentication error
+          if (response.status === 401) {
+            set({
+              error: 'Sign in to access opportunities',
+              loading: false,
+              hasFetched: true,
+            })
+            return
+          }
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Failed to fetch opportunities')
+          }
+
+          set({
+            opportunities: data.opportunities,
+            total: data.total,
+            loading: false,
+            hasFetched: true,
+          })
+        } catch (error) {
+          console.error('[Scout Store] Fetch error:', error)
+          set({
+            error: error instanceof Error ? error.message : 'Failed to fetch opportunities',
+            loading: false,
+          })
+        }
+      },
+
       setOpportunities: (opportunities) => set({ opportunities }),
 
       setLoading: (loading) => set({ loading }),
 
       setError: (error) => set({ error }),
 
-      setFilter: (key, value) =>
+      setFilter: (key, value) => {
         set((state) => ({
           filters: { ...state.filters, [key]: value },
-        })),
+        }))
+        // Re-fetch after filter change
+        get().fetchOpportunities()
+      },
 
-      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+      resetFilters: () => {
+        set({ filters: DEFAULT_FILTERS })
+        get().fetchOpportunities()
+      },
 
       selectOpportunity: (id) => set({ selectedOpportunityId: id }),
 
@@ -232,10 +190,95 @@ export const useScoutStore = create<ScoutState>()(
           newSet.add(id)
           return { addedToTimeline: newSet }
         }),
+
+      // TAP Intel Actions
+      validateContact: async (opportunityId: string) => {
+        const state = get()
+        const opportunity = state.opportunities.find((o) => o.id === opportunityId)
+
+        if (!opportunity) {
+          console.error('[Scout Store] Opportunity not found:', opportunityId)
+          return
+        }
+
+        if (!opportunity.contactEmail) {
+          set((s) => ({
+            enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
+            enrichmentErrorById: { ...s.enrichmentErrorById, [opportunityId]: 'No contact email' },
+          }))
+          return
+        }
+
+        // Set loading state
+        set((s) => ({
+          enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'loading' },
+          enrichmentErrorById: { ...s.enrichmentErrorById, [opportunityId]: '' },
+        }))
+
+        try {
+          const response = await fetch('/api/tap/intel/enrich', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contacts: [
+                {
+                  id: opportunityId,
+                  name: opportunity.contactName || opportunity.name,
+                  email: opportunity.contactEmail,
+                  outlet: opportunity.name,
+                  genre_tags: opportunity.genres,
+                },
+              ],
+            }),
+          })
+
+          const data = await response.json()
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.error?.message || 'Failed to validate contact')
+          }
+
+          const enriched = data.data?.enriched?.[0]
+
+          if (enriched) {
+            set((s) => ({
+              enrichedById: {
+                ...s.enrichedById,
+                [opportunityId]: {
+                  contactIntelligence: enriched.contactIntelligence,
+                  researchConfidence: enriched.researchConfidence,
+                  lastResearched: enriched.lastResearched,
+                  errors: enriched.errors,
+                },
+              },
+              enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'success' },
+            }))
+          } else {
+            throw new Error('No enrichment data returned')
+          }
+        } catch (error) {
+          console.error('[Scout Store] Enrichment error:', error)
+          set((s) => ({
+            enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
+            enrichmentErrorById: {
+              ...s.enrichmentErrorById,
+              [opportunityId]: error instanceof Error ? error.message : 'Validation failed',
+            },
+          }))
+        }
+      },
+
+      getEnrichmentStatus: (opportunityId: string): EnrichmentStatus => {
+        return get().enrichmentStatusById[opportunityId] || 'idle'
+      },
+
+      getEnrichedData: (opportunityId: string): EnrichedContact | null => {
+        return get().enrichedById[opportunityId] || null
+      },
     }),
     {
       name: 'totalaud-scout-store',
-      version: 1,
+      version: 2, // Bump version due to structure change
       // Only persist filters and addedToTimeline, not the opportunities data
       partialize: (state) => ({
         filters: state.filters,
@@ -323,4 +366,25 @@ export const selectSelectedOpportunity = (state: ScoutState): Opportunity | null
  */
 export const selectIsAddedToTimeline = (state: ScoutState, id: string): boolean => {
   return state.addedToTimeline.has(id)
+}
+
+/**
+ * Get enrichment data for an opportunity.
+ */
+export const selectEnrichedContact = (state: ScoutState, id: string): EnrichedContact | null => {
+  return state.enrichedById[id] || null
+}
+
+/**
+ * Get enrichment status for an opportunity.
+ */
+export const selectEnrichmentStatus = (state: ScoutState, id: string): EnrichmentStatus => {
+  return state.enrichmentStatusById[id] || 'idle'
+}
+
+/**
+ * Get enrichment error for an opportunity.
+ */
+export const selectEnrichmentError = (state: ScoutState, id: string): string | null => {
+  return state.enrichmentErrorById[id] || null
 }

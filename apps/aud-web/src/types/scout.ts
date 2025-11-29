@@ -15,7 +15,7 @@ export type OpportunityType = 'radio' | 'playlist' | 'blog' | 'curator' | 'press
 
 export type AudienceSize = 'small' | 'medium' | 'large'
 
-export type OpportunitySource = 'airtable' | 'manual' | 'discovery'
+export type OpportunitySource = 'airtable' | 'manual' | 'discovery' | 'curated' | 'research'
 
 /**
  * An opportunity is a potential outlet for music promotion.
@@ -178,6 +178,40 @@ export const VIBE_OPTIONS = [
 ] as const
 
 export type Vibe = (typeof VIBE_OPTIONS)[number]
+
+// ============================================================================
+// TAP Intel Enrichment Types
+// ============================================================================
+
+/**
+ * Contact enrichment confidence level from TAP Intel.
+ */
+export type EnrichmentConfidence = 'High' | 'Medium' | 'Low'
+
+/**
+ * Email validation classification from TAP Intel.
+ */
+export type EmailClassification = 'safe' | 'risky' | 'invalid'
+
+/**
+ * Enriched contact data returned from TAP Intel.
+ */
+export interface EnrichedContact {
+  contactIntelligence?: string
+  researchConfidence?: EnrichmentConfidence
+  lastResearched?: string
+  emailValidation?: {
+    isValid: boolean
+    confidence: number
+    classification?: EmailClassification
+  }
+  errors?: string[]
+}
+
+/**
+ * Enrichment status for tracking validation state.
+ */
+export type EnrichmentStatus = 'idle' | 'loading' | 'success' | 'error'
 
 // ============================================================================
 // Utility Types

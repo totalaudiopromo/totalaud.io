@@ -13,6 +13,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { PricingPreview } from './PricingPreview'
 
 // Feature data
 const FEATURES = [
@@ -405,29 +406,62 @@ export function LandingPage() {
           One workspace for everything that matters.
         </motion.p>
 
-        {/* CTA */}
+        {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <MagneticButton href="/workspace">Enter workspace</MagneticButton>
+          <MagneticButton href="/signup">Start Your Workspace</MagneticButton>
         </motion.div>
 
-        {/* Secondary text */}
-        <motion.p
+        {/* Secondary options */}
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
             marginTop: '24px',
-            fontSize: '13px',
-            color: 'rgba(255, 255, 255, 0.35)',
-            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
           }}
         >
-          Free to use · No account required
-        </motion.p>
+          <Link
+            href="/workspace"
+            style={{
+              fontSize: '14px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
+          >
+            Try as guest →
+          </Link>
+          <span
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            }}
+          >
+            Already have an account?{' '}
+            <Link
+              href="/login"
+              style={{
+                color: '#3AA9BE',
+                textDecoration: 'none',
+                fontWeight: 500,
+              }}
+            >
+              Sign in
+            </Link>
+          </span>
+        </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
@@ -529,6 +563,9 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Preview Section */}
+      <PricingPreview />
+
       {/* Bottom CTA Section */}
       <section
         style={{
@@ -582,7 +619,28 @@ export function LandingPage() {
           >
             Join hundreds of indie artists who've stopped hoping and started doing.
           </p>
-          <MagneticButton href="/workspace">Start now — it's free</MagneticButton>
+          <MagneticButton href="/signup">Create free account</MagneticButton>
+          <p
+            style={{
+              marginTop: '16px',
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.35)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            }}
+          >
+            or{' '}
+            <Link
+              href="/workspace"
+              style={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
+            >
+              try as guest first
+            </Link>
+          </p>
         </motion.div>
       </section>
 

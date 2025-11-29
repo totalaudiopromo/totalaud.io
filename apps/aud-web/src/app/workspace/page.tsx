@@ -17,9 +17,10 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ideas'
 import { useIdeasStore } from '@/stores/useIdeasStore'
-import { TimelineCanvas, TimelineToolbar } from '@/components/workspace/timeline'
+import { TimelineCanvas, TimelineToolbar, NextSteps } from '@/components/workspace/timeline'
 import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
 import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
+import { UserMenu } from '@/components/workspace/UserMenu'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -70,8 +71,33 @@ function WorkspaceContent() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <TimelineToolbar />
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <TimelineCanvas />
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 0 }}>
+              {/* Main canvas */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <TimelineCanvas />
+              </div>
+              {/* Next Steps sidebar - hidden on mobile */}
+              <div
+                style={{
+                  width: 280,
+                  flexShrink: 0,
+                  borderLeft: '1px solid rgba(255, 255, 255, 0.06)',
+                  padding: 16,
+                  overflowY: 'auto',
+                  display: 'none', // Hidden by default (mobile)
+                }}
+                className="timeline-sidebar"
+              >
+                <NextSteps maxItems={5} />
+              </div>
+              {/* CSS for responsive sidebar */}
+              <style>{`
+                @media (min-width: 1024px) {
+                  .timeline-sidebar {
+                    display: block !important;
+                  }
+                }
+              `}</style>
             </div>
           </div>
         )
@@ -124,13 +150,15 @@ function WorkspaceContent() {
           gap: 12,
         }}
       >
-        {/* Logo - hidden on mobile to save space */}
-        <div
+        {/* Logo */}
+        <a
+          href="/"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             flexShrink: 0,
+            textDecoration: 'none',
           }}
         >
           <span
@@ -143,7 +171,7 @@ function WorkspaceContent() {
           >
             totalaud.io
           </span>
-        </div>
+        </a>
 
         {/* Mode tabs - scrollable on mobile */}
         <nav
@@ -208,6 +236,11 @@ function WorkspaceContent() {
             </button>
           ))}
         </nav>
+
+        {/* User menu */}
+        <div style={{ flexShrink: 0 }}>
+          <UserMenu />
+        </div>
       </header>
 
       {/* Main content */}

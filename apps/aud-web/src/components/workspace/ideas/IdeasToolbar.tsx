@@ -206,22 +206,28 @@ export function IdeasToolbar() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 12,
-          padding: '12px 24px',
+          gap: 8,
+          padding: '10px 12px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           backgroundColor: 'rgba(15, 17, 19, 0.95)',
           backdropFilter: 'blur(8px)',
-          minHeight: 56,
+          minHeight: 52,
+          flexWrap: 'wrap',
         }}
       >
-        {/* Left: Filter tabs */}
+        {/* Left: Filter tabs - scrollable on mobile */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
-            flexShrink: 0,
+            gap: 2,
+            flexShrink: 1,
             overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+            minWidth: 0,
+            flex: '1 1 auto',
           }}
         >
           {/* All tab */}
@@ -265,8 +271,8 @@ export function IdeasToolbar() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '6px 12px',
+                gap: 4,
+                padding: '6px 10px',
                 backgroundColor: filter === tag.key ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                 border: 'none',
                 borderRadius: 4,
@@ -277,6 +283,7 @@ export function IdeasToolbar() {
                 transition: 'all 0.16s ease',
                 fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
                 whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               <span
@@ -305,14 +312,14 @@ export function IdeasToolbar() {
           ))}
         </div>
 
-        {/* Centre: Search */}
+        {/* Centre: Search - collapses on mobile */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            flex: '0 1 200px',
-            minWidth: 120,
+            flex: '0 1 180px',
+            minWidth: 100,
           }}
         >
           <div
@@ -364,12 +371,12 @@ export function IdeasToolbar() {
           </div>
         </div>
 
-        {/* Right: Actions */}
+        {/* Right: Actions - compact on mobile */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             flexShrink: 0,
           }}
         >

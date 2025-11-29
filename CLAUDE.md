@@ -1,4 +1,4 @@
-# Claude Code Configuration - totalaud.io (Experimental Project)
+# Claude Code Configuration - totalaud.io (Calm Creative Workspace)
 
 ---
 
@@ -151,13 +151,22 @@ refactor(hooks): extract presence logic to custom hook
 
 ## 🎯 PROJECT OVERVIEW
 
-**Project**: totalaud.io (Experimental Multi-Agent System)
+**Project**: totalaud.io (Calm Creative Workspace for Independent Artists)
 **Location**: `/Users/chrisschofield/workspace/active/totalaud.io`
-**Status**: Experimental - Learning & Innovation Sandbox (Phase 4/5 Implementation Complete)
-**Purpose**: Cinematic AI agent workspace for music promotion - "operator → signal journey"
+**Status**: Post-Pivot - Building Calm Creative Workspace (November 2025)
+**Purpose**: A minimal, calm workspace helping artists with ideas, opportunities, plans, and pitch
 **Live URL**: https://aud-web-production.up.railway.app
+**PRD**: See [PRD.md](PRD.md) for full product requirements
 
-**Key Distinction**: This is NOT the customer acquisition project (total-audio-platform). This is an experimental sandbox for innovation and learning.
+**Product Vision**:
+totalaud.io is calm, not chaotic. Minimal, not overwhelming. Artist-first, not marketing-first.
+It gives independent artists one clear place to sort ideas, find opportunities, craft their narrative, and build a plan.
+
+**Four Core Modes**:
+1. **Ideas Mode** — capture & organise creative/marketing ideas (90% complete)
+2. **Scout Mode** — discover real opportunities (playlists, blogs, radio, press)
+3. **Timeline Mode** — plan release actions visually
+4. **Pitch Mode** — craft narratives and bios with AI coaching
 
 **Tech Stack**:
 - **Framework**: Next.js 15.0.3 (App Router)
@@ -179,22 +188,34 @@ refactor(hooks): extract presence logic to custom hook
 ```
 totalaud.io/
 ├── apps/
-│   └── aud-web/              # Main experimental app
+│   └── aud-web/              # Main workspace app
 │       ├── src/
 │       │   ├── app/          # Next.js 15 app router
-│       │   ├── components/   # React components
+│       │   │   └── workspace/  # 4-mode workspace (Ideas, Scout, Timeline, Pitch)
+│       │   ├── components/
+│       │   │   ├── workspace/  # Mode-specific components
+│       │   │   │   ├── ideas/    # Ideas Mode (canvas, list, toolbar)
+│       │   │   │   ├── scout/    # Scout Mode (filters, grid, cards)
+│       │   │   │   ├── timeline/ # Timeline Mode (blocks, widget)
+│       │   │   │   └── pitch/    # Pitch Mode (editor, coach)
+│       │   │   └── landing/    # Landing page components
 │       │   ├── lib/          # Utilities and helpers
 │       │   ├── hooks/        # Custom React hooks
-│       │   └── stores/       # Zustand state management
+│       │   └── stores/       # Zustand state (ideas, scout, timeline, pitch)
 │       └── package.json
 ├── packages/
 │   └── core/
-│       ├── agent-executor/   # Multi-agent execution engine
-│       ├── supabase/         # Supabase client & utilities
-│       ├── schemas/          # Shared TypeScript types
-│       ├── skills-engine/    # Skills-based agent system
-│       ├── theme-engine/     # Dynamic theming system
-│       └── integrations/     # External API integrations
+│       ├── supabase/         # Supabase client & utilities (KEEP)
+│       ├── schemas/          # Shared TypeScript types (KEEP)
+│       ├── ai-provider/      # AI integration for Pitch Mode (KEEP)
+│       └── integrations/     # External API integrations (KEEP)
+├── _archive/
+│   └── packages/             # Archived OS/agent packages
+│       ├── operator-os/      # OS personality system (archived)
+│       ├── operator-boot/    # Boot sequence system (archived)
+│       ├── theme-engine/     # Theme switching (archived)
+│       ├── skills-engine/    # Agent skills (archived)
+│       └── agent-executor/   # Multi-agent workflows (archived)
 └── package.json              # Monorepo root
 ```
 
@@ -769,13 +790,32 @@ NODE_ENV=production
 
 ## 🎯 PROJECT PHILOSOPHY
 
-This is an **experimental sandbox** for:
-- Learning new patterns and technologies
-- Testing innovative multi-agent workflows
-- Building prototypes without customer pressure
-- Exploring AI-powered music industry automation
+totalaud.io is a **calm creative workspace** for independent artists.
 
-**Remember**: This is separate from the customer acquisition project (total-audio-platform). Here you can experiment, break things, and learn!
+**Core Principles**:
+
+- **Calm, not chaotic** — Remove overwhelm, give clarity
+- **Minimal, not overwhelming** — Only what's needed, nothing more
+- **Guided, not empty** — Helpful empty states, progressive disclosure
+- **Artist-first** — Everything serves the artist's journey
+- **Mobile-ready** — First-class responsive behaviours
+- **Beautifully crafted** — Premium feel, not cluttered
+
+**What We DON'T Build**:
+
+- ❌ Complex multi-agent OS workflows
+- ❌ OS themes (XP/Aqua/ASCII/etc.) — archived
+- ❌ Elaborate dashboards
+- ❌ Full CRM functionality
+- ❌ PR automation at scale
+
+**UX Principles**:
+
+- **Uncluttered**: everything unnecessary is removed
+- **Soft motion**: only subtle Framer Motion transitions
+- **Direct**: no assistant bubbles or chat UI
+- **Portable**: export always available
+- **Progressive**: empty states guide, not overwhelm
 
 ---
 
@@ -964,16 +1004,19 @@ This enables **seamless visual context workflow** without interruptions during U
 
 ---
 
-## 📋 CURRENT BUILD PHASES
+## 📋 CURRENT BUILD PHASES (Post-Pivot November 2025)
 
 | Phase | Focus | Status |
 |-------|-------|--------|
-| 3 | Collaboration + Presence | ✅ Complete |
-| 4 | Landing Page Foundations | ✅ Complete |
-| 4.5 | Scroll Flow Enhancements | 🔄 In Progress |
-| 5 | Launch Readiness + Analytics | ⏳ Pending |
+| 1 | Foundation cleanup, archive OS/agents | 🔄 In Progress |
+| 2 | Ideas Mode finalisation | ⏳ Pending |
+| 3 | Scout Mode MVP (Airtable + MCP discovery) | ⏳ Pending |
+| 4 | Timeline Mode MVP | ⏳ Pending |
+| 5 | Pitch Mode with AI coaching | ⏳ Pending |
+| 6 | Auth + Landing Page (calm messaging) | ⏳ Pending |
+| 7 | Polish + Beta Release | ⏳ Pending |
 
-**Current Priority**: Phase 4.5 - Finalise cinematic scroll flow, add magnetic CTA + video proof section
+**Current Priority**: Phase 1 - Clean codebase, archive old OS/agent packages, enable Scout tab
 
 ---
 
@@ -991,9 +1034,10 @@ Project-specific documentation files:
 
 ---
 
-**Last Updated**: October 2025
-**Status**: Phase 4.5 In Progress - Scroll Flow Enhancements (Landing Page)
-**Recent Work**: Successfully deployed to Railway after resolving Vercel monorepo issues
+**Last Updated**: November 2025
+**Status**: Post-Pivot Phase 1 - Foundation cleanup for Calm Creative Workspace
+**Recent Work**: PRD pivot from multi-agent OS to calm 4-mode workspace
 **Live URL**: <https://aud-web-production.up.railway.app>
-**Next**: Complete Phase 4.5 scroll flow, then Phase 5 (Launch Readiness + Analytics)
-**Development Focus**: Cinematic landing page with Framer Motion scroll effects
+**Next**: Archive OS/agent packages, enable Scout tab, polish Ideas Mode
+**Development Focus**: Calm, minimal workspace for independent artists
+**PRD**: See [PRD.md](PRD.md) for complete product requirements

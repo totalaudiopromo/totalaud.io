@@ -2,7 +2,7 @@
  * Timeline Canvas Component
  * 2025 Brand Pivot - Cinematic Editorial
  *
- * 5 swim lanes for release planning:
+ * 5 swim lanes for release planning with drag-drop support:
  * - Pre-release (preparation)
  * - Release (launch day)
  * - Promo (promotion activities)
@@ -12,12 +12,29 @@
 
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useRef, useMemo, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+} from '@dnd-kit/core'
 import { useTimelineStore } from '@/stores/useTimelineStore'
-import { LANES } from '@/types/timeline'
+import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
+import { DraggableEvent } from './DraggableEvent'
+import { DroppableLane } from './DroppableLane'
+import { TimelineEventCard } from './TimelineEventCard'
 
-// Helper to get weeks array
+// ============================================================================
+// Helpers
+// ============================================================================
+
 function getWeeksInRange(start: Date, weeks: number): Date[] {
   const result: Date[] = []
   const current = new Date(start)
@@ -28,23 +45,49 @@ function getWeeksInRange(start: Date, weeks: number): Date[] {
   return result
 }
 
-// Format date for display
 function formatWeek(date: Date): string {
   const day = date.getDate()
   const month = date.toLocaleDateString('en-GB', { month: 'short' })
   return `${day} ${month}`
 }
 
+// ============================================================================
+// Main Component
+// ============================================================================
+
 export function TimelineCanvas() {
-  // Use the Timeline store
   const events = useTimelineStore((state) => state.events)
-  const [hoveredEvent, setHoveredEvent] = useState<string | null>(null)
+  const updateEvent = useTimelineStore((state) => state.updateEvent)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+  const [editingEventId, setEditingEventId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Get the event being edited
+  const editingEvent = useMemo(
+    () => (editingEventId ? events.find((e) => e.id === editingEventId) : null),
+    [events, editingEventId]
+  )
 
   // Timeline spans 12 weeks from Jan 1, 2025
   const startDate = new Date(2025, 0, 1)
   const weeks = getWeeksInRange(startDate, 12)
   const weekWidth = 120
+
+  // Configure drag sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before drag starts
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 8,
+      },
+    })
+  )
 
   // Convert ISO date strings to Date objects for positioning
   const eventsWithDates = useMemo(
@@ -57,260 +100,246 @@ export function TimelineCanvas() {
   )
 
   // Calculate event position
-  const getEventPosition = (date: Date): number => {
-    const daysDiff = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    return (daysDiff / 7) * weekWidth + 16
-  }
+  const getEventPosition = useCallback(
+    (date: Date): number => {
+      const daysDiff = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+      return (daysDiff / 7) * weekWidth + 16
+    },
+    [startDate, weekWidth]
+  )
+
+  // Get the active event being dragged
+  const activeEvent = useMemo(
+    () => eventsWithDates.find((e) => e.id === activeId),
+    [eventsWithDates, activeId]
+  )
+
+  // Drag handlers
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+  }, [])
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    setOverId(event.over?.id as string | null)
+  }, [])
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      setActiveId(null)
+      setOverId(null)
+
+      if (!over) return
+
+      const eventId = active.id as string
+      const targetLaneId = over.id as LaneType
+
+      // Validate it's a valid lane
+      const isValidLane = LANES.some((l) => l.id === targetLaneId)
+      if (!isValidLane) return
+
+      // Update the event's lane
+      const currentEvent = events.find((e) => e.id === eventId)
+      if (currentEvent && currentEvent.lane !== targetLaneId) {
+        const laneColour = LANES.find((l) => l.id === targetLaneId)?.colour ?? currentEvent.colour
+        updateEvent(eventId, {
+          lane: targetLaneId,
+          colour: laneColour,
+        })
+      }
+    },
+    [events, updateEvent]
+  )
+
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null)
+    setOverId(null)
+  }, [])
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        backgroundColor: '#0F1113',
-        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-      }}
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
-      {/* Timeline header with weeks */}
       <div
         style={{
           display: 'flex',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          flexDirection: 'column',
+          height: '100%',
+          backgroundColor: '#0F1113',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
         }}
       >
-        {/* Lane labels column */}
+        {/* Timeline header with weeks */}
         <div
           style={{
-            width: 100,
-            minWidth: 100,
-            flexShrink: 0,
-            borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-            padding: '12px 12px',
+            display: 'flex',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           }}
         >
-          <span
+          {/* Lane labels column */}
+          <div
             style={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.4)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              width: 100,
+              minWidth: 100,
+              flexShrink: 0,
+              borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+              padding: '12px 12px',
             }}
           >
-            Lanes
-          </span>
-        </div>
-
-        {/* Week headers - scrollable */}
-        <div
-          ref={scrollRef}
-          style={{
-            flex: 1,
-            overflowX: 'auto',
-            display: 'flex',
-          }}
-        >
-          {weeks.map((week, i) => (
-            <div
-              key={i}
+            <span
               style={{
-                width: weekWidth,
-                flexShrink: 0,
-                padding: '12px 8px',
-                borderRight: '1px solid rgba(255, 255, 255, 0.03)',
-                textAlign: 'center',
+                fontSize: 11,
+                fontWeight: 500,
+                color: 'rgba(255, 255, 255, 0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
               }}
             >
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                }}
-              >
-                {formatWeek(week)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+              Lanes
+            </span>
+          </div>
 
-      {/* Lanes */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        {LANES.map((lane) => (
+          {/* Week headers - scrollable */}
           <div
-            key={lane.id}
+            ref={scrollRef}
             style={{
               flex: 1,
+              overflowX: 'auto',
               display: 'flex',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-              minHeight: 80,
             }}
           >
-            {/* Lane label */}
-            <div
+            {weeks.map((week, i) => (
+              <div
+                key={i}
+                style={{
+                  width: weekWidth,
+                  flexShrink: 0,
+                  padding: '12px 8px',
+                  borderRight: '1px solid rgba(255, 255, 255, 0.03)',
+                  textAlign: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: 'rgba(255, 255, 255, 0.5)',
+                  }}
+                >
+                  {formatWeek(week)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Lanes */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          {LANES.map((lane) => (
+            <DroppableLane
+              key={lane.id}
+              lane={lane}
+              isOver={overId === lane.id}
+              weekWidth={weekWidth}
+            >
+              {eventsWithDates
+                .filter((e) => e.lane === lane.id)
+                .map((event) => (
+                  <DraggableEvent
+                    key={event.id}
+                    event={event}
+                    position={getEventPosition(event.dateObj)}
+                    isDragging={activeId === event.id}
+                    onEdit={() => setEditingEventId(event.id)}
+                  />
+                ))}
+            </DroppableLane>
+          ))}
+        </div>
+
+        {/* Drag overlay - shows a copy of the dragged item */}
+        <DragOverlay dropAnimation={{ duration: 240, easing: 'ease-out' }}>
+          {activeEvent ? (
+            <motion.div
+              initial={{ scale: 1.05, opacity: 0.9 }}
+              animate={{ scale: 1.08, opacity: 0.95 }}
               style={{
-                width: 100,
-                minWidth: 100,
-                flexShrink: 0,
-                borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-                padding: '12px 10px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 6,
+                padding: '8px 12px',
+                backgroundColor: `${activeEvent.colour}25`,
+                border: `2px solid ${activeEvent.colour}`,
+                borderRadius: 6,
+                boxShadow: `0 8px 24px ${activeEvent.colour}40`,
+                maxWidth: 140,
+                cursor: 'grabbing',
               }}
             >
               <div
                 style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  backgroundColor: lane.colour,
-                  marginTop: 4,
-                  flexShrink: 0,
-                }}
-              />
-              <span
-                style={{
                   fontSize: 12,
                   fontWeight: 500,
-                  color: lane.colour,
+                  color: activeEvent.colour,
+                  marginBottom: 2,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
               >
-                {lane.label}
-              </span>
-            </div>
+                {activeEvent.title}
+              </div>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: 'rgba(255, 255, 255, 0.4)',
+                }}
+              >
+                {activeEvent.dateObj.toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                })}
+              </div>
+            </motion.div>
+          ) : null}
+        </DragOverlay>
 
-            {/* Lane content - scrollable */}
-            <div
-              style={{
-                flex: 1,
-                position: 'relative',
-                overflowX: 'auto',
-                background: `repeating-linear-gradient(
-                  to right,
-                  transparent,
-                  transparent ${weekWidth - 1}px,
-                  rgba(255, 255, 255, 0.02) ${weekWidth - 1}px,
-                  rgba(255, 255, 255, 0.02) ${weekWidth}px
-                )`,
-              }}
-            >
-              {/* Events in this lane */}
-              {eventsWithDates
-                .filter((e) => e.lane === lane.id)
-                .map((event) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    onMouseEnter={() => setHoveredEvent(event.id)}
-                    onMouseLeave={() => setHoveredEvent(null)}
-                    style={{
-                      position: 'absolute',
-                      top: 12,
-                      left: getEventPosition(event.dateObj),
-                      padding: '8px 12px',
-                      backgroundColor: `${event.colour}15`,
-                      border: `1px solid ${event.colour}40`,
-                      borderRadius: 6,
-                      cursor: 'pointer',
-                      transition: 'transform 0.12s ease, box-shadow 0.12s ease',
-                      transform: hoveredEvent === event.id ? 'scale(1.02)' : 'scale(1)',
-                      boxShadow:
-                        hoveredEvent === event.id ? `0 4px 12px ${event.colour}25` : 'none',
-                      zIndex: hoveredEvent === event.id ? 10 : 1,
-                      maxWidth: 140,
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        color: event.colour,
-                        marginBottom: 2,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {event.title}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: 'rgba(255, 255, 255, 0.4)',
-                      }}
-                    >
-                      {event.dateObj.toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </div>
-
-                    {/* Tooltip on hover */}
-                    {hoveredEvent === event.id && event.description && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: 0,
-                          marginTop: 8,
-                          padding: '8px 12px',
-                          backgroundColor: '#1A1D21',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          borderRadius: 6,
-                          fontSize: 11,
-                          color: 'rgba(255, 255, 255, 0.7)',
-                          whiteSpace: 'nowrap',
-                          zIndex: 20,
-                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                        }}
-                      >
-                        {event.description}
-                      </motion.div>
-                    )}
-                  </motion.div>
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Footer hint */}
-      <div
-        style={{
-          padding: '12px 24px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <span
+        {/* Footer hint */}
+        <div
           style={{
-            fontSize: 12,
-            color: 'rgba(255, 255, 255, 0.4)',
+            padding: '12px 24px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
           }}
         >
-          Scroll horizontally to view more weeks
-        </span>
-        <span
-          style={{
-            fontSize: 12,
-            color: 'rgba(255, 255, 255, 0.3)',
-          }}
-        >
-          {events.length} events
-        </span>
+          <span
+            style={{
+              fontSize: 12,
+              color: 'rgba(255, 255, 255, 0.4)',
+            }}
+          >
+            Drag events between lanes • Scroll to view weeks
+          </span>
+          <span
+            style={{
+              fontSize: 12,
+              color: 'rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            {events.length} events
+          </span>
+        </div>
       </div>
-    </div>
+
+      {/* Edit modal */}
+      <AnimatePresence>
+        {editingEvent && (
+          <TimelineEventCard event={editingEvent} onClose={() => setEditingEventId(null)} />
+        )}
+      </AnimatePresence>
+    </DndContext>
   )
 }

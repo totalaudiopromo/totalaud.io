@@ -9,9 +9,16 @@
 
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+import Link from 'next/link'
 import { AnimatePresence } from 'framer-motion'
-import { useScoutStore, selectFilteredOpportunities } from '@/stores/useScoutStore'
+import {
+  useScoutStore,
+  selectFilteredOpportunities,
+  selectEnrichedContact,
+  selectEnrichmentStatus,
+  selectEnrichmentError,
+} from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { OpportunityCard } from './OpportunityCard'
 
@@ -22,8 +29,24 @@ interface ScoutGridProps {
 export function ScoutGrid({ className }: ScoutGridProps) {
   const opportunities = useScoutStore(selectFilteredOpportunities)
   const loading = useScoutStore((state) => state.loading)
+  const error = useScoutStore((state) => state.error)
+  const hasFetched = useScoutStore((state) => state.hasFetched)
+  const fetchOpportunities = useScoutStore((state) => state.fetchOpportunities)
   const selectOpportunity = useScoutStore((state) => state.selectOpportunity)
   const markAddedToTimeline = useScoutStore((state) => state.markAddedToTimeline)
+  const validateContact = useScoutStore((state) => state.validateContact)
+
+  // Enrichment state selectors
+  const enrichedById = useScoutStore((state) => state.enrichedById)
+  const enrichmentStatusById = useScoutStore((state) => state.enrichmentStatusById)
+  const enrichmentErrorById = useScoutStore((state) => state.enrichmentErrorById)
+
+  // Fetch opportunities on mount (if not already fetched)
+  useEffect(() => {
+    if (!hasFetched && !loading) {
+      fetchOpportunities()
+    }
+  }, [hasFetched, loading, fetchOpportunities])
 
   // Timeline store integration - subscribe to events for reactivity
   const addFromOpportunity = useTimelineStore((state) => state.addFromOpportunity)
@@ -45,6 +68,88 @@ export function ScoutGrid({ className }: ScoutGridProps) {
     },
     [addFromOpportunity, markAddedToTimeline]
   )
+
+  // Auth error state
+  if (error === 'Sign in to access opportunities') {
+    return (
+      <div
+        className={className}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          minHeight: 400,
+          gap: 16,
+          padding: 24,
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(58, 169, 190, 0.1)',
+            border: '1px solid rgba(58, 169, 190, 0.2)',
+            borderRadius: 14,
+            fontSize: 24,
+            color: '#3AA9BE',
+          }}
+        >
+          🔐
+        </div>
+        <div>
+          <h3
+            style={{
+              margin: 0,
+              marginBottom: 8,
+              fontSize: 15,
+              fontWeight: 600,
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            }}
+          >
+            Sign in to view opportunities
+          </h3>
+          <p
+            style={{
+              margin: 0,
+              marginBottom: 16,
+              fontSize: 13,
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              maxWidth: 280,
+            }}
+          >
+            Create an account or sign in to browse curated radio stations, playlists, blogs, and
+            press contacts.
+          </p>
+          <Link
+            href="/login"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#0F1113',
+              backgroundColor: '#3AA9BE',
+              borderRadius: 8,
+              textDecoration: 'none',
+              transition: 'opacity 0.2s ease',
+            }}
+          >
+            Sign in
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   // Loading skeleton
   if (loading) {
@@ -191,11 +296,15 @@ export function ScoutGrid({ className }: ScoutGridProps) {
             key={opportunity.id}
             opportunity={opportunity}
             isAddedToTimeline={isOpportunityInTimeline(opportunity.id)}
+            enrichedData={enrichedById[opportunity.id] || null}
+            enrichmentStatus={enrichmentStatusById[opportunity.id] || 'idle'}
+            enrichmentError={enrichmentErrorById[opportunity.id] || null}
             onSelect={() => selectOpportunity(opportunity.id)}
             onAddToTimeline={() => handleAddToTimeline(opportunity)}
             onCopyEmail={() => {
               // Could track analytics here
             }}
+            onValidateContact={() => validateContact(opportunity.id)}
           />
         ))}
       </AnimatePresence>

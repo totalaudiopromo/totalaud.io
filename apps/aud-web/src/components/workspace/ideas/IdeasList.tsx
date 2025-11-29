@@ -100,22 +100,22 @@ export function IdeasList({ className }: IdeasListProps) {
         fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
       }}
     >
-      {/* Header row */}
+      {/* Header row - simplified on mobile */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '32px 1fr 100px 60px',
-          gap: 16,
-          padding: '12px 24px',
+          gridTemplateColumns: '24px 1fr 80px 50px',
+          gap: 12,
+          padding: '10px 12px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: 500,
           color: 'rgba(255, 255, 255, 0.4)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
         }}
       >
-        <span>Tag</span>
+        <span></span>
         <span>Content</span>
         <span>Created</span>
         <span></span>
@@ -191,9 +191,9 @@ export function IdeasList({ className }: IdeasListProps) {
                 onDoubleClick={() => handleRowDoubleClick(card)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '32px 1fr 100px 60px',
-                  gap: 16,
-                  padding: '14px 24px',
+                  gridTemplateColumns: '24px 1fr 80px 50px',
+                  gap: 12,
+                  padding: '12px 12px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                   cursor: 'pointer',
                   backgroundColor:
@@ -340,9 +340,9 @@ export function IdeasList({ className }: IdeasListProps) {
       {cards.length > 0 && (
         <div
           style={{
-            padding: '12px 24px',
+            padding: '10px 12px',
             borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-            fontSize: 12,
+            fontSize: 11,
             color: 'rgba(255, 255, 255, 0.4)',
           }}
         >
