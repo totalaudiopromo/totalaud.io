@@ -21,6 +21,7 @@ import { TimelineCanvas, TimelineToolbar, NextSteps } from '@/components/workspa
 import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
 import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
 import { UserMenu } from '@/components/workspace/UserMenu'
+import { MobileNav } from '@/components/workspace/MobileNav'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -173,18 +174,15 @@ function WorkspaceContent() {
           </span>
         </a>
 
-        {/* Mode tabs - scrollable on mobile */}
+        {/* Mode tabs - hidden on mobile, visible on md+ */}
         <nav
+          className="workspace-nav"
           style={{
-            display: 'flex',
+            display: 'none', // Hidden by default (mobile)
             alignItems: 'center',
-            gap: 2,
-            overflowX: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            flex: 1,
             justifyContent: 'center',
+            flex: 1,
+            gap: 4,
           }}
         >
           {MODES.map((modeConfig) => (
@@ -243,8 +241,8 @@ function WorkspaceContent() {
         </div>
       </header>
 
-      {/* Main content */}
-      <main style={{ flex: 1, minHeight: 0 }}>
+      {/* Main content - add bottom padding on mobile for MobileNav */}
+      <main style={{ flex: 1, minHeight: 0 }} className="pb-14 md:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}
@@ -258,6 +256,18 @@ function WorkspaceContent() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Mobile bottom navigation */}
+      <MobileNav mode={mode} onModeChange={handleModeChange} />
+
+      {/* Responsive styles for nav */}
+      <style>{`
+        @media (min-width: 768px) {
+          .workspace-nav {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

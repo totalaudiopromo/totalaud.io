@@ -11,7 +11,12 @@
 
 import { useCallback, useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useIdeasStore, selectFilteredCards, type IdeaTag } from '@/stores/useIdeasStore'
+import {
+  useIdeasStore,
+  selectFilteredCards,
+  selectHasStarterIdeas,
+  type IdeaTag,
+} from '@/stores/useIdeasStore'
 import { IdeaCard } from './IdeaCard'
 
 // Detect touch device
@@ -37,11 +42,18 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
   // Store state
   const cards = useIdeasStore(selectFilteredCards)
   const selectedCardId = useIdeasStore((state) => state.selectedCardId)
+  const hasStarterIdeas = useIdeasStore(selectHasStarterIdeas)
   const addCard = useIdeasStore((state) => state.addCard)
   const updateCard = useIdeasStore((state) => state.updateCard)
   const deleteCard = useIdeasStore((state) => state.deleteCard)
   const moveCard = useIdeasStore((state) => state.moveCard)
   const selectCard = useIdeasStore((state) => state.selectCard)
+  const initStarterIdeas = useIdeasStore((state) => state.initStarterIdeas)
+
+  // Initialize starter ideas on mount
+  useEffect(() => {
+    initStarterIdeas()
+  }, [initStarterIdeas])
 
   // Handle canvas click (deselect)
   const handleCanvasClick = useCallback(
@@ -232,6 +244,32 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
         >
           Alt + drag to pan
         </div>
+      )}
+
+      {/* Starter ideas hint banner */}
+      {hasStarterIdeas && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          style={{
+            position: 'absolute',
+            top: 12,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '8px 16px',
+            backgroundColor: 'rgba(58, 169, 190, 0.1)',
+            border: '1px dashed rgba(58, 169, 190, 0.3)',
+            borderRadius: 8,
+            fontSize: 12,
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          ✨ Starter prompts — edit or delete to make them yours
+        </motion.div>
       )}
     </div>
   )

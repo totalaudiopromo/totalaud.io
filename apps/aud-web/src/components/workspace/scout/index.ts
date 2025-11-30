@@ -7,3 +7,4 @@
 export { ScoutToolbar } from './ScoutToolbar'
 export { ScoutGrid } from './ScoutGrid'
 export { OpportunityCard } from './OpportunityCard'
+export { ScoutPreview } from './ScoutPreview'

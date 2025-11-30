@@ -10,7 +10,6 @@
 'use client'
 
 import { useCallback, useEffect } from 'react'
-import Link from 'next/link'
 import { AnimatePresence } from 'framer-motion'
 import {
   useScoutStore,
@@ -21,6 +20,7 @@ import {
 } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { OpportunityCard } from './OpportunityCard'
+import { ScoutPreview } from './ScoutPreview'
 
 interface ScoutGridProps {
   className?: string
@@ -69,84 +69,11 @@ export function ScoutGrid({ className }: ScoutGridProps) {
     [addFromOpportunity, markAddedToTimeline]
   )
 
-  // Auth error state
+  // Auth error state - show blurred preview with CTA
   if (error === 'Sign in to access opportunities') {
     return (
-      <div
-        className={className}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          minHeight: 400,
-          gap: 16,
-          padding: 24,
-          textAlign: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: 56,
-            height: 56,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(58, 169, 190, 0.1)',
-            border: '1px solid rgba(58, 169, 190, 0.2)',
-            borderRadius: 14,
-            fontSize: 24,
-            color: '#3AA9BE',
-          }}
-        >
-          🔐
-        </div>
-        <div>
-          <h3
-            style={{
-              margin: 0,
-              marginBottom: 8,
-              fontSize: 15,
-              fontWeight: 600,
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
-          >
-            Sign in to view opportunities
-          </h3>
-          <p
-            style={{
-              margin: 0,
-              marginBottom: 16,
-              fontSize: 13,
-              color: 'rgba(255, 255, 255, 0.4)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-              maxWidth: 280,
-            }}
-          >
-            Create an account or sign in to browse curated radio stations, playlists, blogs, and
-            press contacts.
-          </p>
-          <Link
-            href="/login"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '10px 20px',
-              fontSize: 14,
-              fontWeight: 500,
-              color: '#0F1113',
-              backgroundColor: '#3AA9BE',
-              borderRadius: 8,
-              textDecoration: 'none',
-              transition: 'opacity 0.2s ease',
-            }}
-          >
-            Sign in
-          </Link>
-        </div>
+      <div className={className} style={{ height: '100%' }}>
+        <ScoutPreview />
       </div>
     )
   }

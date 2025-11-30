@@ -13,7 +13,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
+import { SocialProof } from './SocialProof'
 
 // Feature data
 const FEATURES = [
@@ -41,78 +43,6 @@ const FEATURES = [
     description: 'Tell your story. AI-assisted pitch crafting that sounds like you, not a robot.',
   },
 ]
-
-// Floating node component for the network visualization
-function FloatingNode({
-  delay,
-  size,
-  x,
-  y,
-}: {
-  delay: number
-  size: number
-  x: string
-  y: string
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{
-        opacity: [0.1, 0.4, 0.1],
-        scale: [0.8, 1, 0.8],
-      }}
-      transition={{
-        duration: 4,
-        delay,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
-      style={{
-        position: 'absolute',
-        left: x,
-        top: y,
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        background:
-          'radial-gradient(circle, rgba(58, 169, 190, 0.6) 0%, rgba(58, 169, 190, 0) 70%)',
-        filter: 'blur(1px)',
-        pointerEvents: 'none',
-      }}
-    />
-  )
-}
-
-// Network visualization background
-function NetworkVisualization() {
-  const nodes = [
-    { delay: 0, size: 120, x: '10%', y: '20%' },
-    { delay: 0.5, size: 80, x: '85%', y: '15%' },
-    { delay: 1, size: 60, x: '70%', y: '60%' },
-    { delay: 1.5, size: 100, x: '20%', y: '70%' },
-    { delay: 2, size: 40, x: '50%', y: '40%' },
-    { delay: 0.3, size: 70, x: '30%', y: '45%' },
-    { delay: 1.2, size: 50, x: '60%', y: '25%' },
-    { delay: 0.8, size: 90, x: '80%', y: '80%' },
-    { delay: 1.8, size: 55, x: '15%', y: '85%' },
-    { delay: 2.2, size: 45, x: '45%', y: '75%' },
-  ]
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        overflow: 'hidden',
-        pointerEvents: 'none',
-      }}
-    >
-      {nodes.map((node, i) => (
-        <FloatingNode key={i} {...node} />
-      ))}
-    </div>
-  )
-}
 
 // Magnetic button component
 function MagneticButton({ children, href }: { children: React.ReactNode; href: string }) {
@@ -314,8 +244,6 @@ export function LandingPage() {
           scale: heroScale,
         }}
       >
-        <NetworkVisualization />
-
         {/* Top badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -563,6 +491,9 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Social Proof Section */}
+      <SocialProof />
+
       {/* Pricing Preview Section */}
       <PricingPreview />
 
@@ -669,16 +600,13 @@ export function LandingPage() {
               gap: '24px',
             }}
           >
-            <span
-              style={{
-                fontSize: '14px',
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.4)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              totalaud.io
-            </span>
+            <Image
+              src="/brand/svg/totalaud-wordmark-cyan.svg"
+              alt="totalaud.io"
+              width={100}
+              height={24}
+              style={{ opacity: 0.7 }}
+            />
             <span
               style={{
                 fontSize: '13px',
@@ -703,15 +631,47 @@ export function LandingPage() {
               </a>
             </span>
           </div>
-          <span
+          <div
             style={{
-              fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.25)',
-              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '24px',
             }}
           >
-            © {new Date().getFullYear()}
-          </span>
+            <Link
+              href="/privacy"
+              style={{
+                fontSize: '13px',
+                color: 'rgba(255, 255, 255, 0.35)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                textDecoration: 'none',
+                transition: 'color 0.2s ease',
+              }}
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              style={{
+                fontSize: '13px',
+                color: 'rgba(255, 255, 255, 0.35)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                textDecoration: 'none',
+                transition: 'color 0.2s ease',
+              }}
+            >
+              Terms
+            </Link>
+            <span
+              style={{
+                fontSize: '13px',
+                color: 'rgba(255, 255, 255, 0.25)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              © {new Date().getFullYear()}
+            </span>
+          </div>
         </div>
       </footer>
 

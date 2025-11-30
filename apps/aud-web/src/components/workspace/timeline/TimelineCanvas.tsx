@@ -12,7 +12,7 @@
 
 'use client'
 
-import { useState, useRef, useMemo, useCallback } from 'react'
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   DndContext,
@@ -69,10 +69,46 @@ export function TimelineCanvas() {
     [events, editingEventId]
   )
 
-  // Timeline spans 12 weeks from Jan 1, 2025
-  const startDate = new Date(2025, 0, 1)
+  // Timeline starts from today and spans 12 weeks
+  const today = useMemo(() => {
+    const now = new Date()
+    // Start from beginning of current week (Monday)
+    const day = now.getDay()
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(now.setDate(diff))
+  }, [])
+  const startDate = today
   const weeks = getWeeksInRange(startDate, 12)
   const weekWidth = 120
+
+  // Calculate today's position for scrolling
+  const getTodayPosition = useCallback((): number => {
+    const now = new Date()
+    const daysDiff = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    return Math.max(0, (daysDiff / 7) * weekWidth)
+  }, [startDate, weekWidth])
+
+  // Scroll to today on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      const todayPos = getTodayPosition()
+      scrollRef.current.scrollTo({
+        left: todayPos,
+        behavior: 'smooth',
+      })
+    }
+  }, [getTodayPosition])
+
+  // Handle Today button click
+  const handleScrollToToday = useCallback(() => {
+    if (scrollRef.current) {
+      const todayPos = getTodayPosition()
+      scrollRef.current.scrollTo({
+        left: todayPos,
+        behavior: 'smooth',
+      })
+    }
+  }, [getTodayPosition])
 
   // Configure drag sensors
   const sensors = useSensors(
@@ -313,9 +349,11 @@ export function TimelineCanvas() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: 12,
           }}
         >
           <span
+            className="hidden md:inline"
             style={{
               fontSize: 12,
               color: 'rgba(255, 255, 255, 0.4)',
@@ -323,14 +361,45 @@ export function TimelineCanvas() {
           >
             Drag events between lanes • Scroll to view weeks
           </span>
-          <span
-            style={{
-              fontSize: 12,
-              color: 'rgba(255, 255, 255, 0.3)',
-            }}
-          >
-            {events.length} events
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              onClick={handleScrollToToday}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#3AA9BE',
+                backgroundColor: 'rgba(58, 169, 190, 0.1)',
+                border: '1px solid rgba(58, 169, 190, 0.2)',
+                borderRadius: 6,
+                cursor: 'pointer',
+                transition: 'all 0.12s ease',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.15)'
+                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.3)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)'
+                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.2)'
+              }}
+            >
+              <span style={{ fontSize: 10 }}>◉</span>
+              Today
+            </button>
+            <span
+              style={{
+                fontSize: 12,
+                color: 'rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              {events.length} events
+            </span>
+          </div>
         </div>
       </div>
 
