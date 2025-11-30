@@ -1,17 +1,19 @@
 /**
  * Pitch Mode Store
- * Phase 5: MVP Pivot - Pitch Builder
  *
- * Zustand store with localStorage persistence for pitch drafts.
- * Follows the same pattern as useIdeasStore.
+ * Phase 10: Data Persistence
  *
- * Integrates with:
+ * Zustand store for pitch drafts with:
+ * - Supabase sync for authenticated users
+ * - localStorage fallback for unauthenticated users
  * - Local AI Coach (Claude) for section-level improvements
  * - TAP Pitch service for full pitch generation from metadata
  */
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import type { SyncedPitchDraft } from '@/hooks/useSupabaseSync'
 
 // ============ Types ============
 
@@ -20,9 +22,6 @@ export type CoachAction = 'improve' | 'suggest' | 'rewrite'
 export type TAPTone = 'casual' | 'professional' | 'enthusiastic'
 export type TAPGenerationStatus = 'idle' | 'loading' | 'success' | 'error'
 
-/**
- * TAP Pitch generation request metadata
- */
 export interface TAPPitchRequest {
   artistName: string
   trackTitle: string
@@ -33,9 +32,6 @@ export interface TAPPitchRequest {
   tone?: TAPTone
 }
 
-/**
- * TAP Pitch generation result
- */
 export interface TAPPitchResult {
   subject?: string
   body: string
@@ -111,18 +107,24 @@ interface PitchState {
   drafts: PitchDraft[]
   currentDraftId: string | null
 
-  // AI Coach state (Claude-based section improvements)
+  // AI Coach state
   isCoachOpen: boolean
   isCoachLoading: boolean
   coachResponse: string | null
   coachError: string | null
   selectedSectionId: string | null
 
-  // TAP Pitch state (full pitch generation from metadata)
+  // TAP Pitch state
   tapGenerationStatus: TAPGenerationStatus
   tapPitchResult: TAPPitchResult | null
   tapError: string | null
   isTAPModalOpen: boolean
+
+  // Supabase sync state
+  isLoading: boolean
+  isSyncing: boolean
+  syncError: string | null
+  lastSyncedAt: string | null
 
   // Actions - Type Selection
   selectType: (type: PitchType) => void
@@ -149,16 +151,44 @@ interface PitchState {
   clearTAPResult: () => void
 
   // Actions - Draft Management
-  saveDraft: (name: string) => string
+  saveDraft: (name: string) => Promise<string>
   loadDraft: (id: string) => void
-  deleteDraft: (id: string) => void
-  renameDraft: (id: string, name: string) => void
+  deleteDraft: (id: string) => Promise<void>
+  renameDraft: (id: string, name: string) => Promise<void>
+
+  // Supabase sync actions
+  loadFromSupabase: () => Promise<void>
+  syncToSupabase: () => Promise<void>
 }
 
 // ============ Helper Functions ============
 
 function generateId(): string {
   return `pitch-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+}
+
+function toSupabaseDraft(
+  draft: PitchDraft,
+  userId: string
+): Omit<SyncedPitchDraft, 'created_at' | 'updated_at'> {
+  return {
+    id: draft.id,
+    user_id: userId,
+    name: draft.name,
+    pitch_type: draft.type,
+    sections: draft.sections,
+  }
+}
+
+function fromSupabaseDraft(data: SyncedPitchDraft): PitchDraft {
+  return {
+    id: data.id,
+    name: data.name,
+    type: data.pitch_type as PitchType,
+    sections: data.sections,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  }
 }
 
 // ============ Store Implementation ============
@@ -184,7 +214,14 @@ export const usePitchStore = create<PitchState>()(
       tapError: null,
       isTAPModalOpen: false,
 
-      // Type Selection
+      // Supabase sync state
+      isLoading: false,
+      isSyncing: false,
+      syncError: null,
+      lastSyncedAt: null,
+
+      // ========== Type Selection ==========
+
       selectType: (type) => {
         set({
           currentType: type,
@@ -193,7 +230,6 @@ export const usePitchStore = create<PitchState>()(
           currentDraftId: null,
           coachResponse: null,
           coachError: null,
-          // Reset TAP state
           tapGenerationStatus: 'idle',
           tapPitchResult: null,
           tapError: null,
@@ -211,7 +247,6 @@ export const usePitchStore = create<PitchState>()(
           coachResponse: null,
           coachError: null,
           selectedSectionId: null,
-          // Reset TAP state
           tapGenerationStatus: 'idle',
           tapPitchResult: null,
           tapError: null,
@@ -219,7 +254,8 @@ export const usePitchStore = create<PitchState>()(
         })
       },
 
-      // Section Editing
+      // ========== Section Editing ==========
+
       updateSection: (id, content) => {
         set((state) => ({
           sections: state.sections.map((s) => (s.id === id ? { ...s, content } : s)),
@@ -235,7 +271,8 @@ export const usePitchStore = create<PitchState>()(
         })
       },
 
-      // AI Coach
+      // ========== AI Coach ==========
+
       toggleCoach: () => set((state) => ({ isCoachOpen: !state.isCoachOpen })),
       openCoach: () => set({ isCoachOpen: true }),
       closeCoach: () => set({ isCoachOpen: false }),
@@ -251,7 +288,8 @@ export const usePitchStore = create<PitchState>()(
         }))
       },
 
-      // TAP Pitch Generation
+      // ========== TAP Pitch Generation ==========
+
       openTAPModal: () => set({ isTAPModalOpen: true }),
       closeTAPModal: () => set({ isTAPModalOpen: false }),
 
@@ -307,20 +345,14 @@ export const usePitchStore = create<PitchState>()(
         const state = get()
         if (!state.tapPitchResult) return
 
-        // Parse TAP result and populate sections
-        // The TAP body typically includes all the pitch content
-        // We'll put it in the relevant sections based on structure
         const body = state.tapPitchResult.body
 
-        // For now, put the entire body into "The Hook" section as starting point
-        // User can then edit and redistribute to other sections
         set((currentState) => ({
           sections: currentState.sections.map((s) => {
             if (s.id === 'hook' && state.tapPitchResult?.subject) {
               return { ...s, content: state.tapPitchResult.subject }
             }
             if (s.id === 'story') {
-              // Put main body content here
               return { ...s, content: body }
             }
             return s
@@ -340,8 +372,9 @@ export const usePitchStore = create<PitchState>()(
         })
       },
 
-      // Draft Management
-      saveDraft: (name) => {
+      // ========== Draft Management ==========
+
+      saveDraft: async (name) => {
         const state = get()
         const now = new Date().toISOString()
         const id = state.currentDraftId || generateId()
@@ -357,6 +390,7 @@ export const usePitchStore = create<PitchState>()(
           updatedAt: now,
         }
 
+        // Optimistic update
         set((state) => ({
           drafts: state.currentDraftId
             ? state.drafts.map((d) => (d.id === id ? draft : d))
@@ -364,6 +398,32 @@ export const usePitchStore = create<PitchState>()(
           currentDraftId: id,
           isDirty: false,
         }))
+
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            const { error } = await supabase.from('user_pitch_drafts').upsert(
+              {
+                ...toSupabaseDraft(draft, user.id),
+                created_at: draft.createdAt,
+                updated_at: draft.updatedAt,
+              },
+              { onConflict: 'id' }
+            )
+
+            if (error) {
+              console.error('[Pitch Store] Save draft error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Pitch Store] Sync error:', error)
+        }
 
         return id
       },
@@ -382,24 +442,167 @@ export const usePitchStore = create<PitchState>()(
         })
       },
 
-      deleteDraft: (id) => {
+      deleteDraft: async (id) => {
+        // Optimistic update
         set((state) => ({
           drafts: state.drafts.filter((d) => d.id !== id),
           currentDraftId: state.currentDraftId === id ? null : state.currentDraftId,
         }))
+
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            const { error } = await supabase
+              .from('user_pitch_drafts')
+              .delete()
+              .eq('id', id)
+              .eq('user_id', user.id)
+
+            if (error) {
+              console.error('[Pitch Store] Delete draft error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Pitch Store] Sync error:', error)
+        }
       },
 
-      renameDraft: (id, name) => {
+      renameDraft: async (id, name) => {
+        const now = new Date().toISOString()
+
+        // Optimistic update
         set((state) => ({
-          drafts: state.drafts.map((d) =>
-            d.id === id ? { ...d, name, updatedAt: new Date().toISOString() } : d
-          ),
+          drafts: state.drafts.map((d) => (d.id === id ? { ...d, name, updatedAt: now } : d)),
         }))
+
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            const { error } = await supabase
+              .from('user_pitch_drafts')
+              .update({ name, updated_at: now })
+              .eq('id', id)
+              .eq('user_id', user.id)
+
+            if (error) {
+              console.error('[Pitch Store] Rename draft error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Pitch Store] Sync error:', error)
+        }
+      },
+
+      // ========== Supabase Sync Actions ==========
+
+      loadFromSupabase: async () => {
+        set({ isLoading: true, syncError: null })
+
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (!user) {
+            set({ isLoading: false })
+            return
+          }
+
+          const { data, error } = await supabase
+            .from('user_pitch_drafts')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+
+          if (error) {
+            console.error('[Pitch Store] Load error:', error)
+            set({ isLoading: false, syncError: error.message })
+            return
+          }
+
+          if (data && data.length > 0) {
+            const drafts = data.map(fromSupabaseDraft)
+            set({
+              drafts,
+              isLoading: false,
+              lastSyncedAt: new Date().toISOString(),
+            })
+          } else {
+            set({ isLoading: false })
+          }
+        } catch (error) {
+          console.error('[Pitch Store] Load error:', error)
+          set({
+            isLoading: false,
+            syncError: error instanceof Error ? error.message : 'Failed to load',
+          })
+        }
+      },
+
+      syncToSupabase: async () => {
+        const state = get()
+        if (state.isSyncing) return
+
+        set({ isSyncing: true, syncError: null })
+
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (!user) {
+            set({ isSyncing: false })
+            return
+          }
+
+          const supabaseDrafts = state.drafts.map((draft) => ({
+            ...toSupabaseDraft(draft, user.id),
+            created_at: draft.createdAt,
+            updated_at: draft.updatedAt,
+          }))
+
+          if (supabaseDrafts.length > 0) {
+            const { error } = await supabase
+              .from('user_pitch_drafts')
+              .upsert(supabaseDrafts, { onConflict: 'id' })
+
+            if (error) {
+              console.error('[Pitch Store] Sync error:', error)
+              set({ isSyncing: false, syncError: error.message })
+              return
+            }
+          }
+
+          set({
+            isSyncing: false,
+            lastSyncedAt: new Date().toISOString(),
+          })
+        } catch (error) {
+          console.error('[Pitch Store] Sync error:', error)
+          set({
+            isSyncing: false,
+            syncError: error instanceof Error ? error.message : 'Sync failed',
+          })
+        }
       },
     }),
     {
       name: 'totalaud-pitch-store',
-      version: 1,
+      version: 2, // Bump version for sync fields
     }
   )
 )
@@ -424,6 +627,13 @@ export const selectTAPStatus = (state: PitchState) => ({
   result: state.tapPitchResult,
   error: state.tapError,
   isModalOpen: state.isTAPModalOpen,
+})
+
+export const selectSyncStatus = (state: PitchState) => ({
+  isLoading: state.isLoading,
+  isSyncing: state.isSyncing,
+  error: state.syncError,
+  lastSyncedAt: state.lastSyncedAt,
 })
 
 // ============ Export Helpers ============

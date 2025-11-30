@@ -2,6 +2,7 @@
  * useIdeasStore Tests
  *
  * Phase 6: MVP Pivot - Ideas Canvas
+ * Phase 10: Updated for async Supabase sync
  *
  * @vitest-environment jsdom
  */
@@ -27,9 +28,9 @@ describe('useIdeasStore', () => {
   })
 
   describe('addCard', () => {
-    it('adds a new card with content and tag', () => {
-      act(() => {
-        useIdeasStore.getState().addCard('Test idea', 'content')
+    it('adds a new card with content and tag', async () => {
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Test idea', 'content')
       })
 
       const state = useIdeasStore.getState()
@@ -38,28 +39,28 @@ describe('useIdeasStore', () => {
       expect(state.cards[0].tag).toBe('content')
     })
 
-    it('generates a unique ID for each card', () => {
-      act(() => {
-        useIdeasStore.getState().addCard('Idea 1', 'content')
-        useIdeasStore.getState().addCard('Idea 2', 'brand')
+    it('generates a unique ID for each card', async () => {
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Idea 1', 'content')
+        await useIdeasStore.getState().addCard('Idea 2', 'brand')
       })
 
       const state = useIdeasStore.getState()
       expect(state.cards[0].id).not.toBe(state.cards[1].id)
     })
 
-    it('sets position when provided', () => {
-      act(() => {
-        useIdeasStore.getState().addCard('Test', 'music', { x: 100, y: 200 })
+    it('sets position when provided', async () => {
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Test', 'music', { x: 100, y: 200 })
       })
 
       const state = useIdeasStore.getState()
       expect(state.cards[0].position).toEqual({ x: 100, y: 200 })
     })
 
-    it('generates random position when not provided', () => {
-      act(() => {
-        useIdeasStore.getState().addCard('Test', 'promo')
+    it('generates random position when not provided', async () => {
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Test', 'promo')
       })
 
       const state = useIdeasStore.getState()
@@ -67,18 +68,19 @@ describe('useIdeasStore', () => {
       expect(state.cards[0].position.y).toBeGreaterThanOrEqual(100)
     })
 
-    it('selects the newly added card', () => {
-      act(() => {
-        const id = useIdeasStore.getState().addCard('Test', 'content')
-        expect(useIdeasStore.getState().selectedCardId).toBe(id)
+    it('selects the newly added card', async () => {
+      let id: string = ''
+      await act(async () => {
+        id = await useIdeasStore.getState().addCard('Test', 'content')
       })
+      expect(useIdeasStore.getState().selectedCardId).toBe(id)
     })
 
-    it('sets createdAt and updatedAt timestamps', () => {
+    it('sets createdAt and updatedAt timestamps', async () => {
       const before = new Date().toISOString()
 
-      act(() => {
-        useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Test', 'content')
       })
 
       const after = new Date().toISOString()
@@ -92,42 +94,42 @@ describe('useIdeasStore', () => {
   })
 
   describe('updateCard', () => {
-    it('updates card content', () => {
+    it('updates card content', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Original', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Original', 'content')
       })
 
-      act(() => {
-        useIdeasStore.getState().updateCard(cardId, { content: 'Updated' })
+      await act(async () => {
+        await useIdeasStore.getState().updateCard(cardId, { content: 'Updated' })
       })
 
       const state = useIdeasStore.getState()
       expect(state.cards[0].content).toBe('Updated')
     })
 
-    it('updates card tag', () => {
+    it('updates card tag', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content')
       })
 
-      act(() => {
-        useIdeasStore.getState().updateCard(cardId, { tag: 'brand' })
+      await act(async () => {
+        await useIdeasStore.getState().updateCard(cardId, { tag: 'brand' })
       })
 
       const state = useIdeasStore.getState()
       expect(state.cards[0].tag).toBe('brand')
     })
 
-    it('updates updatedAt timestamp', () => {
+    it('updates updatedAt timestamp', async () => {
       let cardId = ''
       let originalUpdatedAt = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content')
         originalUpdatedAt = useIdeasStore.getState().cards[0].updatedAt
       })
 
@@ -135,8 +137,8 @@ describe('useIdeasStore', () => {
       vi.useFakeTimers()
       vi.advanceTimersByTime(100)
 
-      act(() => {
-        useIdeasStore.getState().updateCard(cardId, { content: 'New content' })
+      await act(async () => {
+        await useIdeasStore.getState().updateCard(cardId, { content: 'New content' })
       })
 
       vi.useRealTimers()
@@ -147,51 +149,51 @@ describe('useIdeasStore', () => {
   })
 
   describe('deleteCard', () => {
-    it('removes a card', () => {
+    it('removes a card', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content')
       })
 
       expect(useIdeasStore.getState().cards).toHaveLength(1)
 
-      act(() => {
-        useIdeasStore.getState().deleteCard(cardId)
+      await act(async () => {
+        await useIdeasStore.getState().deleteCard(cardId)
       })
 
       expect(useIdeasStore.getState().cards).toHaveLength(0)
     })
 
-    it('clears selection if deleted card was selected', () => {
+    it('clears selection if deleted card was selected', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content')
         useIdeasStore.getState().selectCard(cardId)
       })
 
       expect(useIdeasStore.getState().selectedCardId).toBe(cardId)
 
-      act(() => {
-        useIdeasStore.getState().deleteCard(cardId)
+      await act(async () => {
+        await useIdeasStore.getState().deleteCard(cardId)
       })
 
       expect(useIdeasStore.getState().selectedCardId).toBeNull()
     })
 
-    it('keeps selection if different card was deleted', () => {
+    it('keeps selection if different card was deleted', async () => {
       let card1Id = ''
       let card2Id = ''
 
-      act(() => {
-        card1Id = useIdeasStore.getState().addCard('Card 1', 'content')
-        card2Id = useIdeasStore.getState().addCard('Card 2', 'brand')
+      await act(async () => {
+        card1Id = await useIdeasStore.getState().addCard('Card 1', 'content')
+        card2Id = await useIdeasStore.getState().addCard('Card 2', 'brand')
         useIdeasStore.getState().selectCard(card1Id)
       })
 
-      act(() => {
-        useIdeasStore.getState().deleteCard(card2Id)
+      await act(async () => {
+        await useIdeasStore.getState().deleteCard(card2Id)
       })
 
       expect(useIdeasStore.getState().selectedCardId).toBe(card1Id)
@@ -199,15 +201,15 @@ describe('useIdeasStore', () => {
   })
 
   describe('moveCard', () => {
-    it('updates card position', () => {
+    it('updates card position', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content', { x: 0, y: 0 })
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content', { x: 0, y: 0 })
       })
 
-      act(() => {
-        useIdeasStore.getState().moveCard(cardId, { x: 150, y: 250 })
+      await act(async () => {
+        await useIdeasStore.getState().moveCard(cardId, { x: 150, y: 250 })
       })
 
       const state = useIdeasStore.getState()
@@ -235,11 +237,11 @@ describe('useIdeasStore', () => {
   })
 
   describe('selectCard', () => {
-    it('selects a card by ID', () => {
+    it('selects a card by ID', async () => {
       let cardId = ''
 
-      act(() => {
-        cardId = useIdeasStore.getState().addCard('Test', 'content')
+      await act(async () => {
+        cardId = await useIdeasStore.getState().addCard('Test', 'content')
         useIdeasStore.getState().selectCard(null) // Reset selection
         useIdeasStore.getState().selectCard(cardId)
       })
@@ -247,9 +249,9 @@ describe('useIdeasStore', () => {
       expect(useIdeasStore.getState().selectedCardId).toBe(cardId)
     })
 
-    it('deselects when set to null', () => {
-      act(() => {
-        const cardId = useIdeasStore.getState().addCard('Test', 'content')
+    it('deselects when set to null', async () => {
+      await act(async () => {
+        const cardId = await useIdeasStore.getState().addCard('Test', 'content')
         useIdeasStore.getState().selectCard(cardId)
         useIdeasStore.getState().selectCard(null)
       })
@@ -259,11 +261,11 @@ describe('useIdeasStore', () => {
   })
 
   describe('clearAllCards', () => {
-    it('removes all cards', () => {
-      act(() => {
-        useIdeasStore.getState().addCard('Card 1', 'content')
-        useIdeasStore.getState().addCard('Card 2', 'brand')
-        useIdeasStore.getState().addCard('Card 3', 'music')
+    it('removes all cards', async () => {
+      await act(async () => {
+        await useIdeasStore.getState().addCard('Card 1', 'content')
+        await useIdeasStore.getState().addCard('Card 2', 'brand')
+        await useIdeasStore.getState().addCard('Card 3', 'music')
       })
 
       expect(useIdeasStore.getState().cards).toHaveLength(3)
@@ -275,9 +277,9 @@ describe('useIdeasStore', () => {
       expect(useIdeasStore.getState().cards).toHaveLength(0)
     })
 
-    it('clears selection', () => {
-      act(() => {
-        const cardId = useIdeasStore.getState().addCard('Test', 'content')
+    it('clears selection', async () => {
+      await act(async () => {
+        const cardId = await useIdeasStore.getState().addCard('Test', 'content')
         useIdeasStore.getState().selectCard(cardId)
         useIdeasStore.getState().clearAllCards()
       })
@@ -288,11 +290,11 @@ describe('useIdeasStore', () => {
 
   describe('selectors', () => {
     describe('selectFilteredCards', () => {
-      it('returns all cards when no filter', () => {
-        act(() => {
-          useIdeasStore.getState().addCard('Card 1', 'content')
-          useIdeasStore.getState().addCard('Card 2', 'brand')
-          useIdeasStore.getState().addCard('Card 3', 'music')
+      it('returns all cards when no filter', async () => {
+        await act(async () => {
+          await useIdeasStore.getState().addCard('Card 1', 'content')
+          await useIdeasStore.getState().addCard('Card 2', 'brand')
+          await useIdeasStore.getState().addCard('Card 3', 'music')
         })
 
         const state = useIdeasStore.getState()
@@ -300,11 +302,11 @@ describe('useIdeasStore', () => {
         expect(filtered).toHaveLength(3)
       })
 
-      it('filters cards by tag', () => {
-        act(() => {
-          useIdeasStore.getState().addCard('Card 1', 'content')
-          useIdeasStore.getState().addCard('Card 2', 'brand')
-          useIdeasStore.getState().addCard('Card 3', 'content')
+      it('filters cards by tag', async () => {
+        await act(async () => {
+          await useIdeasStore.getState().addCard('Card 1', 'content')
+          await useIdeasStore.getState().addCard('Card 2', 'brand')
+          await useIdeasStore.getState().addCard('Card 3', 'content')
           useIdeasStore.getState().setFilter('content')
         })
 
@@ -316,9 +318,9 @@ describe('useIdeasStore', () => {
     })
 
     describe('selectSelectedCard', () => {
-      it('returns selected card', () => {
-        act(() => {
-          const cardId = useIdeasStore.getState().addCard('Test', 'content')
+      it('returns selected card', async () => {
+        await act(async () => {
+          const cardId = await useIdeasStore.getState().addCard('Test', 'content')
           useIdeasStore.getState().selectCard(cardId)
         })
 
@@ -328,9 +330,9 @@ describe('useIdeasStore', () => {
         expect(selected?.content).toBe('Test')
       })
 
-      it('returns null when no selection', () => {
-        act(() => {
-          useIdeasStore.getState().addCard('Test', 'content')
+      it('returns null when no selection', async () => {
+        await act(async () => {
+          await useIdeasStore.getState().addCard('Test', 'content')
           useIdeasStore.getState().selectCard(null)
         })
 
@@ -341,10 +343,10 @@ describe('useIdeasStore', () => {
     })
 
     describe('selectCardCount', () => {
-      it('returns total card count', () => {
-        act(() => {
-          useIdeasStore.getState().addCard('Card 1', 'content')
-          useIdeasStore.getState().addCard('Card 2', 'brand')
+      it('returns total card count', async () => {
+        await act(async () => {
+          await useIdeasStore.getState().addCard('Card 1', 'content')
+          await useIdeasStore.getState().addCard('Card 2', 'brand')
         })
 
         const state = useIdeasStore.getState()
@@ -353,12 +355,12 @@ describe('useIdeasStore', () => {
     })
 
     describe('selectCardCountByTag', () => {
-      it('returns counts by tag', () => {
-        act(() => {
-          useIdeasStore.getState().addCard('Card 1', 'content')
-          useIdeasStore.getState().addCard('Card 2', 'content')
-          useIdeasStore.getState().addCard('Card 3', 'brand')
-          useIdeasStore.getState().addCard('Card 4', 'music')
+      it('returns counts by tag', async () => {
+        await act(async () => {
+          await useIdeasStore.getState().addCard('Card 1', 'content')
+          await useIdeasStore.getState().addCard('Card 2', 'content')
+          await useIdeasStore.getState().addCard('Card 3', 'brand')
+          await useIdeasStore.getState().addCard('Card 4', 'music')
         })
 
         const state = useIdeasStore.getState()

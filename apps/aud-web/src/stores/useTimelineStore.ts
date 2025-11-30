@@ -1,16 +1,17 @@
 /**
  * Timeline Store
  *
- * Phase 3: MVP Pivot - Timeline Store
+ * Phase 10: Data Persistence
  *
- * A Zustand store for managing timeline events across 5 swim lanes.
- * Persists events to localStorage.
- *
- * Integrates with TAP Tracker for optional campaign logging.
+ * A Zustand store for managing timeline events across 5 swim lanes with:
+ * - Supabase sync for authenticated users
+ * - localStorage fallback for unauthenticated users
+ * - TAP Tracker integration for campaign logging
  */
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type {
   TimelineEvent,
   NewTimelineEvent,
@@ -20,6 +21,7 @@ import type {
 } from '@/types/timeline'
 import { SAMPLE_EVENTS, generateEventId, getLaneColour } from '@/types/timeline'
 import type { Opportunity } from '@/types/scout'
+import type { SyncedTimelineEvent } from '@/hooks/useSupabaseSync'
 
 // ============================================================================
 // Store Interface
@@ -38,22 +40,76 @@ interface TimelineState {
   trackerSyncStatusById: Record<string, TrackerSyncStatus>
   trackerSyncErrorById: Record<string, string>
 
+  // Supabase sync state
+  isLoading: boolean
+  isSyncing: boolean
+  syncError: string | null
+  lastSyncedAt: string | null
+
   // Actions
-  addEvent: (event: NewTimelineEvent) => string
-  updateEvent: (id: string, updates: TimelineEventUpdate) => void
-  deleteEvent: (id: string) => void
+  addEvent: (event: NewTimelineEvent) => Promise<string>
+  updateEvent: (id: string, updates: TimelineEventUpdate) => Promise<void>
+  deleteEvent: (id: string) => Promise<void>
   selectEvent: (id: string | null) => void
-  clearSampleEvents: () => void
+  clearSampleEvents: () => Promise<void>
   resetToSamples: () => void
 
   // Scout integration
-  addFromOpportunity: (opportunity: Opportunity, lane?: LaneType) => string
+  addFromOpportunity: (opportunity: Opportunity, lane?: LaneType) => Promise<string>
   isOpportunityInTimeline: (opportunityId: string) => boolean
 
   // TAP Tracker integration
   syncToTracker: (eventId: string) => Promise<void>
   getTrackerSyncStatus: (eventId: string) => TrackerSyncStatus
   isEventSynced: (eventId: string) => boolean
+
+  // Supabase sync actions
+  loadFromSupabase: () => Promise<void>
+  syncToSupabase: () => Promise<void>
+}
+
+// ============================================================================
+// Conversion Functions
+// ============================================================================
+
+function toSupabaseEvent(
+  event: TimelineEvent,
+  userId: string
+): Omit<SyncedTimelineEvent, 'created_at' | 'updated_at'> {
+  return {
+    id: event.id,
+    user_id: userId,
+    lane: event.lane,
+    title: event.title,
+    event_date: event.date,
+    colour: event.colour,
+    description: event.description ?? null,
+    url: event.url ?? null,
+    tags: event.tags ?? [],
+    source: event.source,
+    opportunity_id: event.opportunityId ?? null,
+    tracker_campaign_id: event.trackerCampaignId ?? null,
+    tracker_synced_at: event.trackerSyncedAt ?? null,
+  }
+}
+
+function fromSupabaseEvent(data: SyncedTimelineEvent): TimelineEvent {
+  return {
+    id: data.id,
+    lane: data.lane as LaneType,
+    title: data.title,
+    date: data.event_date,
+    colour: data.colour,
+    description: data.description ?? undefined,
+    url: data.url ?? undefined,
+    tags: data.tags ?? undefined,
+    source: data.source as 'manual' | 'scout' | 'sample',
+    opportunityId: data.opportunity_id ?? undefined,
+    trackerCampaignId: data.tracker_campaign_id ?? undefined,
+    trackerSyncedAt: data.tracker_synced_at ?? undefined,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  }
 }
 
 // ============================================================================
@@ -73,8 +129,15 @@ export const useTimelineStore = create<TimelineState>()(
       trackerSyncStatusById: {},
       trackerSyncErrorById: {},
 
-      // Actions
-      addEvent: (event) => {
+      // Supabase sync state
+      isLoading: false,
+      isSyncing: false,
+      syncError: null,
+      lastSyncedAt: null,
+
+      // ========== CRUD Actions ==========
+
+      addEvent: async (event) => {
         const id = generateEventId()
         const now = new Date().toISOString()
         const newEvent: TimelineEvent = {
@@ -83,31 +146,146 @@ export const useTimelineStore = create<TimelineState>()(
           createdAt: now,
           updatedAt: now,
         }
+
+        // Optimistic update
         set((state) => ({
           events: [...state.events, newEvent],
         }))
+
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            const { error } = await supabase.from('user_timeline_events').insert({
+              ...toSupabaseEvent(newEvent, user.id),
+              created_at: now,
+              updated_at: now,
+            })
+
+            if (error) {
+              console.error('[Timeline Store] Insert error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Timeline Store] Sync error:', error)
+        }
+
         return id
       },
 
-      updateEvent: (id, updates) =>
+      updateEvent: async (id, updates) => {
+        const now = new Date().toISOString()
+
+        // Optimistic update
         set((state) => ({
           events: state.events.map((event) =>
-            event.id === id ? { ...event, ...updates, updatedAt: new Date().toISOString() } : event
+            event.id === id ? { ...event, ...updates, updatedAt: now } : event
           ),
-        })),
+        }))
 
-      deleteEvent: (id) =>
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            // Convert updates to Supabase format
+            const supabaseUpdates: Record<string, unknown> = { updated_at: now }
+            if (updates.lane) supabaseUpdates.lane = updates.lane
+            if (updates.title) supabaseUpdates.title = updates.title
+            if (updates.date) supabaseUpdates.event_date = updates.date
+            if (updates.colour) supabaseUpdates.colour = updates.colour
+            if (updates.description !== undefined) supabaseUpdates.description = updates.description
+            if (updates.url !== undefined) supabaseUpdates.url = updates.url
+            if (updates.tags) supabaseUpdates.tags = updates.tags
+
+            const { error } = await supabase
+              .from('user_timeline_events')
+              .update(supabaseUpdates)
+              .eq('id', id)
+              .eq('user_id', user.id)
+
+            if (error) {
+              console.error('[Timeline Store] Update error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Timeline Store] Sync error:', error)
+        }
+      },
+
+      deleteEvent: async (id) => {
+        // Optimistic update
         set((state) => ({
           events: state.events.filter((event) => event.id !== id),
           selectedEventId: state.selectedEventId === id ? null : state.selectedEventId,
-        })),
+        }))
+
+        // Sync to Supabase if authenticated
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            const { error } = await supabase
+              .from('user_timeline_events')
+              .delete()
+              .eq('id', id)
+              .eq('user_id', user.id)
+
+            if (error) {
+              console.error('[Timeline Store] Delete error:', error)
+              set({ syncError: error.message })
+            }
+          }
+        } catch (error) {
+          console.error('[Timeline Store] Sync error:', error)
+        }
+      },
 
       selectEvent: (id) => set({ selectedEventId: id }),
 
-      clearSampleEvents: () =>
+      clearSampleEvents: async () => {
+        const sampleIds = get()
+          .events.filter((e) => e.source === 'sample')
+          .map((e) => e.id)
+
         set((state) => ({
           events: state.events.filter((event) => event.source !== 'sample'),
-        })),
+        }))
+
+        // Delete samples from Supabase if they were synced
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user && sampleIds.length > 0) {
+            const { error } = await supabase
+              .from('user_timeline_events')
+              .delete()
+              .eq('user_id', user.id)
+              .in('id', sampleIds)
+
+            if (error) {
+              console.error('[Timeline Store] Clear samples error:', error)
+            }
+          }
+        } catch (error) {
+          console.error('[Timeline Store] Sync error:', error)
+        }
+      },
 
       resetToSamples: () =>
         set({
@@ -115,15 +293,15 @@ export const useTimelineStore = create<TimelineState>()(
           selectedEventId: null,
         }),
 
-      // Scout integration
-      addFromOpportunity: (opportunity, lane = 'promo') => {
+      // ========== Scout Integration ==========
+
+      addFromOpportunity: async (opportunity, lane = 'promo') => {
         const { addEvent } = get()
 
-        // Create event from opportunity
         const newEvent: NewTimelineEvent = {
           lane,
           title: `Pitch: ${opportunity.name}`,
-          date: new Date().toISOString(), // Default to today, user can adjust
+          date: new Date().toISOString(),
           colour: getLaneColour(lane),
           description: opportunity.description ?? `${opportunity.type} outreach`,
           url: opportunity.link,
@@ -140,7 +318,8 @@ export const useTimelineStore = create<TimelineState>()(
         return events.some((event) => event.opportunityId === opportunityId)
       },
 
-      // TAP Tracker integration
+      // ========== TAP Tracker Integration ==========
+
       syncToTracker: async (eventId: string) => {
         const state = get()
         const event = state.events.find((e) => e.id === eventId)
@@ -150,7 +329,6 @@ export const useTimelineStore = create<TimelineState>()(
           return
         }
 
-        // Don't sync sample events
         if (event.source === 'sample') {
           set((s) => ({
             trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'error' },
@@ -162,7 +340,6 @@ export const useTimelineStore = create<TimelineState>()(
           return
         }
 
-        // Already synced?
         if (event.trackerCampaignId) {
           set((s) => ({
             trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'synced' },
@@ -170,18 +347,12 @@ export const useTimelineStore = create<TimelineState>()(
           return
         }
 
-        // Set syncing state
         set((s) => ({
           trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'syncing' },
           trackerSyncErrorById: { ...s.trackerSyncErrorById, [eventId]: '' },
         }))
 
         try {
-          // Note: We don't send platform/genre/target_type because TAP Tracker
-          // has database check constraints that require specific values
-          // (e.g., "BBC Radio", "Commercial Radio" instead of "radio").
-          // Users can set these manually in the Tracker dashboard.
-
           const response = await fetch('/api/tap/tracker/campaigns', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -202,7 +373,6 @@ export const useTimelineStore = create<TimelineState>()(
           const campaignId = data.data?.campaign?.id
           const syncedAt = new Date().toISOString()
 
-          // Update event with tracker info
           set((s) => ({
             events: s.events.map((e) =>
               e.id === eventId
@@ -216,6 +386,24 @@ export const useTimelineStore = create<TimelineState>()(
             ),
             trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'synced' },
           }))
+
+          // Also update in Supabase
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (user) {
+            await supabase
+              .from('user_timeline_events')
+              .update({
+                tracker_campaign_id: campaignId,
+                tracker_synced_at: syncedAt,
+                updated_at: syncedAt,
+              })
+              .eq('id', eventId)
+              .eq('user_id', user.id)
+          }
         } catch (error) {
           console.error('[Timeline Store] Tracker sync error:', error)
           set((s) => ({
@@ -231,7 +419,6 @@ export const useTimelineStore = create<TimelineState>()(
       getTrackerSyncStatus: (eventId: string): TrackerSyncStatus => {
         const state = get()
         const event = state.events.find((e) => e.id === eventId)
-        // If event already has trackerCampaignId, it's synced
         if (event?.trackerCampaignId) return 'synced'
         return state.trackerSyncStatusById[eventId] || 'idle'
       },
@@ -241,11 +428,107 @@ export const useTimelineStore = create<TimelineState>()(
         const event = state.events.find((e) => e.id === eventId)
         return !!event?.trackerCampaignId
       },
+
+      // ========== Supabase Sync Actions ==========
+
+      loadFromSupabase: async () => {
+        set({ isLoading: true, syncError: null })
+
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (!user) {
+            set({ isLoading: false })
+            return
+          }
+
+          const { data, error } = await supabase
+            .from('user_timeline_events')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('event_date', { ascending: true })
+
+          if (error) {
+            console.error('[Timeline Store] Load error:', error)
+            set({ isLoading: false, syncError: error.message })
+            return
+          }
+
+          if (data && data.length > 0) {
+            const events = data.map(fromSupabaseEvent)
+            set({
+              events,
+              isLoading: false,
+              lastSyncedAt: new Date().toISOString(),
+            })
+          } else {
+            set({ isLoading: false })
+          }
+        } catch (error) {
+          console.error('[Timeline Store] Load error:', error)
+          set({
+            isLoading: false,
+            syncError: error instanceof Error ? error.message : 'Failed to load',
+          })
+        }
+      },
+
+      syncToSupabase: async () => {
+        const state = get()
+        if (state.isSyncing) return
+
+        set({ isSyncing: true, syncError: null })
+
+        try {
+          const supabase = createBrowserSupabaseClient()
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
+          if (!user) {
+            set({ isSyncing: false })
+            return
+          }
+
+          // Upsert all non-sample events
+          const eventsToSync = state.events.filter((e) => e.source !== 'sample')
+          const supabaseEvents = eventsToSync.map((event) => ({
+            ...toSupabaseEvent(event, user.id),
+            created_at: event.createdAt,
+            updated_at: event.updatedAt,
+          }))
+
+          if (supabaseEvents.length > 0) {
+            const { error } = await supabase
+              .from('user_timeline_events')
+              .upsert(supabaseEvents, { onConflict: 'id' })
+
+            if (error) {
+              console.error('[Timeline Store] Sync error:', error)
+              set({ isSyncing: false, syncError: error.message })
+              return
+            }
+          }
+
+          set({
+            isSyncing: false,
+            lastSyncedAt: new Date().toISOString(),
+          })
+        } catch (error) {
+          console.error('[Timeline Store] Sync error:', error)
+          set({
+            isSyncing: false,
+            syncError: error instanceof Error ? error.message : 'Sync failed',
+          })
+        }
+      },
     }),
     {
       name: 'totalaud-timeline-store',
-      version: 2, // Bump version due to new tracker fields
-      // Persist all events
+      version: 3, // Bump version for sync fields
       partialize: (state) => ({
         events: state.events,
       }),
@@ -257,24 +540,15 @@ export const useTimelineStore = create<TimelineState>()(
 // Selectors
 // ============================================================================
 
-/**
- * Get events for a specific lane.
- */
 export const selectEventsByLane = (state: TimelineState, lane: LaneType): TimelineEvent[] => {
   return state.events.filter((event) => event.lane === lane)
 }
 
-/**
- * Get the currently selected event.
- */
 export const selectSelectedEvent = (state: TimelineState): TimelineEvent | null => {
   if (!state.selectedEventId) return null
   return state.events.find((event) => event.id === state.selectedEventId) ?? null
 }
 
-/**
- * Get events count by lane.
- */
 export const selectEventCountByLane = (state: TimelineState): Record<LaneType, number> => {
   return state.events.reduce(
     (acc, event) => {
@@ -291,23 +565,14 @@ export const selectEventCountByLane = (state: TimelineState): Record<LaneType, n
   )
 }
 
-/**
- * Get events from Scout (added from opportunities).
- */
 export const selectScoutEvents = (state: TimelineState): TimelineEvent[] => {
   return state.events.filter((event) => event.source === 'scout')
 }
 
-/**
- * Get events synced to TAP Tracker.
- */
 export const selectSyncedEvents = (state: TimelineState): TimelineEvent[] => {
   return state.events.filter((event) => !!event.trackerCampaignId)
 }
 
-/**
- * Get tracker sync status for an event.
- */
 export const selectTrackerSyncStatus = (
   state: TimelineState,
   eventId: string
@@ -317,9 +582,13 @@ export const selectTrackerSyncStatus = (
   return state.trackerSyncStatusById[eventId] || 'idle'
 }
 
-/**
- * Get tracker sync error for an event.
- */
 export const selectTrackerSyncError = (state: TimelineState, eventId: string): string | null => {
   return state.trackerSyncErrorById[eventId] || null
 }
+
+export const selectSyncStatus = (state: TimelineState) => ({
+  isLoading: state.isLoading,
+  isSyncing: state.isSyncing,
+  error: state.syncError,
+  lastSyncedAt: state.lastSyncedAt,
+})

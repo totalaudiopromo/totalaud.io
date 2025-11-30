@@ -112,7 +112,7 @@ export interface PitchAnalysis {
 }
 
 // Tracker Types
-export type CampaignStatus = 'planning' | 'active' | 'completed' | 'paused'
+export type CampaignStatus = 'planning' | 'active' | 'completed' | 'paused' | 'draft'
 export type CampaignPlatform =
   | 'spotify'
   | 'apple_music'
@@ -156,9 +156,9 @@ export interface CreateCampaignRequest {
   name: string
   artist_name?: string
   status?: CampaignStatus
-  platform?: CampaignPlatform
+  platform?: CampaignPlatform | string // TAP DB validates this
   genre?: string
-  target_type?: CampaignTargetType
+  target_type?: CampaignTargetType | string // TAP DB validates this
   notes?: string
   start_date?: string
   end_date?: string
