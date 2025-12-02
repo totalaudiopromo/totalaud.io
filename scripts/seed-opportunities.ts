@@ -23,14 +23,21 @@ import { createClient } from '@supabase/supabase-js'
 // Configuration
 // ============================================
 
-const SUPABASE_URL = 'https://ucncbighzqudaszewjrv.supabase.co'
-const SUPABASE_SERVICE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbmNiaWdoenF1ZGFzemV3anJ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODkxNTYyMSwiZXhwIjoyMDc0NDkxNjIxfQ.jNbVTjvh7uOGINRPXJ6TFQJuNEbOLuOccVm8nqnlgPE'
+// Load from environment variables - never commit secrets to git
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ucncbighzqudaszewjrv.supabase.co'
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const AIRTABLE_API_KEY =
-  'patH8DF1YEieVCSvo.67dba69700daaf313291239b9a27544aca935e4efb915153fab27c35927dfe1a'
-const AIRTABLE_BASE_ID = 'appx7uTQWRH8cIC20'
-const AIRTABLE_TABLE_ID = 'tblcZnUsB4Swyjcip' // Radio Contacts
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appx7uTQWRH8cIC20'
+const AIRTABLE_TABLE_ID = process.env.AIRTABLE_TABLE_ID || 'tblcZnUsB4Swyjcip' // Radio Contacts
+
+// Validate required env vars
+if (!SUPABASE_SERVICE_KEY) {
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is required')
+}
+if (!AIRTABLE_API_KEY) {
+  throw new Error('AIRTABLE_API_KEY environment variable is required')
+}
 
 // ============================================
 // Types

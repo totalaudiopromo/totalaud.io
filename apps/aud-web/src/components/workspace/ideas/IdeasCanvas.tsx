@@ -268,7 +268,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             whiteSpace: 'nowrap',
           }}
         >
-          ✨ Starter prompts — edit or delete to make them yours
+          Starter prompts — edit or delete to make them yours
         </motion.div>
       )}
     </div>

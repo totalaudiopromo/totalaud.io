@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
+import './globals.css'
 
 const geistSans = Geist({
   subsets: ['latin'],

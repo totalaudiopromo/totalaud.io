@@ -343,9 +343,7 @@ export function OpportunityCard({
                 ? 'Validating…'
                 : enrichmentStatus === 'error'
                   ? 'Retry'
-                  : !isAuthenticated
-                    ? '🔒 Validate'
-                    : 'Validate'}
+                  : 'Validate'}
           </motion.button>
         )}
 

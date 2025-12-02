@@ -14,6 +14,8 @@
 
 import { useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ideas'
 import { useIdeasStore } from '@/stores/useIdeasStore'
@@ -22,6 +24,8 @@ import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
 import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
+import { SidebarToggle } from '@/components/workspace/SidebarToggle'
+import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -151,28 +155,17 @@ function WorkspaceContent() {
           gap: 12,
         }}
       >
-        {/* Logo */}
-        <a
-          href="/"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            flexShrink: 0,
-            textDecoration: 'none',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: '#3AA9BE',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
-          >
-            totalaud.io
-          </span>
-        </a>
+        {/* Logo - just the TA logomark */}
+        <Link href="/console" className="flex items-center gap-2 flex-shrink-0">
+          <Image
+            src="/brand/svg/ta-logo-cyan.svg"
+            alt="totalaud.io"
+            width={40}
+            height={40}
+            className="h-10 w-10"
+            priority
+          />
+        </Link>
 
         {/* Mode tabs - hidden on mobile, visible on md+ */}
         <nav
@@ -259,6 +252,12 @@ function WorkspaceContent() {
 
       {/* Mobile bottom navigation */}
       <MobileNav mode={mode} onModeChange={handleModeChange} />
+
+      {/* Floating sidebar toggle button */}
+      <SidebarToggle />
+
+      {/* Sidebar overlay */}
+      <SidebarOverlay />
 
       {/* Responsive styles for nav */}
       <style>{`

@@ -346,7 +346,7 @@ export function PitchCanvas() {
               }
             }}
           >
-            <span style={{ fontSize: 14 }}>{!isAuthenticated ? '🔒' : '✦'}</span>
+            <span style={{ fontSize: 14 }}>{'✦'}</span>
             {showAuthPrompt ? 'Sign up to unlock' : 'Generate with TAP'}
           </motion.button>
         </div>

@@ -9,6 +9,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import clsx from 'clsx'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -94,25 +95,7 @@ const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [
 
 export function MobileNav({ mode, onModeChange }: MobileNavProps) {
   return (
-    <nav
-      className="md:hidden"
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 56,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        backgroundColor: 'rgba(15, 17, 19, 0.98)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-        zIndex: 50,
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}
-    >
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-14 flex items-center justify-around bg-tap-black/[0.98] backdrop-blur-xl border-t border-tap-white/[0.06] z-50 pb-[env(safe-area-inset-bottom)]">
       {MODES.map((modeConfig) => {
         const isActive = mode === modeConfig.key
 
@@ -120,36 +103,21 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
           <button
             key={modeConfig.key}
             onClick={() => onModeChange(modeConfig.key)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              padding: '8px 16px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              position: 'relative',
-              minWidth: 64,
-            }}
+            className="flex flex-col items-center justify-center gap-0.5 px-4 py-2 bg-transparent border-none cursor-pointer relative min-w-16"
           >
             <span
-              style={{
-                color: isActive ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
-                transition: 'color 0.12s ease',
-              }}
+              className={clsx(
+                'transition-colors duration-180',
+                isActive ? 'text-tap-cyan' : 'text-tap-white/50'
+              )}
             >
               {modeConfig.icon}
             </span>
             <span
-              style={{
-                fontSize: 10,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                transition: 'color 0.12s ease',
-              }}
+              className={clsx(
+                'text-[10px] font-sans transition-colors duration-180',
+                isActive ? 'text-tap-cyan font-semibold' : 'text-tap-white/50 font-normal'
+              )}
             >
               {modeConfig.label}
             </span>
@@ -158,16 +126,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             {isActive && (
               <motion.div
                 layoutId="mobile-nav-indicator"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 32,
-                  height: 2,
-                  backgroundColor: '#3AA9BE',
-                  borderRadius: 1,
-                }}
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-tap-cyan rounded-sm"
                 transition={{ duration: 0.12 }}
               />
             )}

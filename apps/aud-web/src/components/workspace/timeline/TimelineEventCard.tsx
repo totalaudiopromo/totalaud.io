@@ -479,8 +479,6 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                     </>
                   ) : syncStatus === 'error' ? (
                     'Retry'
-                  ) : !isAuthenticated ? (
-                    '🔒 Log to TAP'
                   ) : (
                     'Log to TAP'
                   )}
