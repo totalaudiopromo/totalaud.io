@@ -1,9 +1,17 @@
 import OpenAI from 'openai'
 import type { AIMessage, AICompletionOptions, AICompletionResult } from './types'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy-load the OpenAI client to avoid build-time errors when OPENAI_API_KEY is not set
+let openaiClient: OpenAI | null = null
+
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openaiClient
+}
 
 export async function completeWithOpenAI(
   messages: AIMessage[],
@@ -11,7 +19,7 @@ export async function completeWithOpenAI(
 ): Promise<AICompletionResult> {
   const model = options.model || 'gpt-4o'
 
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAIClient().chat.completions.create({
     model,
     messages: messages as any,
     temperature: options.temperature ?? 0.7,

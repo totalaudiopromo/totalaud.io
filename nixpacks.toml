@@ -1,11 +1,13 @@
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "pnpm"]
+nixPkgs = ["nodejs_20", "pnpm"]
 
 [phases.install]
 cmds = ["pnpm install --frozen-lockfile"]
 
 [phases.build]
 cmds = ["pnpm build --filter=aud-web"]
+# Only cache Next.js and node_modules cache - avoid tsconfig.tsbuildinfo conflicts
+cacheDirectories = ["node_modules/.cache", "apps/aud-web/.next/cache"]
 
 [start]
 cmd = "cd apps/aud-web && pnpm start"

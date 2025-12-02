@@ -1,31 +1,39 @@
 /**
  * Workspace Page
  *
- * Phase 6: MVP Pivot - Unified Workspace
+ * Calm Creative Workspace (November 2025 Pivot)
  *
- * A calm, modern workspace with mode-switching tabs:
- * - Scout (discovery)
- * - Ideas (canvas)
- * - Timeline (planner)
- * - Pitch (story builder)
- * - Analytics (dashboard)
+ * A calm, minimal workspace with four core modes:
+ * - Ideas (capture and organise creative/marketing ideas)
+ * - Scout (discover real opportunities - playlists, blogs, radio, press)
+ * - Timeline (plan release and creative actions visually)
+ * - Pitch (craft narratives, descriptions, and bios)
  */
 
 'use client'
 
 import { useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IdeasCanvas, IdeasToolbar } from '@/components/workspace/ideas'
+import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ideas'
+import { useIdeasStore } from '@/stores/useIdeasStore'
+import { TimelineCanvas, TimelineToolbar, NextSteps } from '@/components/workspace/timeline'
+import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
+import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
+import { UserMenu } from '@/components/workspace/UserMenu'
+import { MobileNav } from '@/components/workspace/MobileNav'
+import { SidebarToggle } from '@/components/workspace/SidebarToggle'
+import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 
-type WorkspaceMode = 'scout' | 'ideas' | 'timeline' | 'pitch' | 'analytics'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
-const MODES: { key: WorkspaceMode; label: string; icon: string; available: boolean }[] = [
-  { key: 'scout', label: 'Scout', icon: '🔍', available: false },
-  { key: 'ideas', label: 'Ideas', icon: '💡', available: true },
-  { key: 'timeline', label: 'Timeline', icon: '📅', available: false },
-  { key: 'pitch', label: 'Pitch', icon: '📝', available: false },
-  { key: 'analytics', label: 'Analytics', icon: '📊', available: false },
+const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
+  { key: 'ideas', label: 'Ideas', available: true },
+  { key: 'scout', label: 'Scout', available: true },
+  { key: 'timeline', label: 'Timeline', available: true },
+  { key: 'pitch', label: 'Pitch', available: true },
 ]
 
 function WorkspaceContent() {
@@ -49,6 +57,9 @@ function WorkspaceContent() {
     [router]
   )
 
+  // Get view mode from Ideas store
+  const ideasViewMode = useIdeasStore((state) => state.viewMode)
+
   const renderModeContent = () => {
     switch (mode) {
       case 'ideas':
@@ -56,63 +67,62 @@ function WorkspaceContent() {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <IdeasToolbar />
             <div style={{ flex: 1, minHeight: 0 }}>
-              <IdeasCanvas />
+              {ideasViewMode === 'canvas' ? <IdeasCanvas /> : <IdeasList />}
+            </div>
+          </div>
+        )
+
+      case 'timeline':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <TimelineToolbar />
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 0 }}>
+              {/* Main canvas */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <TimelineCanvas />
+              </div>
+              {/* Next Steps sidebar - hidden on mobile */}
+              <div
+                style={{
+                  width: 280,
+                  flexShrink: 0,
+                  borderLeft: '1px solid rgba(255, 255, 255, 0.06)',
+                  padding: 16,
+                  overflowY: 'auto',
+                  display: 'none', // Hidden by default (mobile)
+                }}
+                className="timeline-sidebar"
+              >
+                <NextSteps maxItems={5} />
+              </div>
+              {/* CSS for responsive sidebar */}
+              <style>{`
+                @media (min-width: 1024px) {
+                  .timeline-sidebar {
+                    display: block !important;
+                  }
+                }
+              `}</style>
+            </div>
+          </div>
+        )
+
+      case 'pitch':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <PitchToolbar />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <PitchCanvas />
             </div>
           </div>
         )
 
       case 'scout':
-      case 'timeline':
-      case 'pitch':
-      case 'analytics':
         return (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                width: 64,
-                height: 64,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px dashed rgba(58, 169, 190, 0.3)',
-                borderRadius: 16,
-                fontSize: 28,
-              }}
-            >
-              {MODES.find((m) => m.key === mode)?.icon}
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                }}
-              >
-                {MODES.find((m) => m.key === mode)?.label} Mode
-              </h2>
-              <p
-                style={{
-                  margin: '8px 0 0',
-                  fontSize: 14,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                }}
-              >
-                Coming soon
-              </p>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <ScoutToolbar />
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <ScoutGrid />
             </div>
           </div>
         )
@@ -137,54 +147,35 @@ function WorkspaceContent() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 24px',
+          padding: '0 16px',
           height: 56,
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           backgroundColor: 'rgba(15, 17, 19, 0.95)',
           backdropFilter: 'blur(8px)',
+          gap: 12,
         }}
       >
-        {/* Logo */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 20,
-              fontWeight: 700,
-              color: '#3AA9BE',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
-          >
-            totalaud.io
-          </span>
-          <span
-            style={{
-              fontSize: 11,
-              padding: '2px 8px',
-              backgroundColor: 'rgba(58, 169, 190, 0.15)',
-              border: '1px solid rgba(58, 169, 190, 0.2)',
-              borderRadius: 4,
-              color: '#3AA9BE',
-              fontWeight: 500,
-              textTransform: 'lowercase',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
-          >
-            workspace
-          </span>
-        </div>
+        {/* Logo - just the TA logomark */}
+        <Link href="/console" className="flex items-center gap-2 flex-shrink-0">
+          <Image
+            src="/brand/svg/ta-logo-cyan.svg"
+            alt="totalaud.io"
+            width={40}
+            height={40}
+            className="h-10 w-10"
+            priority
+          />
+        </Link>
 
-        {/* Mode tabs */}
+        {/* Mode tabs - hidden on mobile, visible on md+ */}
         <nav
+          className="workspace-nav"
           style={{
-            display: 'flex',
+            display: 'none', // Hidden by default (mobile)
             alignItems: 'center',
-            gap: 2,
+            justifyContent: 'center',
+            flex: 1,
+            gap: 4,
           }}
         >
           {MODES.map((modeConfig) => (
@@ -196,7 +187,7 @@ function WorkspaceContent() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '8px 16px',
+                padding: '8px 12px',
                 backgroundColor:
                   mode === modeConfig.key ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
                 border: 'none',
@@ -212,6 +203,8 @@ function WorkspaceContent() {
                 transition: 'all 0.12s ease',
                 fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
                 position: 'relative',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               {modeConfig.label}
@@ -235,12 +228,14 @@ function WorkspaceContent() {
           ))}
         </nav>
 
-        {/* Spacer for balance */}
-        <div style={{ width: 120 }} />
+        {/* User menu */}
+        <div style={{ flexShrink: 0 }}>
+          <UserMenu />
+        </div>
       </header>
 
-      {/* Main content */}
-      <main style={{ flex: 1, minHeight: 0 }}>
+      {/* Main content - add bottom padding on mobile for MobileNav */}
+      <main style={{ flex: 1, minHeight: 0 }} className="pb-14 md:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}
@@ -254,6 +249,24 @@ function WorkspaceContent() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Mobile bottom navigation */}
+      <MobileNav mode={mode} onModeChange={handleModeChange} />
+
+      {/* Floating sidebar toggle button */}
+      <SidebarToggle />
+
+      {/* Sidebar overlay */}
+      <SidebarOverlay />
+
+      {/* Responsive styles for nav */}
+      <style>{`
+        @media (min-width: 768px) {
+          .workspace-nav {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

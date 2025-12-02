@@ -9,10 +9,24 @@
 
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useIdeasStore, selectFilteredCards, type IdeaTag } from '@/stores/useIdeasStore'
+import {
+  useIdeasStore,
+  selectFilteredCards,
+  selectHasStarterIdeas,
+  type IdeaTag,
+} from '@/stores/useIdeasStore'
 import { IdeaCard } from './IdeaCard'
+
+// Detect touch device
+function useIsTouchDevice() {
+  const [isTouch, setIsTouch] = useState(false)
+  useEffect(() => {
+    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  }, [])
+  return isTouch
+}
 
 interface IdeasCanvasProps {
   className?: string
@@ -23,15 +37,23 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
   const [isPanning, setIsPanning] = useState(false)
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
   const [startPan, setStartPan] = useState({ x: 0, y: 0 })
+  const isTouchDevice = useIsTouchDevice()
 
   // Store state
   const cards = useIdeasStore(selectFilteredCards)
   const selectedCardId = useIdeasStore((state) => state.selectedCardId)
+  const hasStarterIdeas = useIdeasStore(selectHasStarterIdeas)
   const addCard = useIdeasStore((state) => state.addCard)
   const updateCard = useIdeasStore((state) => state.updateCard)
   const deleteCard = useIdeasStore((state) => state.deleteCard)
   const moveCard = useIdeasStore((state) => state.moveCard)
   const selectCard = useIdeasStore((state) => state.selectCard)
+  const initStarterIdeas = useIdeasStore((state) => state.initStarterIdeas)
+
+  // Initialize starter ideas on mount
+  useEffect(() => {
+    initStarterIdeas()
+  }, [initStarterIdeas])
 
   // Handle canvas click (deselect)
   const handleCanvasClick = useCallback(
@@ -178,7 +200,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
           >
             +
           </div>
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '0 24px' }}>
             <p
               style={{
                 margin: 0,
@@ -188,7 +210,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
                 fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
               }}
             >
-              Double-click to add an idea
+              Tap + Add to capture an idea
             </p>
             <p
               style={{
@@ -198,29 +220,57 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
                 fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
               }}
             >
-              or use the toolbar above
+              or double-tap the canvas
             </p>
           </div>
         </div>
       )}
 
-      {/* Pan hint */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 16,
-          right: 16,
-          padding: '6px 12px',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          borderRadius: 6,
-          fontSize: 11,
-          color: 'rgba(255, 255, 255, 0.5)',
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-          pointerEvents: 'none',
-        }}
-      >
-        Alt + drag to pan
-      </div>
+      {/* Pan hint - hidden on touch devices */}
+      {!isTouchDevice && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 12,
+            right: 12,
+            padding: '5px 10px',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            borderRadius: 6,
+            fontSize: 10,
+            color: 'rgba(255, 255, 255, 0.4)',
+            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            pointerEvents: 'none',
+          }}
+        >
+          Alt + drag to pan
+        </div>
+      )}
+
+      {/* Starter ideas hint banner */}
+      {hasStarterIdeas && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          style={{
+            position: 'absolute',
+            top: 12,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '8px 16px',
+            backgroundColor: 'rgba(58, 169, 190, 0.1)',
+            border: '1px dashed rgba(58, 169, 190, 0.3)',
+            borderRadius: 8,
+            fontSize: 12,
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Starter prompts — edit or delete to make them yours
+        </motion.div>
+      )}
     </div>
   )
 }
