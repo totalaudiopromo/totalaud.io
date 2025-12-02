@@ -26,6 +26,7 @@
       "@/providers/*": ["./src/providers/*"],
       "@/store/*": ["./src/store/*"],
       "@/app/*": ["./src/app/*"],
+      "@/data/*": ["./src/data/*"],
       "@total-audio/schemas-database": ["../../packages/schemas/database/index.ts"],
       "@total-audio/schemas-database/*": ["../../packages/schemas/database/*"]
     },
