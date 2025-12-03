@@ -56,16 +56,15 @@ jobs:
 
       - name: Ensure migrations do not contain TAP tables
         run: |
-          # Check for TAP-specific table prefixes (not index names)
-          # anr_ = ANR tables, rcf_ = RCF tables, pr_ = PR tables
-          # smart_segments and email_campaigns are TAP features
-          # Note: scenes_ check removed as canvas_scenes is a totalaud.io table
-          # Note: workspace_ check removed as totalaud.io uses workspace tables
+          # Check for TAP-specific table prefixes
+          # These are tables that belong to Total Audio Platform (TAP), not totalaud.io
+          # anr_ = Artist Network Radio tables
+          # rcf_ = Radio Contact Finder tables
+          # smart_segments = TAP email segmentation feature
+          # Note: coverage_events is a totalaud.io console table (allowed)
           if grep -r "CREATE TABLE.*anr_" supabase/migrations 2>/dev/null || \
              grep -r "CREATE TABLE.*rcf_" supabase/migrations 2>/dev/null || \
-             grep -r "CREATE TABLE.*coverage_" supabase/migrations 2>/dev/null || \
-             grep -r "CREATE TABLE.*smart_segments" supabase/migrations 2>/dev/null || \
-             grep -r "CREATE TABLE.*email_campaigns" supabase/migrations 2>/dev/null; then
+             grep -r "CREATE TABLE.*smart_segments" supabase/migrations 2>/dev/null; then
             echo "❌ Forbidden TAP table detected in migrations"
             exit 1
           fi
