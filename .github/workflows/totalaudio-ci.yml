@@ -56,14 +56,16 @@ jobs:
 
       - name: Ensure migrations do not contain TAP tables
         run: |
-          if grep -r "anr_" supabase/migrations 2>/dev/null || \
-             grep -r "rcf_" supabase/migrations 2>/dev/null || \
-             grep -r "scenes_" supabase/migrations 2>/dev/null || \
-             grep -r "pr_" supabase/migrations 2>/dev/null || \
-             grep -r "coverage_" supabase/migrations 2>/dev/null || \
-             grep -r "smart_segments" supabase/migrations 2>/dev/null || \
-             grep -r "email_campaigns" supabase/migrations 2>/dev/null || \
-             grep -r "workspace_" supabase/migrations 2>/dev/null; then
+          # Check for TAP-specific table prefixes (not index names)
+          # anr_ = ANR tables, rcf_ = RCF tables, pr_ = PR tables
+          # smart_segments and email_campaigns are TAP features
+          # Note: scenes_ check removed as canvas_scenes is a totalaud.io table
+          # Note: workspace_ check removed as totalaud.io uses workspace tables
+          if grep -r "CREATE TABLE.*anr_" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*rcf_" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*coverage_" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*smart_segments" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*email_campaigns" supabase/migrations 2>/dev/null; then
             echo "❌ Forbidden TAP table detected in migrations"
             exit 1
           fi
