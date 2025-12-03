@@ -10,6 +10,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 
 type Goal = 'release' | 'discover' | 'pitch' | 'plan'
@@ -106,16 +108,15 @@ export default function OnboardingPage() {
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span
-            style={{
-              fontSize: 24,
-              fontWeight: 700,
-              color: '#3AA9BE',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            totalaud.io
-          </span>
+          <Link href="/">
+            <Image
+              src="/brand/svg/ta-logo-cyan.svg"
+              alt="totalaud.io"
+              width={48}
+              height={48}
+              style={{ opacity: 0.9 }}
+            />
+          </Link>
         </div>
 
         {/* Step 1: Artist Name */}

@@ -10,6 +10,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 
@@ -82,8 +83,8 @@ export function SignupForm() {
 
       // Check if user was created successfully
       if (data.user) {
-        // Redirect to workspace on successful signup
-        router.push('/workspace')
+        // Redirect to onboarding on successful signup
+        router.push('/onboarding')
       } else {
         // This shouldn't happen with email verification disabled
         setError('Account created. Please check your email to verify.')
@@ -126,6 +127,19 @@ export function SignupForm() {
         fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
       }}
     >
+      {/* Logo */}
+      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <Link href="/">
+          <Image
+            src="/brand/svg/ta-logo-cyan.svg"
+            alt="totalaud.io"
+            width={48}
+            height={48}
+            style={{ opacity: 0.9 }}
+          />
+        </Link>
+      </div>
+
       {/* Header - Contextual based on ?feature= param */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <h1

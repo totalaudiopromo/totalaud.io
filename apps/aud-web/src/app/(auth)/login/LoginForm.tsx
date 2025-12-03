@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
@@ -142,6 +143,19 @@ export function LoginForm() {
           boxShadow: '0 24px 48px rgba(0, 0, 0, 0.4)',
         }}
       >
+        {/* Logo */}
+        <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <Link href="/">
+            <Image
+              src="/brand/svg/ta-logo-cyan.svg"
+              alt="totalaud.io"
+              width={48}
+              height={48}
+              style={{ opacity: 0.9 }}
+            />
+          </Link>
+        </motion.div>
+
         {/* Header */}
         <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: '36px' }}>
           <h1

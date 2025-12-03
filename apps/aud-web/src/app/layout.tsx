@@ -85,7 +85,8 @@ export const viewport: Viewport = {
   themeColor: '#0A0B0C',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // Note: Removed maximumScale: 1 for WCAG 2.2 accessibility compliance
+  // Users with visual impairments need to zoom the page
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
