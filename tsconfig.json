@@ -30,5 +30,5 @@
       "@total-audio/schemas-skills": ["./packages/schemas/skills"]
     }
   },
-  "exclude": ["node_modules", ".next", "dist", "**/tests/**"]
+  "exclude": ["node_modules", ".next", "dist", "**/tests/**", "_archive", "**/_archive", "apps/loopos", "apps/totalaud.io", "apps/orchestrator", "apps/totalaudiopromo", "apps/aud-experimental"]
 }

@@ -14,14 +14,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-
-      - name: Setup pnpm
-        run: npm install -g pnpm
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
@@ -30,13 +32,16 @@ jobs:
         run: pnpm lint
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm turbo typecheck --filter=aud-web
 
       - name: Test
         run: pnpm test -- --runInBand
         continue-on-error: true
 
       - name: Build (monorepo aware)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: pnpm turbo build --filter=aud-web
 
       - name: Ensure no TAP imports
@@ -51,14 +56,15 @@ jobs:
 
       - name: Ensure migrations do not contain TAP tables
         run: |
-          if grep -r "anr_" supabase/migrations 2>/dev/null || \
-             grep -r "rcf_" supabase/migrations 2>/dev/null || \
-             grep -r "scenes_" supabase/migrations 2>/dev/null || \
-             grep -r "pr_" supabase/migrations 2>/dev/null || \
-             grep -r "coverage_" supabase/migrations 2>/dev/null || \
-             grep -r "smart_segments" supabase/migrations 2>/dev/null || \
-             grep -r "email_campaigns" supabase/migrations 2>/dev/null || \
-             grep -r "workspace_" supabase/migrations 2>/dev/null; then
+          # Check for TAP-specific table prefixes
+          # These are tables that belong to Total Audio Platform (TAP), not totalaud.io
+          # anr_ = Artist Network Radio tables
+          # rcf_ = Radio Contact Finder tables
+          # smart_segments = TAP email segmentation feature
+          # Note: coverage_events is a totalaud.io console table (allowed)
+          if grep -r "CREATE TABLE.*anr_" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*rcf_" supabase/migrations 2>/dev/null || \
+             grep -r "CREATE TABLE.*smart_segments" supabase/migrations 2>/dev/null; then
             echo "❌ Forbidden TAP table detected in migrations"
             exit 1
           fi

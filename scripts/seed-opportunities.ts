@@ -25,7 +25,7 @@ import { createClient } from '@supabase/supabase-js'
 
 // Load from environment variables - never commit secrets to git
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ucncbighzqudaszewjrv.supabase.co'
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appx7uTQWRH8cIC20'
