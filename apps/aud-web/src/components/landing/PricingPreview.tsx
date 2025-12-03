@@ -324,8 +324,8 @@ export function PricingPreview() {
         <PricingTier title="Free" features={FREE_FEATURES} ctaText="Start free" ctaHref="/signup" />
         <PricingTier
           title="Pro"
-          price="£12"
-          priceNote="/month"
+          price="£39"
+          priceNote="/month (or £299/year)"
           features={PRO_FEATURES}
           ctaText="Coming soon"
           ctaHref="/signup"

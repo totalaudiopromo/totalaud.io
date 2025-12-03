@@ -144,8 +144,80 @@ export function ScoutGrid({ className }: ScoutGridProps) {
     )
   }
 
+  // Get filter/search state for empty state differentiation
+  const filters = useScoutStore((state) => state.filters)
+  const hasActiveFilters = filters.searchQuery.trim() !== '' || filters.type !== null
+
   // Empty state
   if (opportunities.length === 0) {
+    // First-use empty state (no filters active)
+    if (!hasActiveFilters && hasFetched) {
+      return (
+        <div
+          className={className}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            minHeight: 400,
+            gap: 16,
+            padding: 24,
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(58, 169, 190, 0.1)',
+              border: '1px solid rgba(58, 169, 190, 0.2)',
+              borderRadius: 14,
+              fontSize: 24,
+              color: '#3AA9BE',
+            }}
+          >
+            ◎
+          </div>
+          <div>
+            <h3
+              style={{
+                margin: 0,
+                marginBottom: 8,
+                fontSize: 18,
+                fontWeight: 600,
+                color: '#F7F8F9',
+                fontFamily: 'var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif)',
+              }}
+            >
+              Discover opportunities
+            </h3>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 13,
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: 'var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif)',
+                maxWidth: 320,
+                lineHeight: 1.5,
+              }}
+            >
+              Find radio DJs, playlist curators, and press contacts. Add them to your Timeline to
+              plan your campaign.
+            </p>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255, 255, 255, 0.3)' }}>
+            Opportunities are loaded from your account
+          </div>
+        </div>
+      )
+    }
+
+    // Filter/search empty state
     return (
       <div
         className={className}
@@ -185,7 +257,7 @@ export function ScoutGrid({ className }: ScoutGridProps) {
               fontSize: 15,
               fontWeight: 600,
               color: 'rgba(255, 255, 255, 0.8)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif)',
             }}
           >
             No opportunities match your filters
@@ -195,7 +267,7 @@ export function ScoutGrid({ className }: ScoutGridProps) {
               margin: 0,
               fontSize: 13,
               color: 'rgba(255, 255, 255, 0.4)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif)',
               maxWidth: 280,
             }}
           >
