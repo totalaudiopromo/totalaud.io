@@ -23,8 +23,18 @@ interface InviteRow {
   created_at: string
 }
 
-export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
+interface UserProfileRow {
+  id: string
+  artist_name: string | null
+}
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ epkId: string }> }
+) {
   try {
+    const { epkId } = await params
+
     const supabase = createRouteSupabaseClient()
     const {
       data: { session },
@@ -40,7 +50,7 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const campaignId = params.epkId
+    const campaignId = epkId
 
     const { data: collaboratorRowsData, error: collaboratorError } = await supabase
       .from('campaign_collaborators')
@@ -74,8 +84,9 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
       log.warn('Failed to load collaborator profiles', { error: profilesError })
     }
 
-    const profileMap = new Map<string, string | undefined>(
-      (profiles ?? []).map((profile) => [profile.id as string, (profile as any).artist_name])
+    const typedProfiles = (profiles ?? []) as UserProfileRow[]
+    const profileMap = new Map<string, string | null>(
+      typedProfiles.map((profile) => [profile.id, profile.artist_name])
     )
 
     let invites: InviteRow[] = []
@@ -97,9 +108,9 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
       currentRole,
       collaborators: collaboratorRows,
       invites,
-      profiles: (profiles ?? []).map((profile) => ({
+      profiles: typedProfiles.map((profile) => ({
         id: profile.id,
-        artist_name: (profile as any).artist_name ?? null,
+        artist_name: profile.artist_name ?? null,
       })),
     })
   } catch (error) {
@@ -108,8 +119,12 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ epkId: string }> }
+) {
   try {
+    const { epkId } = await params
     const body = (await request.json()) as { email?: string; role?: string; message?: string }
     const { email, role = 'viewer' } = body
 
@@ -132,7 +147,7 @@ export async function POST(request: NextRequest, { params }: { params: { epkId: 
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const campaignId = params.epkId
+    const campaignId = epkId
 
     const { data: ownerRecord, error: roleError } = await supabase
       .from('campaign_collaborators')

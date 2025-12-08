@@ -6,9 +6,10 @@ const log = logger.scope('EpkCommentDetailAPI')
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { epkId: string; commentId: string } }
+  { params }: { params: Promise<{ epkId: string; commentId: string }> }
 ) {
   try {
+    const { epkId, commentId } = await params
     const body = (await request.json()) as { body?: string }
     if (!body.body || !body.body.trim()) {
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
@@ -32,7 +33,7 @@ export async function PUT(
     const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
-      .eq('id', params.commentId)
+      .eq('id', commentId)
       .maybeSingle()
 
     if (commentError) {
@@ -47,7 +48,7 @@ export async function PUT(
     const { data: roleRecord, error: roleError } = await supabase
       .from('campaign_collaborators')
       .select('role')
-      .eq('campaign_id', params.epkId)
+      .eq('campaign_id', epkId)
       .eq('user_id', session.user.id)
       .maybeSingle()
 
@@ -66,7 +67,7 @@ export async function PUT(
     const { error: updateError } = await supabase
       .from('epk_comments')
       .update({ body: body.body })
-      .eq('id', params.commentId)
+      .eq('id', commentId)
 
     if (updateError) {
       log.error('Failed to update comment', updateError)
@@ -82,9 +83,11 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { epkId: string; commentId: string } }
+  { params }: { params: Promise<{ epkId: string; commentId: string }> }
 ) {
   try {
+    const { epkId, commentId } = await params
+
     const supabase = createRouteSupabaseClient()
     const {
       data: { session },
@@ -103,7 +106,7 @@ export async function DELETE(
     const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
-      .eq('id', params.commentId)
+      .eq('id', commentId)
       .maybeSingle()
 
     if (commentError) {
@@ -118,7 +121,7 @@ export async function DELETE(
     const { data: roleRecord, error: roleError } = await supabase
       .from('campaign_collaborators')
       .select('role')
-      .eq('campaign_id', params.epkId)
+      .eq('campaign_id', epkId)
       .eq('user_id', session.user.id)
       .maybeSingle()
 
@@ -134,10 +137,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error: deleteError } = await supabase
-      .from('epk_comments')
-      .delete()
-      .eq('id', params.commentId)
+    const { error: deleteError } = await supabase.from('epk_comments').delete().eq('id', commentId)
 
     if (deleteError) {
       log.error('Failed to delete comment', deleteError)

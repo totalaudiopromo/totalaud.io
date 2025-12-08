@@ -10,6 +10,9 @@
 import { NextResponse } from 'next/server'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/serviceRole'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('AccountDeleteAPI')
 
 export async function DELETE() {
   try {
@@ -31,24 +34,33 @@ export async function DELETE() {
 
     // Delete user data from related tables (cascade should handle most)
     // These are explicit deletes for tables that may not have cascade
+    // Note: Some tables may not exist yet - errors are logged but don't block deletion
     const tablesToClean = [
       'ideas',
       'opportunities',
       'timeline_events',
       'pitches',
       'user_preferences',
-    ]
+    ] as const
 
     for (const table of tablesToClean) {
-      // Using 'as any' because not all tables exist yet
-      await (adminClient as any).from(table).delete().eq('user_id', userId)
+      try {
+        const { error } = await adminClient.from(table).delete().eq('user_id', userId)
+        if (error) {
+          // Log but don't fail - table might not exist or have different schema
+          log.warn(`Failed to clean ${table}`, { error: error.message })
+        }
+      } catch (err) {
+        // Table might not exist - log and continue
+        log.warn(`Error cleaning ${table}`, { error: err })
+      }
     }
 
     // Delete the auth user (this will cascade to profiles if set up)
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId)
 
     if (deleteError) {
-      console.error('Error deleting user:', deleteError)
+      log.error('Error deleting user', deleteError)
       return NextResponse.json(
         { error: 'Failed to delete account. Please contact support.' },
         { status: 500 }
@@ -57,7 +69,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Account deletion error:', error)
+    log.error('Account deletion error', error)
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
   }
 }

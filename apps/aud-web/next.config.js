@@ -9,13 +9,12 @@ const nextConfig = {
     '@total-audio/ui',
   ],
   typescript: {
-    // TEMPORARY: Ignore build errors to unblock Vercel deployment
-    // TODO: Fix all TypeScript errors (AgentStatus, FlowTemplate, statusColors, etc.)
-    ignoreBuildErrors: true,
+    // Build checks re-enabled after security hardening (December 2025)
+    ignoreBuildErrors: false,
   },
   eslint: {
-    // TEMPORARY: Ignore ESLint errors during builds
-    ignoreDuringBuilds: true,
+    // Build checks re-enabled after security hardening (December 2025)
+    ignoreDuringBuilds: false,
   },
   webpack: (config) => {
     // Fix path alias resolution for Vercel builds

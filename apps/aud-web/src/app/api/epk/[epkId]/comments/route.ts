@@ -14,8 +14,18 @@ interface CommentRow {
   updated_at?: string | null
 }
 
-export async function GET(_request: NextRequest, { params }: { params: { epkId: string } }) {
+interface UserProfileRow {
+  id: string
+  artist_name: string | null
+}
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ epkId: string }> }
+) {
   try {
+    const { epkId } = await params
+
     const supabase = createRouteSupabaseClient()
     const {
       data: { session },
@@ -30,8 +40,6 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
     if (!session) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
-
-    const epkId = params.epkId
 
     const { data: collaborators, error: collaboratorsError } = await supabase
       .from('campaign_collaborators')
@@ -73,8 +81,9 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
     const collaboratorRoleMap = new Map<string, string>()
     collaborators?.forEach((row) => collaboratorRoleMap.set(row.user_id, row.role))
 
-    const profileMap = new Map<string, string | undefined>(
-      (profiles ?? []).map((profile) => [profile.id as string, (profile as any).artist_name])
+    const typedProfiles = (profiles ?? []) as UserProfileRow[]
+    const profileMap = new Map<string, string | null>(
+      typedProfiles.map((profile) => [profile.id, profile.artist_name])
     )
 
     const comments =
@@ -102,8 +111,12 @@ export async function GET(_request: NextRequest, { params }: { params: { epkId: 
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { epkId: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ epkId: string }> }
+) {
   try {
+    const { epkId } = await params
     const body = (await request.json()) as { body?: string; parentId?: string | null }
     if (!body.body || !body.body.trim()) {
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
@@ -123,8 +136,6 @@ export async function POST(request: NextRequest, { params }: { params: { epkId: 
     if (!session) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
-
-    const epkId = params.epkId
     const parentId = body.parentId ?? null
 
     const { data: roleRecord, error: roleError } = await supabase
