@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { tapClient, TotalAudioApiError, type EnrichContactInput } from '@/lib/tap-client'
 
 const log = logger.scope('TAPIntelEnrich')
@@ -39,6 +40,41 @@ const enrichRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate request
+    const supabase = createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AUTH_ERROR',
+            message: 'Failed to verify authentication',
+          },
+        },
+        { status: 500 }
+      )
+    }
+
+    if (!session) {
+      log.warn('Unauthenticated request to Intel enrich')
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORISED',
+            message: 'Authentication required',
+          },
+        },
+        { status: 401 }
+      )
+    }
+
     // Check if Intel is configured
     if (!tapClient.isConfigured('intel')) {
       log.warn('Intel API not configured')

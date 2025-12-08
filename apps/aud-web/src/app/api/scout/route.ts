@@ -17,7 +17,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import type { Opportunity, OpportunityType, AudienceSize, OpportunitySource } from '@/types/scout'
+
+const log = logger.scope('ScoutAPI')
 
 // ============================================================================
 // Types for database row
@@ -120,7 +123,7 @@ export async function GET(
     } = await supabase.auth.getSession()
 
     if (sessionError) {
-      console.error('[Scout API] Session error:', sessionError)
+      log.error('Session error', sessionError)
       return NextResponse.json(
         { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
         { status: 401 }
@@ -173,7 +176,7 @@ export async function GET(
     const { data, error, count } = await query
 
     if (error) {
-      console.error('[Scout API] Query error:', error)
+      log.error('Query error', error)
       return NextResponse.json(
         { success: false, error: 'Failed to fetch opportunities', code: 'QUERY_ERROR' },
         { status: 500 }
@@ -184,7 +187,7 @@ export async function GET(
     const opportunities = (data || []).map((row) => normaliseOpportunity(row as OpportunityRow))
 
     const duration = Date.now() - startTime
-    console.log(`[Scout API] Returned ${opportunities.length} opportunities in ${duration}ms`)
+    log.info(`Returned ${opportunities.length} opportunities in ${duration}ms`)
 
     return NextResponse.json({
       success: true,
@@ -201,7 +204,7 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error('[Scout API] Unexpected error:', error)
+    log.error('Unexpected error', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' },
       { status: 500 }

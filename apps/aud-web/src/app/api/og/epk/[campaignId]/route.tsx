@@ -13,6 +13,9 @@
 import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
 import { getEpkCampaign } from '@/lib/epk/getEpkCampaign'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('OGImageAPI')
 
 export const runtime = 'edge'
 
@@ -26,8 +29,11 @@ const flowCoreColours = {
   borderGrey: '#2A2D2F',
 }
 
-export async function GET(req: NextRequest, { params }: { params: { campaignId: string } }) {
-  const { campaignId } = params
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ campaignId: string }> }
+) {
+  const { campaignId } = await params
 
   try {
     const campaign = await getEpkCampaign(campaignId)
@@ -199,7 +205,7 @@ export async function GET(req: NextRequest, { params }: { params: { campaignId: 
       }
     )
   } catch (error) {
-    console.error('OG Image generation failed:', error)
+    log.error('OG Image generation failed', error)
 
     // Return fallback image on error
     return new ImageResponse(
