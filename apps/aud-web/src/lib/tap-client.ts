@@ -218,21 +218,28 @@ class BaseClient {
   protected async request<T>(
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     path: string,
-    body?: unknown
+    body?: unknown,
+    options?: { userId?: string }
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
     try {
-      log.debug(`${method} ${path}`, { baseUrl: this.baseUrl })
+      log.debug(`${method} ${path}`, { baseUrl: this.baseUrl, userId: options?.userId })
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.apiKey}`,
+      }
+
+      if (options?.userId) {
+        headers['X-User-ID'] = options.userId
+      }
 
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
-        },
+        headers,
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
       })
@@ -273,12 +280,12 @@ class BaseClient {
     }
   }
 
-  protected get<T>(path: string): Promise<T> {
-    return this.request<T>('GET', path)
+  protected get<T>(path: string, options?: { userId?: string }): Promise<T> {
+    return this.request<T>('GET', path, undefined, options)
   }
 
-  protected post<T>(path: string, body: unknown): Promise<T> {
-    return this.request<T>('POST', path, body)
+  protected post<T>(path: string, body: unknown, options?: { userId?: string }): Promise<T> {
+    return this.request<T>('POST', path, body, options)
   }
 }
 
@@ -348,26 +355,29 @@ class PitchClient extends BaseClient {
 // ============================================================================
 
 class TrackerClient extends BaseClient {
-  async listCampaigns(): Promise<{
+  async listCampaigns(userId: string): Promise<{
     campaigns: CampaignWithInsights[]
     metrics: CampaignMetrics
     patterns: { bestPerformingPlatform?: string; bestPerformingGenre?: string }
   }> {
-    return this.get('/api/campaigns')
+    return this.get('/api/campaigns', { userId })
   }
 
-  async getCampaigns(): Promise<CampaignWithInsights[]> {
-    const response = await this.listCampaigns()
+  async getCampaigns(userId: string): Promise<CampaignWithInsights[]> {
+    const response = await this.listCampaigns(userId)
     return response.campaigns
   }
 
-  async getMetrics(): Promise<CampaignMetrics> {
-    const response = await this.listCampaigns()
+  async getMetrics(userId: string): Promise<CampaignMetrics> {
+    const response = await this.listCampaigns(userId)
     return response.metrics
   }
 
-  async createCampaign(campaign: CreateCampaignRequest): Promise<CampaignWithInsights> {
-    return this.post<CampaignWithInsights>('/api/campaigns', campaign)
+  async createCampaign(
+    campaign: CreateCampaignRequest,
+    userId: string
+  ): Promise<CampaignWithInsights> {
+    return this.post<CampaignWithInsights>('/api/campaigns', campaign, { userId })
   }
 }
 

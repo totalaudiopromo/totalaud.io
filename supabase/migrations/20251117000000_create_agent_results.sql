@@ -30,3 +30,26 @@ CREATE TRIGGER update_agent_results_updated_at
   BEFORE UPDATE ON agent_results
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- Row Level Security
+ALTER TABLE agent_results ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own agent results"
+  ON agent_results
+  FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own agent results"
+  ON agent_results
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own agent results"
+  ON agent_results
+  FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own agent results"
+  ON agent_results
+  FOR DELETE
+  USING (auth.uid() = user_id);

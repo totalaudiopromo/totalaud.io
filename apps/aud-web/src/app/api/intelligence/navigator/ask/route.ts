@@ -1,12 +1,14 @@
-/**
- * Navigator Ask API Route
- *
- * AI-powered navigation using Claude
- * Answers questions about campaigns, opportunities, and content strategy
- */
-
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
+import { z } from 'zod'
+
+const log = logger.scope('NavigatorAPI')
+
+const navigatorQuestionSchema = z.object({
+  question: z.string().min(1, 'Question cannot be empty').max(1000, 'Question too long'),
+})
 
 const SYSTEM_PROMPT = `You are the AI Navigator for totalaud.io, a calm creative workspace for indie artists.
 
@@ -30,25 +32,43 @@ When answering, always provide:
 
 export async function POST(request: NextRequest) {
   try {
-    const { question } = await request.json()
+    // Authenticate request
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
-    if (!question || typeof question !== 'string') {
-      return NextResponse.json({ error: 'Question is required' }, { status: 400 })
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
+
+    // Validate input
+    const body = await request.json()
+    const validationResult = navigatorQuestionSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: validationResult.error.format() },
+        { status: 400 }
+      )
+    }
+
+    const { question } = validationResult.data
 
     const apiKey = process.env.ANTHROPIC_API_KEY
     if (!apiKey) {
-      console.error('ANTHROPIC_API_KEY not configured')
+      log.error('ANTHROPIC_API_KEY not configured')
       return NextResponse.json({ error: 'AI service not configured' }, { status: 503 })
     }
 
     // Create client inside the handler to ensure env var is available
     const client = new Anthropic({ apiKey })
 
-    console.log('[Navigator] Calling Claude with question:', question.substring(0, 50))
+    log.debug('Calling Claude', { questionPreview: question.substring(0, 50) })
 
     const message = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-haiku-20241022',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [
@@ -64,7 +84,7 @@ export async function POST(request: NextRequest) {
     const answer =
       textContent?.type === 'text' ? textContent.text : 'I could not generate a response.'
 
-    console.log('[Navigator] Got response:', answer.substring(0, 100))
+    log.debug('Claude response received', { answerPreview: answer.substring(0, 100) })
 
     // Parse out recommended actions from the response
     const actions: string[] = []
@@ -118,7 +138,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: unknown) {
     const err = error as { status?: number; message?: string }
-    console.error('[Navigator] API error:', err?.status, err?.message, error)
+    log.error('Navigator API error', error instanceof Error ? error : new Error(String(error)), {
+      status: err?.status,
+      message: err?.message,
+    })
 
     // If it's a rate limit or auth error, provide a more specific message
     if (err?.status === 429) {

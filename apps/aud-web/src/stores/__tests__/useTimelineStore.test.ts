@@ -14,7 +14,7 @@ const mockOpportunity: Opportunity = {
   type: 'radio',
   genres: ['indie', 'rock'],
   vibes: [],
-  audienceSize: 'huge',
+  audienceSize: 'large',
   source: 'curated',
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
@@ -22,9 +22,11 @@ const mockOpportunity: Opportunity = {
 
 describe('useTimelineStore', () => {
   beforeEach(() => {
-    const { result } = renderHook(() => useTimelineStore())
     act(() => {
-      result.current.clearSampleEvents()
+      useTimelineStore.setState({
+        events: [],
+        selectedEventId: null,
+      })
     })
   })
 

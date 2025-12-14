@@ -10,7 +10,7 @@ create table if not exists public.opportunities (
   description text,
   
   -- Filtering Attributes
-  genres text[] not null default '{}', -- Array of genres (e.g., ['indie', 'electronic'])
+  genres text[] not null default '{}', -- Array of genres (e.g., ['indie']). 'all' implies universal appeal.
   vibes text[] default '{}',           -- Array of vibes (e.g., ['chill', 'upbeat'])
   
   -- Audience
@@ -20,7 +20,7 @@ create table if not exists public.opportunities (
   -- Contact & Links
   url text,
   contact_email text,
-  contact_info jsonb,  -- Flexible field for submission links, social handles, etc.
+  contact_info jsonb,  -- Flexible field: { "submissionUrl": "...", "socials": { "instagram": "..." }, "contactName": "..." }
   
   -- Metadata
   is_active boolean default true,
@@ -28,8 +28,8 @@ create table if not exists public.opportunities (
   submission_notes text,
   
   -- Stats (optional, for future trust signals)
-  avg_response_time text,
-  acceptance_rate text,
+  avg_response_time integer, -- Average response time in days
+  acceptance_rate numeric(5,2), -- Acceptance rate percentage (0-100.00)
   
   -- Timestamps
   created_at timestamptz not null default now(),

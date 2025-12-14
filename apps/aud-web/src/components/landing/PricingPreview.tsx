@@ -299,7 +299,7 @@ export function PricingPreview() {
       >
         <PricingTier
           title="Artist"
-          price="$19"
+          price="£19"
           priceNote="/month"
           features={ARTIST_FEATURES}
           ctaText="Start 14-Day Free Trial"
@@ -307,7 +307,7 @@ export function PricingPreview() {
         />
         <PricingTier
           title="Pro"
-          price="$39"
+          price="£39"
           priceNote="/month"
           features={PRO_FEATURES}
           ctaText="Start 14-Day Free Trial"

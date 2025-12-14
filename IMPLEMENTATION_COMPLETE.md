@@ -132,7 +132,7 @@ Created **4 key documents**:
    - Test error reporting
 
 5. **Final QA**
-   - Test Auth auth flow end-to-end
+   - Test auth flow end-to-end
    - Verify Scout → Timeline integration
    - Test Pitch AI coaching
    - Check all empty states

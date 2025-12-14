@@ -119,16 +119,13 @@ export interface ModeRecommendation {
 export const intelligenceAPI = {
   // Navigator
   async askNavigator(question: string): Promise<NavigatorAnswer> {
-    console.log('[intelligenceAPI] Calling navigator with:', question)
     const res = await fetch(`${API_BASE}/navigator/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question }),
     })
-    console.log('[intelligenceAPI] Got response status:', res.status)
     if (!res.ok) throw new Error('Navigator request failed')
     const data = await res.json()
-    console.log('[intelligenceAPI] Got data:', data)
     return data
   },
 

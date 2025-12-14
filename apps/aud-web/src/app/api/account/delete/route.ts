@@ -36,16 +36,18 @@ export async function DELETE() {
     // These are explicit deletes for tables that may not have cascade
     // Note: Some tables may not exist yet - errors are logged but don't block deletion
     const tablesToClean = [
-      'ideas',
+      'user_ideas',
       'opportunities',
-      'timeline_events',
-      'pitches',
+      'user_timeline_events',
+      'user_pitch_drafts',
       'user_preferences',
-    ] as const
+    ]
 
     for (const table of tablesToClean) {
       try {
-        const { error } = await adminClient.from(table).delete().eq('user_id', userId)
+        // Using 'as any' because not all tables exist in the generated types yet
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (adminClient as any).from(table).delete().eq('user_id', userId)
         if (error) {
           // Log but don't fail - table might not exist or have different schema
           log.warn(`Failed to clean ${table}`, { error: error.message })

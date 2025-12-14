@@ -3,10 +3,10 @@
  * Testing opportunity filtering, fetching, and Timeline integration
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useScoutStore, selectFilteredOpportunities } from '../useScoutStore'
-import type { Opportunity } from '@/types/scout'
+import { type Opportunity, DEFAULT_FILTERS } from '@/types/scout'
 
 // Mock opportunities
 const mockOpportunities: Opportunity[] = [
@@ -16,7 +16,7 @@ const mockOpportunities: Opportunity[] = [
     type: 'radio',
     genres: ['indie', 'rock'],
     vibes: ['edgy', 'alternative'],
-    audienceSize: 'huge',
+    audienceSize: 'large',
     description: 'National BBC radio station',
     source: 'curated',
     createdAt: '2024-01-01T00:00:00Z',
@@ -50,11 +50,24 @@ const mockOpportunities: Opportunity[] = [
 
 describe('useScoutStore', () => {
   beforeEach(() => {
+    // Mock global.fetch
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve({
+            success: true,
+            opportunities: mockOpportunities,
+            total: mockOpportunities.length,
+          }),
+      })
+    ) as unknown as ReturnType<typeof vi.fn>
+
     // Reset store before each test
     const { result } = renderHook(() => useScoutStore())
     act(() => {
-      result.current.setOpportunities([])
-      result.current.resetFilters()
+      useScoutStore.setState({ opportunities: [], filters: DEFAULT_FILTERS })
     })
   })
 
@@ -147,12 +160,12 @@ describe('useScoutStore', () => {
       const { result } = renderHook(() => useScoutStore())
 
       act(() => {
-        result.current.setFilter('audienceSize', 'huge')
+        result.current.setFilter('audienceSize', 'large')
       })
 
       const filtered = selectFilteredOpportunities(result.current)
-      expect(filtered).toHaveLength(1)
-      expect(filtered[0].audienceSize).toBe('huge')
+      expect(filtered).toHaveLength(2)
+      expect(filtered[0].audienceSize).toBe('large')
     })
 
     it('should filter by search query', () => {

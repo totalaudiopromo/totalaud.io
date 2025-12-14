@@ -48,8 +48,8 @@
 
 | Tier | Price | Best For |
 |------|-------|----------|
-| **Artist** | $19/mo ($190/yr - 2 months free) | Independent artists with 1-2 releases/year |
-| **Pro** | $39/mo ($390/yr - 2 months free) | Active artists, small teams, multiple projects |
+| **Artist** | £19/mo (£190/yr - 2 months free) | Independent artists with 1-2 releases/year |
+| **Pro** | £39/mo (£390/yr - 2 months free) | Active artists, small teams, multiple projects |
 
 ### Option B: Three-Tier Model
 
@@ -83,7 +83,7 @@
 ### Pricing Structure
 
 ```
-ARTIST PLAN: $19/month ($190/year)
+ARTIST PLAN: £19/month (£190/year)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✓ Full workspace access (Ideas, Scout, Timeline, Pitch)
 ✓ 100 AI Coach suggestions/month
@@ -92,7 +92,7 @@ ARTIST PLAN: $19/month ($190/year)
 ✓ Export pitches
 ✓ Email support
 
-PRO PLAN: $39/month ($390/year)
+PRO PLAN: £39/month (£390/year)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Everything in Artist, plus:
 ✓ Unlimited AI Coach
@@ -104,15 +104,15 @@ Everything in Artist, plus:
 
 ### Why These Prices
 
-- **$19/mo** - Positioned above Feature.fm's basic tier, below their Pro
-- **$39/mo** - Matches Feature.fm Pro, but offers more value
+- **£19/mo** - Positioned above Feature.fm's basic tier, below their Pro
+- **£39/mo** - Matches Feature.fm Pro, but offers more value
 - Both significantly cheaper than per-campaign costs (SubmitHub/Groover/Playlist Push)
-- Artists spending $50-100 per campaign on Groover would save money with us
+- Artists spending £50-100 per campaign on Groover would save money with us
 
 ### ROI Messaging
 
 > "One playlist placement = 10,000+ streams. One PR placement = 1,000+ new fans. 
-> At $19/month, you need just ONE hit to 10x your investment."
+> At £19/month, you need just ONE hit to 10x your investment."
 
 ---
 

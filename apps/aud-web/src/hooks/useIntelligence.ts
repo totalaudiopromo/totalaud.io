@@ -9,7 +9,6 @@ import { intelligenceAPI } from '@/lib/console/api/intelligence'
 export function useNavigator() {
   return {
     ask: async (question: string) => {
-      console.log('[useNavigator] Calling askNavigator with:', question)
       return intelligenceAPI.askNavigator(question)
     },
   }

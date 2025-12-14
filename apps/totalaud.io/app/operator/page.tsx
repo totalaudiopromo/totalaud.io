@@ -9,9 +9,18 @@ import dynamic from 'next/dynamic'
 
 // Provide a no-op localStorage shim during server rendering to avoid crashes
 // from client-only dependencies that assume browser APIs.
+interface LocalStorageLike {
+  getItem: (key: string) => string | null
+  setItem: (key: string, value: string) => void
+  removeItem: (key: string) => void
+  clear: () => void
+  key: (index: number) => string | null
+  readonly length: number
+}
+
 if (typeof window === 'undefined') {
   const storage = new Map<string, string>()
-  ;(globalThis as any).localStorage = {
+  ;(globalThis as unknown as { localStorage: LocalStorageLike }).localStorage = {
     getItem: (key: string) => (storage.has(key) ? storage.get(key)! : null),
     setItem: (key: string, value: string) => {
       storage.set(key, String(value))
