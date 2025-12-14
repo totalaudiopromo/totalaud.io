@@ -45,7 +45,7 @@ export function LoginForm() {
         throw authError
       }
 
-      console.log('Login successful:', data.user?.email)
+      // Login successful - redirect will happen via middleware
 
       // Successful login - redirect to workspace
       router.push('/workspace')
