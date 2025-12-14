@@ -95,7 +95,7 @@ const SECTION_GUIDANCE: Record<string, string> = {
 export async function POST(request: NextRequest) {
   try {
     // Authenticate request
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

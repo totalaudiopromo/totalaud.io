@@ -37,7 +37,7 @@ const generateRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Authenticate request
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

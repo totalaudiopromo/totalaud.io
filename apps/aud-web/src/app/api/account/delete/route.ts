@@ -17,7 +17,7 @@ const log = logger.scope('AccountDeleteAPI')
 export async function DELETE() {
   try {
     // Get the current user from session
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { user },
       error: userError,

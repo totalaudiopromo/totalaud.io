@@ -19,6 +19,7 @@ import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePit
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
+import { TypingIndicator } from '@/components/ui/EmptyState'
 
 // Simple copy button for sections
 function CopyButton({ content }: { content: string }) {
@@ -596,22 +597,11 @@ export function PitchCanvas() {
                     lineHeight: 1.5,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
+                    gap: 12,
                   }}
                 >
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: 16,
-                      height: 16,
-                      border: '2px solid rgba(58, 169, 190, 0.3)',
-                      borderTopColor: '#3AA9BE',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite',
-                    }}
-                  />
-                  Thinking...
-                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                  <TypingIndicator />
+                  <span>AI Coach is thinking...</span>
                 </div>
               )}
 

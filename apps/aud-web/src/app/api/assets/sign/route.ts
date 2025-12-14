@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const validated = signRequestSchema.parse(body)
     const { filename, mimeType, byteSize, kind, campaignId, title, tags } = validated
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

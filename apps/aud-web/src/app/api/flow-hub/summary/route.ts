@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     const periodParam = parseInt(searchParams.get('period') || '7', 10)
     const period = ALLOWED_PERIODS.has(periodParam) ? periodParam : 7
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

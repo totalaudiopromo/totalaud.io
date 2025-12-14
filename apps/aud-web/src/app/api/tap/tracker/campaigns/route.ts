@@ -45,7 +45,7 @@ const createCampaignSchema = z.object({
  * Helper to verify authentication
  */
 async function verifyAuth() {
-  const supabase = createRouteSupabaseClient()
+  const supabase = await createRouteSupabaseClient()
   const {
     data: { session },
     error: sessionError,

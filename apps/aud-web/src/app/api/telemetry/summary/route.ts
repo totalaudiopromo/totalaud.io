@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     const periodParam = searchParams.get('period') || '7d'
     const days = parsePeriod(periodParam)
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { assetId } = deleteRequestSchema.parse(body)
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

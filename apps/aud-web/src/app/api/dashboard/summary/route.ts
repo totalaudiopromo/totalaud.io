@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'period must be 7 or 30' }, { status: 400 })
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
 
     const {
       data: { session },

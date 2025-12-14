@@ -199,14 +199,14 @@ function WorkspaceContent() {
           gap: 12,
         }}
       >
-        {/* Logo - just the TA logomark */}
+        {/* Logo - horizontal lockup with wordmark */}
         <Link href="/console" className="flex items-center gap-2 flex-shrink-0">
           <Image
-            src="/brand/svg/ta-logo-cyan.svg"
+            src="/brand/svg/lockup-horizontal-cyan.svg"
             alt="totalaud.io"
-            width={40}
+            width={160}
             height={40}
-            className="h-10 w-10"
+            className="h-8 w-auto"
             priority
           />
         </Link>

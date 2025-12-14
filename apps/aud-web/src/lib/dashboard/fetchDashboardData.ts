@@ -78,7 +78,7 @@ export interface DashboardData {
  * Returns aggregated data from campaigns, contacts, coverage, patterns, and actions tables
  */
 export async function fetchDashboardData(): Promise<DashboardData> {
-  const supabase = createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient()
 
   try {
     // Run all queries in parallel

@@ -16,7 +16,7 @@ const log = logger.scope('CampaignsLastUsedAPI')
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
 
     const {
       data: { session },

@@ -26,7 +26,7 @@ export async function GET(
   try {
     const { epkId } = await params
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
@@ -122,7 +122,7 @@ export async function POST(
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

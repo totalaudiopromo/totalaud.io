@@ -16,7 +16,7 @@ const log = logger.scope('AuthSessionAPI')
 
 export async function GET() {
   try {
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error,

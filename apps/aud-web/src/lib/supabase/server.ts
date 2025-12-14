@@ -5,10 +5,12 @@ import {
 } from '@supabase/auth-helpers-nextjs'
 import type { Database } from '@total-audio/schemas-database'
 
-export function createServerSupabaseClient() {
-  return createServerComponentClient<Database>({ cookies })
+export async function createServerSupabaseClient() {
+  const cookieStore = await cookies()
+  return createServerComponentClient<Database>({ cookies: () => cookieStore })
 }
 
-export function createRouteSupabaseClient() {
-  return createRouteHandlerClient<Database>({ cookies })
+export async function createRouteSupabaseClient() {
+  const cookieStore = await cookies()
+  return createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 }

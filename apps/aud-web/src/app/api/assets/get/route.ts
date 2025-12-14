@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     log.info('Asset fetch requested', { assetId })
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

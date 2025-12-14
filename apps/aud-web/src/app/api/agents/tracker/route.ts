@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     log.info('Tracker request received', { sessionId, userId, campaignId })
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

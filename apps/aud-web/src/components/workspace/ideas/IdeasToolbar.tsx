@@ -125,12 +125,14 @@ export function IdeasToolbar() {
   )
 
   // Toast for feedback
-  const { ideaCreated } = useToast()
+  const { ideaCreated, checkAndCelebrate } = useToast()
 
   const handleAddCard = useCallback(() => {
     addCard('New idea...', filter ?? 'content')
     ideaCreated()
-  }, [addCard, filter, ideaCreated])
+    // Check for milestone (first idea, 5th, 10th, etc.)
+    checkAndCelebrate('ideas', totalCards + 1)
+  }, [addCard, filter, ideaCreated, checkAndCelebrate, totalCards])
 
   const handleExport = useCallback(
     async (format: 'markdown' | 'text', visibleOnly: boolean) => {

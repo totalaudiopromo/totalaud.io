@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { role, input, loopContext, originOS } = agentRunRequestSchema.parse(body)
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

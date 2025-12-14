@@ -11,7 +11,7 @@ export async function DELETE(
   try {
     const { epkId, collaboratorId } = await params
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

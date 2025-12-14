@@ -16,6 +16,7 @@ import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import { OpportunityCardCalm } from './OpportunityCardCalm'
 import { ScoutPreview } from './ScoutPreview'
+import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 
 const ITEMS_PER_PAGE = 12
 
@@ -36,7 +37,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   const addFromOpportunity = useTimelineStore((state) => state.addFromOpportunity)
   const timelineEvents = useTimelineStore((state) => state.events)
 
-  const { addedToTimeline: showAddedToast } = useToast()
+  const { addedToTimeline: showAddedToast, checkAndCelebrate } = useToast()
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
@@ -60,8 +61,16 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
       addFromOpportunity(opportunity, 'promo')
       markAddedToTimeline(opportunity.id)
       showAddedToast()
+      // Check for timeline milestone
+      checkAndCelebrate('timeline', timelineEvents.length + 1)
     },
-    [addFromOpportunity, markAddedToTimeline, showAddedToast]
+    [
+      addFromOpportunity,
+      markAddedToTimeline,
+      showAddedToast,
+      checkAndCelebrate,
+      timelineEvents.length,
+    ]
   )
 
   const visibleOpportunities = useMemo(
@@ -98,12 +107,15 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
 
     return (
       <div className={`${className} flex items-center justify-center h-full`}>
-        <div className="text-center max-w-xs">
-          <p className="text-white/60 mb-1">{hasFilters ? 'No matches' : 'No opportunities yet'}</p>
-          <p className="text-white/30 text-sm">
-            {hasFilters ? 'Try adjusting your filters' : 'Check back soon'}
-          </p>
-        </div>
+        <EmptyState
+          title={hasFilters ? emptyStates.scout.noResults.title : emptyStates.scout.firstTime.title}
+          description={
+            hasFilters
+              ? emptyStates.scout.noResults.description
+              : emptyStates.scout.firstTime.description
+          }
+          variant="minimal"
+        />
       </div>
     )
   }

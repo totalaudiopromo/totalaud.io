@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       campaignId,
     })
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
