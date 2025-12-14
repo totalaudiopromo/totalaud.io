@@ -46,10 +46,12 @@ export function OpportunityCardCalm({
       transition={{ duration: 0.15 }}
       className="
         group cursor-pointer
-        p-4 rounded-lg
+        p-4 rounded-xl
         bg-white/[0.025] border border-white/[0.05]
-        hover:bg-white/[0.04] hover:border-white/[0.08]
-        transition-colors duration-200
+        hover:bg-white/[0.04] hover:border-white/[0.1]
+        hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]
+        backdrop-blur-sm
+        transition-all duration-300 ease-out
       "
     >
       {/* Header: Type badge + Audience */}

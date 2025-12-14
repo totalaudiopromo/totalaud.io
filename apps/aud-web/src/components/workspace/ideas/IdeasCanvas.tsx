@@ -18,6 +18,7 @@ import {
   type IdeaTag,
 } from '@/stores/useIdeasStore'
 import { IdeaCard } from './IdeaCard'
+import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 
 // Detect touch device
 function useIsTouchDevice() {
@@ -180,49 +181,19 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 16,
             pointerEvents: 'none',
           }}
         >
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(58, 169, 190, 0.1)',
-              border: '1px solid rgba(58, 169, 190, 0.2)',
-              borderRadius: 12,
-              color: '#3AA9BE',
-              fontSize: 24,
-            }}
-          >
-            +
-          </div>
-          <div style={{ textAlign: 'center', padding: '0 24px' }}>
-            <p
-              style={{
-                margin: 0,
-                fontSize: 14,
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-              }}
-            >
-              Tap + Add to capture an idea
-            </p>
-            <p
-              style={{
-                margin: '8px 0 0',
-                fontSize: 12,
-                color: 'rgba(255, 255, 255, 0.4)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-              }}
-            >
-              or double-tap the canvas
-            </p>
-          </div>
+          <EmptyState
+            title={emptyStates.ideas.firstTime.title}
+            description={emptyStates.ideas.firstTime.description}
+            variant="default"
+            action={
+              <div style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 12, marginTop: 8 }}>
+                Tap + Add or double-click the canvas
+              </div>
+            }
+          />
         </div>
       )}
 
