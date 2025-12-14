@@ -12,31 +12,31 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
-const FREE_FEATURES = [
-  { text: 'Ideas Mode', description: 'Capture and organise creative concepts' },
-  { text: 'Timeline Mode', description: 'Plan releases across five lanes' },
-  { text: 'Scout Mode', description: 'Browse opportunities database' },
-  { text: 'Pitch Coach', description: 'Craft your artist narrative' },
-  { text: 'Local workspace', description: 'Your data, stored locally' },
+const ARTIST_FEATURES = [
+  { text: 'Full Workspace Access', description: 'Ideas, Timeline, Pitch, Scout' },
+  { text: '100 AI Coach Prompts', description: 'Per month via Claude' },
+  { text: 'Scout Opportunity Database', description: 'Playlists, blogs, radio, press' },
+  { text: 'Release Planner', description: 'Visual timeline with 5 lanes' },
+  { text: 'Export Pitches', description: 'Markdown & text export' },
 ]
 
 const PRO_FEATURES = [
-  { text: 'Everything in Free', description: 'All core features included' },
-  { text: 'Validate contacts', description: 'TAP Intel enrichment' },
-  { text: 'Generate pitches', description: 'AI-powered pitch writing' },
-  { text: 'Log to Tracker', description: 'Sync with TAP campaigns' },
-  { text: 'Unlimited Scout', description: 'No daily search limits' },
+  { text: 'Everything in Artist', description: 'All core features included' },
+  { text: 'Unlimited AI Coach', description: 'No monthly limits' },
+  { text: 'Priority Opportunities', description: 'Get alerts for new matches' },
+  { text: 'Advanced Analytics', description: 'Track pitch performance' },
+  { text: 'Multi-Project Support', description: 'Manage multiple artist profiles' },
 ]
 
 interface PricingTierProps {
   title: string
-  price?: string
-  priceNote?: string
+  price: string
+  priceNote: string
   features: Array<{ text: string; description: string }>
   ctaText: string
   ctaHref: string
   isPro?: boolean
-  isComingSoon?: boolean
+  highlight?: string
 }
 
 function PricingTier({
@@ -47,7 +47,7 @@ function PricingTier({
   ctaText,
   ctaHref,
   isPro = false,
-  isComingSoon = false,
+  highlight,
 }: PricingTierProps) {
   return (
     <motion.div
@@ -69,8 +69,8 @@ function PricingTier({
         overflow: 'hidden',
       }}
     >
-      {/* Coming soon badge for Pro */}
-      {isComingSoon && (
+      {/* Highlight badge */}
+      {highlight && (
         <div
           style={{
             position: 'absolute',
@@ -86,7 +86,7 @@ function PricingTier({
             letterSpacing: '0.02em',
           }}
         >
-          Coming soon
+          {highlight}
         </div>
       )}
 
@@ -113,44 +113,26 @@ function PricingTier({
           marginBottom: '24px',
         }}
       >
-        {price ? (
-          <>
-            <span
-              style={{
-                fontSize: '32px',
-                fontWeight: 600,
-                color: '#F7F8F9',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {price}
-            </span>
-            {priceNote && (
-              <span
-                style={{
-                  fontSize: '14px',
-                  color: 'rgba(255, 255, 255, 0.4)',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                {priceNote}
-              </span>
-            )}
-          </>
-        ) : (
-          <span
-            style={{
-              fontSize: '32px',
-              fontWeight: 600,
-              color: '#F7F8F9',
-              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Free
-          </span>
-        )}
+        <span
+          style={{
+            fontSize: '32px',
+            fontWeight: 600,
+            color: '#F7F8F9',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {price}
+        </span>
+        <span
+          style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255, 0.4)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          }}
+        >
+          {priceNote}
+        </span>
       </div>
 
       {/* Divider */}
@@ -191,76 +173,68 @@ function PricingTier({
             >
               ✓
             </span>
-            <span
-              style={{
-                fontSize: '14px',
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                lineHeight: 1.5,
-              }}
-            >
-              {feature.text}
-            </span>
+            <div>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  marginBottom: '2px',
+                }}
+              >
+                {feature.text}
+              </span>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                }}
+              >
+                {feature.description}
+              </span>
+            </div>
           </li>
         ))}
       </ul>
 
       {/* CTA button */}
-      {isComingSoon ? (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '14px 24px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.4)',
-            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-            cursor: 'not-allowed',
-          }}
-        >
-          {ctaText}
-        </div>
-      ) : (
-        <Link
-          href={ctaHref}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '14px 24px',
-            background: isPro
-              ? 'linear-gradient(135deg, #3AA9BE 0%, #2D8A9C 100%)'
-              : 'rgba(255, 255, 255, 0.08)',
-            border: isPro ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: isPro ? '#0A0B0C' : '#F7F8F9',
-            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-            textDecoration: 'none',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            if (!isPro) {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isPro) {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-            }
-          }}
-        >
-          {ctaText}
-        </Link>
-      )}
+      <Link
+        href={ctaHref}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '14px 24px',
+          background: isPro
+            ? 'linear-gradient(135deg, #3AA9BE 0%, #2D8A9C 100%)'
+            : 'rgba(255, 255, 255, 0.08)',
+          border: isPro ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '8px',
+          fontSize: '14px',
+          fontWeight: 500,
+          color: isPro ? '#0A0B0C' : '#F7F8F9',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          textDecoration: 'none',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!isPro) {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isPro) {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+          }
+        }}
+      >
+        {ctaText}
+      </Link>
     </motion.div>
   )
 }
@@ -303,12 +277,14 @@ export function PricingPreview() {
             fontSize: '16px',
             lineHeight: 1.6,
             color: 'rgba(255, 255, 255, 0.5)',
-            maxWidth: '420px',
+            maxWidth: '500px',
             margin: '0 auto',
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
-          Start free. Upgrade when you need TAP integration.
+          No hidden submission fees. No credit cost per curator.
+          <br />
+          Just professional tools for independent growth.
         </p>
       </motion.div>
 
@@ -321,16 +297,23 @@ export function PricingPreview() {
           flexWrap: 'wrap',
         }}
       >
-        <PricingTier title="Free" features={FREE_FEATURES} ctaText="Start free" ctaHref="/signup" />
+        <PricingTier
+          title="Artist"
+          price="$19"
+          priceNote="/month"
+          features={ARTIST_FEATURES}
+          ctaText="Start 14-Day Free Trial"
+          ctaHref="/signup"
+        />
         <PricingTier
           title="Pro"
-          price="£39"
-          priceNote="/month (or £299/year)"
+          price="$39"
+          priceNote="/month"
           features={PRO_FEATURES}
-          ctaText="Coming soon"
+          ctaText="Start 14-Day Free Trial"
           ctaHref="/signup"
           isPro
-          isComingSoon
+          highlight="Most Popular"
         />
       </div>
 
@@ -346,9 +329,13 @@ export function PricingPreview() {
           fontSize: '13px',
           color: 'rgba(255, 255, 255, 0.35)',
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          lineHeight: 1.6,
         }}
       >
-        No credit card required · Cancel anytime
+        <strong>100% Money-Back Guarantee.</strong> If you don't love it in the first 30 days, we'll
+        refund you.
+        <br />
+        No questions asked. Cancel anytime.
       </motion.p>
     </section>
   )
