@@ -9,17 +9,26 @@ export function NavigatorPanel() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const navigator = useNavigator()
 
   const handleAsk = async () => {
     if (!question.trim()) return
 
     setLoading(true)
+    setError(null)
+    const currentQuestion = question
+    setQuestion('') // Clear input immediately for better UX
+
     try {
-      const result = await navigator.ask(question)
+      console.log('[NavigatorPanel] Asking:', currentQuestion)
+      const result = await navigator.ask(currentQuestion)
+      console.log('[NavigatorPanel] Got result:', result)
       setAnswer(result)
-    } catch (error) {
-      console.error('Navigator error:', error)
+    } catch (err) {
+      console.error('[NavigatorPanel] Error:', err)
+      setError('Failed to get a response. Please try again.')
+      setQuestion(currentQuestion) // Restore question on error
     } finally {
       setLoading(false)
     }
@@ -52,7 +61,20 @@ export function NavigatorPanel() {
             </button>
           </div>
 
-          {answer && (
+          {error && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
+
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-tap-grey">
+              <div className="w-4 h-4 border-2 border-tap-cyan/30 border-t-tap-cyan rounded-full animate-spin" />
+              <span>Thinking...</span>
+            </div>
+          )}
+
+          {answer && !loading && (
             <div className="space-y-3">
               <p className="text-sm text-tap-white leading-relaxed">{answer.answer}</p>
               {answer.recommendedActions && answer.recommendedActions.length > 0 && (

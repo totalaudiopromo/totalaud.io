@@ -8,7 +8,10 @@ import { intelligenceAPI } from '@/lib/console/api/intelligence'
 // Navigator hook
 export function useNavigator() {
   return {
-    ask: intelligenceAPI.askNavigator,
+    ask: async (question: string) => {
+      console.log('[useNavigator] Calling askNavigator with:', question)
+      return intelligenceAPI.askNavigator(question)
+    },
   }
 }
 

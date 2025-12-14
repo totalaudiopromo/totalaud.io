@@ -12,12 +12,51 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { useAuthGate } from '@/components/auth'
+import { useToast } from '@/contexts/ToastContext'
+
+// Simple copy button for sections
+function CopyButton({ content }: { content: string }) {
+  const [copied, setCopied] = useState(false)
+  const { pitchCopied } = useToast()
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopied(true)
+      pitchCopied()
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Copy failed:', err)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      style={{
+        padding: '4px 10px',
+        fontSize: 11,
+        fontWeight: 500,
+        color: copied ? '#10B981' : 'rgba(255, 255, 255, 0.5)',
+        backgroundColor: copied ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+        border: `1px solid ${copied ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
+        borderRadius: 4,
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
+        fontFamily: 'inherit',
+      }}
+    >
+      {copied ? 'Copied' : 'Copy'}
+    </button>
+  )
+}
 
 // Pitch template options
 const PITCH_TYPES: { key: PitchType; label: string; description: string }[] = [
@@ -409,6 +448,8 @@ export function PitchCanvas() {
 
                 {/* Coach action buttons */}
                 <div style={{ display: 'flex', gap: 4 }}>
+                  {/* Copy button */}
+                  {section.content && <CopyButton content={section.content} />}
                   {(['improve', 'suggest', 'rewrite'] as CoachAction[]).map((action) => (
                     <button
                       key={action}

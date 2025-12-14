@@ -13,15 +13,15 @@ export function SidebarToggle() {
   return (
     <motion.button
       onClick={toggle}
-      className="fixed bottom-20 md:bottom-6 right-4 z-40 w-12 h-12 rounded-full bg-tap-panel border border-tap-cyan/30 shadow-lg flex items-center justify-center hover:bg-tap-panel/80 transition-colors"
+      className="fixed bottom-24 md:bottom-6 left-4 z-50 w-12 h-12 rounded-full bg-tap-cyan/90 border border-tap-cyan shadow-lg flex items-center justify-center hover:bg-tap-cyan transition-colors"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
       aria-label="Open navigation menu"
     >
-      <Bars3Icon className="w-6 h-6 text-tap-cyan" />
+      <Bars3Icon className="w-6 h-6 text-tap-black" />
     </motion.button>
   )
 }
