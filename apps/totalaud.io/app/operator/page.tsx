@@ -18,7 +18,7 @@ interface LocalStorageLike {
   readonly length: number
 }
 
-if (typeof window === 'undefined') {
+if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
   const storage = new Map<string, string>()
   ;(globalThis as unknown as { localStorage: LocalStorageLike }).localStorage = {
     getItem: (key: string) => (storage.has(key) ? storage.get(key)! : null),

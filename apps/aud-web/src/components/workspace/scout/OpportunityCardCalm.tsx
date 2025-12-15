@@ -40,10 +40,19 @@ export function OpportunityCardCalm({
   return (
     <motion.article
       onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onSelect()
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`View details for ${opportunity.name}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -2 }}
-      transition={{ duration: 0.15 }}
+      transition={{ duration: 0.12 }}
       className="
         group cursor-pointer
         p-4 rounded-xl
@@ -51,7 +60,8 @@ export function OpportunityCardCalm({
         hover:bg-white/[0.04] hover:border-white/[0.1]
         hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]
         backdrop-blur-sm
-        transition-all duration-300 ease-out
+        focus:outline-none focus:ring-2 focus:ring-[#3AA9BE]/50
+        transition-all duration-[240ms] ease-out
       "
     >
       {/* Header: Type badge + Audience */}
@@ -105,10 +115,15 @@ export function OpportunityCardCalm({
         <motion.button
           onClick={handleAdd}
           disabled={isAddedToTimeline}
+          aria-label={
+            isAddedToTimeline
+              ? `Already added ${opportunity.name}`
+              : `Add ${opportunity.name} to timeline`
+          }
           whileTap={{ scale: 0.95 }}
           className={`
             shrink-0 px-3 py-1 rounded text-xs font-medium
-            transition-all duration-150
+            transition-all duration-[120ms]
             ${
               isAddedToTimeline
                 ? 'bg-emerald-500/10 text-emerald-400/60 cursor-default'
