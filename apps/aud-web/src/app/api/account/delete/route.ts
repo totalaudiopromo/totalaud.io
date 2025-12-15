@@ -41,13 +41,11 @@ export async function DELETE() {
       'user_timeline_events',
       'user_pitch_drafts',
       'user_preferences',
-    ]
+    ] as const
 
     for (const table of tablesToClean) {
       try {
-        // Using 'as any' because not all tables exist in the generated types yet
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (adminClient as any).from(table).delete().eq('user_id', userId)
+        const { error } = await adminClient.from(table).delete().eq('user_id', userId)
         if (error) {
           // Log but don't fail - table might not exist or have different schema
           log.warn(`Failed to clean ${table}`, { error: error.message })
