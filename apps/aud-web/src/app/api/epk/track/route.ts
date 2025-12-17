@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         downloads: body.eventType === 'download' ? 1 : 0,
         region,
         device,
-        metadata: body.metadata || {},
+        metadata: (body.metadata || {}) as Record<string, string | number | boolean | null>,
       })
       .select()
       .single()
@@ -87,8 +87,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to track event' }, { status: 500 })
     }
 
-    // Also log to flow_telemetry for general analytics
-    const { error: telemetryError } = await supabase.from('flow_telemetry').insert({
+    // Note: flow_telemetry table is planned but not yet created in database
+    // Log telemetry information for future implementation
+    log.debug('Telemetry event recorded locally', {
       user_id: session.user.id,
       event_type: `epk_${body.eventType}`,
       event_data: {
@@ -98,11 +99,6 @@ export async function POST(req: NextRequest) {
         device,
       },
     })
-
-    if (telemetryError) {
-      log.warn('Failed to log telemetry event', { error: telemetryError })
-      // Don't fail the request if telemetry fails
-    }
 
     log.info('EPK event tracked', {
       epkId: body.epkId,

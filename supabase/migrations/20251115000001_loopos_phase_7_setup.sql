@@ -10,7 +10,7 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_workspaces (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS loopos_workspaces (
 );
 
 CREATE TABLE IF NOT EXISTS loopos_workspace_members (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role TEXT NOT NULL CHECK (role IN ('owner', 'editor', 'viewer')),
@@ -114,7 +114,7 @@ CREATE POLICY "Owners can remove members"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_nodes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('idea', 'milestone', 'task', 'reference', 'insight', 'decision')),
@@ -181,7 +181,7 @@ CREATE POLICY "Editors can delete nodes"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_notes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   node_id UUID REFERENCES loopos_nodes(id) ON DELETE CASCADE,
@@ -243,7 +243,7 @@ CREATE POLICY "Editors can delete notes"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_journal_entries (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('text', 'voice', 'reflection')),
@@ -288,7 +288,7 @@ CREATE POLICY "Users can delete their own journal entries"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_moodboard_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('image', 'colour', 'text', 'link')),
@@ -353,7 +353,7 @@ CREATE POLICY "Editors can delete moodboard items"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_creative_packs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -424,7 +424,7 @@ CREATE POLICY "Pack creators can delete"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_playbook_chapters (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
@@ -494,7 +494,7 @@ CREATE POLICY "Owners can delete chapters"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_flow_sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -540,7 +540,7 @@ CREATE POLICY "Users can delete their own flow sessions"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_agent_executions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   agent_type TEXT NOT NULL,
@@ -584,7 +584,7 @@ CREATE POLICY "Users can update their own agent executions"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_auto_chains (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -649,7 +649,7 @@ CREATE POLICY "Editors can delete auto chains"
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS loopos_exports (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id UUID NOT NULL REFERENCES loopos_workspaces(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('pdf', 'docx', 'json', 'zip', 'presentation')),

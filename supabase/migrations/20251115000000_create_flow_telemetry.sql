@@ -20,7 +20,7 @@
 
 -- Create flow_telemetry table
 create table if not exists flow_telemetry (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
   campaign_id uuid,
   event_type text not null check (event_type in ('save', 'share', 'agentRun', 'tabChange', 'idle', 'sessionStart', 'sessionEnd')),

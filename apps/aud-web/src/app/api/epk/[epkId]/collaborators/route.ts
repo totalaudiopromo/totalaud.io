@@ -10,7 +10,6 @@ interface CollaboratorRow {
   role: string
   invited_by: string | null
   created_at: string
-  accepted_at?: string | null
 }
 
 interface InviteRow {
@@ -25,7 +24,7 @@ interface InviteRow {
 
 interface UserProfileRow {
   id: string
-  artist_name: string | null
+  full_name: string | null
 }
 
 export async function GET(
@@ -54,7 +53,7 @@ export async function GET(
 
     const { data: collaboratorRowsData, error: collaboratorError } = await supabase
       .from('campaign_collaborators')
-      .select('id, user_id, role, invited_by, created_at, accepted_at')
+      .select('id, user_id, role, invited_by, created_at')
       .eq('campaign_id', campaignId)
 
     if (collaboratorError) {
@@ -74,7 +73,7 @@ export async function GET(
 
     const { data: profiles, error: profilesError } = await supabase
       .from('user_profiles')
-      .select('id, artist_name')
+      .select('id, full_name')
       .in(
         'id',
         collaboratorRows.map((row) => row.user_id)
@@ -86,7 +85,7 @@ export async function GET(
 
     const typedProfiles = (profiles ?? []) as UserProfileRow[]
     const profileMap = new Map<string, string | null>(
-      typedProfiles.map((profile) => [profile.id, profile.artist_name])
+      typedProfiles.map((profile) => [profile.id, profile.full_name])
     )
 
     let invites: InviteRow[] = []
@@ -110,7 +109,7 @@ export async function GET(
       invites,
       profiles: typedProfiles.map((profile) => ({
         id: profile.id,
-        artist_name: profile.artist_name ?? null,
+        full_name: profile.full_name ?? null,
       })),
     })
   } catch (error) {

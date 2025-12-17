@@ -17,8 +17,11 @@ import {
   selectHasStarterIdeas,
   type IdeaTag,
 } from '@/stores/useIdeasStore'
+import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useToast } from '@/contexts/ToastContext'
 import { IdeaCard } from './IdeaCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
+import { getLaneColour, type LaneType } from '@/types/timeline'
 
 // Detect touch device
 function useIsTouchDevice() {
@@ -50,6 +53,38 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
   const moveCard = useIdeasStore((state) => state.moveCard)
   const selectCard = useIdeasStore((state) => state.selectCard)
   const initStarterIdeas = useIdeasStore((state) => state.initStarterIdeas)
+
+  // Timeline store for cross-mode connection
+  const addTimelineEvent = useTimelineStore((state) => state.addEvent)
+  const { addedToTimeline } = useToast()
+
+  // Handler to send idea to timeline
+  const handleSendToTimeline = useCallback(
+    async (card: { id: string; content: string; tag: IdeaTag }) => {
+      // Map idea tags to timeline lanes
+      const tagToLane: Record<IdeaTag, LaneType> = {
+        content: 'content',
+        brand: 'promo',
+        music: 'release',
+        promo: 'promo',
+      }
+
+      const lane = tagToLane[card.tag] || 'content'
+
+      await addTimelineEvent({
+        lane,
+        title: card.content.slice(0, 50) || 'Untitled Idea',
+        date: new Date().toISOString(),
+        colour: getLaneColour(lane),
+        description: card.content,
+        tags: [card.tag, 'from-ideas'],
+        source: 'manual',
+      })
+
+      addedToTimeline()
+    },
+    [addTimelineEvent, addedToTimeline]
+  )
 
   // Initialize starter ideas on mount
   useEffect(() => {
@@ -166,6 +201,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             onMove={(position) => moveCard(card.id, position)}
             onUpdate={(updates) => updateCard(card.id, updates)}
             onDelete={() => deleteCard(card.id)}
+            onSendToTimeline={() => handleSendToTimeline(card)}
           />
         ))}
       </motion.div>

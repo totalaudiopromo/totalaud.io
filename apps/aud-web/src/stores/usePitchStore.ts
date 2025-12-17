@@ -167,6 +167,17 @@ function generateId(): string {
   return `pitch-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
 }
 
+// Type for raw database row (sections is Json which can be null)
+interface DatabasePitchDraft {
+  id: string
+  user_id: string
+  name: string
+  pitch_type: string
+  sections: unknown // Json type in Supabase
+  created_at: string
+  updated_at: string
+}
+
 function toSupabaseDraft(
   draft: PitchDraft,
   userId: string
@@ -180,12 +191,17 @@ function toSupabaseDraft(
   }
 }
 
-function fromSupabaseDraft(data: SyncedPitchDraft): PitchDraft {
+function fromSupabaseDraft(data: DatabasePitchDraft): PitchDraft {
+  // Parse sections from Json, defaulting to empty array if null
+  const sections = Array.isArray(data.sections)
+    ? (data.sections as PitchSection[])
+    : DEFAULT_SECTIONS
+
   return {
     id: data.id,
     name: data.name,
     type: data.pitch_type as PitchType,
-    sections: data.sections,
+    sections,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
   }

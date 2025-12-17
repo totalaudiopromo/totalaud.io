@@ -106,7 +106,8 @@ export async function POST(req: NextRequest) {
  * Queries campaign_outreach_logs table and joins with artist_assets
  */
 async function fetchOutreachLogs(
-  supabase: ReturnType<typeof createRouteSupabaseClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   params: { sessionId: string; userId: string; campaignId: string }
 ): Promise<OutreachLog[]> {
   const { sessionId, userId, campaignId } = params
@@ -132,7 +133,8 @@ async function fetchOutreachLogs(
     }
 
     // Map database records to OutreachLog type
-    const mappedLogs: OutreachLog[] = logs.map((dbLog) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedLogs: OutreachLog[] = logs.map((dbLog: any) => ({
       id: dbLog.id,
       session_id: sessionId,
       user_id: userId,

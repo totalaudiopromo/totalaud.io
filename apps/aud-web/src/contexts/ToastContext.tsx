@@ -23,7 +23,10 @@ interface ToastContextValue {
   pitchCopied: () => void
 
   // Milestone checking
-  checkAndCelebrate: (type: 'ideas' | 'timeline' | 'scout', count: number) => void
+  checkAndCelebrate: (
+    type: 'ideas' | 'timeline' | 'scout' | 'pitch' | 'onboarding',
+    count: number
+  ) => void
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null)
@@ -71,7 +74,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   // Milestone celebrations
   const checkAndCelebrate = useCallback(
-    (type: 'ideas' | 'timeline' | 'scout', count: number) => {
+    (type: 'ideas' | 'timeline' | 'scout' | 'pitch' | 'onboarding', count: number) => {
       const message = checkMilestone(type, count)
       if (message) {
         // Delay slightly for milestone to feel special

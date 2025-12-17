@@ -12,6 +12,8 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTimelineStore } from '@/stores/useTimelineStore'
+import { usePitchStore, type PitchType } from '@/stores/usePitchStore'
+import { useScoutStore } from '@/stores/useScoutStore'
 import { LANES, type LaneType, type TimelineEvent, type TrackerSyncStatus } from '@/types/timeline'
 import { useAuthGate } from '@/components/auth'
 
@@ -29,6 +31,13 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
   const syncToTracker = useTimelineStore((state) => state.syncToTracker)
   const trackerSyncStatusById = useTimelineStore((state) => state.trackerSyncStatusById)
   const trackerSyncErrorById = useTimelineStore((state) => state.trackerSyncErrorById)
+
+  // Pitch store for cross-mode connection
+  const selectPitchType = usePitchStore((state) => state.selectType)
+  const updatePitchSection = usePitchStore((state) => state.updateSection)
+
+  // Scout store for marking opportunity as pitched
+  const markAsPitched = useScoutStore((state) => state.markAsPitched)
 
   const [title, setTitle] = useState(event.title)
   const [description, setDescription] = useState(event.description ?? '')
@@ -62,6 +71,49 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
 
     syncToTracker(event.id)
   }, [canSync, syncToTracker, event.id, requireAuth, router])
+
+  // Handler to create a pitch from this timeline event
+  const handleCreatePitch = useCallback(() => {
+    // Determine pitch type based on lane/tags
+    let pitchType: PitchType = 'custom'
+    const tagsLower = event.tags?.map((t) => t.toLowerCase()) || []
+    const titleLower = event.title.toLowerCase()
+
+    if (tagsLower.includes('radio') || titleLower.includes('radio') || event.lane === 'promo') {
+      pitchType = 'radio'
+    } else if (
+      tagsLower.includes('press') ||
+      titleLower.includes('press') ||
+      tagsLower.includes('blog')
+    ) {
+      pitchType = 'press'
+    } else if (tagsLower.includes('playlist') || titleLower.includes('playlist')) {
+      pitchType = 'playlist'
+    }
+
+    // Set up pitch with type and pre-fill context
+    selectPitchType(pitchType)
+
+    // Pre-fill the hook section with event context
+    const hookContent = event.title.replace(/^Pitch:\s*/i, '').trim()
+    if (hookContent) {
+      updatePitchSection('hook', hookContent)
+    }
+
+    // Pre-fill story with description if available
+    if (event.description) {
+      updatePitchSection('story', event.description)
+    }
+
+    // Mark the source opportunity as pitched (if this event came from Scout)
+    if (event.opportunityId) {
+      markAsPitched(event.opportunityId)
+    }
+
+    // Close the modal and navigate to workspace with pitch mode
+    onClose()
+    router.push('/workspace?mode=pitch')
+  }, [event, selectPitchType, updatePitchSection, markAsPitched, onClose, router])
 
   // Focus title on mount
   useEffect(() => {
@@ -488,6 +540,41 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
           </div>
         )}
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+        {/* Cross-mode: Create Pitch button */}
+        {event.source !== 'sample' && (
+          <div style={{ marginBottom: 16 }}>
+            <button
+              onClick={handleCreatePitch}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '12px 16px',
+                fontSize: 13,
+                fontWeight: 500,
+                color: '#A855F7',
+                backgroundColor: 'rgba(168, 85, 247, 0.08)',
+                border: '1px solid rgba(168, 85, 247, 0.25)',
+                borderRadius: 8,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.15)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.08)'
+              }}
+            >
+              <span style={{ fontSize: 14 }}>✍️</span>
+              Create Pitch from Event
+            </button>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div

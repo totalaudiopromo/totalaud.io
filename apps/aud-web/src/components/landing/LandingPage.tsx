@@ -42,20 +42,26 @@ const FEATURES = [
     title: 'Pitch',
     description: 'Tell your story. AI-assisted pitch crafting that sounds like you, not a robot.',
   },
+  {
+    id: 'finish',
+    title: 'Finish',
+    description:
+      'Polish your track. Upload, separate stems, detect structure, arrange — all in your browser.',
+  },
 ]
 
 const HOW_IT_WORKS = [
   {
-    title: 'Drop your demo',
-    detail: 'Upload your stems, we detect structure, key, tempo, and sections.',
+    title: 'Scout contacts',
+    detail: 'Find radio pluggers, playlist curators, and press contacts who fit your sound.',
   },
   {
-    title: 'Shape with AI assist',
-    detail: 'Finish Mode suggests rearranges, fills, and quick EQ/comp tweaks.',
+    title: 'Plan your timeline',
+    detail: 'Map out your release campaign with actions across promo, content, and outreach.',
   },
   {
-    title: 'Publish & pitch',
-    detail: 'Master, then jump straight into Scout, Timeline, and Pitch workflows.',
+    title: 'Craft your pitch',
+    detail: 'Write compelling pitches with AI coaching that understands the music industry.',
   },
 ]
 
@@ -526,7 +532,7 @@ export function LandingPage() {
                   fontFamily: 'var(--font-geist-mono), monospace',
                 }}
               >
-                Processing: demo-finisher.wav
+                Ideas • Scout • Timeline • Pitch • Finish
               </span>
             </div>
           </div>

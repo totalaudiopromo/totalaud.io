@@ -1,0 +1,14 @@
+{
+  "name": "@total-audio/signal-threads",
+  "version": "1.0.0",
+  "description": "Narrative timeline builder connecting all campaign events",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@total-audio/core-db": "workspace:*",
+    "@total-audio/fusion-layer": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "5.7.2"
+  }
+}

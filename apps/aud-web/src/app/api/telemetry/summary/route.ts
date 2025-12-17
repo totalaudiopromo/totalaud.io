@@ -97,7 +97,9 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days)
 
     // Build query
-    let query = supabase
+    // Note: flow_telemetry table is planned but not yet created in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query = (supabase as any)
       .from('flow_telemetry')
       .select('*')
       .eq('user_id', userId)
@@ -123,7 +125,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const events = data || []
+    interface TelemetryEvent {
+      event_type: string
+      created_at: string
+      duration_ms?: number
+      metadata?: Record<string, unknown>
+    }
+
+    const events: TelemetryEvent[] = data || []
 
     // Calculate summary metrics
     const saveEvents = events.filter((e) => e.event_type === 'save')

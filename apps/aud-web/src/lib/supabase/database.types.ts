@@ -1,10 +1,30 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: '13.0.5'
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -72,6 +92,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'agent_messages_session_id_fkey'
+            columns: ['session_id']
+            isOneToOne: false
+            referencedRelation: 'agent_sessions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      agent_results: {
+        Row: {
+          agent_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          result_data: Json
+          session_id: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_type: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          result_data: Json
+          session_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          result_data?: Json
+          session_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'agent_results_session_id_fkey'
             columns: ['session_id']
             isOneToOne: false
             referencedRelation: 'agent_sessions'
@@ -379,6 +443,151 @@ export type Database = {
         }
         Relationships: []
       }
+      artist_assets: {
+        Row: {
+          byte_size: number | null
+          campaign_id: string | null
+          checksum: string | null
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          kind: string
+          mime_type: string | null
+          path: string | null
+          public_share_id: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          byte_size?: number | null
+          campaign_id?: string | null
+          checksum?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          kind?: string
+          mime_type?: string | null
+          path?: string | null
+          public_share_id?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          byte_size?: number | null
+          campaign_id?: string | null
+          checksum?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          kind?: string
+          mime_type?: string | null
+          path?: string | null
+          public_share_id?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      b2c_consent: {
+        Row: {
+          collection_method: string
+          collection_url: string | null
+          consent_expires_at: string | null
+          consent_text: string
+          consent_type: string
+          consent_version: string
+          created_at: string | null
+          discovered_contact_id: string
+          granted: boolean
+          granted_at: string | null
+          id: string
+          ip_hash: string | null
+          is_reconsent: boolean | null
+          previous_consent_id: string | null
+          updated_at: string | null
+          user_agent: string | null
+          withdrawn_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          collection_method: string
+          collection_url?: string | null
+          consent_expires_at?: string | null
+          consent_text: string
+          consent_type: string
+          consent_version: string
+          created_at?: string | null
+          discovered_contact_id: string
+          granted?: boolean
+          granted_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          is_reconsent?: boolean | null
+          previous_consent_id?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          withdrawn_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          collection_method?: string
+          collection_url?: string | null
+          consent_expires_at?: string | null
+          consent_text?: string
+          consent_type?: string
+          consent_version?: string
+          created_at?: string | null
+          discovered_contact_id?: string
+          granted?: boolean
+          granted_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          is_reconsent?: boolean | null
+          previous_consent_id?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          withdrawn_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'b2c_consent_discovered_contact_id_fkey'
+            columns: ['discovered_contact_id']
+            isOneToOne: false
+            referencedRelation: 'discovered_contacts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'b2c_consent_previous_consent_id_fkey'
+            columns: ['previous_consent_id']
+            isOneToOne: false
+            referencedRelation: 'b2c_consent'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'b2c_consent_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: false
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       benchmarks: {
         Row: {
           avg_cost_per_result: number
@@ -617,6 +826,45 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      campaign_context: {
+        Row: {
+          artist: string | null
+          created_at: string
+          followers: number | null
+          genre: string | null
+          goal: string
+          horizon_days: number
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          artist?: string | null
+          created_at?: string
+          followers?: number | null
+          genre?: string | null
+          goal: string
+          horizon_days: number
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          artist?: string | null
+          created_at?: string
+          followers?: number | null
+          genre?: string | null
+          goal?: string
+          horizon_days?: number
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       campaign_dashboard_metrics: {
         Row: {
@@ -1281,6 +1529,65 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_suppressions: {
+        Row: {
+          added_by: string | null
+          created_at: string | null
+          domain_encrypted: string | null
+          domain_hash: string | null
+          email_encrypted: string | null
+          email_hash: string | null
+          id: string
+          notes: string | null
+          reason: string
+          retention_justification: string | null
+          scope: string
+          source: string
+          source_reference: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string | null
+          domain_encrypted?: string | null
+          domain_hash?: string | null
+          email_encrypted?: string | null
+          email_hash?: string | null
+          id?: string
+          notes?: string | null
+          reason: string
+          retention_justification?: string | null
+          scope: string
+          source: string
+          source_reference?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string | null
+          domain_encrypted?: string | null
+          domain_hash?: string | null
+          email_encrypted?: string | null
+          email_hash?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string
+          retention_justification?: string | null
+          scope?: string
+          source?: string
+          source_reference?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'contact_suppressions_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: false
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       contacts: {
         Row: {
           created_at: string | null
@@ -1431,6 +1738,179 @@ export type Database = {
             columns: ['campaign_id']
             isOneToOne: false
             referencedRelation: 'campaigns'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      discovered_contacts: {
+        Row: {
+          classification_confidence: number | null
+          classification_signals: Json | null
+          confidence_score: number | null
+          contact_type: string
+          created_at: string | null
+          discovered_by: string
+          discovery_metadata: Json | null
+          email: string | null
+          email_verification_date: string | null
+          email_verification_method: string | null
+          email_verified: boolean | null
+          id: string
+          imported_contact_id: string | null
+          name: string
+          outlet_name: string | null
+          outlet_type: string | null
+          retention_expires_at: string
+          role: string | null
+          search_provider: string
+          search_query: string
+          search_response_id: string | null
+          source_domain: string
+          source_url: string
+          status: string | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          classification_confidence?: number | null
+          classification_signals?: Json | null
+          confidence_score?: number | null
+          contact_type: string
+          created_at?: string | null
+          discovered_by: string
+          discovery_metadata?: Json | null
+          email?: string | null
+          email_verification_date?: string | null
+          email_verification_method?: string | null
+          email_verified?: boolean | null
+          id?: string
+          imported_contact_id?: string | null
+          name: string
+          outlet_name?: string | null
+          outlet_type?: string | null
+          retention_expires_at: string
+          role?: string | null
+          search_provider: string
+          search_query: string
+          search_response_id?: string | null
+          source_domain: string
+          source_url: string
+          status?: string | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          classification_confidence?: number | null
+          classification_signals?: Json | null
+          confidence_score?: number | null
+          contact_type?: string
+          created_at?: string | null
+          discovered_by?: string
+          discovery_metadata?: Json | null
+          email?: string | null
+          email_verification_date?: string | null
+          email_verification_method?: string | null
+          email_verified?: boolean | null
+          id?: string
+          imported_contact_id?: string | null
+          name?: string
+          outlet_name?: string | null
+          outlet_type?: string | null
+          retention_expires_at?: string
+          role?: string | null
+          search_provider?: string
+          search_query?: string
+          search_response_id?: string | null
+          source_domain?: string
+          source_url?: string
+          status?: string | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'discovered_contacts_imported_contact_id_fkey'
+            columns: ['imported_contact_id']
+            isOneToOne: false
+            referencedRelation: 'intel_contacts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'discovered_contacts_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: false
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      discovery_logs: {
+        Row: {
+          api_cost_cents: number | null
+          b2b_count: number | null
+          b2c_count: number | null
+          contacts_deduplicated: number | null
+          contacts_found: number | null
+          contacts_suppressed: number | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          ip_hash: string
+          processing_time_ms: number | null
+          search_params: Json | null
+          search_provider: string
+          search_query: string
+          status: string
+          tokens_used: number | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          api_cost_cents?: number | null
+          b2b_count?: number | null
+          b2c_count?: number | null
+          contacts_deduplicated?: number | null
+          contacts_found?: number | null
+          contacts_suppressed?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_hash: string
+          processing_time_ms?: number | null
+          search_params?: Json | null
+          search_provider: string
+          search_query: string
+          status: string
+          tokens_used?: number | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          api_cost_cents?: number | null
+          b2b_count?: number | null
+          b2c_count?: number | null
+          contacts_deduplicated?: number | null
+          contacts_found?: number | null
+          contacts_suppressed?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_hash?: string
+          processing_time_ms?: number | null
+          search_params?: Json | null
+          search_provider?: string
+          search_query?: string
+          status?: string
+          tokens_used?: number | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'discovery_logs_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: false
+            referencedRelation: 'workspaces'
             referencedColumns: ['id']
           },
         ]
@@ -2119,6 +2599,7 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string
+          discovery_source_id: string | null
           email: string | null
           enrichment_confidence: number | null
           enrichment_date: string | null
@@ -2126,11 +2607,15 @@ export type Database = {
           genre_tags: string[] | null
           id: string
           instagram: string | null
+          is_discovered: boolean | null
           last_contacted: string | null
           last_response: string | null
           last_verified: string | null
           location_city: string | null
           location_country: string | null
+          merge_log: Json | null
+          merge_source: string | null
+          merge_timestamp: string | null
           name: string
           notes: string | null
           outlet: string | null
@@ -2149,6 +2634,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           created_by: string
+          discovery_source_id?: string | null
           email?: string | null
           enrichment_confidence?: number | null
           enrichment_date?: string | null
@@ -2156,11 +2642,15 @@ export type Database = {
           genre_tags?: string[] | null
           id?: string
           instagram?: string | null
+          is_discovered?: boolean | null
           last_contacted?: string | null
           last_response?: string | null
           last_verified?: string | null
           location_city?: string | null
           location_country?: string | null
+          merge_log?: Json | null
+          merge_source?: string | null
+          merge_timestamp?: string | null
           name: string
           notes?: string | null
           outlet?: string | null
@@ -2179,6 +2669,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           created_by?: string
+          discovery_source_id?: string | null
           email?: string | null
           enrichment_confidence?: number | null
           enrichment_date?: string | null
@@ -2186,11 +2677,15 @@ export type Database = {
           genre_tags?: string[] | null
           id?: string
           instagram?: string | null
+          is_discovered?: boolean | null
           last_contacted?: string | null
           last_response?: string | null
           last_verified?: string | null
           location_city?: string | null
           location_country?: string | null
+          merge_log?: Json | null
+          merge_source?: string | null
+          merge_timestamp?: string | null
           name?: string
           notes?: string | null
           outlet?: string | null
@@ -2207,6 +2702,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'intel_contacts_discovery_source_id_fkey'
+            columns: ['discovery_source_id']
+            isOneToOne: false
+            referencedRelation: 'discovered_contacts'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'intel_contacts_workspace_id_fkey'
             columns: ['workspace_id']
@@ -2818,6 +3320,56 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      retention_audit_log: {
+        Row: {
+          audit_date: string
+          b2b_deleted: number | null
+          b2b_retention_days: number | null
+          b2c_deleted: number | null
+          b2c_retention_days: number | null
+          created_at: string | null
+          discovered_contacts_deleted: number | null
+          id: string
+          notes: string | null
+          reason: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          audit_date: string
+          b2b_deleted?: number | null
+          b2b_retention_days?: number | null
+          b2c_deleted?: number | null
+          b2c_retention_days?: number | null
+          created_at?: string | null
+          discovered_contacts_deleted?: number | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          audit_date?: string
+          b2b_deleted?: number | null
+          b2b_retention_days?: number | null
+          b2c_deleted?: number | null
+          b2c_retention_days?: number | null
+          created_at?: string | null
+          discovered_contacts_deleted?: number | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'retention_audit_log_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: false
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
+          },
+        ]
       }
       retention_metrics: {
         Row: {
@@ -3777,6 +4329,59 @@ export type Database = {
           },
         ]
       }
+      workspace_discovery_settings: {
+        Row: {
+          auto_import_b2b: boolean | null
+          b2b_retention_days: number | null
+          b2c_discovery_enabled: boolean | null
+          b2c_retention_days: number | null
+          budget_exhausted_at: string | null
+          contacts_per_request: number | null
+          created_at: string | null
+          daily_budget_cents: number | null
+          monthly_budget_cents: number | null
+          requests_per_day: number | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          auto_import_b2b?: boolean | null
+          b2b_retention_days?: number | null
+          b2c_discovery_enabled?: boolean | null
+          b2c_retention_days?: number | null
+          budget_exhausted_at?: string | null
+          contacts_per_request?: number | null
+          created_at?: string | null
+          daily_budget_cents?: number | null
+          monthly_budget_cents?: number | null
+          requests_per_day?: number | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          auto_import_b2b?: boolean | null
+          b2b_retention_days?: number | null
+          b2c_discovery_enabled?: boolean | null
+          b2c_retention_days?: number | null
+          budget_exhausted_at?: string | null
+          contacts_per_request?: number | null
+          created_at?: string | null
+          daily_budget_cents?: number | null
+          monthly_budget_cents?: number | null
+          requests_per_day?: number | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'workspace_discovery_settings_workspace_id_fkey'
+            columns: ['workspace_id']
+            isOneToOne: true
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       workspace_invitations: {
         Row: {
           accepted_at: string | null
@@ -3972,6 +4577,18 @@ export type Database = {
       }
     }
     Functions: {
+      add_to_suppression_list: {
+        Args: {
+          p_added_by?: string
+          p_email: string
+          p_encryption_key?: string
+          p_reason: string
+          p_source: string
+          p_source_reference?: string
+          p_workspace_id?: string
+        }
+        Returns: string
+      }
       aggregate_epk_metrics: {
         Args: { p_epk_id: string; p_period_end: string; p_period_start: string }
         Returns: {
@@ -4023,6 +4640,18 @@ export type Database = {
       delete_expired_oauth_states: { Args: never; Returns: undefined }
       get_cohort_size: { Args: { p_cohort_date: string }; Returns: number }
       get_confidence_level: { Args: { p_score: number }; Returns: string }
+      get_discovery_budget_status: {
+        Args: { p_workspace_id: string }
+        Returns: {
+          daily_budget_cents: number
+          daily_remaining_cents: number
+          daily_spent_cents: number
+          is_exhausted: boolean
+          monthly_budget_cents: number
+          monthly_remaining_cents: number
+          monthly_spent_cents: number
+        }[]
+      }
       get_intel_contact_stats: {
         Args: { p_workspace_id: string }
         Returns: {
@@ -4082,12 +4711,20 @@ export type Database = {
         Args: { p_integration_type: string; p_workspace_id: string }
         Returns: string
       }
+      has_b2c_consent: {
+        Args: { p_consent_types: string[]; p_contact_id: string }
+        Returns: boolean
+      }
       has_workspace_permission: {
         Args: {
           p_required_role?: string
           p_user_id: string
           p_workspace_id: string
         }
+        Returns: boolean
+      }
+      is_email_suppressed: {
+        Args: { p_email: string; p_workspace_id?: string }
         Returns: boolean
       }
       log_workspace_activity: {
@@ -4246,6 +4883,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

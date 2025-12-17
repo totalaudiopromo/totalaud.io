@@ -34,13 +34,13 @@ export async function DELETE() {
 
     // Delete user data from related tables (cascade should handle most)
     // These are explicit deletes for tables that may not have cascade
-    // Note: Some tables may not exist yet - errors are logged but don't block deletion
+    // Note: User ideas, timeline events, pitch drafts are stored in localStorage (Zustand stores),
+    // not in the database, so we only need to clean actual database tables here.
     const tablesToClean = [
-      'user_ideas',
-      'opportunities',
-      'user_timeline_events',
-      'user_pitch_drafts',
-      'user_preferences',
+      'artist_assets',
+      'agent_results',
+      'agent_sessions',
+      'campaign_outreach_logs',
     ] as const
 
     for (const table of tablesToClean) {

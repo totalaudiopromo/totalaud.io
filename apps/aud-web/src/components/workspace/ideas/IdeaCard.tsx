@@ -43,6 +43,7 @@ interface IdeaCardProps {
   onMove: (position: { x: number; y: number }) => void
   onUpdate: (updates: Partial<Pick<IdeaCardType, 'content' | 'tag'>>) => void
   onDelete: () => void
+  onSendToTimeline?: () => void
 }
 
 export function IdeaCard({
@@ -52,6 +53,7 @@ export function IdeaCard({
   onMove,
   onUpdate,
   onDelete,
+  onSendToTimeline,
 }: IdeaCardProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -123,6 +125,14 @@ export function IdeaCard({
       onDelete()
     },
     [onDelete]
+  )
+
+  const handleSendToTimeline = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      onSendToTimeline?.()
+    },
+    [onSendToTimeline]
   )
 
   return (
@@ -226,34 +236,65 @@ export function IdeaCard({
         </p>
       )}
 
-      {/* Delete button (visible on hover/select) */}
+      {/* Action buttons (visible on hover/select) */}
       {isSelected && (
-        <motion.button
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12 }}
-          onClick={handleDeleteClick}
           style={{
             position: 'absolute',
             top: 8,
             right: 8,
-            width: 20,
-            height: 20,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 4,
-            color: '#EF4444',
-            fontSize: 12,
-            cursor: 'pointer',
+            gap: 4,
           }}
-          aria-label="Delete card"
         >
-          ×
-        </motion.button>
+          {/* Send to Timeline button */}
+          {onSendToTimeline && (
+            <button
+              onClick={handleSendToTimeline}
+              style={{
+                width: 20,
+                height: 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(58, 169, 190, 0.1)',
+                border: '1px solid rgba(58, 169, 190, 0.3)',
+                borderRadius: 4,
+                color: '#3AA9BE',
+                fontSize: 11,
+                cursor: 'pointer',
+              }}
+              aria-label="Send to Timeline"
+              title="Add to Timeline"
+            >
+              →
+            </button>
+          )}
+          {/* Delete button */}
+          <button
+            onClick={handleDeleteClick}
+            style={{
+              width: 20,
+              height: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: 4,
+              color: '#EF4444',
+              fontSize: 12,
+              cursor: 'pointer',
+            }}
+            aria-label="Delete card"
+          >
+            ×
+          </button>
+        </motion.div>
       )}
     </motion.div>
   )

@@ -14,6 +14,7 @@ import { TYPE_LABELS, TYPE_COLOURS, AUDIENCE_SIZE_LABELS } from '@/types/scout'
 interface OpportunityCardCalmProps {
   opportunity: Opportunity
   isAddedToTimeline: boolean
+  isPitched: boolean
   onAddToTimeline: () => void
   onSelect: () => void
 }
@@ -21,6 +22,7 @@ interface OpportunityCardCalmProps {
 export function OpportunityCardCalm({
   opportunity,
   isAddedToTimeline,
+  isPitched,
   onAddToTimeline,
   onSelect,
 }: OpportunityCardCalmProps) {
@@ -64,18 +66,34 @@ export function OpportunityCardCalm({
         transition-all duration-[240ms] ease-out
       "
     >
-      {/* Header: Type badge + Audience */}
+      {/* Header: Type badge + Pitched badge + Audience */}
       <div className="flex items-center justify-between gap-3 mb-2">
-        <span
-          className="text-[10px] font-medium px-2 py-0.5 rounded"
-          style={{
-            backgroundColor: typeColour.bg,
-            color: typeColour.text,
-            border: `1px solid ${typeColour.border}`,
-          }}
-        >
-          {TYPE_LABELS[opportunity.type]}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="text-[10px] font-medium px-2 py-0.5 rounded"
+            style={{
+              backgroundColor: typeColour.bg,
+              color: typeColour.text,
+              border: `1px solid ${typeColour.border}`,
+            }}
+          >
+            {TYPE_LABELS[opportunity.type]}
+          </span>
+
+          {/* Pitched badge */}
+          {isPitched && (
+            <span
+              className="text-[10px] font-medium px-2 py-0.5 rounded"
+              style={{
+                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                color: '#A855F7',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+              }}
+            >
+              ✍️ Pitched
+            </span>
+          )}
+        </div>
 
         <span className="text-[10px] text-white/30 uppercase tracking-wide">
           {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}

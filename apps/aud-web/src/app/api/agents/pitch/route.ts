@@ -109,16 +109,18 @@ export async function POST(req: NextRequest) {
     if (campaignId && contactName) {
       try {
         // Create outreach log entry
-        const { error: insertError } = await supabase.from('campaign_outreach_logs').insert({
-          user_id: authenticatedUserId,
-          campaign_id: campaignId,
-          contact_name: contactName,
-          message_preview: pitch.substring(0, 200), // First 200 chars
-          asset_ids: publicAttachments.map((a) => a.id),
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: insertError } = await (supabase as any)
+          .from('campaign_outreach_logs')
+          .insert({
+            user_id: authenticatedUserId,
+            campaign_id: campaignId,
+            contact_name: contactName,
+            message_preview: pitch.substring(0, 200), // First 200 chars
+            asset_ids: publicAttachments.map((a) => a.id),
+            status: 'sent',
+            sent_at: new Date().toISOString(),
+          })
 
         if (insertError) {
           log.warn('Failed to write outreach log', { error: insertError })

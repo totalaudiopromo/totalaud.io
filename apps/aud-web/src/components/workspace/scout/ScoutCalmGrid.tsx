@@ -32,6 +32,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   const fetchOpportunities = useScoutStore((state) => state.fetchOpportunities)
   const selectOpportunity = useScoutStore((state) => state.selectOpportunity)
   const markAddedToTimeline = useScoutStore((state) => state.markAddedToTimeline)
+  const pitchedIds = useScoutStore((state) => state.pitchedIds)
   const filters = useScoutStore((state) => state.filters)
 
   const addFromOpportunity = useTimelineStore((state) => state.addFromOpportunity)
@@ -136,6 +137,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
               <OpportunityCardCalm
                 opportunity={opp}
                 isAddedToTimeline={isInTimeline(opp.id)}
+                isPitched={pitchedIds.has(opp.id)}
                 onAddToTimeline={() => handleAddToTimeline(opp)}
                 onSelect={() => selectOpportunity(opp.id)}
               />

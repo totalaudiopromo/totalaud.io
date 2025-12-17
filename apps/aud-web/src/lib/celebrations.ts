@@ -53,6 +53,12 @@ export const milestones = {
     { count: 5, message: '5 opportunities collected' },
     { count: 10, message: '10 opportunities - great network' },
   ],
+  pitch: [
+    { count: 1, message: 'First pitch started' },
+    { count: 3, message: '3 pitches drafted' },
+    { count: 5, message: '5 pitches - serious outreach' },
+  ],
+  onboarding: [{ count: 1, message: 'Welcome to totalaud.io' }],
 }
 
 export function checkMilestone(type: keyof typeof milestones, count: number): string | null {

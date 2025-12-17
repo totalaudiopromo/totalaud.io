@@ -78,6 +78,25 @@ interface TimelineState {
 // Conversion Functions
 // ============================================================================
 
+// Type for raw database row (with nullable fields matching actual schema)
+interface DatabaseTimelineEvent {
+  id: string
+  user_id: string
+  lane: string
+  title: string
+  event_date: string
+  colour: string | null
+  description: string | null
+  url: string | null
+  tags: string[] | null
+  source: string
+  opportunity_id: string | null
+  tracker_campaign_id: string | null
+  tracker_synced_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 function toSupabaseEvent(
   event: TimelineEvent,
   userId: string
@@ -99,13 +118,13 @@ function toSupabaseEvent(
   }
 }
 
-function fromSupabaseEvent(data: SyncedTimelineEvent): TimelineEvent {
+function fromSupabaseEvent(data: DatabaseTimelineEvent): TimelineEvent {
   return {
     id: data.id,
     lane: data.lane as LaneType,
     title: data.title,
     date: data.event_date,
-    colour: data.colour,
+    colour: data.colour ?? '#3AA9BE', // Default to accent colour
     description: data.description ?? undefined,
     url: data.url ?? undefined,
     tags: data.tags ?? undefined,

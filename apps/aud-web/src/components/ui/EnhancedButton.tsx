@@ -7,13 +7,14 @@
 
 'use client'
 
-import { motion } from 'framer-motion'
-import { ButtonHTMLAttributes, ReactNode, forwardRef } from 'react'
+import { motion, type HTMLMotionProps } from 'framer-motion'
+import { ReactNode, forwardRef } from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'success' | 'danger'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
-interface EnhancedButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+// Use HTMLMotionProps for button to avoid React/Framer Motion event handler conflicts
+interface EnhancedButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   children: ReactNode
   variant?: ButtonVariant
   size?: ButtonSize
