@@ -6,6 +6,9 @@
  */
 
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('DashboardData')
 
 export interface DashboardSnapshot {
   activeCampaigns: number
@@ -191,7 +194,7 @@ export async function fetchDashboardData(): Promise<DashboardData> {
 
     return data
   } catch (error) {
-    console.error('Error fetching dashboard data:', error)
+    log.error('Error fetching dashboard data', error)
     // Return empty state data on error
     return getEmptyStateDashboard()
   }

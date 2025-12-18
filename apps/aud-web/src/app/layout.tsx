@@ -45,22 +45,15 @@ export const metadata: Metadata = {
     title: 'totalaud.io - Helping indie artists get heard',
     description:
       'Scout contacts, capture ideas, plan releases, craft pitches. One calm workspace for everything that matters.',
-    images: [
-      {
-        url: '/brand/png/lockup-horizontal-cyan-4096.png',
-        width: 4096,
-        height: 1024,
-        alt: 'totalaud.io - Calm creative workspace for independent artists',
-      },
-    ],
+    // OG image auto-generated from opengraph-image.tsx (1200x630)
   },
   twitter: {
     card: 'summary_large_image',
     title: 'totalaud.io - Helping indie artists get heard',
     description:
       'Scout contacts, capture ideas, plan releases, craft pitches. One calm workspace for everything that matters.',
-    images: ['/brand/png/lockup-horizontal-cyan-4096.png'],
     creator: '@totalaudiopromo',
+    // Twitter image auto-generated from twitter-image.tsx (1200x630)
   },
   icons: {
     icon: [
