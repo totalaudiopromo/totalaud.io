@@ -14,6 +14,9 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('LoginForm')
 
 export function LoginForm() {
   const router = useRouter()
@@ -41,17 +44,17 @@ export function LoginForm() {
       })
 
       if (authError) {
-        console.error('Auth error:', authError)
+        log.error('Auth error', authError)
         throw authError
       }
 
-      console.log('Login successful:', data.user?.email)
+      log.info('Login successful', { email: data.user?.email })
 
       // Successful login - redirect to workspace
       router.push('/workspace')
       router.refresh()
     } catch (err) {
-      console.error('Login error:', err)
+      log.error('Login error', err)
       const message = err instanceof Error ? err.message : 'Invalid email or password'
       setError(message)
     } finally {
