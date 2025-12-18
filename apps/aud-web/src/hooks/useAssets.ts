@@ -177,8 +177,6 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
 
   /**
    * Toggle public/private status
-   * NOTE: This requires a new API endpoint /api/assets/update (to be implemented)
-   * For now, this is a placeholder that shows the optimistic update pattern
    */
   const togglePublic = useCallback(
     async (assetId: string, isPublic: boolean): Promise<boolean> => {
@@ -191,11 +189,19 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
       try {
         log.info('Toggling asset visibility', { assetId, isPublic })
 
-        // TODO: Implement /api/assets/update endpoint
-        // For now, we'll just log a warning
-        log.warn('togglePublic not yet implemented - requires /api/assets/update endpoint')
+        const response = await fetch('/api/assets/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assetId, is_public: isPublic }),
+        })
+
+        if (!response.ok) {
+          const data = await response.json()
+          throw new Error(data.error || `HTTP ${response.status}`)
+        }
 
         toast.success(isPublic ? 'Asset made public' : 'Asset made private')
+        log.debug('Asset visibility updated', { assetId, isPublic })
 
         return true
       } catch (err) {
@@ -204,7 +210,9 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
         // Rollback optimistic update
         setAssets(originalAssets)
 
-        toast.error('Failed to update asset')
+        toast.error('Failed to update asset', {
+          description: err instanceof Error ? err.message : 'Unknown error',
+        })
 
         return false
       }
