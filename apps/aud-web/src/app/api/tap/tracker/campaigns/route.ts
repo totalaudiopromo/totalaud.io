@@ -45,7 +45,7 @@ const createCampaignSchema = z.object({
  * Helper to verify authentication
  */
 async function verifyAuth() {
-  const supabase = createRouteSupabaseClient()
+  const supabase = await createRouteSupabaseClient()
   const {
     data: { session },
     error: sessionError,
@@ -104,7 +104,7 @@ export async function GET() {
 
     log.info('Fetching campaigns')
 
-    const result = await tapClient.tracker.listCampaigns()
+    const result = await tapClient.tracker.listCampaigns(session.user.id)
 
     log.info('Campaigns fetched', { count: result.campaigns.length })
 
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     log.info('Creating campaign', { name: campaignData.name, platform: campaignData.platform })
 
-    const campaign = await tapClient.tracker.createCampaign(campaignData)
+    const campaign = await tapClient.tracker.createCampaign(campaignData, session.user.id)
 
     log.info('Campaign created', { campaignId: campaign.id })
 

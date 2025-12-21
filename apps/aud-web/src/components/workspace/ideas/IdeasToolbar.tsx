@@ -18,6 +18,7 @@ import {
   type IdeaTag,
   type SortMode,
 } from '@/stores/useIdeasStore'
+import { useToast } from '@/contexts/ToastContext'
 
 const TAGS: { key: IdeaTag; label: string; colour: string }[] = [
   { key: 'content', label: 'Content', colour: '#3AA9BE' },
@@ -123,9 +124,15 @@ export function IdeasToolbar() {
     [setFilter]
   )
 
+  // Toast for feedback
+  const { ideaCreated, checkAndCelebrate } = useToast()
+
   const handleAddCard = useCallback(() => {
     addCard('New idea...', filter ?? 'content')
-  }, [addCard, filter])
+    ideaCreated()
+    // Check for milestone (first idea, 5th, 10th, etc.)
+    checkAndCelebrate('ideas', totalCards + 1)
+  }, [addCard, filter, ideaCreated, checkAndCelebrate, totalCards])
 
   const handleExport = useCallback(
     async (format: 'markdown' | 'text', visibleOnly: boolean) => {

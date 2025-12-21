@@ -1,0 +1,14 @@
+{
+  "name": "@total-audio/automations-drawer",
+  "version": "1.0.0",
+  "description": "AI-powered quick automation system",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@total-audio/core-db": "workspace:*",
+    "@total-audio/fusion-layer": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "5.7.2"
+  }
+}

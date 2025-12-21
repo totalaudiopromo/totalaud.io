@@ -1,0 +1,22 @@
+{
+  "name": "@total-audio/intelligence-navigator",
+  "version": "1.0.0",
+  "description": "Intelligence Navigator Q&A layer for unified dashboard",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./components/*": "./src/components/*"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.65.0",
+    "@total-audio/ai-skills": "workspace:*",
+    "@total-audio/core-db": "workspace:*",
+    "@total-audio/fusion-layer": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.25",
+    "typescript": "5.7.2"
+  }
+}

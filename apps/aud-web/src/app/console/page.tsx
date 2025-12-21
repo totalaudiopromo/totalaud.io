@@ -9,6 +9,7 @@ import { CoverageMapCard } from '@/components/console/dashboard/CoverageMapCard'
 import { IdentitySummary } from '@/components/console/dashboard/IdentitySummary'
 import { SignalThreadsMini } from '@/components/console/dashboard/SignalThreadsMini'
 import { fetchDashboardData } from '@/lib/dashboard/fetchDashboardData'
+import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
 
 export default async function ConsolePage() {
   // Fetch real data from Supabase (with fallback to empty state)
@@ -21,33 +22,37 @@ export default async function ConsolePage() {
         description="comprehensive overview of your campaigns, contacts, and intelligence"
       />
 
-      <div className="space-y-6">
+      <StaggeredEntrance className="space-y-6">
         {/* AI Navigator */}
-        <NavigatorPanel />
+        <StaggerItem>
+          <NavigatorPanel />
+        </StaggerItem>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <StaggerItem className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <SnapshotCard data={data.snapshot} />
           <div className="lg:col-span-2">
             <NextActionsList actions={data.nextActions} />
           </div>
-        </div>
+        </StaggerItem>
 
         {/* Patterns */}
-        <PatternsGrid patterns={data.patterns} />
+        <StaggerItem>
+          <PatternsGrid patterns={data.patterns} />
+        </StaggerItem>
 
         {/* Charts and Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StaggerItem className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TrajectoryChart data={data.trajectory} />
           <CoverageMapCard coverage={data.coverage} />
-        </div>
+        </StaggerItem>
 
         {/* Identity and Signals */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StaggerItem className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <IdentitySummary identity={data.identity} />
           <SignalThreadsMini events={data.signals} />
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggeredEntrance>
     </PageContainer>
   )
 }

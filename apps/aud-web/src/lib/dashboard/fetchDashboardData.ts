@@ -78,7 +78,7 @@ export interface DashboardData {
  * Returns aggregated data from campaigns, contacts, coverage, patterns, and actions tables
  */
 export async function fetchDashboardData(): Promise<DashboardData> {
-  const supabase = createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient()
 
   try {
     // Run all queries in parallel
@@ -117,7 +117,7 @@ export async function fetchDashboardData(): Promise<DashboardData> {
         // Recent campaign events for signals
         supabase
           .from('campaign_events')
-          .select('id, event_type, metadata, created_at')
+          .select('id, type, message, created_at')
           .order('created_at', { ascending: false })
           .limit(10),
       ])
@@ -163,9 +163,9 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     const signals: SignalEvent[] = (eventsRes.data ?? []).map((e) => ({
       id: e.id,
       date: new Date(e.created_at),
-      type: e.event_type,
-      title: e.metadata?.title ?? e.event_type,
-      significance: e.metadata?.significance ?? 0.5,
+      type: e.type,
+      title: e.message || e.type,
+      significance: 0.5,
     }))
 
     // Build response

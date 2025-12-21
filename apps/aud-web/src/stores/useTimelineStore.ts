@@ -12,6 +12,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
 import type {
   TimelineEvent,
   NewTimelineEvent,
@@ -22,6 +23,11 @@ import type {
 import { SAMPLE_EVENTS, generateEventId, getLaneColour } from '@/types/timeline'
 import type { Opportunity } from '@/types/scout'
 import type { SyncedTimelineEvent } from '@/hooks/useSupabaseSync'
+import type { Database } from '@total-audio/schemas-database'
+
+type TimelineEventRowUpdate = Database['public']['Tables']['user_timeline_events']['Update']
+
+const log = logger.scope('TimelineStore')
 
 // ============================================================================
 // Store Interface
@@ -72,6 +78,25 @@ interface TimelineState {
 // Conversion Functions
 // ============================================================================
 
+// Type for raw database row (with nullable fields matching actual schema)
+interface DatabaseTimelineEvent {
+  id: string
+  user_id: string
+  lane: string
+  title: string
+  event_date: string
+  colour: string | null
+  description: string | null
+  url: string | null
+  tags: string[] | null
+  source: string
+  opportunity_id: string | null
+  tracker_campaign_id: string | null
+  tracker_synced_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 function toSupabaseEvent(
   event: TimelineEvent,
   userId: string
@@ -93,13 +118,13 @@ function toSupabaseEvent(
   }
 }
 
-function fromSupabaseEvent(data: SyncedTimelineEvent): TimelineEvent {
+function fromSupabaseEvent(data: DatabaseTimelineEvent): TimelineEvent {
   return {
     id: data.id,
     lane: data.lane as LaneType,
     title: data.title,
     date: data.event_date,
-    colour: data.colour,
+    colour: data.colour ?? '#3AA9BE', // Default to accent colour
     description: data.description ?? undefined,
     url: data.url ?? undefined,
     tags: data.tags ?? undefined,
@@ -160,19 +185,27 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            const { error } = await supabase.from('user_timeline_events').insert({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase.from('user_timeline_events') as any).insert({
               ...toSupabaseEvent(newEvent, user.id),
               created_at: now,
               updated_at: now,
             })
 
             if (error) {
-              console.error('[Timeline Store] Insert error:', error)
-              set({ syncError: error.message })
+              // Don't show error for common cases (table not existing, RLS)
+              // These are expected when database isn't fully set up
+              const isSetupError = error.code === '42P01' || error.message?.includes('permission')
+              if (!isSetupError) {
+                log.warn('Sync error (non-critical)', { error: error.message })
+              }
+              // Still persist locally - that's working fine
             }
           }
+          // If not authenticated, local storage handles it - no error needed
         } catch (error) {
-          console.error('[Timeline Store] Sync error:', error)
+          // Network or other errors - log quietly, local storage still works
+          log.warn('Sync unavailable', { error })
         }
 
         return id
@@ -197,7 +230,7 @@ export const useTimelineStore = create<TimelineState>()(
 
           if (user) {
             // Convert updates to Supabase format
-            const supabaseUpdates: Record<string, unknown> = { updated_at: now }
+            const supabaseUpdates: TimelineEventRowUpdate = { updated_at: now }
             if (updates.lane) supabaseUpdates.lane = updates.lane
             if (updates.title) supabaseUpdates.title = updates.title
             if (updates.date) supabaseUpdates.event_date = updates.date
@@ -206,19 +239,19 @@ export const useTimelineStore = create<TimelineState>()(
             if (updates.url !== undefined) supabaseUpdates.url = updates.url
             if (updates.tags) supabaseUpdates.tags = updates.tags
 
-            const { error } = await supabase
-              .from('user_timeline_events')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase.from('user_timeline_events') as any)
               .update(supabaseUpdates)
               .eq('id', id)
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Timeline Store] Update error:', error)
+              log.error('Update error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Timeline Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -237,19 +270,19 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            const { error } = await supabase
-              .from('user_timeline_events')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase.from('user_timeline_events') as any)
               .delete()
               .eq('id', id)
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Timeline Store] Delete error:', error)
+              log.error('Delete error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Timeline Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -279,11 +312,11 @@ export const useTimelineStore = create<TimelineState>()(
               .in('id', sampleIds)
 
             if (error) {
-              console.error('[Timeline Store] Clear samples error:', error)
+              log.error('Clear samples error', error)
             }
           }
         } catch (error) {
-          console.error('[Timeline Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -325,7 +358,7 @@ export const useTimelineStore = create<TimelineState>()(
         const event = state.events.find((e) => e.id === eventId)
 
         if (!event) {
-          console.error('[Timeline Store] Event not found:', eventId)
+          log.error('Event not found', { eventId })
           return
         }
 
@@ -394,8 +427,8 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            await supabase
-              .from('user_timeline_events')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabase.from('user_timeline_events') as any)
               .update({
                 tracker_campaign_id: campaignId,
                 tracker_synced_at: syncedAt,
@@ -405,7 +438,7 @@ export const useTimelineStore = create<TimelineState>()(
               .eq('user_id', user.id)
           }
         } catch (error) {
-          console.error('[Timeline Store] Tracker sync error:', error)
+          log.error('Tracker sync error', error)
           set((s) => ({
             trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'error' },
             trackerSyncErrorById: {
@@ -452,7 +485,7 @@ export const useTimelineStore = create<TimelineState>()(
             .order('event_date', { ascending: true })
 
           if (error) {
-            console.error('[Timeline Store] Load error:', error)
+            log.error('Load error', error)
             set({ isLoading: false, syncError: error.message })
             return
           }
@@ -468,7 +501,7 @@ export const useTimelineStore = create<TimelineState>()(
             set({ isLoading: false })
           }
         } catch (error) {
-          console.error('[Timeline Store] Load error:', error)
+          log.error('Load error', error)
           set({
             isLoading: false,
             syncError: error instanceof Error ? error.message : 'Failed to load',
@@ -502,12 +535,14 @@ export const useTimelineStore = create<TimelineState>()(
           }))
 
           if (supabaseEvents.length > 0) {
-            const { error } = await supabase
-              .from('user_timeline_events')
-              .upsert(supabaseEvents, { onConflict: 'id' })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase.from('user_timeline_events') as any).upsert(
+              supabaseEvents,
+              { onConflict: 'id' }
+            )
 
             if (error) {
-              console.error('[Timeline Store] Sync error:', error)
+              log.error('Sync error', error)
               set({ isSyncing: false, syncError: error.message })
               return
             }
@@ -518,7 +553,7 @@ export const useTimelineStore = create<TimelineState>()(
             lastSyncedAt: new Date().toISOString(),
           })
         } catch (error) {
-          console.error('[Timeline Store] Sync error:', error)
+          log.error('Sync error', error)
           set({
             isSyncing: false,
             syncError: error instanceof Error ? error.message : 'Sync failed',

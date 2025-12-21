@@ -52,6 +52,9 @@ interface ScoutState {
   // Track which opportunities have been added to timeline
   addedToTimeline: Set<string>
 
+  // Track which opportunities have been pitched
+  pitchedIds: Set<string>
+
   // TAP Intel Enrichment State
   enrichedById: Record<string, EnrichedContact>
   enrichmentStatusById: Record<string, EnrichmentStatus>
@@ -66,6 +69,7 @@ interface ScoutState {
   resetFilters: () => void
   selectOpportunity: (id: string | null) => void
   markAddedToTimeline: (id: string) => void
+  markAsPitched: (id: string) => void
 
   // TAP Intel Actions
   validateContact: (opportunityId: string) => Promise<void>
@@ -89,6 +93,7 @@ export const useScoutStore = create<ScoutState>()(
       filters: DEFAULT_FILTERS,
       selectedOpportunityId: null,
       addedToTimeline: new Set<string>(),
+      pitchedIds: new Set<string>(),
 
       // TAP Intel Enrichment State
       enrichedById: {},
@@ -191,6 +196,13 @@ export const useScoutStore = create<ScoutState>()(
           return { addedToTimeline: newSet }
         }),
 
+      markAsPitched: (id) =>
+        set((state) => {
+          const newSet = new Set(state.pitchedIds)
+          newSet.add(id)
+          return { pitchedIds: newSet }
+        }),
+
       // TAP Intel Actions
       validateContact: async (opportunityId: string) => {
         const state = get()
@@ -278,16 +290,20 @@ export const useScoutStore = create<ScoutState>()(
     }),
     {
       name: 'totalaud-scout-store',
-      version: 2, // Bump version due to structure change
-      // Only persist filters and addedToTimeline, not the opportunities data
+      version: 3, // Bump version for pitchedIds
+      // Only persist filters and addedToTimeline/pitchedIds, not the opportunities data
       partialize: (state) => ({
         filters: state.filters,
         addedToTimeline: Array.from(state.addedToTimeline),
+        pitchedIds: Array.from(state.pitchedIds),
       }),
-      // Rehydrate Set from array
+      // Rehydrate Sets from arrays
       onRehydrateStorage: () => (state) => {
         if (state && Array.isArray(state.addedToTimeline)) {
           state.addedToTimeline = new Set(state.addedToTimeline as unknown as string[])
+        }
+        if (state && Array.isArray(state.pitchedIds)) {
+          state.pitchedIds = new Set(state.pitchedIds as unknown as string[])
         }
       },
     }
@@ -366,6 +382,13 @@ export const selectSelectedOpportunity = (state: ScoutState): Opportunity | null
  */
 export const selectIsAddedToTimeline = (state: ScoutState, id: string): boolean => {
   return state.addedToTimeline.has(id)
+}
+
+/**
+ * Check if an opportunity has been pitched.
+ */
+export const selectIsPitched = (state: ScoutState, id: string): boolean => {
+  return state.pitchedIds.has(id)
 }
 
 /**

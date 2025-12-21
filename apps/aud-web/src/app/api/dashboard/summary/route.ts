@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'period must be 7 or 30' }, { status: 400 })
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
 
     const {
       data: { session },
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
         downloads: metrics?.reduce((sum, m) => sum + m.downloads, 0) || 0,
         shares: metrics?.reduce((sum, m) => sum + m.shares, 0) || 0,
         engagementScore:
-          metrics?.reduce((sum, m) => sum + parseFloat(m.engagement_score), 0) /
+          metrics?.reduce((sum, m) => sum + (m.engagement_score ?? 0), 0) /
             (metrics?.length || 1) || 0,
       },
       dataPoints: metrics?.length || 0,

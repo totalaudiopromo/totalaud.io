@@ -98,12 +98,13 @@ export function NextSteps({ maxItems = 3, className }: NextStepsProps) {
             marginBottom: 8,
           }}
         >
-          <span style={{ fontSize: 14 }}>📋</span>
           <span
             style={{
               fontSize: 12,
               fontWeight: 600,
               color: 'rgba(255, 255, 255, 0.7)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
             }}
           >
             Next Steps
@@ -142,12 +143,13 @@ export function NextSteps({ maxItems = 3, className }: NextStepsProps) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14 }}>📋</span>
           <span
             style={{
               fontSize: 12,
               fontWeight: 600,
               color: 'rgba(255, 255, 255, 0.7)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
             }}
           >
             Next Steps

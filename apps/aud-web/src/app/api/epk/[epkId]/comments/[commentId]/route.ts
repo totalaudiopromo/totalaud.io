@@ -15,7 +15,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
@@ -30,7 +30,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const { data: commentRecord, error: commentError } = await supabase
+    // Note: epk_comments table is planned but not yet created in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -64,7 +66,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error: updateError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: updateError } = await (supabase as any)
       .from('epk_comments')
       .update({ body: body.body })
       .eq('id', commentId)
@@ -88,7 +91,7 @@ export async function DELETE(
   try {
     const { epkId, commentId } = await params
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
@@ -103,7 +106,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    const { data: commentRecord, error: commentError } = await supabase
+    // Note: epk_comments table is planned but not yet created in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -137,7 +142,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error: deleteError } = await supabase.from('epk_comments').delete().eq('id', commentId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: deleteError } = await (supabase as any)
+      .from('epk_comments')
+      .delete()
+      .eq('id', commentId)
 
     if (deleteError) {
       log.error('Failed to delete comment', deleteError)

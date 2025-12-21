@@ -30,6 +30,7 @@ import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { DraggableEvent } from './DraggableEvent'
 import { DroppableLane } from './DroppableLane'
 import { TimelineEventCard } from './TimelineEventCard'
+import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 
 // ============================================================================
 // Helpers
@@ -219,55 +220,20 @@ export function TimelineCanvas() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 16,
-              padding: 24,
               zIndex: 10,
               backgroundColor: 'rgba(15, 17, 19, 0.95)',
             }}
           >
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px solid rgba(58, 169, 190, 0.2)',
-                borderRadius: 14,
-                fontSize: 24,
-                color: '#3AA9BE',
-              }}
-            >
-              ◈
-            </div>
-            <div style={{ textAlign: 'center', maxWidth: 320 }}>
-              <h3
-                style={{
-                  margin: 0,
-                  marginBottom: 8,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: '#F7F8F9',
-                }}
-              >
-                Plan your release
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 13,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  lineHeight: 1.5,
-                }}
-              >
-                Add events from Scout Mode or create your own milestones. Drag between lanes to
-                organise your campaign.
-              </p>
-            </div>
-            <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255, 255, 255, 0.3)' }}>
-              Visit <span style={{ color: '#3AA9BE' }}>Scout</span> to discover opportunities
-            </div>
+            <EmptyState
+              title={emptyStates.timeline.firstTime.title}
+              description={emptyStates.timeline.firstTime.description}
+              variant="large"
+              action={
+                <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255, 255, 255, 0.3)' }}>
+                  Visit <span style={{ color: '#3AA9BE' }}>Scout</span> to discover opportunities
+                </div>
+              }
+            />
           </div>
         )}
         {/* Timeline header with weeks */}
