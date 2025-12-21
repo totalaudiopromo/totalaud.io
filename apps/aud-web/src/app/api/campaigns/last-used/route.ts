@@ -16,7 +16,7 @@ const log = logger.scope('CampaignsLastUsedAPI')
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
 
     const {
       data: { session },
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id
 
     // Load last-used campaign (RLS-safe query)
-    const { data: campaigns, error: fetchError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: campaigns, error: fetchError } = await (supabase as any)
       .from('campaign_context')
       .select('id, artist_name, created_at, last_accessed_at')
       .eq('user_id', userId)
@@ -49,7 +50,8 @@ export async function POST(req: NextRequest) {
       log.info('Last-used campaign found', { campaignId: campaign.id, userId })
 
       // Update last_accessed_at timestamp
-      await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
         .from('campaign_context')
         .update({ last_accessed_at: new Date().toISOString() })
         .eq('id', campaign.id)
@@ -73,7 +75,8 @@ export async function POST(req: NextRequest) {
       last_accessed_at: new Date().toISOString(),
     }
 
-    const { data: createdCampaign, error: createError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: createdCampaign, error: createError } = await (supabase as any)
       .from('campaign_context')
       .insert([newCampaign])
       .select('id, artist_name')

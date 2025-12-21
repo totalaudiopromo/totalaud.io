@@ -42,6 +42,27 @@ const FEATURES = [
     title: 'Pitch',
     description: 'Tell your story. AI-assisted pitch crafting that sounds like you, not a robot.',
   },
+  {
+    id: 'finish',
+    title: 'Finish',
+    description:
+      'Polish your track. Upload, separate stems, detect structure, arrange — all in your browser.',
+  },
+]
+
+const HOW_IT_WORKS = [
+  {
+    title: 'Scout contacts',
+    detail: 'Find radio pluggers, playlist curators, and press contacts who fit your sound.',
+  },
+  {
+    title: 'Plan your timeline',
+    detail: 'Map out your release campaign with actions across promo, content, and outreach.',
+  },
+  {
+    title: 'Craft your pitch',
+    detail: 'Write compelling pitches with AI coaching that understands the music industry.',
+  },
 ]
 
 // Magnetic button component
@@ -217,6 +238,20 @@ export function LandingPage() {
         overflowX: 'hidden',
       }}
     >
+      {/* Ambient spotlight gradients */}
+      <div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background:
+            'radial-gradient(circle at 20% 18%, rgba(58,169,190,0.14), transparent 32%), radial-gradient(circle at 80% 12%, rgba(111,200,181,0.12), transparent 30%), radial-gradient(circle at 50% 70%, rgba(58,169,190,0.08), transparent 45%)',
+          filter: 'blur(12px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
       {/* Sticky Navigation Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -436,6 +471,71 @@ export function LandingPage() {
           >
             Try as guest →
           </Link>
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+              padding: '12px 14px',
+              borderRadius: '14px',
+              border: '1px solid rgba(58, 169, 190, 0.2)',
+              background: 'rgba(255, 255, 255, 0.02)',
+              minWidth: '260px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: '#3AA9BE',
+                boxShadow: '0 0 12px rgba(58,169,190,0.8)',
+              }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+              <span
+                style={{
+                  fontSize: 13,
+                  color: '#EAECEE',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                }}
+              >
+                Finish Mode live
+              </span>
+              <div
+                style={{
+                  width: '100%',
+                  height: 6,
+                  borderRadius: 999,
+                  background: 'rgba(255,255,255,0.05)',
+                  overflow: 'hidden',
+                }}
+              >
+                <motion.div
+                  animate={{ x: ['0%', '60%', '0%'] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    width: '45%',
+                    height: '100%',
+                    background:
+                      'linear-gradient(90deg, rgba(58,169,190,0.8), rgba(111,200,181,0.7))',
+                  }}
+                />
+              </div>
+              <span
+                style={{
+                  fontSize: 12,
+                  color: 'rgba(255,255,255,0.55)',
+                  fontFamily: 'var(--font-geist-mono), monospace',
+                }}
+              >
+                Ideas • Scout • Timeline • Pitch • Finish
+              </span>
+            </div>
+          </div>
           <span
             style={{
               fontSize: '13px',
@@ -496,6 +596,81 @@ export function LandingPage() {
           />
         </motion.div>
       </motion.section>
+
+      {/* How it works strip */}
+      <section
+        style={{
+          padding: '64px 24px 40px',
+          maxWidth: '1100px',
+          margin: '0 auto',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '20px',
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(58,169,190,0.08)',
+            borderRadius: '16px',
+            padding: '20px',
+          }}
+        >
+          {HOW_IT_WORKS.map((item, i) => (
+            <div
+              key={item.title}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr',
+                gap: '12px',
+                alignItems: 'start',
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '10px',
+                  background: 'rgba(58,169,190,0.12)',
+                  border: '1px solid rgba(58,169,190,0.25)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  color: '#3AA9BE',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  fontFamily: 'var(--font-geist-mono), monospace',
+                }}
+              >
+                0{i + 1}
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    color: '#EAECEE',
+                    fontWeight: 600,
+                    marginBottom: 6,
+                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    color: 'rgba(255,255,255,0.6)',
+                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  }}
+                >
+                  {item.detail}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Features Section */}
       <section

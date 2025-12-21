@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     const periodParam = parseInt(searchParams.get('period') || '7', 10)
     const period = ALLOWED_PERIODS.has(periodParam) ? periodParam : 7
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
@@ -46,7 +46,9 @@ export async function GET(req: NextRequest) {
     const periodStart = new Date(now)
     periodStart.setDate(periodStart.getDate() - period)
 
-    const { data: cachedSummary, error: cacheError } = await supabase
+    // Note: flow_hub_summary_cache table is planned but not yet created in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: cachedSummary, error: cacheError } = await (supabase as any)
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -64,7 +66,8 @@ export async function GET(req: NextRequest) {
     }
 
     if (!summary || !isCacheHit) {
-      const { error: refreshError } = await supabase.rpc('refresh_flow_hub_summary', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: refreshError } = await (supabase as any).rpc('refresh_flow_hub_summary', {
         uid: userId,
       })
 
@@ -73,7 +76,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
       }
 
-      const refreshed = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const refreshed = await (supabase as any)
         .from('flow_hub_summary_cache')
         .select('metrics, generated_at, expires_at')
         .eq('user_id', userId)

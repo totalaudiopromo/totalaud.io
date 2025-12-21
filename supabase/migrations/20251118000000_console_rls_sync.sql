@@ -87,6 +87,13 @@ CREATE POLICY "Users can delete own agent results"
 -- Enable RLS
 ALTER TABLE canvas_scenes ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies to make this migration idempotent
+DROP POLICY IF EXISTS "Users can view own canvas scenes" ON canvas_scenes;
+DROP POLICY IF EXISTS "Users can insert own canvas scenes" ON canvas_scenes;
+DROP POLICY IF EXISTS "Users can update own canvas scenes" ON canvas_scenes;
+DROP POLICY IF EXISTS "Users can delete own canvas scenes" ON canvas_scenes;
+DROP POLICY IF EXISTS "Anyone can view public canvas scenes" ON canvas_scenes;
+
 -- Policy: Users can view their own canvas scenes
 CREATE POLICY "Users can view own canvas scenes"
   ON canvas_scenes

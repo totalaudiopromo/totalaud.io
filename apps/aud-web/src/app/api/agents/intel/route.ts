@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       sessionId,
     })
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,
@@ -67,7 +67,52 @@ export async function POST(req: NextRequest) {
 
     // Fetch relevant document assets if requested
     if (includeAssetContext) {
-      relevantAssets = await fetchRelevantDocumentAssets(supabase, resolvedUserId)
+      try {
+        log.debug('Fetching document assets for user', { userId: resolvedUserId })
+
+        // Type assertion needed due to @supabase/auth-helpers-nextjs 0.10.0
+        // not fully supporting the new Database type format with __InternalSupabase.
+        // TODO: Migrate to @supabase/ssr to resolve this properly.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: assets, error } = await (supabase as any)
+          .from('artist_assets')
+          .select('*')
+          .eq('user_id', resolvedUserId)
+          .eq('kind', 'document')
+          .order('created_at', { ascending: false })
+          .limit(10)
+
+        if (error) {
+          log.warn('Failed to fetch document assets from database', { error })
+        } else if (assets && assets.length > 0) {
+          // Define type for the raw database asset record
+          type RawAsset = {
+            id: string
+            kind: string
+            title: string | null
+            url: string | null
+            is_public: boolean | null
+            byte_size: number | null
+            mime_type: string | null
+            created_at: string | null
+          }
+          // Map database records to AssetAttachment type
+          relevantAssets = (assets as RawAsset[])
+            .filter((asset: RawAsset) => typeof asset.url === 'string' && asset.url.length > 0)
+            .map((asset: RawAsset) => ({
+              id: String(asset.id),
+              kind: (asset.kind as AssetAttachment['kind']) ?? 'document',
+              title: asset.title ?? 'Untitled Document',
+              url: String(asset.url),
+              is_public: Boolean(asset.is_public),
+              byte_size: asset.byte_size ?? undefined,
+              mime_type: asset.mime_type ?? undefined,
+              created_at: asset.created_at ?? undefined,
+            }))
+        }
+      } catch (fetchError) {
+        log.warn('Failed to fetch document assets', { error: fetchError })
+      }
 
       log.info('Relevant assets found', {
         count: relevantAssets.length,
@@ -81,7 +126,8 @@ export async function POST(req: NextRequest) {
     // Save results to database if authenticated
     if (session && sessionId) {
       try {
-        await supabase.from('agent_results').insert({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from('agent_results').insert({
           user_id: resolvedUserId,
           session_id: sessionId,
           agent_type: 'intel',
@@ -91,7 +137,6 @@ export async function POST(req: NextRequest) {
             assetsUsed: relevantAssets.length,
             assetIds: relevantAssets.map((a) => a.id),
           },
-          created_at: new Date().toISOString(),
         })
 
         log.info('Intel results saved to database', { sessionId, userId: resolvedUserId })
@@ -145,55 +190,6 @@ export async function POST(req: NextRequest) {
       },
       { status: 500 }
     )
-  }
-}
-
-/**
- * Fetch relevant document assets for intel enrichment
- * Looks for: press releases, bios, one-sheets
- */
-async function fetchRelevantDocumentAssets(
-  supabase: ReturnType<typeof createRouteSupabaseClient>,
-  userId: string
-): Promise<AssetAttachment[]> {
-  try {
-    log.debug('Fetching document assets for user', { userId })
-
-    const { data: assets, error } = await supabase
-      .from('artist_assets')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('kind', 'document')
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    if (error) {
-      log.warn('Failed to fetch document assets from database', { error })
-      return []
-    }
-
-    if (!assets || assets.length === 0) {
-      return []
-    }
-
-    // Map database records to AssetAttachment type
-    const mappedAssets: AssetAttachment[] = assets
-      .filter((asset) => typeof asset.url === 'string' && asset.url.length > 0)
-      .map((asset) => ({
-        id: String(asset.id),
-        kind: (asset.kind as AssetAttachment['kind']) ?? 'document',
-        title: asset.title ?? 'Untitled Document',
-        url: String(asset.url),
-        is_public: Boolean(asset.is_public),
-        byte_size: asset.byte_size ?? undefined,
-        mime_type: asset.mime_type ?? undefined,
-        created_at: asset.created_at ?? undefined,
-      }))
-
-    return mappedAssets
-  } catch (error) {
-    log.warn('Failed to fetch document assets', { error })
-    return []
   }
 }
 

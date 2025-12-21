@@ -19,6 +19,7 @@ import {
   selectEnrichmentError,
 } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useToast } from '@/contexts/ToastContext'
 import { OpportunityCard } from './OpportunityCard'
 import { ScoutPreview } from './ScoutPreview'
 
@@ -41,6 +42,10 @@ export function ScoutGrid({ className }: ScoutGridProps) {
   const enrichmentStatusById = useScoutStore((state) => state.enrichmentStatusById)
   const enrichmentErrorById = useScoutStore((state) => state.enrichmentErrorById)
 
+  // Get filter/search state for empty state differentiation (must be before any early returns)
+  const filters = useScoutStore((state) => state.filters)
+  const hasActiveFilters = filters.searchQuery.trim() !== '' || filters.type !== null
+
   // Fetch opportunities on mount (if not already fetched)
   useEffect(() => {
     if (!hasFetched && !loading) {
@@ -58,6 +63,9 @@ export function ScoutGrid({ className }: ScoutGridProps) {
     [timelineEvents]
   )
 
+  // Toast notifications for delight
+  const { addedToTimeline: showAddedToast } = useToast()
+
   const handleAddToTimeline = useCallback(
     (opportunity: (typeof opportunities)[0]) => {
       // Add to Timeline store
@@ -65,8 +73,11 @@ export function ScoutGrid({ className }: ScoutGridProps) {
 
       // Also mark in Scout store for UI state
       markAddedToTimeline(opportunity.id)
+
+      // Show delightful toast notification
+      showAddedToast()
     },
-    [addFromOpportunity, markAddedToTimeline]
+    [addFromOpportunity, markAddedToTimeline, showAddedToast]
   )
 
   // Auth error state - show blurred preview with CTA
@@ -143,10 +154,6 @@ export function ScoutGrid({ className }: ScoutGridProps) {
       </div>
     )
   }
-
-  // Get filter/search state for empty state differentiation
-  const filters = useScoutStore((state) => state.filters)
-  const hasActiveFilters = filters.searchQuery.trim() !== '' || filters.type !== null
 
   // Empty state
   if (opportunities.length === 0) {

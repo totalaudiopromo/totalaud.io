@@ -16,16 +16,56 @@ import { useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IdeasCanvas, IdeasList, IdeasToolbar } from '@/components/workspace/ideas'
 import { useIdeasStore } from '@/stores/useIdeasStore'
-import { TimelineCanvas, TimelineToolbar, NextSteps } from '@/components/workspace/timeline'
-import { PitchCanvas, PitchToolbar } from '@/components/workspace/pitch'
-import { ScoutToolbar, ScoutGrid } from '@/components/workspace/scout'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
+import { TipBanner } from '@/components/onboarding'
+
+// Dynamic imports for code splitting - each mode loads only when needed
+const IdeasCanvas = dynamic(
+  () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasCanvas })),
+  { ssr: false }
+)
+const IdeasList = dynamic(
+  () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasList })),
+  { ssr: false }
+)
+const IdeasToolbar = dynamic(
+  () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasToolbar })),
+  { ssr: false }
+)
+const TimelineCanvas = dynamic(
+  () => import('@/components/workspace/timeline').then((m) => ({ default: m.TimelineCanvas })),
+  { ssr: false }
+)
+const TimelineToolbar = dynamic(
+  () => import('@/components/workspace/timeline').then((m) => ({ default: m.TimelineToolbar })),
+  { ssr: false }
+)
+const NextSteps = dynamic(
+  () => import('@/components/workspace/timeline').then((m) => ({ default: m.NextSteps })),
+  { ssr: false }
+)
+const PitchCanvas = dynamic(
+  () => import('@/components/workspace/pitch').then((m) => ({ default: m.PitchCanvas })),
+  { ssr: false }
+)
+const PitchToolbar = dynamic(
+  () => import('@/components/workspace/pitch').then((m) => ({ default: m.PitchToolbar })),
+  { ssr: false }
+)
+const ScoutCalmToolbar = dynamic(
+  () => import('@/components/workspace/scout').then((m) => ({ default: m.ScoutCalmToolbar })),
+  { ssr: false }
+)
+const ScoutCalmGrid = dynamic(
+  () => import('@/components/workspace/scout').then((m) => ({ default: m.ScoutCalmGrid })),
+  { ssr: false }
+)
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -66,6 +106,7 @@ function WorkspaceContent() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <IdeasToolbar />
+            <TipBanner tipId="ideas" className="mx-4 mt-3" />
             <div style={{ flex: 1, minHeight: 0 }}>
               {ideasViewMode === 'canvas' ? <IdeasCanvas /> : <IdeasList />}
             </div>
@@ -76,6 +117,7 @@ function WorkspaceContent() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <TimelineToolbar />
+            <TipBanner tipId="timeline" className="mx-4 mt-3" />
             <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: 0 }}>
               {/* Main canvas */}
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -111,6 +153,7 @@ function WorkspaceContent() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <PitchToolbar />
+            <TipBanner tipId="pitch" className="mx-4 mt-3" />
             <div style={{ flex: 1, minHeight: 0 }}>
               <PitchCanvas />
             </div>
@@ -120,9 +163,10 @@ function WorkspaceContent() {
       case 'scout':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <ScoutToolbar />
+            <ScoutCalmToolbar />
+            <TipBanner tipId="scout" className="mx-5 mt-3" />
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-              <ScoutGrid />
+              <ScoutCalmGrid />
             </div>
           </div>
         )
@@ -134,6 +178,7 @@ function WorkspaceContent() {
 
   return (
     <div
+      data-testid="workspace-container"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -155,14 +200,14 @@ function WorkspaceContent() {
           gap: 12,
         }}
       >
-        {/* Logo - just the TA logomark */}
+        {/* Logo - horizontal lockup with wordmark */}
         <Link href="/console" className="flex items-center gap-2 flex-shrink-0">
           <Image
-            src="/brand/svg/ta-logo-cyan.svg"
+            src="/brand/svg/lockup-horizontal-cyan.svg"
             alt="totalaud.io"
-            width={40}
+            width={160}
             height={40}
-            className="h-10 w-10"
+            className="h-8 w-auto"
             priority
           />
         </Link>
@@ -239,10 +284,10 @@ function WorkspaceContent() {
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{ height: '100%' }}
           >
             {renderModeContent()}

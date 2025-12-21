@@ -44,6 +44,7 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
   return (
     <motion.div
       ref={setNodeRef}
+      data-testid="timeline-event"
       {...listeners}
       {...attributes}
       onClick={handleClick}
@@ -89,14 +90,37 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
       </div>
       <div
         style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
           fontSize: 10,
           color: 'rgba(255, 255, 255, 0.4)',
         }}
       >
-        {event.dateObj.toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'short',
-        })}
+        <span>
+          {event.dateObj.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+          })}
+        </span>
+        {/* Scout source indicator */}
+        {event.opportunityId && (
+          <span
+            style={{
+              fontSize: 8,
+              padding: '1px 4px',
+              backgroundColor: 'rgba(58, 169, 190, 0.15)',
+              color: '#3AA9BE',
+              borderRadius: 3,
+              textTransform: 'uppercase',
+              letterSpacing: '0.03em',
+              fontWeight: 600,
+            }}
+            title="Added from Scout"
+          >
+            Scout
+          </span>
+        )}
       </div>
 
       {/* Tags (if present) */}

@@ -114,7 +114,7 @@ export async function GET(
     const offset = parseInt(searchParams.get('offset') || '0', 10)
 
     // Create authenticated client
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
 
     // Check authentication
     const {

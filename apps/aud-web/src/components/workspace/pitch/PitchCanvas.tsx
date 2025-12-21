@@ -12,12 +12,17 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { useAuthGate } from '@/components/auth'
+import { useToast } from '@/contexts/ToastContext'
+import { TypingIndicator } from '@/components/ui/EmptyState'
+import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
+
+import { CopyButton } from '@/components/ui/CopyButton'
 
 // Pitch template options
 const PITCH_TYPES: { key: PitchType; label: string; description: string }[] = [
@@ -47,6 +52,7 @@ export function PitchCanvas() {
   const router = useRouter()
   const { canAccess: isAuthenticated, requireAuth } = useAuthGate()
   const [showAuthPrompt, setShowAuthPrompt] = useState(false)
+  const { pitchCopied } = useToast()
 
   // Get state and actions from store
   const {
@@ -124,183 +130,67 @@ export function PitchCanvas() {
   // Template selection view
   if (!currentType) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          padding: '24px 16px',
-          overflowY: 'auto',
-          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-        }}
-      >
-        <h2
-          style={{
-            fontSize: 22,
-            fontWeight: 600,
-            color: '#F7F8F9',
-            marginBottom: 8,
-            letterSpacing: '-0.02em',
-            textAlign: 'center',
-          }}
+      <div className="flex flex-col items-center justify-center min-h-[500px] h-full p-6 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10"
         >
-          Choose your pitch type
-        </h2>
-        <p
-          style={{
-            fontSize: 14,
-            color: 'rgba(255, 255, 255, 0.5)',
-            marginBottom: 32,
-            maxWidth: 400,
-            textAlign: 'center',
-            padding: '0 16px',
-          }}
-        >
-          Select a template to get started. Our AI coach will help you craft the perfect pitch.
-        </p>
+          <h2 className="text-2xl font-semibold text-tap-white mb-2 tracking-tight">
+            Choose your pitch type
+          </h2>
+          <p className="text-sm text-tap-grey max-w-md mx-auto">
+            Select a template to get started. Our AI coach will help you craft the perfect pitch.
+          </p>
+        </motion.div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 12,
-            maxWidth: 600,
-            width: '100%',
-          }}
-        >
+        <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-2xl w-full">
           {PITCH_TYPES.map((type) => (
-            <motion.button
-              key={type.key}
-              onClick={() => selectType(type.key)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: 24,
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: 12,
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'border-color 0.2s ease, background-color 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.4)'
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.05)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)'
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: '#F7F8F9',
-                  marginBottom: 8,
-                }}
+            <StaggerItem key={type.key} className="h-full">
+              <motion.button
+                onClick={() => selectType(type.key)}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-tap-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
               >
-                {type.label}
-              </span>
-              <span
-                style={{
-                  fontSize: 13,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  lineHeight: 1.4,
-                }}
-              >
-                {type.description}
-              </span>
-            </motion.button>
+                {/* Hover Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                <span className="relative z-10 text-base font-semibold text-tap-white group-hover:text-white mb-2 block">
+                  {type.label}
+                </span>
+                <span className="relative z-10 text-xs text-tap-grey leading-relaxed">
+                  {type.description}
+                </span>
+              </motion.button>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggeredEntrance>
       </div>
     )
   }
 
   // Pitch editor view
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100%',
-        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-        position: 'relative',
-      }}
-    >
+    <div className="flex h-full relative font-sans">
       {/* Main editor */}
-      <div
-        style={{
-          flex: 1,
-          padding: '16px',
-          overflowY: 'auto',
-        }}
-      >
+      <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
         {/* Back button */}
         <button
           onClick={() => resetPitch()}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '8px 12px',
-            marginBottom: 24,
-            fontSize: 13,
-            color: 'rgba(255, 255, 255, 0.5)',
-            backgroundColor: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: 6,
-            cursor: 'pointer',
-            transition: 'color 0.2s ease, border-color 0.2s ease',
-            fontFamily: 'inherit',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#3AA9BE'
-            e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.3)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-          }}
+          className="flex items-center gap-2 px-3 py-2 mb-6 text-xs text-tap-grey hover:text-white transition-colors rounded-lg hover:bg-white/5"
         >
           ← Back to templates
         </button>
 
         {/* Pitch type header with TAP generate button */}
-        <div
-          style={{
-            marginBottom: 32,
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: 16,
-            flexWrap: 'wrap',
-          }}
-        >
+        <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h2
-              style={{
-                margin: 0,
-                marginBottom: 8,
-                fontSize: 22,
-                fontWeight: 600,
-                color: '#F7F8F9',
-              }}
-            >
+            <h2 className="text-2xl font-semibold text-tap-white mb-2 tracking-tight">
               {PITCH_TYPES.find((t) => t.key === currentType)?.label}
             </h2>
-            <p
-              style={{
-                margin: 0,
-                fontSize: 14,
-                color: 'rgba(255, 255, 255, 0.5)',
-              }}
-            >
+            <p className="text-sm text-tap-grey">
               {PITCH_TYPES.find((t) => t.key === currentType)?.description}
             </p>
           </div>
@@ -315,129 +205,55 @@ export function PitchCanvas() {
                 ? 'Sign up to generate pitches with TAP'
                 : 'Generate a pitch using TAP AI'
             }
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 16px',
-              fontSize: 13,
-              fontWeight: 500,
-              color: showAuthPrompt ? '#F97316' : '#3AA9BE',
-              backgroundColor: showAuthPrompt
-                ? 'rgba(249, 115, 22, 0.1)'
-                : 'rgba(58, 169, 190, 0.1)',
-              border: `1px solid ${showAuthPrompt ? 'rgba(249, 115, 22, 0.3)' : 'rgba(58, 169, 190, 0.3)'}`,
-              borderRadius: 8,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              fontFamily: 'inherit',
-              flexShrink: 0,
-            }}
-            onMouseEnter={(e) => {
-              if (!showAuthPrompt) {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.15)'
-                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.5)'
+            className={`
+              flex items-center gap-2 px-4 py-2.5 text-xs font-medium rounded-lg border transition-all duration-200
+              ${
+                showAuthPrompt
+                  ? 'bg-orange-500/10 border-orange-500/30 text-orange-500'
+                  : 'bg-tap-cyan/10 border-tap-cyan/30 text-tap-cyan hover:bg-tap-cyan/20 hover:border-tap-cyan/50'
               }
-            }}
-            onMouseLeave={(e) => {
-              if (!showAuthPrompt) {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)'
-                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.3)'
-              }
-            }}
+            `}
           >
-            <span style={{ fontSize: 14 }}>{'✦'}</span>
+            <span className="text-sm">✦</span>
             {showAuthPrompt ? 'Sign up to unlock' : 'Generate with TAP'}
           </motion.button>
         </div>
 
         {/* Sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {sections.map((section, index) => (
-            <motion.div
+        <StaggeredEntrance className="flex flex-col gap-6">
+          {sections.map((section) => (
+            <StaggerItem
               key={section.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              style={{
-                backgroundColor:
+              className={`
+                group rounded-xl border transition-all duration-300 overflow-hidden
+                ${
                   selectedSectionId === section.id
-                    ? 'rgba(58, 169, 190, 0.05)'
-                    : 'rgba(255, 255, 255, 0.02)',
-                border:
-                  selectedSectionId === section.id
-                    ? '1px solid rgba(58, 169, 190, 0.3)'
-                    : '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: 10,
-                overflow: 'hidden',
-                transition: 'border-color 0.2s ease, background-color 0.2s ease',
-              }}
+                    ? 'bg-[#161A1D]/80 border-tap-cyan/30 shadow-[0_0_20px_-10px_rgba(58,169,190,0.2)]'
+                    : 'bg-transparent border-white/5 hover:border-white/10'
+                }
+              `}
             >
               {/* Section header with coach actions */}
-              <div
-                style={{
-                  padding: '14px 20px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: 8,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: '#3AA9BE',
-                    }}
-                  >
-                    {section.title}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: 'rgba(255, 255, 255, 0.3)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    {index + 1}/{sections.length}
-                  </span>
+              <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-tap-cyan">{section.title}</span>
                 </div>
 
                 {/* Coach action buttons */}
-                <div style={{ display: 'flex', gap: 4 }}>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {section.content && (
+                    <CopyButton
+                      text={section.content}
+                      onCopy={pitchCopied}
+                      className="text-[10px] py-1 px-2 h-auto"
+                    />
+                  )}
                   {(['improve', 'suggest', 'rewrite'] as CoachAction[]).map((action) => (
                     <button
                       key={action}
                       onClick={() => requestCoach(section.id, action)}
                       disabled={isCoachLoading}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: 'rgba(255, 255, 255, 0.5)',
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: 4,
-                        cursor: isCoachLoading ? 'wait' : 'pointer',
-                        opacity: isCoachLoading ? 0.5 : 1,
-                        transition: 'all 0.15s ease',
-                        fontFamily: 'inherit',
-                        textTransform: 'capitalize',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isCoachLoading) {
-                          e.currentTarget.style.color = '#3AA9BE'
-                          e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.4)'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-                      }}
+                      className="px-2.5 py-1 text-[10px] font-medium text-tap-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
                     >
                       {action}
                     </button>
@@ -447,21 +263,8 @@ export function PitchCanvas() {
 
               {/* Placeholder hint (only when empty) */}
               {!section.content && (
-                <div
-                  style={{
-                    padding: '12px 20px',
-                    backgroundColor: 'rgba(58, 169, 190, 0.05)',
-                    borderBottom: '1px solid rgba(58, 169, 190, 0.1)',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 13,
-                      color: 'rgba(58, 169, 190, 0.9)',
-                      lineHeight: 1.5,
-                      fontStyle: 'italic',
-                    }}
-                  >
+                <div className="px-5 py-3 bg-tap-cyan/[0.03] border-b border-tap-cyan/5">
+                  <span className="text-xs text-tap-cyan/70 italic leading-relaxed">
                     {section.placeholder}
                   </span>
                 </div>
@@ -473,23 +276,12 @@ export function PitchCanvas() {
                 onChange={(e) => updateSection(section.id, e.target.value)}
                 onFocus={() => selectSection(section.id)}
                 placeholder="Start writing..."
-                style={{
-                  width: '100%',
-                  minHeight: 120,
-                  padding: '16px 20px',
-                  fontSize: 15,
-                  lineHeight: 1.6,
-                  color: '#F7F8F9',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  resize: 'vertical',
-                  fontFamily: 'inherit',
-                }}
+                className="w-full min-h-[120px] p-5 text-sm leading-relaxed text-tap-white bg-transparent border-none outline-none resize-none placeholder:text-tap-grey/30 focus:bg-white/[0.01] transition-colors"
+                style={{ resize: 'vertical' }}
               />
-            </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggeredEntrance>
       </div>
 
       {/* AI Coach sidebar */}
@@ -499,44 +291,18 @@ export function PitchCanvas() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              borderLeft: '1px solid rgba(255, 255, 255, 0.06)',
-              backgroundColor: 'rgba(15, 17, 19, 0.95)',
-              overflow: 'hidden',
-              flexShrink: 0,
-            }}
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="border-l border-white/5 bg-[#0F1113]/95 backdrop-blur-xl flex-shrink-0 relative z-20"
           >
-            <div style={{ padding: 24, width: 340, height: '100%', overflowY: 'auto' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 20,
-                }}
-              >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: 15,
-                    fontWeight: 600,
-                    color: '#F7F8F9',
-                  }}
-                >
+            <div className="p-6 h-full overflow-y-auto w-[340px]">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse" />
                   AI Coach
                 </h3>
                 <button
                   onClick={() => closeCoach()}
-                  style={{
-                    padding: '4px 8px',
-                    fontSize: 12,
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
+                  className="text-xs text-tap-grey hover:text-white transition-colors"
                 >
                   Close
                 </button>
@@ -544,68 +310,23 @@ export function PitchCanvas() {
 
               {/* Loading state */}
               {isCoachLoading && (
-                <div
-                  style={{
-                    padding: 16,
-                    backgroundColor: 'rgba(58, 169, 190, 0.08)',
-                    border: '1px solid rgba(58, 169, 190, 0.2)',
-                    borderRadius: 8,
-                    fontSize: 13,
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    lineHeight: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                  }}
-                >
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: 16,
-                      height: 16,
-                      border: '2px solid rgba(58, 169, 190, 0.3)',
-                      borderTopColor: '#3AA9BE',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite',
-                    }}
-                  />
-                  Thinking...
-                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                <div className="p-4 rounded-xl bg-tap-cyan/5 border border-tap-cyan/10 flex items-center gap-3">
+                  <TypingIndicator />
+                  <span className="text-xs text-tap-cyan/80">Thinking...</span>
                 </div>
               )}
 
               {/* Error state */}
               {coachError && !isCoachLoading && (
-                <div
-                  style={{
-                    padding: 16,
-                    backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                    border: '1px solid rgba(220, 38, 38, 0.3)',
-                    borderRadius: 8,
-                    fontSize: 13,
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    lineHeight: 1.5,
-                  }}
-                >
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-tap-white/90">
                   {coachError}
                 </div>
               )}
 
               {/* Coach response */}
               {coachResponse && !isCoachLoading && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div
-                    style={{
-                      padding: 16,
-                      backgroundColor: 'rgba(58, 169, 190, 0.08)',
-                      border: '1px solid rgba(58, 169, 190, 0.2)',
-                      borderRadius: 8,
-                      fontSize: 13,
-                      color: 'rgba(255, 255, 255, 0.85)',
-                      lineHeight: 1.6,
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-sm text-tap-white/90 leading-relaxed whitespace-pre-wrap shadow-inner">
                     {coachResponse}
                   </div>
 
@@ -617,24 +338,7 @@ export function PitchCanvas() {
                           applyCoachSuggestion(selectedSectionId, coachResponse)
                         }
                       }}
-                      style={{
-                        padding: '10px 16px',
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: '#0F1113',
-                        backgroundColor: '#3AA9BE',
-                        border: 'none',
-                        borderRadius: 6,
-                        cursor: 'pointer',
-                        transition: 'opacity 0.15s ease',
-                        fontFamily: 'inherit',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.9'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1'
-                      }}
+                      className="w-full py-2.5 text-xs font-semibold text-tap-black bg-tap-cyan hover:bg-tap-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
                     >
                       Apply to section
                     </button>
@@ -644,19 +348,9 @@ export function PitchCanvas() {
 
               {/* Default state */}
               {!isCoachLoading && !coachResponse && !coachError && (
-                <div
-                  style={{
-                    padding: 16,
-                    backgroundColor: 'rgba(58, 169, 190, 0.08)',
-                    border: '1px solid rgba(58, 169, 190, 0.2)',
-                    borderRadius: 8,
-                    fontSize: 13,
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  Click <strong>Improve</strong>, <strong>Suggest</strong>, or{' '}
-                  <strong>Rewrite</strong> on any section to get AI coaching feedback.
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-tap-grey leading-relaxed text-center">
+                  Select a section and click <strong>Improve</strong>, <strong>Suggest</strong>, or{' '}
+                  <strong>Rewrite</strong> to get real-time feedback.
                 </div>
               )}
             </div>
@@ -666,38 +360,16 @@ export function PitchCanvas() {
 
       {/* Coach toggle button (when closed) */}
       {!isCoachOpen && (
-        <button
+        <motion.button
           onClick={() => openCoach()}
-          style={{
-            position: 'absolute',
-            right: 24,
-            bottom: 24,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '12px 18px',
-            fontSize: 14,
-            fontWeight: 500,
-            color: '#0F1113',
-            backgroundColor: '#3AA9BE',
-            border: 'none',
-            borderRadius: 8,
-            cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(58, 169, 190, 0.3)',
-            transition: 'transform 0.12s ease, box-shadow 0.12s ease',
-            fontFamily: 'inherit',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(58, 169, 190, 0.4)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(58, 169, 190, 0.3)'
-          }}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-tap-black bg-tap-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
         >
-          Ask AI Coach
-        </button>
+          <span>✨</span> Ask AI Coach
+        </motion.button>
       )}
 
       {/* TAP Generate Modal */}

@@ -112,16 +112,29 @@ function toSupabaseIdea(
   }
 }
 
+// Type for the raw database row (with nullable position fields)
+interface DatabaseIdea {
+  id: string
+  user_id: string
+  content: string
+  tag: string
+  position_x: number | null
+  position_y: number | null
+  is_starter: boolean | null
+  created_at: string
+  updated_at: string
+}
+
 // Convert Supabase format to local card
-function fromSupabaseIdea(idea: SyncedIdea): IdeaCard {
+function fromSupabaseIdea(idea: DatabaseIdea): IdeaCard {
   return {
     id: idea.id,
     content: idea.content,
     tag: idea.tag as IdeaTag,
-    position: { x: idea.position_x, y: idea.position_y },
+    position: { x: idea.position_x ?? 100, y: idea.position_y ?? 100 },
     createdAt: idea.created_at,
     updatedAt: idea.updated_at,
-    isStarter: idea.is_starter,
+    isStarter: idea.is_starter ?? false,
   }
 }
 

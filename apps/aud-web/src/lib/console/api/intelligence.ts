@@ -125,7 +125,8 @@ export const intelligenceAPI = {
       body: JSON.stringify({ question }),
     })
     if (!res.ok) throw new Error('Navigator request failed')
-    return res.json()
+    const data = await res.json()
+    return data
   },
 
   // Correlations
