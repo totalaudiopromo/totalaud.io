@@ -178,16 +178,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
       onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        zIndex: 100,
-      }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-50 backdrop-blur-sm"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -196,160 +187,68 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
-        style={{
-          backgroundColor: '#1A1D21',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 12,
-          width: '100%',
-          maxWidth: 420,
-          padding: 24,
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.4)',
-        }}
+        className="bg-[#1A1D21] border border-white/10 rounded-xl w-full max-w-md p-6 shadow-2xl relative"
       >
         {/* Header with lane colour indicator */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}
-        >
+        <div className="flex items-center gap-3 mb-5">
           <div
+            className="w-3 h-3 rounded-full shadow-[0_0_12px]"
             style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
               backgroundColor: LANES.find((l) => l.id === lane)?.colour ?? '#6B7280',
-              boxShadow: `0 0 12px ${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,
+              boxShadowColor: `${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,
             }}
           />
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.4)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
+          <span className="text-[11px] font-medium text-tap-grey/60 uppercase tracking-wider">
             Edit Event
           </span>
         </div>
 
         {/* Title input */}
-        <div style={{ marginBottom: 16 }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.5)',
-              marginBottom: 6,
-            }}
-          >
-            Title
-          </label>
+        <div className="mb-4">
+          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Title</label>
           <input
             ref={titleRef}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Event title..."
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              fontSize: 14,
-              color: 'rgba(255, 255, 255, 0.9)',
-              outline: 'none',
-              fontFamily: 'inherit',
-            }}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white placeholder-tap-grey/30 focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors"
           />
         </div>
 
         {/* Date input */}
-        <div style={{ marginBottom: 16 }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.5)',
-              marginBottom: 6,
-            }}
-          >
-            Date
-          </label>
+        <div className="mb-4">
+          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Date</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              fontSize: 14,
-              color: 'rgba(255, 255, 255, 0.9)',
-              outline: 'none',
-              fontFamily: 'inherit',
-              colorScheme: 'dark',
-            }}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors [color-scheme:dark]"
           />
         </div>
 
         {/* Lane select */}
-        <div style={{ marginBottom: 16 }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.5)',
-              marginBottom: 6,
-            }}
-          >
-            Lane
-          </label>
-          <select
-            value={lane}
-            onChange={(e) => setLane(e.target.value as LaneType)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              fontSize: 14,
-              color: 'rgba(255, 255, 255, 0.9)',
-              outline: 'none',
-              fontFamily: 'inherit',
-              cursor: 'pointer',
-            }}
-          >
-            {LANES.map((l) => (
-              <option key={l.id} value={l.id} style={{ backgroundColor: '#1A1D21' }}>
-                {l.label}
-              </option>
-            ))}
-          </select>
+        <div className="mb-4">
+          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Lane</label>
+          <div className="relative">
+            <select
+              value={lane}
+              onChange={(e) => setLane(e.target.value as LaneType)}
+              className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors appearance-none cursor-pointer"
+            >
+              {LANES.map((l) => (
+                <option key={l.id} value={l.id} className="bg-[#1A1D21]">
+                  {l.label}
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow if needed, but standard one is usually fine in dark mode on Mac */}
+          </div>
         </div>
 
         {/* Description textarea */}
-        <div style={{ marginBottom: 20 }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 11,
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.5)',
-              marginBottom: 6,
-            }}
-          >
+        <div className="mb-5">
+          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">
             Description (optional)
           </label>
           <textarea
@@ -357,49 +256,19 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add notes..."
             rows={3}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              fontSize: 13,
-              color: 'rgba(255, 255, 255, 0.8)',
-              outline: 'none',
-              fontFamily: 'inherit',
-              resize: 'vertical',
-              minHeight: 60,
-            }}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white placeholder-tap-grey/30 focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors resize-none min-h-[80px]"
           />
         </div>
 
         {/* URL display (if present) */}
         {event.url && (
-          <div style={{ marginBottom: 20 }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: 11,
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.5)',
-                marginBottom: 6,
-              }}
-            >
-              Link
-            </label>
+          <div className="mb-5">
+            <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Link</label>
             <a
               href={event.url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'block',
-                fontSize: 12,
-                color: '#3AA9BE',
-                textDecoration: 'none',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+              className="block text-xs text-tap-cyan truncate hover:underline"
             >
               {event.url}
             </a>
@@ -408,29 +277,13 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
 
         {/* Tags display (if present) */}
         {event.tags && event.tags.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: 11,
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.5)',
-                marginBottom: 6,
-              }}
-            >
-              Tags
-            </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div className="mb-5">
+            <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Tags</label>
+            <div className="flex flex-wrap gap-2">
               {event.tags.map((tag) => (
                 <span
                   key={tag}
-                  style={{
-                    fontSize: 11,
-                    padding: '4px 8px',
-                    backgroundColor: 'rgba(58, 169, 190, 0.15)',
-                    borderRadius: 4,
-                    color: 'rgba(255, 255, 255, 0.6)',
-                  }}
+                  className="px-2 py-1 text-[11px] bg-tap-cyan/15 rounded text-tap-grey/80 border border-tap-cyan/10"
                 >
                   {tag}
                 </span>
@@ -442,150 +295,83 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         {/* TAP Tracker sync section */}
         {event.source !== 'sample' && (
           <div
-            style={{
-              marginBottom: 20,
-              padding: 12,
-              backgroundColor: isSynced ? 'rgba(73, 163, 108, 0.1)' : 'rgba(58, 169, 190, 0.05)',
-              border: isSynced
-                ? '1px solid rgba(73, 163, 108, 0.2)'
-                : '1px solid rgba(58, 169, 190, 0.15)',
-              borderRadius: 8,
-            }}
+            className={`mb-5 p-3 rounded-lg border flex items-center justify-between gap-3
+              ${
+                isSynced
+                  ? 'bg-emerald-500/10 border-emerald-500/20'
+                  : 'bg-tap-cyan/5 border-tap-cyan/15'
+              }
+            `}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: isSynced ? '#49A36C' : 'rgba(255, 255, 255, 0.6)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: 4,
-                  }}
-                >
-                  {isSynced ? '✓ Logged to TAP Tracker' : 'TAP Tracker'}
-                </div>
-                {isSynced && event.trackerSyncedAt && (
-                  <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.4)' }}>
-                    Synced {new Date(event.trackerSyncedAt).toLocaleDateString('en-GB')}
-                  </div>
-                )}
-                {syncError && (
-                  <div style={{ fontSize: 11, color: '#EF4444', marginTop: 4 }}>{syncError}</div>
-                )}
+            <div>
+              <div
+                className={`text-[11px] font-semibold uppercase tracking-wider mb-0.5
+                  ${isSynced ? 'text-emerald-500' : 'text-tap-grey'}
+                `}
+              >
+                {isSynced ? '✓ Logged to TAP Tracker' : 'TAP Tracker'}
               </div>
-
-              {!isSynced && (
-                <button
-                  onClick={handleSyncToTracker}
-                  disabled={!canSync && syncStatus !== 'idle'}
-                  title={
-                    !isAuthenticated
-                      ? 'Sign up to sync events to TAP Tracker'
-                      : 'Sync this event to TAP Tracker'
-                  }
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 14px',
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: showAuthPrompt
-                      ? '#F97316'
-                      : syncStatus === 'syncing'
-                        ? 'rgba(58, 169, 190, 0.6)'
-                        : '#3AA9BE',
-                    backgroundColor: showAuthPrompt ? 'rgba(249, 115, 22, 0.1)' : 'transparent',
-                    border: `1px solid ${showAuthPrompt ? 'rgba(249, 115, 22, 0.3)' : 'rgba(58, 169, 190, 0.3)'}`,
-                    borderRadius: 6,
-                    cursor: canSync || !isAuthenticated ? 'pointer' : 'wait',
-                    transition: 'all 0.15s ease',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  {showAuthPrompt ? (
-                    'Sign up to unlock'
-                  ) : syncStatus === 'syncing' ? (
-                    <>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          width: 12,
-                          height: 12,
-                          border: '2px solid rgba(58, 169, 190, 0.3)',
-                          borderTopColor: '#3AA9BE',
-                          borderRadius: '50%',
-                          animation: 'spin 1s linear infinite',
-                        }}
-                      />
-                      Syncing...
-                    </>
-                  ) : syncStatus === 'error' ? (
-                    'Retry'
-                  ) : (
-                    'Log to TAP'
-                  )}
-                </button>
+              {isSynced && event.trackerSyncedAt && (
+                <div className="text-[11px] text-tap-grey/50">
+                  Synced {new Date(event.trackerSyncedAt).toLocaleDateString('en-GB')}
+                </div>
               )}
+              {syncError && <div className="text-[11px] text-red-400 mt-0.5">{syncError}</div>}
             </div>
+
+            {!isSynced && (
+              <button
+                onClick={handleSyncToTracker}
+                disabled={!canSync && syncStatus !== 'idle'}
+                title={
+                  !isAuthenticated
+                    ? 'Sign up to sync events to TAP Tracker'
+                    : 'Sync this event to TAP Tracker'
+                }
+                className={`
+                  flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all
+                  ${
+                    showAuthPrompt
+                      ? 'bg-orange-500/10 border-orange-500/30 text-orange-500'
+                      : syncStatus === 'syncing'
+                        ? 'bg-transparent text-tap-cyan/60 border-tap-cyan/30'
+                        : 'bg-transparent text-tap-cyan border-tap-cyan/30 hover:bg-tap-cyan/10'
+                  }
+                  ${!canSync && syncStatus !== 'idle' ? 'cursor-wait' : 'cursor-pointer'}
+                `}
+              >
+                {showAuthPrompt ? (
+                  'Sign up to unlock'
+                ) : syncStatus === 'syncing' ? (
+                  <>
+                    <span className="w-3 h-3 border-2 border-tap-cyan/30 border-t-tap-cyan rounded-full animate-spin" />
+                    Syncing...
+                  </>
+                ) : syncStatus === 'error' ? (
+                  'Retry'
+                ) : (
+                  'Log to TAP'
+                )}
+              </button>
+            )}
           </div>
         )}
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
         {/* Cross-mode: Create Pitch button */}
         {event.source !== 'sample' && (
-          <div style={{ marginBottom: 16 }}>
+          <div className="mb-4">
             <button
               onClick={handleCreatePitch}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                padding: '12px 16px',
-                fontSize: 13,
-                fontWeight: 500,
-                color: '#A855F7',
-                backgroundColor: 'rgba(168, 85, 247, 0.08)',
-                border: '1px solid rgba(168, 85, 247, 0.25)',
-                borderRadius: 8,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                fontFamily: 'inherit',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.15)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.08)'
-              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-medium text-purple-400 bg-purple-500/10 border border-purple-500/25 rounded-lg hover:bg-purple-500/15 hover:text-purple-300 transition-all"
             >
-              <span style={{ fontSize: 14 }}>✍️</span>
+              <span>✍️</span>
               Create Pitch from Event
             </button>
           </div>
         )}
 
         {/* Action buttons */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-            paddingTop: 16,
-          }}
-        >
+        <div className="flex items-center justify-between pt-4 border-t border-white/5">
           {/* Delete button */}
           <AnimatePresence mode="wait">
             {showDeleteConfirm ? (
@@ -594,36 +380,18 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                style={{ display: 'flex', gap: 8, alignItems: 'center' }}
+                className="flex items-center gap-2"
               >
-                <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.5)' }}>Delete?</span>
+                <span className="text-xs text-tap-grey/60">Delete?</span>
                 <button
                   onClick={handleDelete}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#EF4444',
-                    border: 'none',
-                    borderRadius: 4,
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: 'white',
-                    cursor: 'pointer',
-                  }}
+                  className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded hover:bg-red-600 transition-colors"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: 4,
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    cursor: 'pointer',
-                  }}
+                  className="px-3 py-1.5 bg-transparent border border-white/20 text-tap-grey text-xs font-medium rounded hover:text-white transition-colors"
                 >
                   No
                 </button>
@@ -635,16 +403,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowDeleteConfirm(true)}
-                style={{
-                  padding: '6px 12px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: 4,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: '#EF4444',
-                  cursor: 'pointer',
-                }}
+                className="px-3 py-1.5 bg-transparent border border-red-500/30 text-red-400 text-xs font-medium rounded hover:bg-red-500/10 transition-colors"
               >
                 Delete
               </motion.button>
@@ -652,36 +411,24 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
           </AnimatePresence>
 
           {/* Save/Cancel */}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: 'transparent',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: 6,
-                fontSize: 13,
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.6)',
-                cursor: 'pointer',
-              }}
+              className="px-4 py-2 bg-transparent border border-white/10 text-tap-grey text-xs font-medium rounded-lg hover:text-white transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!title.trim()}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: hasChanges ? '#3AA9BE' : 'rgba(58, 169, 190, 0.3)',
-                border: 'none',
-                borderRadius: 6,
-                fontSize: 13,
-                fontWeight: 500,
-                color: hasChanges ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                cursor: title.trim() ? 'pointer' : 'not-allowed',
-                opacity: title.trim() ? 1 : 0.5,
-              }}
+              className={`
+                px-4 py-2 border-none rounded-lg text-xs font-medium transition-all
+                ${
+                  hasChanges
+                    ? 'bg-tap-cyan text-tap-black hover:bg-tap-cyan/90 cursor-pointer'
+                    : 'bg-tap-cyan/20 text-white/50 cursor-not-allowed'
+                }
+              `}
             >
               Save
             </button>
@@ -689,14 +436,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         </div>
 
         {/* Keyboard hint */}
-        <div
-          style={{
-            marginTop: 12,
-            textAlign: 'center',
-            fontSize: 10,
-            color: 'rgba(255, 255, 255, 0.3)',
-          }}
-        >
+        <div className="mt-3 text-center text-[10px] text-tap-grey/30">
           ⌘Enter to save • Esc to cancel
         </div>
       </motion.div>

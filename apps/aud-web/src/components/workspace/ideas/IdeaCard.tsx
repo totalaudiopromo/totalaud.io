@@ -150,50 +150,43 @@ export function IdeaCard({
         y: card.position.y,
       }}
       transition={{
-        duration: 0.12,
+        duration: 0.2,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ scale: isSelected || isDragging ? 1 : 1.02 }}
+      whileHover={{ scale: isSelected || isDragging ? 1 : 1.02, y: -2 }}
       onClick={onSelect}
       onDoubleClick={handleDoubleClick}
+      className={`
+        absolute w-[220px] min-h-[100px] p-4 rounded-xl backdrop-blur-md transition-all duration-200 group
+        ${isDragging ? 'cursor-grabbing z-50 scale-105 shadow-2xl' : 'cursor-grab z-10'}
+        ${
+          isSelected
+            ? 'bg-[#161A1D] border-tap-cyan/40 shadow-[0_0_20px_-5px_rgba(58,169,190,0.3)]'
+            : 'bg-[#161A1D]/80 border-white/5 hover:border-white/20 hover:bg-[#161A1D] shadow-lg'
+        }
+        border
+      `}
       style={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: 200,
-        minHeight: 80,
-        backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.03)',
-        border: `1px solid ${isSelected ? tagColour.border : 'rgba(255, 255, 255, 0.08)'}`,
-        borderRadius: 8,
-        padding: 12,
-        cursor: isDragging ? 'grabbing' : 'grab',
-        userSelect: 'none',
         boxShadow: isSelected
-          ? `0 0 0 1px ${tagColour.border}, 0 4px 12px rgba(0, 0, 0, 0.2)`
-          : '0 2px 8px rgba(0, 0, 0, 0.15)',
-        zIndex: isSelected || isDragging ? 100 : 1,
+          ? `0 0 0 1px ${tagColour.border}, 0 8px 24px -4px rgba(0, 0, 0, 0.4)`
+          : undefined,
       }}
     >
       {/* Tag pill */}
       <button
         onClick={handleTagClick}
+        className="
+          inline-flex items-center gap-1.5 px-2.5 py-1 mb-3
+          rounded-full text-[10px] font-semibold uppercase tracking-wider
+          border transition-all hover:scale-105
+        "
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          padding: '2px 8px',
-          backgroundColor: tagColour.bg,
-          border: `1px solid ${tagColour.border}`,
-          borderRadius: 12,
-          fontSize: 10,
-          fontWeight: 500,
+          backgroundColor: `${tagColour.bg}15`,
+          borderColor: tagColour.border,
           color: tagColour.text,
-          textTransform: 'lowercase',
-          cursor: 'pointer',
-          marginBottom: 8,
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
         }}
       >
+        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tagColour.text }} />
         {card.tag}
       </button>
 
@@ -205,97 +198,39 @@ export function IdeaCard({
           onChange={(e) => setEditContent(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          style={{
-            width: '100%',
-            minHeight: 40,
-            backgroundColor: 'transparent',
-            border: 'none',
-            outline: 'none',
-            resize: 'none',
-            fontSize: 13,
-            lineHeight: 1.5,
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-          }}
+          className="w-full min-h-[60px] bg-transparent border-none outline-none resize-none text-sm text-tap-white leading-relaxed font-sans placeholder:text-tap-grey/30"
+          autoFocus
         />
       ) : (
-        <p
-          style={{
-            margin: 0,
-            fontSize: 13,
-            lineHeight: 1.5,
-            color: 'rgba(255, 255, 255, 0.85)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-          }}
-        >
-          {card.content || (
-            <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Double-click to edit...</span>
-          )}
+        <p className="text-sm text-tap-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
+          {card.content || <span className="text-tap-grey/40 italic">Double-click to edit...</span>}
         </p>
       )}
 
       {/* Action buttons (visible on hover/select) */}
-      {isSelected && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.12 }}
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            display: 'flex',
-            gap: 4,
-          }}
-        >
-          {/* Send to Timeline button */}
-          {onSendToTimeline && (
-            <button
-              onClick={handleSendToTimeline}
-              style={{
-                width: 20,
-                height: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px solid rgba(58, 169, 190, 0.3)',
-                borderRadius: 4,
-                color: '#3AA9BE',
-                fontSize: 11,
-                cursor: 'pointer',
-              }}
-              aria-label="Send to Timeline"
-              title="Add to Timeline"
-            >
-              →
-            </button>
-          )}
-          {/* Delete button */}
+      <div
+        className={`absolute top-3 right-3 flex gap-1.5 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+      >
+        {/* Send to Timeline button */}
+        {onSendToTimeline && (
           <button
-            onClick={handleDeleteClick}
-            style={{
-              width: 20,
-              height: 20,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: 4,
-              color: '#EF4444',
-              fontSize: 12,
-              cursor: 'pointer',
-            }}
-            aria-label="Delete card"
+            onClick={handleSendToTimeline}
+            className="flex items-center justify-center w-6 h-6 rounded bg-tap-cyan/10 border border-tap-cyan/20 text-tap-cyan hover:bg-tap-cyan hover:text-tap-black transition-colors"
+            aria-label="Send to Timeline"
+            title="Add to Timeline"
           >
-            ×
+            <span className="text-xs">→</span>
           </button>
-        </motion.div>
-      )}
+        )}
+        {/* Delete button */}
+        <button
+          onClick={handleDeleteClick}
+          className="flex items-center justify-center w-6 h-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+          aria-label="Delete card"
+        >
+          <span className="text-sm">×</span>
+        </button>
+      </div>
     </motion.div>
   )
 }

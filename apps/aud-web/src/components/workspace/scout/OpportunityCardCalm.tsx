@@ -1,15 +1,10 @@
-/**
- * OpportunityCardCalm
- *
- * Balanced opportunity card - informative but clean
- */
-
 'use client'
 
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Opportunity } from '@/types/scout'
 import { TYPE_LABELS, TYPE_COLOURS, AUDIENCE_SIZE_LABELS } from '@/types/scout'
+import { PlusIcon, CheckIcon } from '@heroicons/react/24/outline'
 
 interface OpportunityCardCalmProps {
   opportunity: Opportunity
@@ -50,107 +45,91 @@ export function OpportunityCardCalm({
       }}
       tabIndex={0}
       role="button"
-      aria-label={`View details for ${opportunity.name}`}
+      className="group relative h-full flex flex-col p-5 rounded-xl bg-[#161A1D] border border-white/5 overflow-hidden transition-all duration-300 hover:border-tap-cyan/30"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -2 }}
-      transition={{ duration: 0.12 }}
-      className="
-        group cursor-pointer
-        p-4 rounded-xl
-        bg-white/[0.025] border border-white/[0.05]
-        hover:bg-white/[0.04] hover:border-white/[0.1]
-        hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]
-        backdrop-blur-sm
-        focus:outline-none focus:ring-2 focus:ring-[#3AA9BE]/50
-        transition-all duration-[240ms] ease-out
-      "
     >
-      {/* Header: Type badge + Pitched badge + Audience */}
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <div className="flex items-center gap-1.5">
-          <span
-            className="text-[10px] font-medium px-2 py-0.5 rounded"
-            style={{
-              backgroundColor: typeColour.bg,
-              color: typeColour.text,
-              border: `1px solid ${typeColour.border}`,
-            }}
-          >
-            {TYPE_LABELS[opportunity.type]}
-          </span>
+      {/* Ambient Glow on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-          {/* Pitched badge */}
-          {isPitched && (
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
             <span
-              className="text-[10px] font-medium px-2 py-0.5 rounded"
+              className="px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider border"
               style={{
-                backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                color: '#A855F7',
-                border: '1px solid rgba(168, 85, 247, 0.3)',
+                backgroundColor: `${typeColour.bg}05`, // Very subtle
+                color: typeColour.text,
+                borderColor: `${typeColour.border}40`,
               }}
             >
-              ✍️ Pitched
+              {TYPE_LABELS[opportunity.type]}
             </span>
-          )}
+
+            {isPitched && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                Pitched
+              </span>
+            )}
+          </div>
+
+          <span className="text-[10px] text-tap-grey/60 font-mono uppercase tracking-wide">
+            {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
+          </span>
         </div>
 
-        <span className="text-[10px] text-white/30 uppercase tracking-wide">
-          {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
-        </span>
-      </div>
+        {/* Title & Desc */}
+        <h3 className="text-base font-medium text-tap-white leading-snug mb-2 line-clamp-1 group-hover:text-white transition-colors">
+          {opportunity.name}
+        </h3>
 
-      {/* Name */}
-      <h3 className="text-sm font-medium text-white/90 leading-snug mb-1 line-clamp-1">
-        {opportunity.name}
-      </h3>
-
-      {/* Description - always visible but truncated */}
-      {opportunity.description && (
-        <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-3">
-          {opportunity.description}
+        <p className="text-xs text-tap-grey leading-relaxed line-clamp-2 mb-4">
+          {opportunity.description || 'No description available for this contact.'}
         </p>
-      )}
 
-      {/* Footer: Genres + Action */}
-      <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/[0.04]">
-        {/* Genres */}
-        <div className="flex gap-1.5 min-w-0 flex-1">
-          {opportunity.genres.slice(0, 2).map((genre) => (
-            <span
-              key={genre}
-              className="text-[10px] text-white/30 bg-white/[0.03] px-1.5 py-0.5 rounded truncate"
-            >
-              {genre}
-            </span>
-          ))}
-          {opportunity.genres.length > 2 && (
-            <span className="text-[10px] text-white/20">+{opportunity.genres.length - 2}</span>
-          )}
+        {/* Footer */}
+        <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5 group-hover:border-white/10 transition-colors">
+          {/* Genre Tags */}
+          <div className="flex flex-wrap gap-1.5 min-w-0 pr-4">
+            {opportunity.genres.slice(0, 2).map((genre) => (
+              <span
+                key={genre}
+                className="text-[10px] text-tap-grey/80 bg-white/5 px-1.5 py-0.5 rounded border border-transparent group-hover:border-white/5 transition-all"
+              >
+                {genre}
+              </span>
+            ))}
+            {opportunity.genres.length > 2 && (
+              <span className="text-[10px] text-tap-grey/50 self-center">
+                +{opportunity.genres.length - 2}
+              </span>
+            )}
+          </div>
+
+          {/* Action Button */}
+          <motion.button
+            onClick={handleAdd}
+            disabled={isAddedToTimeline}
+            whileTap={{ scale: 0.95 }}
+            className={`
+              flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-200
+              ${
+                isAddedToTimeline
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 cursor-default'
+                  : 'bg-white/5 border-white/10 text-tap-grey hover:bg-tap-cyan hover:border-tap-cyan hover:text-tap-black hover:shadow-[0_0_12px_rgba(58,169,190,0.4)]'
+              }
+            `}
+          >
+            {isAddedToTimeline ? (
+              <CheckIcon className="w-4 h-4" />
+            ) : (
+              <PlusIcon className="w-4 h-4" />
+            )}
+          </motion.button>
         </div>
-
-        {/* Add button */}
-        <motion.button
-          onClick={handleAdd}
-          disabled={isAddedToTimeline}
-          aria-label={
-            isAddedToTimeline
-              ? `Already added ${opportunity.name}`
-              : `Add ${opportunity.name} to timeline`
-          }
-          whileTap={{ scale: 0.95 }}
-          className={`
-            shrink-0 px-3 py-1 rounded text-xs font-medium
-            transition-all duration-[120ms]
-            ${
-              isAddedToTimeline
-                ? 'bg-emerald-500/10 text-emerald-400/60 cursor-default'
-                : 'bg-white/[0.06] text-white/60 hover:bg-[#3AA9BE]/20 hover:text-[#3AA9BE]'
-            }
-          `}
-        >
-          {isAddedToTimeline ? 'Added' : '+ Add'}
-        </motion.button>
       </div>
     </motion.article>
   )

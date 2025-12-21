@@ -17,6 +17,7 @@ import { useToast } from '@/contexts/ToastContext'
 import { OpportunityCardCalm } from './OpportunityCardCalm'
 import { ScoutPreview } from './ScoutPreview'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
+import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
 
 const ITEMS_PER_PAGE = 12
 
@@ -124,16 +125,10 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   return (
     <div className={`${className} p-5`}>
       {/* Grid - 3 columns on desktop, fills width */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <AnimatePresence mode="popLayout">
-          {visibleOpportunities.map((opp, index) => (
-            <motion.div
-              key={opp.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, delay: index * 0.02 }}
-            >
+          {visibleOpportunities.map((opp) => (
+            <StaggerItem key={opp.id} className="h-full">
               <OpportunityCardCalm
                 opportunity={opp}
                 isAddedToTimeline={isInTimeline(opp.id)}
@@ -141,10 +136,10 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
                 onAddToTimeline={() => handleAddToTimeline(opp)}
                 onSelect={() => selectOpportunity(opp.id)}
               />
-            </motion.div>
+            </StaggerItem>
           ))}
         </AnimatePresence>
-      </div>
+      </StaggeredEntrance>
 
       {hasMore && (
         <div className="mt-6 text-center">
