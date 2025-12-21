@@ -95,7 +95,10 @@ const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [
 
 export function MobileNav({ mode, onModeChange }: MobileNavProps) {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-14 flex items-center justify-around bg-tap-black/[0.98] backdrop-blur-xl border-t border-tap-white/[0.06] z-50 pb-[env(safe-area-inset-bottom)]">
+    <nav
+      data-testid="mobile-nav"
+      className="md:hidden fixed bottom-0 left-0 right-0 h-14 flex items-center justify-around bg-tap-black/[0.98] backdrop-blur-xl border-t border-tap-white/[0.06] z-50 pb-[env(safe-area-inset-bottom)]"
+    >
       {MODES.map((modeConfig) => {
         const isActive = mode === modeConfig.key
 

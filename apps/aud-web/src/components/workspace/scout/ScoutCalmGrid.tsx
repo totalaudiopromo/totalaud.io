@@ -123,7 +123,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   }
 
   return (
-    <div className={`${className} p-5`}>
+    <div className={`${className} p-5`} data-testid="scout-grid">
       {/* Grid - 3 columns on desktop, fills width */}
       <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <AnimatePresence mode="popLayout">
