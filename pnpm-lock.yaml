@@ -175,8 +175,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.18(tsx@4.20.6)
       typescript:
-        specifier: ^5
-        version: 5.9.3
+        specifier: 5.6.3
+        version: 5.6.3
       vitest:
         specifier: ^4.0.3
         version: 4.0.3(@types/node@20.19.22)(@vitest/ui@4.0.3)(jsdom@26.1.0)(tsx@4.20.6)
@@ -6455,6 +6455,12 @@ packages:
       is-typed-array: 1.1.15
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
+    dev: true
+
+  /typescript@5.6.3:
+    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
     dev: true
 
   /typescript@5.9.3:
