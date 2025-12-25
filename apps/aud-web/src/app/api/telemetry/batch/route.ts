@@ -14,10 +14,28 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('TelemetryBatchAPI')
+
+// Validation schemas
+const telemetryEventSchema = z.object({
+  event_type: z.enum(['save', 'share', 'agentRun', 'tabChange', 'idle', 'sessionStart', 'sessionEnd']),
+  duration_ms: z.number().optional(),
+  metadata: z.record(z.unknown()).optional(),
+  created_at: z.string().optional(),
+})
+
+const batchRequestSchema = z.object({
+  campaignId: z.string().uuid().optional(),
+  events: z
+    .array(telemetryEventSchema)
+    .min(1, 'Events array cannot be empty')
+    .max(50, 'Maximum 50 events per batch'),
+})
 
 interface TelemetryEvent {
   event_type: 'save' | 'share' | 'agentRun' | 'tabChange' | 'idle' | 'sessionStart' | 'sessionEnd'
@@ -42,44 +60,8 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    const body = (await request.json()) as BatchRequest
-    const { campaignId, events } = body
-
-    // Validation
-    if (!events || !Array.isArray(events)) {
-      return NextResponse.json({ error: 'Events array is required' }, { status: 400 })
-    }
-
-    if (events.length === 0) {
-      return NextResponse.json({ error: 'Events array cannot be empty' }, { status: 400 })
-    }
-
-    if (events.length > 50) {
-      return NextResponse.json({ error: 'Maximum 50 events per batch' }, { status: 400 })
-    }
-
-    // Validate event structure
-    for (const event of events) {
-      if (!event.event_type) {
-        return NextResponse.json({ error: 'All events must have event_type' }, { status: 400 })
-      }
-
-      const validEventTypes = [
-        'save',
-        'share',
-        'agentRun',
-        'tabChange',
-        'idle',
-        'sessionStart',
-        'sessionEnd',
-      ]
-      if (!validEventTypes.includes(event.event_type)) {
-        return NextResponse.json(
-          { error: `Invalid event_type: ${event.event_type}` },
-          { status: 400 }
-        )
-      }
-    }
+    // Validate request body
+    const { campaignId, events } = await validateRequestBody(request, batchRequestSchema)
 
     const supabase = await createRouteSupabaseClient()
     const {
@@ -141,6 +123,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response)
   } catch (error) {
     const duration = Date.now() - startTime
+
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors, duration })
+      return validationErrorResponse(error)
+    }
+
     log.error('Telemetry batch API error', error, { duration })
 
     return NextResponse.json(

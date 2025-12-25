@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import {
   extractEmailsFromHtml,
   verifyEmailsBatchFromSource,
@@ -21,8 +22,14 @@ import {
   determineOutletType,
 } from '@/lib/discovery'
 import { logger } from '@/lib/logger'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('Scout Discovery')
+
+// Validation schema
+const discoverRequestSchema = z.object({
+  url: z.string().url('Invalid URL format'),
+})
 
 export interface DiscoveredContact {
   id: string
@@ -53,22 +60,8 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    const { url } = await request.json()
-
-    if (!url || typeof url !== 'string') {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 })
-    }
-
-    // Validate URL
-    let parsedUrl: URL
-    try {
-      parsedUrl = new URL(url)
-      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-        throw new Error('Invalid protocol')
-      }
-    } catch {
-      return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
-    }
+    // Validate request body
+    const { url } = await validateRequestBody(request, discoverRequestSchema)
 
     const sourceDomain = extractDomainFromUrl(url)
 
@@ -179,6 +172,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors })
+      return validationErrorResponse(error)
+    }
+
     log.error('Discovery error', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Discovery failed' },

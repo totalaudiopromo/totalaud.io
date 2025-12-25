@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('EpkCommentsAPI')
+
+// Validation schema
+const createCommentSchema = z.object({
+  body: z.string().min(1, 'Comment body is required').max(5000, 'Comment too long'),
+  parentId: z.string().uuid().nullable().optional(),
+})
 
 interface CommentRow {
   id: string
@@ -120,10 +128,12 @@ export async function POST(
 ) {
   try {
     const { epkId } = await params
-    const body = (await request.json()) as { body?: string; parentId?: string | null }
-    if (!body.body || !body.body.trim()) {
-      return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
-    }
+
+    // Validate request body
+    const { body: commentBody, parentId } = await validateRequestBody(
+      request,
+      createCommentSchema
+    )
 
     const supabase = await createRouteSupabaseClient()
     const {
@@ -139,7 +149,6 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
-    const parentId = body.parentId ?? null
 
     const { data: roleRecord, error: roleError } = await supabase
       .from('campaign_collaborators')
@@ -160,8 +169,8 @@ export async function POST(
     const insertPayload = {
       epk_id: epkId,
       user_id: session.user.id,
-      body: body.body,
-      parent_id: parentId,
+      body: commentBody,
+      parent_id: parentId ?? null,
     }
 
     // Note: epk_comments table is planned but not yet created in database
@@ -179,6 +188,11 @@ export async function POST(
 
     return NextResponse.json({ id: inserted.id })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors })
+      return validationErrorResponse(error)
+    }
+
     log.error('Unexpected comment creation error', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

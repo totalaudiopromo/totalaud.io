@@ -33,7 +33,9 @@ describe('useTimelineStore', () => {
   describe('Event Management', () => {
     it('should initialize with sample events', () => {
       const { result } = renderHook(() => useTimelineStore())
-      result.current.resetToSamples()
+      act(() => {
+        result.current.resetToSamples()
+      })
       expect(result.current.events.length).toBeGreaterThan(0)
     })
 

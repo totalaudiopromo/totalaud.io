@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('EpkCollaboratorsAPI')
+
+// Validation schema
+const inviteCollaboratorSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  role: z.enum(['owner', 'editor', 'viewer', 'guest']).default('viewer'),
+  message: z.string().optional(),
+})
 
 interface CollaboratorRow {
   id: string
@@ -124,12 +133,9 @@ export async function POST(
 ) {
   try {
     const { epkId } = await params
-    const body = (await request.json()) as { email?: string; role?: string; message?: string }
-    const { email, role = 'viewer' } = body
 
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
-    }
+    // Validate request body
+    const { email, role } = await validateRequestBody(request, inviteCollaboratorSchema)
 
     const supabase = await createRouteSupabaseClient()
     const {
@@ -164,7 +170,8 @@ export async function POST(
       return NextResponse.json({ error: 'Only owners can invite collaborators' }, { status: 403 })
     }
 
-    const normalisedRole = role === 'guest' ? 'viewer' : role
+    // Zod default() ensures role is always a string
+    const normalisedRole = (role === 'guest' ? 'viewer' : role) as string
     const inviteToken = crypto.randomUUID()
     const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
 
@@ -191,6 +198,11 @@ export async function POST(
 
     return NextResponse.json({ inviteUrl })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors })
+      return validationErrorResponse(error)
+    }
+
     log.error('Unexpected invite creation error', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

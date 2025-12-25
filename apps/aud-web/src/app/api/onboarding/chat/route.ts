@@ -9,8 +9,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import Anthropic from '@anthropic-ai/sdk'
 import { logger } from '@/lib/logger'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('Onboarding Chat API')
 
@@ -35,6 +37,29 @@ interface QuickReply {
   label: string
   value: string
 }
+
+// Validation schemas
+const chatMessageSchema = z.object({
+  role: z.enum(['assistant', 'user']),
+  content: z.string().min(1, 'Message content is required'),
+})
+
+const collectedDataSchema = z
+  .object({
+    artistName: z.string().optional(),
+    genre: z.string().optional(),
+    vibe: z.string().optional(),
+    projectType: z.enum(['single', 'ep', 'album', 'none']).optional(),
+    projectTitle: z.string().optional(),
+    releaseDate: z.string().optional(),
+    primaryGoal: z.enum(['discover', 'plan', 'pitch', 'explore']).optional(),
+  })
+  .optional()
+
+const onboardingChatRequestSchema = z.object({
+  messages: z.array(chatMessageSchema).min(1, 'At least one message is required'),
+  collectedData: collectedDataSchema,
+})
 
 const SYSTEM_PROMPT = `You are "Audio", a calm, friendly assistant helping independent musicians set up their workspace on totalaud.io.
 
@@ -76,10 +101,11 @@ Always respond with valid JSON containing:
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, collectedData } = (await request.json()) as {
-      messages: ChatMessage[]
-      collectedData: CollectedData
-    }
+    // Validate request body
+    const { messages, collectedData } = await validateRequestBody(
+      request,
+      onboardingChatRequestSchema
+    )
 
     // Build context about what we've collected
     const collectedContext = Object.entries(collectedData || {})
@@ -163,6 +189,11 @@ export async function POST(request: NextRequest) {
       isComplete: parsed.isComplete || false,
     })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors })
+      return validationErrorResponse(error)
+    }
+
     log.error('Onboarding chat error', error)
     return NextResponse.json({ error: 'Failed to process message' }, { status: 500 })
   }

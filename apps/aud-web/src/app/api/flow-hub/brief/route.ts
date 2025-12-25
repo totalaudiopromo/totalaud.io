@@ -23,25 +23,27 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { validateRequestBody, validationErrorResponse } from '@/lib/api-validation'
 
 const log = logger.scope('FlowHubBriefAPI')
 
 // AI Brief cache duration (4 hours)
 const BRIEF_CACHE_DURATION_MS = 4 * 60 * 60 * 1000
 
+// Validation schema
+const briefRequestSchema = z.object({
+  period: z.union([z.literal(7), z.literal(30), z.literal(90)]).default(7),
+  force_refresh: z.boolean().default(false),
+})
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { period = 7, force_refresh = false } = body
-
-    // Validate period
-    if (![7, 30, 90].includes(period)) {
-      log.warn('Invalid period parameter', { period })
-      return NextResponse.json({ error: 'period must be 7, 30, or 90' }, { status: 400 })
-    }
+    // Validate request body
+    const { period, force_refresh } = await validateRequestBody(req, briefRequestSchema)
 
     const supabase = await createRouteSupabaseClient()
 
@@ -120,10 +122,10 @@ export async function POST(req: NextRequest) {
 
     const normalizedSummary = normalizeSummary(metrics)
 
-    // Generate new AI brief
+    // Generate new AI brief (Zod default() ensures period is always a number)
     log.info('Generating new AI brief with Claude Haiku', { userId, period })
 
-    const briefPrompt = buildBriefPrompt(normalizedSummary, period)
+    const briefPrompt = buildBriefPrompt(normalizedSummary, period as number)
 
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
@@ -176,6 +178,11 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      log.warn('Validation error', { errors: error.errors })
+      return validationErrorResponse(error)
+    }
+
     log.error('Unexpected error in flow hub brief API', { error })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
