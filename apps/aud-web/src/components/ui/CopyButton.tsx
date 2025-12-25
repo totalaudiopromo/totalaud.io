@@ -8,6 +8,9 @@
 
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('CopyButton')
 
 interface CopyButtonProps {
   text: string
@@ -35,7 +38,7 @@ export function CopyButton({
       // Reset after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      log.error('Failed to copy', err)
     }
   }, [text, onCopy])
 
@@ -96,7 +99,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     await navigator.clipboard.writeText(text)
     return true
   } catch (err) {
-    console.error('Failed to copy:', err)
+    log.error('Failed to copy', err)
     return false
   }
 }

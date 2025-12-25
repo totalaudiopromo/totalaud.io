@@ -6,10 +6,18 @@ import { EnhancedButton } from '@/components/ui/EnhancedButton'
 import { useNavigator } from '@/hooks/useIntelligence'
 import { SparklesIcon } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('NavigatorPanel')
+
+interface NavigatorAnswer {
+  answer: string
+  recommendedActions?: string[]
+}
 
 export function NavigatorPanel() {
   const [question, setQuestion] = useState('')
-  const [answer, setAnswer] = useState<any>(null)
+  const [answer, setAnswer] = useState<NavigatorAnswer | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigator = useNavigator()
@@ -23,12 +31,12 @@ export function NavigatorPanel() {
     setQuestion('') // Clear input immediately for better UX
 
     try {
-      console.log('[NavigatorPanel] Asking:', currentQuestion)
+      log.debug('Asking', { question: currentQuestion })
       const result = await navigator.ask(currentQuestion)
-      console.log('[NavigatorPanel] Got result:', result)
+      log.debug('Got result', { result })
       setAnswer(result)
     } catch (err) {
-      console.error('[NavigatorPanel] Error:', err)
+      log.error('Error', err)
       setError('Failed to get a response. Please try again.')
       setQuestion(currentQuestion) // Restore question on error
     } finally {

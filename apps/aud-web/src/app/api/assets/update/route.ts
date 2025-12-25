@@ -46,7 +46,12 @@ export async function POST(request: NextRequest) {
     const { assetId, is_public, title, description, tags } = updateRequestSchema.parse(body)
 
     // Ensure at least one field is being updated
-    if (is_public === undefined && title === undefined && description === undefined && tags === undefined) {
+    if (
+      is_public === undefined &&
+      title === undefined &&
+      description === undefined &&
+      tags === undefined
+    ) {
       return NextResponse.json(
         {
           error: 'Validation error',
@@ -56,7 +61,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createRouteSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { session },
       error: sessionError,

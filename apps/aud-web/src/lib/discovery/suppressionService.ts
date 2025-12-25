@@ -17,6 +17,9 @@ import {
   encryptAES256GCM,
   isValidEncryptionKey,
 } from './crypto'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Suppression Service')
 
 export type SuppressionReason =
   | 'user_request'
@@ -83,7 +86,7 @@ export async function checkSuppression(email: string, userId?: string): Promise<
       .limit(1)
 
     if (error) {
-      console.error('[SuppressionService] Query error:', error)
+      log.error('Query error', error)
       // Fail open - don't block on errors
       return { isSuppressed: false }
     }
@@ -106,7 +109,7 @@ export async function checkSuppression(email: string, userId?: string): Promise<
 
     return result
   } catch (error) {
-    console.error('[SuppressionService] Check error:', error)
+    log.error('Check error', error)
     // Fail open
     return { isSuppressed: false }
   }
@@ -163,7 +166,7 @@ export async function checkSuppressionBatch(
       .eq('scope', 'global')
 
     if (error) {
-      console.error('[SuppressionService] Batch query error:', error)
+      log.error('Batch query error', error)
       uncached.forEach((email) => results.set(email, { isSuppressed: false }))
       return results
     }
@@ -197,7 +200,7 @@ export async function checkSuppressionBatch(
 
     return results
   } catch (error) {
-    console.error('[SuppressionService] Batch check error:', error)
+    log.error('Batch check error', error)
     uncached.forEach((email) => results.set(email, { isSuppressed: false }))
     return results
   }
@@ -242,10 +245,10 @@ export async function addSuppression(entry: SuppressionEntry, userId?: string): 
     if (error) {
       // Handle duplicate (already suppressed)
       if (error.code === '23505') {
-        console.log(`[SuppressionService] Email already suppressed`)
+        log.info('Email already suppressed')
         return true
       }
-      console.error('[SuppressionService] Add error:', error)
+      log.error('Add error', error)
       return false
     }
 
@@ -257,7 +260,7 @@ export async function addSuppression(entry: SuppressionEntry, userId?: string): 
 
     return true
   } catch (error) {
-    console.error('[SuppressionService] Add suppression error:', error)
+    log.error('Add suppression error', error)
     return false
   }
 }
