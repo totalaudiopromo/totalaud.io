@@ -185,7 +185,7 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const { error } = await (supabase.from('user_timeline_events') as any).insert({
               ...toSupabaseEvent(newEvent, user.id),
               created_at: now,
@@ -239,7 +239,7 @@ export const useTimelineStore = create<TimelineState>()(
             if (updates.url !== undefined) supabaseUpdates.url = updates.url
             if (updates.tags) supabaseUpdates.tags = updates.tags
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const { error } = await (supabase.from('user_timeline_events') as any)
               .update(supabaseUpdates)
               .eq('id', id)
@@ -270,7 +270,7 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const { error } = await (supabase.from('user_timeline_events') as any)
               .delete()
               .eq('id', id)
@@ -427,7 +427,7 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             await (supabase.from('user_timeline_events') as any)
               .update({
                 tracker_campaign_id: campaignId,
@@ -535,7 +535,7 @@ export const useTimelineStore = create<TimelineState>()(
           }))
 
           if (supabaseEvents.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const { error } = await (supabase.from('user_timeline_events') as any).upsert(
               supabaseEvents,
               { onConflict: 'id' }

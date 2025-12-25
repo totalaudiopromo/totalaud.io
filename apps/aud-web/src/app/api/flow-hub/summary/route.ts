@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     periodStart.setDate(periodStart.getDate() - period)
 
     // Note: flow_hub_summary_cache table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: cachedSummary, error: cacheError } = await (supabase as any)
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!summary || !isCacheHit) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const { error: refreshError } = await (supabase as any).rpc('refresh_flow_hub_summary', {
         uid: userId,
       })
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const refreshed = await (supabase as any)
         .from('flow_hub_summary_cache')
         .select('metrics, generated_at, expires_at')

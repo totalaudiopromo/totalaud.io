@@ -169,7 +169,7 @@ export default function AquaOSPage() {
   const handleCopySummary = () => {
     const summary = buildSummary()
 
-    // eslint-disable-next-line no-console
+     
     console.log('[Aqua EPK] EPK summary copied (stub):', summary.replace(/\n/g, ' | '))
   }
 

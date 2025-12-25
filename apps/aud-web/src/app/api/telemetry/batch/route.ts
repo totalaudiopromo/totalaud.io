@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Batch insert to Supabase
     // Note: flow_telemetry table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data, error } = await (supabase as any)
       .from('flow_telemetry')
       .insert(eventsToInsert)

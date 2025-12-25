@@ -33,7 +33,7 @@ export function XPClipboardApp() {
       return
     }
 
-    // eslint-disable-next-line no-console
+     
     console.log('[XP Clipboard] Copy last line to ASCII (stub):', lastLine)
   }
 

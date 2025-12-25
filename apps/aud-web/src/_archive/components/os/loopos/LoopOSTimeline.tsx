@@ -96,7 +96,7 @@ export function LoopOSTimeline({
         <div className="relative">
           {tracks.map((lane, index) => (
             <div
-              // eslint-disable-next-line react/no-array-index-key
+               
               key={`${lane}-${index}`}
               className="relative"
               style={{ height: TRACK_HEIGHT }}

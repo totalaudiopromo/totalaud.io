@@ -58,7 +58,7 @@ export async function GET(
 
     // Note: epk_comments table is planned but not yet created in database
     // Using type assertion to allow build to pass - will handle gracefully at runtime
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: commentRowsData, error: commentsError } = await (supabase as any)
       .from('epk_comments')
       .select('id, epk_id, user_id, body, parent_id, created_at, updated_at')
@@ -165,7 +165,7 @@ export async function POST(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data: inserted, error: insertError } = await (supabase as any)
       .from('epk_comments')
       .insert(insertPayload)
