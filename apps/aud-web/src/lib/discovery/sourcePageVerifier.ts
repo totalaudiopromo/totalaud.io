@@ -10,6 +10,10 @@
  * Copied from Total Audio Platform with permission.
  */
 
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Source Verifier')
+
 export interface VerificationResult {
   verified: boolean
   method:
@@ -67,7 +71,7 @@ async function fetchPageContent(url: string): Promise<{ html: string; status: nu
     return { html, status: response.status }
   } catch (error) {
     clearTimeout(timeoutId)
-    console.warn(`[SourceVerifier] Fetch failed for ${url}:`, error)
+    log.warn(`Fetch failed for ${url}`, { error })
     return null
   }
 }

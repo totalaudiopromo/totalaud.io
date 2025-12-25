@@ -14,6 +14,9 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Login')
 
 export function LoginForm() {
   const router = useRouter()
@@ -41,7 +44,7 @@ export function LoginForm() {
       })
 
       if (authError) {
-        console.error('Auth error:', authError)
+        log.error('Auth error', authError)
         throw authError
       }
 
@@ -51,7 +54,7 @@ export function LoginForm() {
       router.push('/workspace')
       router.refresh()
     } catch (err) {
-      console.error('Login error:', err)
+      log.error('Login error', err)
       const message = err instanceof Error ? err.message : 'Invalid email or password'
       setError(message)
     } finally {
@@ -415,7 +418,7 @@ export function LoginForm() {
               if (error) throw error
               // Redirect happens automatically
             } catch (err) {
-              console.error('Google Sign In Error:', err)
+              log.error('Google Sign In Error', err)
               const message = err instanceof Error ? err.message : 'Failed to sign in with Google'
               setError(message)
               setIsLoading(false)

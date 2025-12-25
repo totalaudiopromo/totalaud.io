@@ -11,6 +11,9 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('ErrorBoundary')
 
 interface ErrorBoundaryProps {
   children: React.ReactNode
@@ -34,7 +37,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    log.error('Caught an error', error, { componentStack: errorInfo.componentStack })
   }
 
   handleRetry = () => {

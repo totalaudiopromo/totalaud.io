@@ -20,6 +20,9 @@ import {
   extractDomainFromUrl,
   determineOutletType,
 } from '@/lib/discovery'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Scout Discovery')
 
 export interface DiscoveredContact {
   id: string
@@ -176,7 +179,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Discovery error:', error)
+    log.error('Discovery error', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Discovery failed' },
       { status: 500 }

@@ -19,6 +19,9 @@ import {
   type PrimaryGoal,
   type ProjectType,
 } from '@/stores/useUserProfileStore'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Onboarding Chat')
 
 interface ChatMessage {
   id: string
@@ -160,7 +163,7 @@ export function OnboardingChat() {
         handleComplete({ ...collectedData, ...data.extractedData })
       }
     } catch (error) {
-      console.error('Chat error:', error)
+      log.error('Chat error', error)
       // Add error message
       setMessages((prev) => [
         ...prev,

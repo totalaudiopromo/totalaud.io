@@ -18,6 +18,9 @@ import type {
   EnrichmentStatus,
 } from '@/types/scout'
 import { DEFAULT_FILTERS } from '@/types/scout'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Scout Store')
 
 // ============================================================================
 // API Response Type
@@ -160,7 +163,7 @@ export const useScoutStore = create<ScoutState>()(
             hasFetched: true,
           })
         } catch (error) {
-          console.error('[Scout Store] Fetch error:', error)
+          log.error('Fetch error', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to fetch opportunities',
             loading: false,
@@ -209,7 +212,7 @@ export const useScoutStore = create<ScoutState>()(
         const opportunity = state.opportunities.find((o) => o.id === opportunityId)
 
         if (!opportunity) {
-          console.error('[Scout Store] Opportunity not found:', opportunityId)
+          log.error('Opportunity not found', undefined, { opportunityId })
           return
         }
 
@@ -269,7 +272,7 @@ export const useScoutStore = create<ScoutState>()(
             throw new Error('No enrichment data returned')
           }
         } catch (error) {
-          console.error('[Scout Store] Enrichment error:', error)
+          log.error('Enrichment error', error)
           set((s) => ({
             enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
             enrichmentErrorById: {

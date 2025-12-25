@@ -10,6 +10,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Onboarding Chat API')
 
 const anthropic = new Anthropic()
 
@@ -160,7 +163,7 @@ export async function POST(request: NextRequest) {
       isComplete: parsed.isComplete || false,
     })
   } catch (error) {
-    console.error('Onboarding chat error:', error)
+    log.error('Onboarding chat error', error)
     return NextResponse.json({ error: 'Failed to process message' }, { status: 500 })
   }
 }

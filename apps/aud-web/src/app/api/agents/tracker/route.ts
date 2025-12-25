@@ -105,9 +105,19 @@ export async function POST(req: NextRequest) {
  * Fetch outreach logs from database
  * Queries campaign_outreach_logs table and joins with artist_assets
  */
+interface DbOutreachLog {
+  id: string
+  contact_id?: string
+  contact_name: string
+  message_preview: string
+  asset_ids?: string[]
+  sent_at: string
+  status: string
+  created_at: string
+}
+
 async function fetchOutreachLogs(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: Awaited<ReturnType<typeof createRouteSupabaseClient>>,
   params: { sessionId: string; userId: string; campaignId: string }
 ): Promise<OutreachLog[]> {
   const { sessionId, userId, campaignId } = params
@@ -133,8 +143,7 @@ async function fetchOutreachLogs(
     }
 
     // Map database records to OutreachLog type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mappedLogs: OutreachLog[] = logs.map((dbLog: any) => ({
+    const mappedLogs: OutreachLog[] = (logs as DbOutreachLog[]).map((dbLog) => ({
       id: dbLog.id,
       session_id: sessionId,
       user_id: userId,
