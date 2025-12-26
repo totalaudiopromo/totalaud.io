@@ -33,7 +33,6 @@ export function XPClipboardApp() {
       return
     }
 
-     
     console.log('[XP Clipboard] Copy last line to ASCII (stub):', lastLine)
   }
 

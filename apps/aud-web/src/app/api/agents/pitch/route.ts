@@ -15,11 +15,11 @@
  * }
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { withAuth } from '@/lib/api-auth'
 
 const log = logger.scope('PitchAgentAPI')
 
@@ -43,7 +43,7 @@ const pitchRequestSchema = z.object({
   campaignId: z.string().optional(),
 })
 
-export async function POST(req: NextRequest) {
+export const POST = withAuth(async ({ userId, supabase, req }) => {
   try {
     // Parse and validate request body
     const body = await req.json()
@@ -58,23 +58,6 @@ export async function POST(req: NextRequest) {
       contactName,
       campaignId,
     })
-
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
-    }
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
-
-    const authenticatedUserId = session.user.id
 
     // Filter out private attachments for external shares
     const publicAttachments = attachments?.filter((a) => a.is_public) || []
@@ -109,11 +92,11 @@ export async function POST(req: NextRequest) {
     if (campaignId && contactName) {
       try {
         // Create outreach log entry
-         
+
         const { error: insertError } = await (supabase as any)
           .from('campaign_outreach_logs')
           .insert({
-            user_id: authenticatedUserId,
+            user_id: userId,
             campaign_id: campaignId,
             contact_name: contactName,
             message_preview: pitch.substring(0, 200), // First 200 chars
@@ -183,7 +166,7 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
 /**
  * Generate pitch content

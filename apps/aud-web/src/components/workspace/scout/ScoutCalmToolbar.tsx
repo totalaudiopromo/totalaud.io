@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState, useRef, useEffect } from 'react'
+import { useCallback, useState } from 'react'
 import {
   useScoutStore,
   selectFilteredOpportunities,
@@ -9,6 +9,7 @@ import {
 import type { OpportunityType } from '@/types/scout'
 import { TYPE_LABELS, TYPE_COLOURS } from '@/types/scout'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useSearchDebounce } from '@/hooks/useSearchDebounce'
 
 const TYPES: OpportunityType[] = ['playlist', 'radio', 'blog', 'press', 'curator']
 
@@ -20,18 +21,11 @@ export function ScoutCalmToolbar() {
   const filteredCount = useScoutStore(selectFilteredOpportunities).length
   const countByType = useScoutStore(selectOpportunityCountByType)
 
-  const [localSearch, setLocalSearch] = useState(filters.searchQuery)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      setFilter('searchQuery', localSearch)
-    }, 150)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [localSearch, setFilter])
+  const [localSearch, setLocalSearch] = useSearchDebounce(
+    (searchValue) => setFilter('searchQuery', searchValue),
+    filters.searchQuery,
+    150
+  )
 
   const hasActiveFilters = filters.type || filters.genres.length > 0 || filters.searchQuery
 

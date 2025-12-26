@@ -12,11 +12,28 @@ import { logger } from './logger'
 const log = logger.scope('API Validation')
 
 /**
+ * Safely parse JSON from request body
+ * @throws Error with clear message if JSON is malformed
+ */
+export async function safeParseJson(req: NextRequest): Promise<unknown> {
+  try {
+    return await req.json()
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      log.warn('Malformed JSON in request body', { error: error.message })
+      throw new Error('Invalid JSON in request body')
+    }
+    throw error
+  }
+}
+
+/**
  * Validate request body against a Zod schema
+ * @throws Error if JSON is malformed
  * @throws ZodError if validation fails
  */
 export async function validateRequestBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  const body = await req.json()
+  const body = await safeParseJson(req)
   return schema.parse(body)
 }
 
@@ -79,7 +96,7 @@ export function createApiHandler<TBody = unknown, TParams = unknown>(
 
       // Validate body if schema provided
       if (options.bodySchema) {
-        const rawBody = await req.json()
+        const rawBody = await safeParseJson(req)
         body = options.bodySchema.parse(rawBody)
       }
 
@@ -100,11 +117,19 @@ export function createApiHandler<TBody = unknown, TParams = unknown>(
       // Otherwise wrap in JSON response
       return NextResponse.json(result)
     } catch (error) {
+      // Handle malformed JSON
+      if (error instanceof Error && error.message === 'Invalid JSON in request body') {
+        log.warn('Malformed JSON request')
+        return NextResponse.json({ error: error.message }, { status: 400 })
+      }
+
+      // Handle validation errors
       if (error instanceof ZodError) {
         log.warn('Validation error', { errors: error.errors })
         return validationErrorResponse(error)
       }
 
+      // Handle unexpected errors
       log.error('Handler error', error)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }

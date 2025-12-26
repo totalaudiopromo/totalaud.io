@@ -31,7 +31,7 @@ export async function PUT(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-     
+
     const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
@@ -66,7 +66,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-     
     const { error: updateError } = await (supabase as any)
       .from('epk_comments')
       .update({ body: body.body })
@@ -107,7 +106,7 @@ export async function DELETE(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-     
+
     const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
@@ -142,7 +141,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-     
     const { error: deleteError } = await (supabase as any)
       .from('epk_comments')
       .delete()

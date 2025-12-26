@@ -23,7 +23,15 @@ const log = logger.scope('TelemetryBatchAPI')
 
 // Validation schemas
 const telemetryEventSchema = z.object({
-  event_type: z.enum(['save', 'share', 'agentRun', 'tabChange', 'idle', 'sessionStart', 'sessionEnd']),
+  event_type: z.enum([
+    'save',
+    'share',
+    'agentRun',
+    'tabChange',
+    'idle',
+    'sessionStart',
+    'sessionEnd',
+  ]),
   duration_ms: z.number().optional(),
   metadata: z.record(z.unknown()).optional(),
   created_at: z.string().optional(),
@@ -92,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // Batch insert to Supabase
     // Note: flow_telemetry table is planned but not yet created in database
-     
+
     const { data, error } = await (supabase as any)
       .from('flow_telemetry')
       .insert(eventsToInsert)

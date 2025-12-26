@@ -5,11 +5,11 @@
  * Uses Anthropic Claude via @total-audio/core-ai-provider
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { withAuth } from '@/lib/api-auth'
 
 const log = logger.scope('PitchCoachAPI')
 
@@ -92,29 +92,9 @@ const SECTION_GUIDANCE: Record<string, string> = {
 
 // ============ Route Handler ============
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async ({ req }) => {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
-    }
-
-    if (!session) {
-      log.warn('Unauthenticated request to pitch coach')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
-
-    const body = await request.json()
+    const body = await req.json()
     const validated = requestSchema.parse(body)
 
     const { action, sectionId, sectionTitle, content, pitchType, allSections } = validated
@@ -181,4 +161,4 @@ ${actionPrompt}`
       { status: 500 }
     )
   }
-}
+})

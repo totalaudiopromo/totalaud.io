@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // Fetch summary data
     // Note: flow_hub_summary_cache table is planned but not yet created in database
-     
+
     const { data: summaryRow, error: summaryError } = await (supabase as any)
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
@@ -154,7 +154,6 @@ export async function POST(req: NextRequest) {
       },
     }
 
-     
     const { error: updateError } = await (supabase as any)
       .from('flow_hub_summary_cache')
       .update({ metrics: updatedMetrics })

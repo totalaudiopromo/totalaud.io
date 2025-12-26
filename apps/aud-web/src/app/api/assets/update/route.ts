@@ -12,10 +12,10 @@
  * - Returns updated asset with FlowCore-style response
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { withAuth } from '@/lib/api-auth'
 
 const log = logger.scope('AssetUpdateAPI')
 
@@ -37,12 +37,12 @@ interface UpdateResponse {
   asset?: Record<string, unknown>
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async ({ userId, supabase, req }) => {
   const startTime = Date.now()
 
   try {
     // Parse and validate request body
-    const body = await request.json()
+    const body = await req.json()
     const { assetId, is_public, title, description, tags } = updateRequestSchema.parse(body)
 
     // Ensure at least one field is being updated
@@ -60,23 +60,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
-    }
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
-
-    const userId = session.user.id
 
     // Verify asset exists and user owns it
     const { data: existingAsset, error: fetchError } = await supabase
@@ -162,4 +145,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

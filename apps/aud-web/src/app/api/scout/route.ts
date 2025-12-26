@@ -15,10 +15,10 @@
  * Requires authentication (RLS policy enforces this).
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import type { Opportunity, OpportunityType, AudienceSize, OpportunitySource } from '@/types/scout'
+import { withAuth } from '@/lib/api-auth'
 
 const log = logger.scope('ScoutAPI')
 
@@ -97,14 +97,12 @@ function normaliseOpportunity(row: OpportunityRow): Opportunity {
 // Route Handler
 // ============================================================================
 
-export async function GET(
-  request: NextRequest
-): Promise<NextResponse<ScoutAPIResponse | ScoutAPIError>> {
+export const GET = withAuth(async ({ supabase, req }) => {
   const startTime = Date.now()
 
   try {
     // Parse query parameters
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = new URL(req.url)
     const type = searchParams.get('type')
     const genre = searchParams.get('genre')
     const vibe = searchParams.get('vibe')
@@ -112,30 +110,6 @@ export async function GET(
     const q = searchParams.get('q')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
     const offset = parseInt(searchParams.get('offset') || '0', 10)
-
-    // Create authenticated client
-    const supabase = await createRouteSupabaseClient()
-
-    // Check authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Session error', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
-        { status: 401 }
-      )
-    }
-
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
-        { status: 401 }
-      )
-    }
 
     // Build query
     let query = supabase
@@ -210,4 +184,4 @@ export async function GET(
       { status: 500 }
     )
   }
-}
+})

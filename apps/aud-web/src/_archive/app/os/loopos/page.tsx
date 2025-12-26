@@ -473,14 +473,12 @@ export default function LoopOSPage() {
       } = await supabase.auth.getSession()
 
       if (sessionError) {
-         
         console.warn('[LoopOS] failed to get session for createLoop', sessionError)
         return
       }
 
       const userId = session?.user?.id
       if (!userId) {
-         
         console.warn('[LoopOS] no authenticated user during loop create, skipping')
         return
       }
@@ -495,7 +493,6 @@ export default function LoopOSPage() {
         .single()
 
       if (insertError || !inserted) {
-         
         console.warn('[LoopOS] failed to create loop', insertError)
         return
       }
@@ -543,7 +540,6 @@ export default function LoopOSPage() {
         setLastLoopId(currentProject.id, inserted.id)
       }
     } catch (error) {
-       
       console.warn('[LoopOS] create loop failed', error)
     }
   }
@@ -561,7 +557,6 @@ export default function LoopOSPage() {
           .single()
 
         if (loopError || !loop) {
-           
           console.warn('[LoopOS] failed to load loop for switch', loopError)
           return
         }
@@ -573,7 +568,6 @@ export default function LoopOSPage() {
           .order('start', { ascending: true })
 
         if (clipsError) {
-           
           console.warn('[LoopOS] failed to load loop clips for switch', clipsError)
         }
 
@@ -593,7 +587,6 @@ export default function LoopOSPage() {
           setLastLoopId(currentProject.id, loop.id)
         }
       } catch (error) {
-         
         console.warn('[LoopOS] switch loop failed', error)
       }
     },
@@ -609,14 +602,12 @@ export default function LoopOSPage() {
       const { error } = await supabase.from('loopos_loops').update({ name: trimmed }).eq('id', id)
 
       if (error) {
-         
         console.warn('[LoopOS] failed to rename loop', error)
         return
       }
 
       renameLoopLocally(id, trimmed)
     } catch (error) {
-       
       console.warn('[LoopOS] rename loop failed', error)
     }
   }

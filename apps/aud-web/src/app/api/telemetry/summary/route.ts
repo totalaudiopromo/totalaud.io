@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
     // Build query
     // Note: flow_telemetry table is planned but not yet created in database
-     
+
     let query = (supabase as any)
       .from('flow_telemetry')
       .select('*')

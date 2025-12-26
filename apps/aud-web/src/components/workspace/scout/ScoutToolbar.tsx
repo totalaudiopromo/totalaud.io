@@ -24,6 +24,7 @@ import {
   AUDIENCE_SIZE_LABELS,
   GENRE_OPTIONS,
 } from '@/types/scout'
+import { useSearchDebounce } from '@/hooks/useSearchDebounce'
 
 // Simple SVG icons
 const SearchIcon = () => (
@@ -59,18 +60,11 @@ export function ScoutToolbar() {
   const sizeRef = useRef<HTMLDivElement>(null)
 
   // Search debounce
-  const [localSearch, setLocalSearch] = useState(filters.searchQuery)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      setFilter('searchQuery', localSearch)
-    }, 150)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [localSearch, setFilter])
+  const [localSearch, setLocalSearch] = useSearchDebounce(
+    (searchValue) => setFilter('searchQuery', searchValue),
+    filters.searchQuery,
+    150
+  )
 
   // Click outside to close dropdowns
   useEffect(() => {

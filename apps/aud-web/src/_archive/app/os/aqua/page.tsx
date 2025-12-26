@@ -169,7 +169,6 @@ export default function AquaOSPage() {
   const handleCopySummary = () => {
     const summary = buildSummary()
 
-     
     console.log('[Aqua EPK] EPK summary copied (stub):', summary.replace(/\n/g, ' | '))
   }
 

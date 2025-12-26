@@ -223,7 +223,6 @@ export default function DawPage() {
   }
 
   const handleOpenLoopOSStub = () => {
-     
     console.log('[DAW] Open LoopOS (stub) clicked')
   }
 
