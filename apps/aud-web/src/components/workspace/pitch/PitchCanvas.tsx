@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
 import { TAPGenerateModal } from './TAPGenerateModal'
+import { IdentityPanel } from './IdentityPanel'
 import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
 import { TypingIndicator } from '@/components/ui/EmptyState'
@@ -194,6 +195,9 @@ export function PitchCanvas() {
         >
           <span aria-hidden="true">←</span> Back to templates
         </button>
+
+        {/* Identity Panel - collapsible */}
+        <IdentityPanel />
 
         {/* Pitch type header with TAP generate button */}
         <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
