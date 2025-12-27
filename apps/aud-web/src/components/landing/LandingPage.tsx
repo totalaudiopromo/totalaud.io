@@ -17,19 +17,19 @@ import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
 import { SocialProof } from './SocialProof'
 
-// Feature data
+// Feature data (4 core modes + Finish coming soon)
 const FEATURES = [
-  {
-    id: 'scout',
-    title: 'Scout',
-    description:
-      'Find the right ears. Radio pluggers, playlist curators, music supervisors — all in one searchable database.',
-  },
   {
     id: 'ideas',
     title: 'Ideas',
     description:
       'Capture fleeting inspiration. An infinite canvas where release concepts take shape.',
+  },
+  {
+    id: 'scout',
+    title: 'Scout',
+    description:
+      'Find the right ears. Radio pluggers, playlist curators, music supervisors — all in one searchable database.',
   },
   {
     id: 'timeline',
@@ -47,6 +47,7 @@ const FEATURES = [
     title: 'Finish',
     description:
       'Polish your track. Upload, separate stems, detect structure, arrange — all in your browser.',
+    comingSoon: true,
   },
 ]
 
@@ -135,6 +136,7 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
 // Feature card with hover reveal
 function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
+  const isComingSoon = 'comingSoon' in feature && feature.comingSoon
 
   return (
     <motion.div
@@ -156,6 +158,7 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
         cursor: 'default',
         transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
         overflow: 'hidden',
+        opacity: isComingSoon ? 0.7 : 1,
       }}
     >
       {/* Hover glow effect */}
@@ -175,7 +178,7 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
         }}
       />
 
-      {/* Number indicator */}
+      {/* Number indicator or Coming Soon badge */}
       <div
         style={{
           position: 'absolute',
@@ -183,12 +186,16 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
           right: '24px',
           fontSize: '12px',
           fontWeight: 500,
-          color: isHovered ? 'rgba(58, 169, 190, 0.8)' : 'rgba(255, 255, 255, 0.2)',
+          color: isComingSoon
+            ? '#3AA9BE'
+            : isHovered
+              ? 'rgba(58, 169, 190, 0.8)'
+              : 'rgba(255, 255, 255, 0.2)',
           fontFamily: 'var(--font-geist-mono), monospace',
           transition: 'color 0.4s ease',
         }}
       >
-        0{index + 1}
+        {isComingSoon ? 'Coming soon' : `0${index + 1}`}
       </div>
 
       <h3
@@ -282,8 +289,8 @@ export function LandingPage() {
           <Image
             src="/brand/svg/ta-logo-cyan.svg"
             alt="totalaud.io"
-            width={36}
-            height={36}
+            width={44}
+            height={44}
             priority
           />
         </Link>
@@ -470,89 +477,10 @@ export function LandingPage() {
             gap: '12px',
           }}
         >
-          <Link
-            href="/workspace"
-            style={{
-              fontSize: '14px',
-              color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              textDecoration: 'none',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
-          >
-            Try as guest →
-          </Link>
-          <div
-            style={{
-              display: 'flex',
-              gap: '10px',
-              alignItems: 'center',
-              padding: '12px 14px',
-              borderRadius: '14px',
-              border: '1px solid rgba(58, 169, 190, 0.2)',
-              background: 'rgba(255, 255, 255, 0.02)',
-              minWidth: '260px',
-              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: '#3AA9BE',
-                boxShadow: '0 0 12px rgba(58,169,190,0.8)',
-              }}
-            />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
-              <span
-                style={{
-                  fontSize: 13,
-                  color: '#EAECEE',
-                  fontWeight: 600,
-                  letterSpacing: '0.02em',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                Finish Mode live
-              </span>
-              <div
-                style={{
-                  width: '100%',
-                  height: 6,
-                  borderRadius: 999,
-                  background: 'rgba(255,255,255,0.05)',
-                  overflow: 'hidden',
-                }}
-              >
-                <motion.div
-                  animate={{ x: ['0%', '60%', '0%'] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{
-                    width: '45%',
-                    height: '100%',
-                    background:
-                      'linear-gradient(90deg, rgba(58,169,190,0.8), rgba(111,200,181,0.7))',
-                  }}
-                />
-              </div>
-              <span
-                style={{
-                  fontSize: 12,
-                  color: 'rgba(255,255,255,0.55)',
-                  fontFamily: 'var(--font-geist-mono), monospace',
-                }}
-              >
-                Ideas • Scout • Timeline • Pitch • Finish
-              </span>
-            </div>
-          </div>
           <span
             style={{
               fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.3)',
+              color: 'rgba(255, 255, 255, 0.35)',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
@@ -570,43 +498,386 @@ export function LandingPage() {
           </span>
         </motion.div>
 
-        {/* Scroll indicator */}
+        {/* Product Preview - Floating Workspace Mockup */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
-            position: 'absolute',
-            bottom: '48px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '12px',
+            marginTop: '64px',
+            width: '100%',
+            maxWidth: '900px',
+            perspective: '1200px',
           }}
         >
-          <span
+          <motion.div
+            animate={{
+              rotateX: [2, -1, 2],
+              y: [0, -8, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
             style={{
-              fontSize: '11px',
-              fontWeight: 500,
-              color: 'rgba(255, 255, 255, 0.3)',
-              fontFamily: 'var(--font-geist-mono), monospace',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
+              position: 'relative',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              background: '#0F1113',
+              border: '1px solid rgba(58, 169, 190, 0.2)',
+              boxShadow: '0 40px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(58, 169, 190, 0.1)',
             }}
           >
-            Scroll
-          </span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              width: '1px',
-              height: '40px',
-              background: 'linear-gradient(to bottom, rgba(58, 169, 190, 0.5), transparent)',
-            }}
-          />
+            {/* Browser window chrome */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 16px',
+                background: 'rgba(0, 0, 0, 0.4)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              }}
+            >
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 95, 87, 0.8)',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 189, 46, 0.8)',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    background: 'rgba(40, 201, 64, 0.8)',
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  fontSize: '11px',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  fontFamily: 'var(--font-geist-mono), monospace',
+                }}
+              >
+                totalaud.io/workspace
+              </div>
+            </div>
+
+            {/* App header with mode tabs */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 16px',
+                height: 48,
+                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                background: 'rgba(15, 17, 19, 0.95)',
+              }}
+            >
+              {/* Logo placeholder */}
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#3AA9BE',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                totalaud
+              </div>
+
+              {/* Mode tabs */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {['Ideas', 'Scout', 'Timeline', 'Pitch'].map((mode, i) => (
+                  <div
+                    key={mode}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: i === 0 ? 500 : 400,
+                      color: i === 0 ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
+                      background: i === 0 ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
+                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                      position: 'relative',
+                    }}
+                  >
+                    {mode}
+                    {i === 0 && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          width: 20,
+                          height: 2,
+                          background: '#3AA9BE',
+                          borderRadius: 1,
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* User avatar placeholder */}
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: 'rgba(58, 169, 190, 0.2)',
+                  border: '1px solid rgba(58, 169, 190, 0.3)',
+                }}
+              />
+            </div>
+
+            {/* Ideas Mode toolbar */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+              }}
+            >
+              {/* Search */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 10px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                }}
+              >
+                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="5" cy="5" r="4" />
+                  <path d="M8 8l3 3" />
+                </svg>
+                Search ideas...
+              </div>
+
+              {/* Filter tabs */}
+              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                {[
+                  { label: 'All', count: 12, active: true },
+                  { label: 'Content', colour: '#3AA9BE', count: 4 },
+                  { label: 'Brand', colour: '#A855F7', count: 3 },
+                  { label: 'Music', colour: '#22C55E', count: 3 },
+                  { label: 'Promo', colour: '#F97316', count: 2 },
+                ].map((tab) => (
+                  <div
+                    key={tab.label}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      fontWeight: 500,
+                      color: tab.active ? '#F7F8F9' : tab.colour || 'rgba(255, 255, 255, 0.5)',
+                      background: tab.active ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                    }}
+                  >
+                    {tab.colour && (
+                      <div
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: tab.colour,
+                        }}
+                      />
+                    )}
+                    {tab.label}
+                    <span style={{ opacity: 0.5 }}>{tab.count}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* View toggle */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '2px',
+                  padding: '2px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  borderRadius: '4px',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '4px 6px',
+                    borderRadius: '3px',
+                    background: 'rgba(58, 169, 190, 0.15)',
+                  }}
+                >
+                  <svg width="10" height="10" fill="#3AA9BE">
+                    <rect x="0" y="0" width="4" height="4" />
+                    <rect x="6" y="0" width="4" height="4" />
+                    <rect x="0" y="6" width="4" height="4" />
+                    <rect x="6" y="6" width="4" height="4" />
+                  </svg>
+                </div>
+                <div style={{ padding: '4px 6px' }}>
+                  <svg width="10" height="10" fill="rgba(255,255,255,0.4)">
+                    <rect x="0" y="0" width="10" height="2" />
+                    <rect x="0" y="4" width="10" height="2" />
+                    <rect x="0" y="8" width="10" height="2" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Ideas canvas area */}
+            <div
+              style={{
+                position: 'relative',
+                minHeight: '260px',
+                background:
+                  'linear-gradient(135deg, rgba(15, 17, 19, 1) 0%, rgba(18, 20, 23, 1) 100%)',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Subtle grid pattern */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundImage: `
+                    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '40px 40px',
+                }}
+              />
+
+              {/* Idea cards scattered on canvas */}
+              {[
+                {
+                  content: 'Behind-the-scenes studio session for TikTok',
+                  tag: 'content',
+                  x: 40,
+                  y: 30,
+                  colour: '#3AA9BE',
+                },
+                {
+                  content: 'Collaborate with visual artist for album artwork',
+                  tag: 'brand',
+                  x: 280,
+                  y: 60,
+                  colour: '#A855F7',
+                },
+                {
+                  content: 'New synth patches for EP',
+                  tag: 'music',
+                  x: 520,
+                  y: 25,
+                  colour: '#22C55E',
+                },
+                {
+                  content: 'Submit to BBC Radio 1 Introducing',
+                  tag: 'promo',
+                  x: 100,
+                  y: 150,
+                  colour: '#F97316',
+                },
+                {
+                  content: 'Spotify playlist pitching strategy',
+                  tag: 'promo',
+                  x: 380,
+                  y: 170,
+                  colour: '#F97316',
+                },
+                {
+                  content: 'Record acoustic version for YouTube',
+                  tag: 'content',
+                  x: 600,
+                  y: 140,
+                  colour: '#3AA9BE',
+                },
+              ].map((card, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.4 + i * 0.1, duration: 0.3 }}
+                  style={{
+                    position: 'absolute',
+                    left: card.x,
+                    top: card.y,
+                    width: 160,
+                    padding: '12px',
+                    background: `linear-gradient(135deg, ${card.colour}08 0%, ${card.colour}04 100%)`,
+                    border: `1px solid ${card.colour}40`,
+                    borderRadius: '8px',
+                    fontSize: '11px',
+                    lineHeight: 1.4,
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                    boxShadow: `0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px ${card.colour}15`,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        background: card.colour,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: '9px',
+                        fontWeight: 500,
+                        color: card.colour,
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {card.tag}
+                    </span>
+                  </div>
+                  {card.content}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </motion.section>
 
@@ -628,7 +899,7 @@ export function LandingPage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
             gap: '20px',
             background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(58,169,190,0.08)',
+            border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '16px',
             padding: '16px',
           }}
@@ -732,8 +1003,7 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            Four focused tools that work together. No bloat, no learning curve, no subscription
-            fatigue.
+            Five focused tools that work together. No bloat, no learning curve, no per-pitch fees.
           </p>
         </motion.div>
 
@@ -812,7 +1082,7 @@ export function LandingPage() {
           >
             Join hundreds of indie artists who've stopped hoping and started doing.
           </p>
-          <MagneticButton href="/signup">Create free account</MagneticButton>
+          <MagneticButton href="/signup">Start Your Workspace</MagneticButton>
           <p
             style={{
               marginTop: '16px',
@@ -821,18 +1091,7 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            or{' '}
-            <Link
-              href="/workspace"
-              style={{
-                color: 'rgba(255, 255, 255, 0.5)',
-                textDecoration: 'none',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
-            >
-              try as guest first
-            </Link>
+            From £5/month • Cancel anytime
           </p>
         </motion.div>
       </section>

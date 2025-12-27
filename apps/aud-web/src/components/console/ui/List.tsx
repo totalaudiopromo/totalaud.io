@@ -16,7 +16,7 @@ export function List({ children, variant = 'default' }: ListProps) {
   return (
     <ul
       className={clsx('space-y-1', {
-        'divide-y divide-tap-panel/30': variant === 'bordered',
+        'divide-y divide-ta-panel/30': variant === 'bordered',
       })}
     >
       {children}
@@ -31,8 +31,8 @@ export function ListItem({ children, onClick, active }: ListItemProps) {
     <Component
       onClick={onClick}
       className={clsx('w-full text-left p-3 rounded-lg transition-all duration-180', {
-        'hover:bg-tap-panel cursor-pointer': onClick,
-        'bg-tap-panel': active,
+        'hover:bg-ta-panel cursor-pointer': onClick,
+        'bg-ta-panel': active,
       })}
     >
       {children}

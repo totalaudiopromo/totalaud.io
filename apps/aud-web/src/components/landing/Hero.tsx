@@ -69,7 +69,7 @@ export function Hero() {
         transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
       >
         <Link
-          href="/workspace"
+          href="/signup"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -91,7 +91,7 @@ export function Hero() {
             e.currentTarget.style.opacity = '1'
           }}
         >
-          Start free
+          Get Started
         </Link>
       </motion.div>
 
@@ -107,7 +107,7 @@ export function Hero() {
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
         }}
       >
-        No signup required
+        From £5/month • Cancel anytime
       </motion.p>
     </section>
   )

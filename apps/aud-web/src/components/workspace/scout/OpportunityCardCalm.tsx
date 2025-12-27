@@ -47,13 +47,13 @@ export function OpportunityCardCalm({
       role="button"
       aria-label={`${opportunity.name}, ${TYPE_LABELS[opportunity.type]}${isAddedToTimeline ? ', added to timeline' : ''}${isPitched ? ', pitched' : ''}`}
       data-testid="opportunity-card"
-      className="group relative h-full flex flex-col p-5 rounded-xl bg-[#161A1D] border border-white/5 overflow-hidden transition-all duration-300 hover:border-tap-cyan/30"
+      className="group relative h-full flex flex-col p-5 rounded-xl bg-[#161A1D] border border-white/5 overflow-hidden transition-all duration-300 hover:border-ta-cyan/30"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -2 }}
     >
       {/* Ambient Glow on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-ta-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col h-full">
@@ -78,17 +78,17 @@ export function OpportunityCardCalm({
             )}
           </div>
 
-          <span className="text-[10px] text-tap-grey/60 font-mono uppercase tracking-wide">
+          <span className="text-[10px] text-ta-grey/60 font-mono uppercase tracking-wide">
             {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
           </span>
         </div>
 
         {/* Title & Desc */}
-        <h3 className="text-base font-medium text-tap-white leading-snug mb-2 line-clamp-1 group-hover:text-white transition-colors">
+        <h3 className="text-base font-medium text-ta-white leading-snug mb-2 line-clamp-1 group-hover:text-white transition-colors">
           {opportunity.name}
         </h3>
 
-        <p className="text-xs text-tap-grey leading-relaxed line-clamp-2 mb-4">
+        <p className="text-xs text-ta-grey leading-relaxed line-clamp-2 mb-4">
           {opportunity.description || 'No description available for this contact.'}
         </p>
 
@@ -99,13 +99,13 @@ export function OpportunityCardCalm({
             {opportunity.genres.slice(0, 2).map((genre) => (
               <span
                 key={genre}
-                className="text-[10px] text-tap-grey/80 bg-white/5 px-1.5 py-0.5 rounded border border-transparent group-hover:border-white/5 transition-all"
+                className="text-[10px] text-ta-grey/80 bg-white/5 px-1.5 py-0.5 rounded border border-transparent group-hover:border-white/5 transition-all"
               >
                 {genre}
               </span>
             ))}
             {opportunity.genres.length > 2 && (
-              <span className="text-[10px] text-tap-grey/50 self-center">
+              <span className="text-[10px] text-ta-grey/50 self-center">
                 +{opportunity.genres.length - 2}
               </span>
             )}
@@ -122,7 +122,7 @@ export function OpportunityCardCalm({
               ${
                 isAddedToTimeline
                   ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 cursor-default'
-                  : 'bg-white/5 border-white/10 text-tap-grey hover:bg-tap-cyan hover:border-tap-cyan hover:text-tap-black hover:shadow-[0_0_12px_rgba(58,169,190,0.4)]'
+                  : 'bg-white/5 border-white/10 text-ta-grey hover:bg-ta-cyan hover:border-ta-cyan hover:text-ta-black hover:shadow-[0_0_12px_rgba(58,169,190,0.4)]'
               }
             `}
           >

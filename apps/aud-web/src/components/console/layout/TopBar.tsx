@@ -11,15 +11,15 @@ export function TopBar() {
   const [workspaceId, setWorkspaceId] = useState('workspace-1')
 
   return (
-    <header className="sticky top-0 z-40 bg-tap-black/95 backdrop-blur border-b border-tap-panel/50">
+    <header className="sticky top-0 z-40 bg-ta-black/95 backdrop-blur border-b border-ta-panel/50">
       <div className="flex items-center justify-between px-8 py-4">
         {/* Artist/Workspace Selector */}
         <div className="flex items-center gap-4">
           <div className="relative">
-            <button className="flex items-center gap-2 px-4 py-2 bg-tap-panel rounded-lg text-sm font-medium text-tap-white lowercase hover:bg-tap-panel/70 transition-colors duration-180">
-              <UserCircleIcon className="w-5 h-5 text-tap-cyan" />
+            <button className="flex items-center gap-2 px-4 py-2 bg-ta-panel rounded-lg text-sm font-medium text-ta-white lowercase hover:bg-ta-panel/70 transition-colors duration-180">
+              <UserCircleIcon className="w-5 h-5 text-ta-cyan" />
               <span>{artistSlug}</span>
-              <ChevronDownIcon className="w-4 h-4 text-tap-grey" />
+              <ChevronDownIcon className="w-4 h-4 text-ta-grey" />
             </button>
           </div>
         </div>
@@ -35,11 +35,11 @@ export function TopBar() {
 
         {/* Quick Actions */}
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-tap-cyan text-tap-black rounded-lg text-sm font-medium lowercase hover:bg-tap-cyan/90 transition-colors duration-180">
+          <button className="px-4 py-2 bg-ta-cyan text-ta-black rounded-lg text-sm font-medium lowercase hover:bg-ta-cyan/90 transition-colors duration-180">
             quick action
           </button>
-          <button className="w-10 h-10 rounded-full bg-tap-panel flex items-center justify-center hover:bg-tap-panel/70 transition-colors duration-180">
-            <UserCircleIcon className="w-6 h-6 text-tap-white" />
+          <button className="w-10 h-10 rounded-full bg-ta-panel flex items-center justify-center hover:bg-ta-panel/70 transition-colors duration-180">
+            <UserCircleIcon className="w-6 h-6 text-ta-white" />
           </button>
         </div>
       </div>

@@ -92,7 +92,7 @@ export function IdentityPanel() {
           w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all duration-200
           ${
             isExpanded
-              ? 'bg-[#161A1D] border-tap-cyan/20'
+              ? 'bg-[#161A1D] border-ta-cyan/20'
               : 'bg-[#161A1D]/50 border-white/5 hover:border-white/10'
           }
         `}
@@ -103,24 +103,24 @@ export function IdentityPanel() {
           <span
             className={`
               w-2 h-2 rounded-full transition-colors
-              ${hasIdentity ? 'bg-tap-cyan' : 'bg-tap-grey/50'}
+              ${hasIdentity ? 'bg-ta-cyan' : 'bg-ta-grey/50'}
             `}
             aria-hidden="true"
           />
-          <span className="text-sm font-medium text-tap-white">Your Identity</span>
+          <span className="text-sm font-medium text-ta-white">Your Identity</span>
           {hasIdentity && oneLiner && !isExpanded && (
-            <span className="text-xs text-tap-grey truncate max-w-[200px]">{oneLiner}</span>
+            <span className="text-xs text-ta-grey truncate max-w-[200px]">{oneLiner}</span>
           )}
         </div>
 
         <div className="flex items-center gap-2">
           {status.isGenerating && (
-            <span className="text-xs text-tap-cyan animate-pulse">Generating...</span>
+            <span className="text-xs text-ta-cyan animate-pulse">Generating...</span>
           )}
           <motion.span
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="text-tap-grey"
+            className="text-ta-grey"
             aria-hidden="true"
           >
             ↓
@@ -143,7 +143,7 @@ export function IdentityPanel() {
               {/* No identity yet */}
               {!hasIdentity && (
                 <div className="space-y-4">
-                  <p className="text-xs text-tap-grey leading-relaxed">
+                  <p className="text-xs text-ta-grey leading-relaxed">
                     Generate your artist identity from your pitch history. This helps create
                     consistent bios, one-liners, and pitch hooks.
                   </p>
@@ -155,8 +155,8 @@ export function IdentityPanel() {
                       w-full py-2.5 text-xs font-semibold rounded-lg transition-all duration-200
                       ${
                         status.isGenerating
-                          ? 'bg-tap-cyan/20 text-tap-cyan/50 cursor-wait'
-                          : 'bg-tap-cyan text-tap-black hover:bg-tap-cyan/90 shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]'
+                          ? 'bg-ta-cyan/20 text-ta-cyan/50 cursor-wait'
+                          : 'bg-ta-cyan text-ta-black hover:bg-ta-cyan/90 shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]'
                       }
                     `}
                   >
@@ -171,10 +171,10 @@ export function IdentityPanel() {
                   {/* One-liner */}
                   {oneLiner && (
                     <div>
-                      <h4 className="text-[10px] uppercase tracking-wider text-tap-grey mb-1.5">
+                      <h4 className="text-[10px] uppercase tracking-wider text-ta-grey mb-1.5">
                         One-liner
                       </h4>
-                      <p className="text-sm text-tap-white leading-relaxed italic">{oneLiner}</p>
+                      <p className="text-sm text-ta-white leading-relaxed italic">{oneLiner}</p>
                     </div>
                   )}
 
@@ -182,19 +182,19 @@ export function IdentityPanel() {
                   {(identity.brandVoice.tone ||
                     (identity.brandVoice.themes && identity.brandVoice.themes.length > 0)) && (
                     <div>
-                      <h4 className="text-[10px] uppercase tracking-wider text-tap-grey mb-1.5">
+                      <h4 className="text-[10px] uppercase tracking-wider text-ta-grey mb-1.5">
                         Brand Voice
                       </h4>
                       <div className="flex flex-wrap gap-1.5">
                         {identity.brandVoice.tone && (
-                          <span className="px-2 py-0.5 text-xs bg-tap-cyan/10 text-tap-cyan rounded-full border border-tap-cyan/20">
+                          <span className="px-2 py-0.5 text-xs bg-ta-cyan/10 text-ta-cyan rounded-full border border-ta-cyan/20">
                             {identity.brandVoice.tone}
                           </span>
                         )}
                         {identity.brandVoice.themes?.map((theme) => (
                           <span
                             key={theme}
-                            className="px-2 py-0.5 text-xs bg-white/5 text-tap-grey rounded-full border border-white/10"
+                            className="px-2 py-0.5 text-xs bg-white/5 text-ta-grey rounded-full border border-white/10"
                           >
                             {theme}
                           </span>
@@ -207,10 +207,10 @@ export function IdentityPanel() {
                   {identity.epkFragments.comparisons &&
                     identity.epkFragments.comparisons.length > 0 && (
                       <div>
-                        <h4 className="text-[10px] uppercase tracking-wider text-tap-grey mb-1.5">
+                        <h4 className="text-[10px] uppercase tracking-wider text-ta-grey mb-1.5">
                           Sounds Like
                         </h4>
-                        <p className="text-xs text-tap-white/80">
+                        <p className="text-xs text-ta-white/80">
                           {identity.epkFragments.comparisons.join(' meets ')}
                         </p>
                       </div>
@@ -219,10 +219,10 @@ export function IdentityPanel() {
                   {/* Short bio preview */}
                   {shortBio && (
                     <div>
-                      <h4 className="text-[10px] uppercase tracking-wider text-tap-grey mb-1.5">
+                      <h4 className="text-[10px] uppercase tracking-wider text-ta-grey mb-1.5">
                         Short Bio
                       </h4>
-                      <p className="text-xs text-tap-white/70 leading-relaxed line-clamp-3">
+                      <p className="text-xs text-ta-white/70 leading-relaxed line-clamp-3">
                         {shortBio}
                       </p>
                     </div>
@@ -238,7 +238,7 @@ export function IdentityPanel() {
                         ${
                           showApplied
                             ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            : 'bg-tap-cyan text-tap-black hover:bg-tap-cyan/90'
+                            : 'bg-ta-cyan text-ta-black hover:bg-ta-cyan/90'
                         }
                       `}
                     >
@@ -248,7 +248,7 @@ export function IdentityPanel() {
                     <button
                       onClick={() => generateIdentity()}
                       disabled={status.isGenerating}
-                      className="px-3 py-2 text-xs font-medium text-tap-grey hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5"
+                      className="px-3 py-2 text-xs font-medium text-ta-grey hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5"
                     >
                       {status.isGenerating ? '...' : 'Refresh'}
                     </button>

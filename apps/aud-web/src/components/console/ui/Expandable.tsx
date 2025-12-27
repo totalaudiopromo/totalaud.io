@@ -14,20 +14,20 @@ export function Expandable({ title, children, defaultExpanded = false }: Expanda
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
   return (
-    <div className="border border-tap-panel/50 rounded-tap overflow-hidden">
+    <div className="border border-ta-panel/50 rounded-ta overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 bg-tap-panel hover:bg-tap-panel/70 transition-colors duration-180"
+        className="w-full flex items-center justify-between p-4 bg-ta-panel hover:bg-ta-panel/70 transition-colors duration-180"
       >
-        <span className="text-sm font-medium text-tap-white lowercase">{title}</span>
+        <span className="text-sm font-medium text-ta-white lowercase">{title}</span>
         <ChevronDownIcon
-          className={clsx('w-4 h-4 text-tap-grey transition-transform duration-180', {
+          className={clsx('w-4 h-4 text-ta-grey transition-transform duration-180', {
             'rotate-180': isExpanded,
           })}
         />
       </button>
       {isExpanded && (
-        <div className="p-4 bg-tap-black/30 border-t border-tap-panel/50">{children}</div>
+        <div className="p-4 bg-ta-black/30 border-t border-ta-panel/50">{children}</div>
       )}
     </div>
   )

@@ -3,7 +3,7 @@ import { TopBar } from '@/components/console/layout/TopBar'
 
 export default function ConsoleLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-tap-black">
+    <div className="flex min-h-screen bg-ta-black">
       <Sidebar />
       <div className="flex-1 ml-64 max-md:ml-0">
         <TopBar />

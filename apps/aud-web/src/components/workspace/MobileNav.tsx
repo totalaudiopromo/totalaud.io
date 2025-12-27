@@ -97,7 +97,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
   return (
     <nav
       data-testid="mobile-nav"
-      className="md:hidden fixed bottom-0 left-0 right-0 h-14 flex items-center justify-around bg-tap-black/[0.98] backdrop-blur-xl border-t border-tap-white/[0.06] z-50 pb-[env(safe-area-inset-bottom)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 h-14 flex items-center justify-around bg-ta-black/[0.98] backdrop-blur-xl border-t border-ta-white/[0.06] z-50 pb-[env(safe-area-inset-bottom)]"
     >
       {MODES.map((modeConfig) => {
         const isActive = mode === modeConfig.key
@@ -111,7 +111,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             <span
               className={clsx(
                 'transition-colors duration-180',
-                isActive ? 'text-tap-cyan' : 'text-tap-white/50'
+                isActive ? 'text-ta-cyan' : 'text-ta-white/50'
               )}
             >
               {modeConfig.icon}
@@ -119,7 +119,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             <span
               className={clsx(
                 'text-[10px] font-sans transition-colors duration-180',
-                isActive ? 'text-tap-cyan font-semibold' : 'text-tap-white/50 font-normal'
+                isActive ? 'text-ta-cyan font-semibold' : 'text-ta-white/50 font-normal'
               )}
             >
               {modeConfig.label}
@@ -129,7 +129,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             {isActive && (
               <motion.div
                 layoutId="mobile-nav-indicator"
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-tap-cyan rounded-sm"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-ta-cyan rounded-sm"
                 transition={{ duration: 0.12 }}
               />
             )}

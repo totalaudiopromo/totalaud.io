@@ -41,14 +41,14 @@ export function SnapshotCard({ data }: SnapshotCardProps) {
       value: data.avgReplyRate * 100,
       icon: ChartBarIcon,
       format: (v: number) => `${v.toFixed(1)}%`,
-      gradient: 'from-tap-cyan/20 to-blue-500/5',
+      gradient: 'from-ta-cyan/20 to-blue-500/5',
     },
   ]
 
   return (
     <Card className="p-0 overflow-hidden bg-gradient-to-br from-[#161A1D] to-[#0F1113] border border-white/5">
       <div className="p-6 border-b border-white/5 bg-white/[0.02]">
-        <h3 className="text-lg font-medium text-tap-white tracking-tight">Snapshot</h3>
+        <h3 className="text-lg font-medium text-ta-white tracking-tight">Snapshot</h3>
       </div>
 
       <div className="grid grid-cols-2">
@@ -76,14 +76,14 @@ export function SnapshotCard({ data }: SnapshotCardProps) {
 
             <div className="relative z-10 flex flex-col h-full justify-between gap-4">
               <div className="flex items-start justify-between">
-                <p className="text-xs font-medium text-tap-grey/60 uppercase tracking-widest">
+                <p className="text-xs font-medium text-ta-grey/60 uppercase tracking-widest">
                   {metric.label}
                 </p>
-                <metric.icon className="w-4 h-4 text-tap-grey/40 group-hover:text-tap-cyan transition-colors duration-300" />
+                <metric.icon className="w-4 h-4 text-ta-grey/40 group-hover:text-ta-cyan transition-colors duration-300" />
               </div>
 
               <motion.p
-                className="text-3xl font-mono text-tap-white font-light tracking-tighter"
+                className="text-3xl font-mono text-ta-white font-light tracking-tighter"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}

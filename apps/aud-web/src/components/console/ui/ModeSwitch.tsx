@@ -20,7 +20,7 @@ const MODES: { id: DashboardMode; label: string }[] = [
 
 export function ModeSwitch({ currentMode, onModeChange }: ModeSwitchProps) {
   return (
-    <div className="flex gap-2 bg-tap-black/50 p-2 rounded-tap">
+    <div className="flex gap-2 bg-ta-black/50 p-2 rounded-ta">
       {MODES.map((mode) => (
         <button
           key={mode.id}
@@ -28,8 +28,8 @@ export function ModeSwitch({ currentMode, onModeChange }: ModeSwitchProps) {
           className={clsx(
             'px-4 py-2 rounded-lg text-sm font-medium lowercase transition-all duration-180',
             {
-              'bg-tap-cyan text-tap-black': currentMode === mode.id,
-              'text-tap-grey hover:text-tap-white hover:bg-tap-panel': currentMode !== mode.id,
+              'bg-ta-cyan text-ta-black': currentMode === mode.id,
+              'text-ta-grey hover:text-ta-white hover:bg-ta-panel': currentMode !== mode.id,
             }
           )}
         >

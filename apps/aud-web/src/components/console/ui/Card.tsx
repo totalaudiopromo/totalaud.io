@@ -11,7 +11,7 @@ export function Card({ children, className, padding = 'md' }: CardProps) {
   return (
     <div
       className={clsx(
-        'bg-tap-panel rounded-tap shadow-tap border border-tap-panel/50 transition-all duration-180',
+        'bg-ta-panel rounded-ta shadow-ta border border-ta-panel/50 transition-all duration-180',
         {
           'p-4': padding === 'sm',
           'p-6': padding === 'md',

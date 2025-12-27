@@ -161,7 +161,7 @@ export function IdeaCard({
         ${isDragging ? 'cursor-grabbing z-50 scale-105 shadow-2xl' : 'cursor-grab z-10'}
         ${
           isSelected
-            ? 'bg-[#161A1D] border-tap-cyan/40 shadow-[0_0_20px_-5px_rgba(58,169,190,0.3)]'
+            ? 'bg-[#161A1D] border-ta-cyan/40 shadow-[0_0_20px_-5px_rgba(58,169,190,0.3)]'
             : 'bg-[#161A1D]/80 border-white/5 hover:border-white/20 hover:bg-[#161A1D] shadow-lg'
         }
         border touch-none
@@ -203,12 +203,12 @@ export function IdeaCard({
           onChange={(e) => setEditContent(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="w-full min-h-[50px] sm:min-h-[60px] bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-tap-white leading-relaxed font-sans placeholder:text-tap-grey/30"
+          className="w-full min-h-[50px] sm:min-h-[60px] bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-ta-white leading-relaxed font-sans placeholder:text-ta-grey/30"
           autoFocus
         />
       ) : (
-        <p className="text-xs sm:text-sm text-tap-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
-          {card.content || <span className="text-tap-grey/40 italic">Double-click to edit...</span>}
+        <p className="text-xs sm:text-sm text-ta-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
+          {card.content || <span className="text-ta-grey/40 italic">Double-click to edit...</span>}
         </p>
       )}
 
@@ -220,7 +220,7 @@ export function IdeaCard({
         {onSendToTimeline && (
           <button
             onClick={handleSendToTimeline}
-            className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-tap-cyan/10 border border-tap-cyan/20 text-tap-cyan hover:bg-tap-cyan hover:text-tap-black transition-colors"
+            className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-ta-cyan/10 border border-ta-cyan/20 text-ta-cyan hover:bg-ta-cyan hover:text-ta-black transition-colors"
             aria-label="Send to Timeline"
             title="Add to Timeline"
           >

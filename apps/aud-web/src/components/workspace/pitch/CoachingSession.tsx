@@ -115,21 +115,21 @@ export function CoachingSession() {
     return (
       <div className="p-6 h-full flex flex-col">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-tap-cyan" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-ta-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-ta-cyan" aria-hidden="true" />
             AI Coach
           </h3>
           <button
             onClick={() => closeCoach()}
             aria-label="Close AI coach panel"
-            className="text-xs text-tap-grey hover:text-white transition-colors"
+            className="text-xs text-ta-grey hover:text-white transition-colors"
           >
             Close
           </button>
         </div>
 
         <div className="flex-1 flex flex-col justify-center">
-          <p className="text-xs text-tap-grey text-center mb-6 leading-relaxed">
+          <p className="text-xs text-ta-grey text-center mb-6 leading-relaxed">
             Choose how you'd like to work with your coach today
           </p>
 
@@ -141,17 +141,17 @@ export function CoachingSession() {
                   onClick={() => startCoachingSession(modeKey)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full p-4 rounded-xl bg-[#161A1D] border border-white/5 hover:border-tap-cyan/30 hover:shadow-[0_0_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 text-left group"
+                  className="w-full p-4 rounded-xl bg-[#161A1D] border border-white/5 hover:border-ta-cyan/30 hover:shadow-[0_0_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 text-left group"
                 >
                   <div className="flex items-center gap-3 mb-1">
                     <span className="text-lg" aria-hidden="true">
                       {info.icon}
                     </span>
-                    <span className="text-sm font-medium text-tap-white group-hover:text-white">
+                    <span className="text-sm font-medium text-ta-white group-hover:text-white">
                       {info.label}
                     </span>
                   </div>
-                  <p className="text-xs text-tap-grey pl-8">{info.description}</p>
+                  <p className="text-xs text-ta-grey pl-8">{info.description}</p>
                 </motion.button>
               )
             )}
@@ -168,8 +168,8 @@ export function CoachingSession() {
       <div className="p-4 border-b border-white/5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse" aria-hidden="true" />
-            <h3 className="text-sm font-semibold text-tap-white">
+            <span className="w-2 h-2 rounded-full bg-ta-cyan animate-pulse" aria-hidden="true" />
+            <h3 className="text-sm font-semibold text-ta-white">
               {mode && MODE_LABELS[mode].label}
             </h3>
           </div>
@@ -177,14 +177,14 @@ export function CoachingSession() {
             <button
               onClick={() => clearCoachingSession()}
               aria-label="Clear conversation"
-              className="text-[10px] text-tap-grey hover:text-white transition-colors"
+              className="text-[10px] text-ta-grey hover:text-white transition-colors"
             >
               Clear
             </button>
             <button
               onClick={() => endCoachingSession()}
               aria-label="End session"
-              className="text-[10px] text-tap-grey hover:text-white transition-colors"
+              className="text-[10px] text-ta-grey hover:text-white transition-colors"
             >
               End
             </button>
@@ -204,7 +204,7 @@ export function CoachingSession() {
             >
               {PHASE_INFO[phase].label}
             </span>
-            <span className="text-[10px] text-tap-grey">{PHASE_INFO[phase].description}</span>
+            <span className="text-[10px] text-ta-grey">{PHASE_INFO[phase].description}</span>
           </div>
         )}
       </div>
@@ -213,7 +213,7 @@ export function CoachingSession() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {/* Welcome message */}
         {messages.length === 0 && (
-          <div className="p-4 rounded-xl bg-tap-cyan/5 border border-tap-cyan/10 text-xs text-tap-cyan/80 leading-relaxed">
+          <div className="p-4 rounded-xl bg-ta-cyan/5 border border-ta-cyan/10 text-xs text-ta-cyan/80 leading-relaxed">
             {mode === 'quick' ? (
               <>
                 Ready for quick tips! Ask me anything about your pitch and I'll give you fast,
@@ -247,7 +247,7 @@ export function CoachingSession() {
             className="flex items-center gap-3 p-3"
           >
             <TypingIndicator />
-            <span className="text-xs text-tap-cyan/70">Coach is thinking...</span>
+            <span className="text-xs text-ta-cyan/70">Coach is thinking...</span>
           </motion.div>
         )}
 
@@ -256,7 +256,7 @@ export function CoachingSession() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-tap-white/90"
+            className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-ta-white/90"
           >
             {error}
           </motion.div>
@@ -276,13 +276,13 @@ export function CoachingSession() {
             placeholder={mode === 'quick' ? 'Ask for quick tips...' : 'Share your thoughts...'}
             disabled={isLoading}
             rows={2}
-            className="flex-1 px-3 py-2 text-sm text-tap-white bg-[#161A1D] border border-white/10 rounded-lg resize-none outline-none focus:border-tap-cyan/30 focus:ring-1 focus:ring-tap-cyan/20 placeholder:text-tap-grey/50 disabled:opacity-50"
+            className="flex-1 px-3 py-2 text-sm text-ta-white bg-[#161A1D] border border-white/10 rounded-lg resize-none outline-none focus:border-ta-cyan/30 focus:ring-1 focus:ring-ta-cyan/20 placeholder:text-ta-grey/50 disabled:opacity-50"
           />
           <button
             onClick={handleSend}
             disabled={isLoading || !inputValue.trim()}
             aria-label="Send message"
-            className="px-4 py-2 text-sm font-medium text-tap-black bg-tap-cyan rounded-lg hover:bg-tap-cyan/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
+            className="px-4 py-2 text-sm font-medium text-ta-black bg-ta-cyan rounded-lg hover:bg-ta-cyan/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
           >
             Send
           </button>
@@ -314,8 +314,8 @@ function MessageBubble({
           max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed
           ${
             isCoach
-              ? 'bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-tap-white/90'
-              : 'bg-tap-cyan/10 border border-tap-cyan/20 text-tap-white'
+              ? 'bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-ta-white/90'
+              : 'bg-ta-cyan/10 border border-ta-cyan/20 text-ta-white'
           }
         `}
       >
@@ -324,13 +324,13 @@ function MessageBubble({
         {/* Follow-up suggestions */}
         {isCoach && message.suggestions && message.suggestions.length > 0 && (
           <div className="mt-3 pt-3 border-t border-white/5">
-            <p className="text-[10px] text-tap-grey mb-2">Suggested follow-ups:</p>
+            <p className="text-[10px] text-ta-grey mb-2">Suggested follow-ups:</p>
             <div className="flex flex-wrap gap-1.5">
               {message.suggestions.map((suggestion, i) => (
                 <button
                   key={i}
                   onClick={() => onSuggestionClick(suggestion)}
-                  className="px-2 py-1 text-[10px] text-tap-cyan bg-tap-cyan/5 hover:bg-tap-cyan/10 border border-tap-cyan/20 rounded-full transition-colors"
+                  className="px-2 py-1 text-[10px] text-ta-cyan bg-ta-cyan/5 hover:bg-ta-cyan/10 border border-ta-cyan/20 rounded-full transition-colors"
                 >
                   {suggestion}
                 </button>

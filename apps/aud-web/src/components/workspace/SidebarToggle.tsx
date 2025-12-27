@@ -13,7 +13,7 @@ export function SidebarToggle() {
   return (
     <motion.button
       onClick={toggle}
-      className="fixed bottom-24 md:bottom-6 left-4 z-50 w-12 h-12 rounded-full bg-tap-cyan/90 border border-tap-cyan shadow-lg flex items-center justify-center hover:bg-tap-cyan transition-colors"
+      className="fixed bottom-24 md:bottom-6 left-4 z-50 w-12 h-12 rounded-full bg-ta-cyan/90 border border-ta-cyan shadow-lg flex items-center justify-center hover:bg-ta-cyan transition-colors"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       initial={{ opacity: 0, x: -20 }}
@@ -21,7 +21,7 @@ export function SidebarToggle() {
       transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
       aria-label="Open navigation menu"
     >
-      <Bars3Icon className="w-6 h-6 text-tap-black" />
+      <Bars3Icon className="w-6 h-6 text-ta-black" />
     </motion.button>
   )
 }

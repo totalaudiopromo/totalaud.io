@@ -100,13 +100,13 @@ export function SidebarOverlay() {
             animate={{ x: 0 }}
             exit={{ x: -300 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-y-0 left-0 w-72 z-50 bg-tap-panel border-r border-tap-panel/50 flex flex-col"
+            className="fixed inset-y-0 left-0 w-72 z-50 bg-ta-panel border-r border-ta-panel/50 flex flex-col"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
           >
             {/* Header with logo and close button */}
-            <div className="p-6 border-b border-tap-panel/50 flex items-center justify-between">
+            <div className="p-6 border-b border-ta-panel/50 flex items-center justify-between">
               <Link href="/console" onClick={handleNavClick}>
                 <Image
                   src="/brand/svg/lockup-horizontal-cyan.svg"
@@ -119,7 +119,7 @@ export function SidebarOverlay() {
               </Link>
               <button
                 onClick={close}
-                className="p-2 rounded-lg text-tap-grey hover:text-tap-white hover:bg-tap-black/50 transition-colors"
+                className="p-2 rounded-lg text-ta-grey hover:text-ta-white hover:bg-ta-black/50 transition-colors"
                 aria-label="Close navigation menu"
               >
                 <XMarkIcon className="w-6 h-6" />
@@ -130,7 +130,7 @@ export function SidebarOverlay() {
             <nav className="flex-1 p-4 overflow-y-auto">
               {navigation.map((section, sectionIdx) => (
                 <div key={section.title} className={clsx(sectionIdx > 0 && 'mt-6')}>
-                  <p className="px-4 mb-2 text-xs text-tap-grey uppercase tracking-wider">
+                  <p className="px-4 mb-2 text-xs text-ta-grey uppercase tracking-wider">
                     {section.title}
                   </p>
                   <div className="space-y-1">
@@ -144,8 +144,8 @@ export function SidebarOverlay() {
                           className={clsx(
                             'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium lowercase transition-all duration-180',
                             {
-                              'bg-tap-cyan text-tap-black': active,
-                              'text-tap-grey hover:text-tap-white hover:bg-tap-black/50': !active,
+                              'bg-ta-cyan text-ta-black': active,
+                              'text-ta-grey hover:text-ta-white hover:bg-ta-black/50': !active,
                             }
                           )}
                         >
@@ -160,8 +160,8 @@ export function SidebarOverlay() {
             </nav>
 
             {/* Footer */}
-            <div className="p-4 border-t border-tap-panel/50">
-              <p className="text-xs text-tap-grey lowercase">© 2025 totalaud.io</p>
+            <div className="p-4 border-t border-ta-panel/50">
+              <p className="text-xs text-ta-grey lowercase">© 2025 totalaud.io</p>
             </div>
           </motion.aside>
         </>

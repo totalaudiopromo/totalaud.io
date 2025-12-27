@@ -20,7 +20,7 @@ export default function InsightsPage() {
       label: 'correlations',
       content: correlationsLoading ? (
         <Card>
-          <p className="text-tap-grey lowercase">loading correlations...</p>
+          <p className="text-ta-grey lowercase">loading correlations...</p>
         </Card>
       ) : correlations ? (
         <CorrelationList
@@ -30,7 +30,7 @@ export default function InsightsPage() {
         />
       ) : (
         <Card>
-          <p className="text-tap-grey lowercase">no correlation data available</p>
+          <p className="text-ta-grey lowercase">no correlation data available</p>
         </Card>
       ),
     },
@@ -39,7 +39,7 @@ export default function InsightsPage() {
       label: 'trajectory',
       content: trajectoryLoading ? (
         <Card>
-          <p className="text-tap-grey lowercase">loading trajectory...</p>
+          <p className="text-ta-grey lowercase">loading trajectory...</p>
         </Card>
       ) : trajectory ? (
         <TrajectoryForecast
@@ -50,7 +50,7 @@ export default function InsightsPage() {
         />
       ) : (
         <Card>
-          <p className="text-tap-grey lowercase">no trajectory data available</p>
+          <p className="text-ta-grey lowercase">no trajectory data available</p>
         </Card>
       ),
     },
@@ -59,7 +59,7 @@ export default function InsightsPage() {
       label: 'patterns',
       content: (
         <Card>
-          <p className="text-sm text-tap-grey lowercase">
+          <p className="text-sm text-ta-grey lowercase">
             pattern analysis available in main dashboard
           </p>
         </Card>
@@ -70,7 +70,7 @@ export default function InsightsPage() {
       label: 'recommendations',
       content: (
         <Card>
-          <p className="text-sm text-tap-grey lowercase">ai-powered recommendations coming soon</p>
+          <p className="text-sm text-ta-grey lowercase">ai-powered recommendations coming soon</p>
         </Card>
       ),
     },
