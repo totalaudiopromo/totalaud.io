@@ -74,6 +74,10 @@ export interface TimelineEvent {
   trackerCampaignId?: string
   /** When this event was synced to TAP Tracker */
   trackerSyncedAt?: string
+
+  // Signal Threads integration (Phase 2)
+  /** ID of the signal thread this event belongs to */
+  threadId?: string | null
 }
 
 // ============================================================================

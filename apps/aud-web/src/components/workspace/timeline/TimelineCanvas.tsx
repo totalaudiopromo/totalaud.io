@@ -8,6 +8,10 @@
  * - Promo (promotion activities)
  * - Content (social/video content)
  * - Analytics (tracking & insights)
+ *
+ * Phase 2: Signal Threads integration
+ * - Visual connectors between threaded events
+ * - Side panel for thread management
  */
 
 'use client'
@@ -26,10 +30,13 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core'
 import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useSignalThreadStore } from '@/stores/useSignalThreadStore'
 import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { DraggableEvent } from './DraggableEvent'
 import { DroppableLane } from './DroppableLane'
 import { TimelineEventCard } from './TimelineEventCard'
+import { ThreadConnector } from './ThreadConnector'
+import { ThreadsPanel } from './ThreadsPanel'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 
 // ============================================================================
@@ -62,7 +69,30 @@ export function TimelineCanvas() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
   const [editingEventId, setEditingEventId] = useState<string | null>(null)
+  const [threadsPanelOpen, setThreadsPanelOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const lanesRef = useRef<HTMLDivElement>(null)
+
+  // Signal Threads integration
+  const loadThreads = useSignalThreadStore((state) => state.loadFromSupabase)
+
+  // Load threads on mount
+  useEffect(() => {
+    loadThreads()
+  }, [loadThreads])
+
+  // Calculate lane heights for ThreadConnector
+  const laneHeights = useMemo(() => {
+    const heights = new Map<string, { top: number; height: number }>()
+    const laneHeight = 80 // Approximate lane height
+    LANES.forEach((lane, index) => {
+      heights.set(lane.id, {
+        top: index * laneHeight + laneHeight / 2,
+        height: laneHeight,
+      })
+    })
+    return heights
+  }, [])
 
   // Get the event being edited
   const editingEvent = useMemo(
@@ -303,7 +333,16 @@ export function TimelineCanvas() {
         </div>
 
         {/* Lanes */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <div
+          ref={lanesRef}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            position: 'relative',
+          }}
+        >
           {LANES.map((lane) => (
             <DroppableLane
               key={lane.id}
@@ -324,6 +363,13 @@ export function TimelineCanvas() {
                 ))}
             </DroppableLane>
           ))}
+
+          {/* Thread connectors overlay */}
+          <ThreadConnector
+            events={events}
+            getEventPosition={getEventPosition}
+            laneHeights={laneHeights}
+          />
         </div>
 
         {/* Drag overlay - shows a copy of the dragged item */}
@@ -391,6 +437,35 @@ export function TimelineCanvas() {
             Drag events between lanes • Scroll to view weeks
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Signal Threads button */}
+            <button
+              onClick={() => setThreadsPanelOpen(!threadsPanelOpen)}
+              aria-label={threadsPanelOpen ? 'Close threads panel' : 'Open threads panel'}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 500,
+                color: threadsPanelOpen ? '#F472B6' : 'rgba(255, 255, 255, 0.6)',
+                backgroundColor: threadsPanelOpen
+                  ? 'rgba(244, 114, 182, 0.15)'
+                  : 'rgba(255, 255, 255, 0.05)',
+                border: threadsPanelOpen
+                  ? '1px solid rgba(244, 114, 182, 0.3)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 6,
+                cursor: 'pointer',
+                transition: 'all 0.12s ease',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              <span style={{ fontSize: 12 }} aria-hidden="true">
+                🧵
+              </span>
+              Threads
+            </button>
             <button
               onClick={handleScrollToToday}
               aria-label="Scroll to today"
@@ -433,6 +508,9 @@ export function TimelineCanvas() {
             </span>
           </div>
         </div>
+
+        {/* Threads Panel */}
+        <ThreadsPanel isOpen={threadsPanelOpen} onClose={() => setThreadsPanelOpen(false)} />
       </div>
 
       {/* Edit modal */}
