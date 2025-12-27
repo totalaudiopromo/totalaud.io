@@ -32,17 +32,19 @@ const FEATURES = [
 export function FeatureGrid() {
   return (
     <section
+      className="px-4 sm:px-6"
       style={{
-        padding: '64px 24px 96px',
+        paddingTop: '64px',
+        paddingBottom: '96px',
         maxWidth: '900px',
         margin: '0 auto',
       }}
     >
       <div
+        className="gap-4 sm:gap-6"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
         }}
       >
         {FEATURES.map((feature, index) => (

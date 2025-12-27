@@ -7,11 +7,11 @@
 'use client'
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { ToastContainer, Toast } from '@/components/ui/Toast'
+import { ToastContainer, Toast, ToastAction } from '@/components/ui/Toast'
 import { getRandomMessage, triggerHaptic, checkMilestone } from '@/lib/celebrations'
 
 interface ToastContextValue {
-  addToast: (message: string, type?: Toast['type'], duration?: number) => void
+  addToast: (message: string, type?: Toast['type'], duration?: number, action?: ToastAction) => void
   success: (message: string) => void
   error: (message: string) => void
   info: (message: string) => void
@@ -19,6 +19,7 @@ interface ToastContextValue {
 
   // Convenience methods with random messages
   ideaCreated: () => void
+  ideaDeleted: (undoCallback: () => void) => void
   addedToTimeline: () => void
   pitchCopied: () => void
 
@@ -35,9 +36,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
   const addToast = useCallback(
-    (message: string, type: Toast['type'] = 'success', duration = 3000) => {
+    (message: string, type: Toast['type'] = 'success', duration = 3000, action?: ToastAction) => {
       const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`
-      setToasts((prev) => [...prev, { id, message, type, duration }])
+      setToasts((prev) => [...prev, { id, message, type, duration, action }])
 
       // Haptic feedback on mobile
       if (type === 'success' || type === 'celebration') {
@@ -63,6 +64,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const ideaCreated = useCallback(() => {
     addToast(getRandomMessage('ideaCreated'), 'success')
   }, [addToast])
+
+  const ideaDeleted = useCallback(
+    (undoCallback: () => void) => {
+      addToast('Idea deleted', 'info', 5000, {
+        label: 'Undo',
+        onClick: undoCallback,
+      })
+    },
+    [addToast]
+  )
 
   const addedToTimeline = useCallback(() => {
     addToast(getRandomMessage('addedToTimeline'), 'success')
@@ -93,6 +104,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     info,
     celebrate,
     ideaCreated,
+    ideaDeleted,
     addedToTimeline,
     pitchCopied,
     checkAndCelebrate,

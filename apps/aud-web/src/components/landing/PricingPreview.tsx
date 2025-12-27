@@ -55,10 +55,10 @@ function PricingTier({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className="px-5 py-7 sm:p-8"
       style={{
-        flex: '1 1 340px',
+        flex: '1 1 min(100%, 340px)',
         maxWidth: '400px',
-        padding: '32px',
         background: isPro
           ? 'linear-gradient(135deg, rgba(58, 169, 190, 0.08) 0%, rgba(58, 169, 190, 0.02) 100%)'
           : 'rgba(255, 255, 255, 0.02)',
@@ -242,8 +242,10 @@ function PricingTier({
 export function PricingPreview() {
   return (
     <section
+      className="px-4 sm:px-6"
       style={{
-        padding: '100px 24px 120px',
+        paddingTop: '80px',
+        paddingBottom: '100px',
         maxWidth: '900px',
         margin: '0 auto',
       }}
@@ -290,9 +292,9 @@ export function PricingPreview() {
 
       {/* Pricing tiers */}
       <div
+        className="gap-4 sm:gap-6"
         style={{
           display: 'flex',
-          gap: '24px',
           justifyContent: 'center',
           flexWrap: 'wrap',
         }}

@@ -13,6 +13,7 @@ import {
   useIdeasStore,
   selectCardCountByTag,
   selectFilteredCards,
+  selectSyncStatus,
   buildMarkdownExport,
   buildPlainTextExport,
   type IdeaTag,
@@ -20,6 +21,42 @@ import {
 } from '@/stores/useIdeasStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useOfflineDetection } from '@/hooks/useOfflineDetection'
+
+// Sync status icons
+const CloudIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+  </svg>
+)
+
+const CheckIcon = () => (
+  <svg
+    width="10"
+    height="10"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+)
+
+const SyncIcon = ({ spinning }: { spinning?: boolean }) => (
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    style={{
+      animation: spinning ? 'spin 1s linear infinite' : 'none',
+    }}
+  >
+    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+  </svg>
+)
 
 const TAGS: { key: IdeaTag; label: string; colour: string }[] = [
   { key: 'content', label: 'Content', colour: '#3AA9BE' },
@@ -128,9 +165,9 @@ export function IdeasToolbar() {
   // Toast for feedback
   const { ideaCreated, checkAndCelebrate } = useToast()
 
-  // Offline detection
+  // Offline detection and sync status
   const { isOnline, wasOffline, clearWasOffline } = useOfflineDetection()
-  const syncError = useIdeasStore((state) => state.syncError)
+  const syncStatus = useIdeasStore(selectSyncStatus)
   const syncToSupabase = useIdeasStore((state) => state.syncToSupabase)
 
   // Auto-sync when coming back online
@@ -224,7 +261,7 @@ export function IdeasToolbar() {
     <>
       {/* Offline/Error Banner */}
       <AnimatePresence>
-        {(!isOnline || syncError) && (
+        {(!isOnline || syncStatus.error) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -245,9 +282,9 @@ export function IdeasToolbar() {
           >
             <span style={{ fontWeight: 500 }}>{!isOnline ? "You're offline" : 'Sync error'}</span>
             <span style={{ opacity: 0.8 }}>
-              {!isOnline ? "— changes will sync when you're back online" : `— ${syncError}`}
+              {!isOnline ? "— changes will sync when you're back online" : `— ${syncStatus.error}`}
             </span>
-            {syncError && isOnline && (
+            {syncStatus.error && isOnline && (
               <button
                 onClick={() => syncToSupabase()}
                 style={{
@@ -644,6 +681,61 @@ export function IdeasToolbar() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Sync status indicator - hidden when offline (banner shows) */}
+          {isOnline && !syncStatus.error && (
+            <div
+              aria-live="polite"
+              aria-label={
+                syncStatus.isLoading
+                  ? 'Loading ideas'
+                  : syncStatus.isSyncing
+                    ? 'Syncing changes'
+                    : 'All changes saved'
+              }
+              className="hidden sm:flex"
+              style={{
+                alignItems: 'center',
+                gap: 4,
+                padding: '4px 8px',
+                fontSize: 11,
+                color:
+                  syncStatus.isLoading || syncStatus.isSyncing
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : 'rgba(16, 185, 129, 0.8)',
+                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              }}
+            >
+              {syncStatus.isLoading ? (
+                <>
+                  <SyncIcon spinning />
+                  <span>Loading...</span>
+                </>
+              ) : syncStatus.isSyncing ? (
+                <>
+                  <SyncIcon spinning />
+                  <span>Syncing...</span>
+                </>
+              ) : (
+                <>
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 14,
+                      height: 14,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                    }}
+                  >
+                    <CheckIcon />
+                  </span>
+                  <span>Saved</span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Add button */}
           <motion.button
