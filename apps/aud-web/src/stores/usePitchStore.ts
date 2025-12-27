@@ -25,6 +25,19 @@ export type CoachAction = 'improve' | 'suggest' | 'rewrite'
 export type TAPTone = 'casual' | 'professional' | 'enthusiastic'
 export type TAPGenerationStatus = 'idle' | 'loading' | 'success' | 'error'
 
+// Intelligence Navigator types (Phase 1.5)
+export type CoachingMode = 'quick' | 'guided'
+export type CoachingPhase = 'foundation' | 'refinement' | 'optimisation'
+
+export interface CoachingMessage {
+  id: string
+  role: 'user' | 'coach'
+  content: string
+  timestamp: string
+  sectionId?: string // Which section this relates to
+  suggestions?: string[] // Follow-up question suggestions
+}
+
 export interface TAPPitchRequest {
   artistName: string
   trackTitle: string
@@ -110,12 +123,18 @@ interface PitchState {
   drafts: PitchDraft[]
   currentDraftId: string | null
 
-  // AI Coach state
+  // AI Coach state (legacy one-shot)
   isCoachOpen: boolean
   isCoachLoading: boolean
   coachResponse: string | null
   coachError: string | null
   selectedSectionId: string | null
+
+  // Intelligence Navigator state (Phase 1.5 - multi-turn coaching)
+  coachingSession: CoachingMessage[]
+  coachingMode: CoachingMode | null
+  coachingPhase: CoachingPhase | null
+  isSessionActive: boolean
 
   // TAP Pitch state
   tapGenerationStatus: TAPGenerationStatus
@@ -137,7 +156,7 @@ interface PitchState {
   updateSection: (id: string, content: string) => void
   selectSection: (id: string | null) => void
 
-  // Actions - AI Coach
+  // Actions - AI Coach (legacy one-shot)
   toggleCoach: () => void
   openCoach: () => void
   closeCoach: () => void
@@ -145,6 +164,14 @@ interface PitchState {
   setCoachResponse: (response: string | null) => void
   setCoachError: (error: string | null) => void
   applyCoachSuggestion: (sectionId: string, content: string) => void
+
+  // Actions - Intelligence Navigator (Phase 1.5 - multi-turn coaching)
+  startCoachingSession: (mode: CoachingMode) => void
+  endCoachingSession: () => void
+  addCoachingMessage: (message: Omit<CoachingMessage, 'id' | 'timestamp'>) => void
+  setCoachingPhase: (phase: CoachingPhase) => void
+  sendSessionMessage: (content: string, sectionId?: string) => Promise<void>
+  clearCoachingSession: () => void
 
   // Actions - TAP Pitch Generation
   openTAPModal: () => void
@@ -227,6 +254,12 @@ export const usePitchStore = create<PitchState>()(
       coachError: null,
       selectedSectionId: null,
 
+      // Intelligence Navigator initial state (Phase 1.5)
+      coachingSession: [],
+      coachingMode: null,
+      coachingPhase: null,
+      isSessionActive: false,
+
       // TAP Pitch initial state
       tapGenerationStatus: 'idle',
       tapPitchResult: null,
@@ -305,6 +338,122 @@ export const usePitchStore = create<PitchState>()(
           isDirty: true,
           coachResponse: null,
         }))
+      },
+
+      // ========== Intelligence Navigator (Phase 1.5) ==========
+
+      startCoachingSession: (mode) => {
+        set({
+          coachingSession: [],
+          coachingMode: mode,
+          coachingPhase: 'foundation',
+          isSessionActive: true,
+          isCoachOpen: true,
+        })
+      },
+
+      endCoachingSession: () => {
+        set({
+          isSessionActive: false,
+          coachingMode: null,
+          coachingPhase: null,
+        })
+      },
+
+      addCoachingMessage: (message) => {
+        const id = `msg-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+        const timestamp = new Date().toISOString()
+
+        set((state) => ({
+          coachingSession: [...state.coachingSession, { ...message, id, timestamp }],
+        }))
+      },
+
+      setCoachingPhase: (phase) => {
+        set({ coachingPhase: phase })
+      },
+
+      sendSessionMessage: async (content, sectionId) => {
+        const state = get()
+        if (!state.isSessionActive) return
+
+        // Add user message
+        const userMessageId = `msg-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+        set((s) => ({
+          coachingSession: [
+            ...s.coachingSession,
+            {
+              id: userMessageId,
+              role: 'user' as const,
+              content,
+              timestamp: new Date().toISOString(),
+              sectionId,
+            },
+          ],
+          isCoachLoading: true,
+          coachError: null,
+        }))
+
+        try {
+          const response = await fetch('/api/pitch/coach/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: content,
+              sectionId,
+              pitchType: state.currentType,
+              mode: state.coachingMode,
+              phase: state.coachingPhase,
+              history: state.coachingSession.slice(-10), // Last 10 messages for context
+              allSections: state.sections.map((s) => ({
+                id: s.id,
+                title: s.title,
+                content: s.content,
+              })),
+            }),
+          })
+
+          const data = await response.json()
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Failed to get coaching response')
+          }
+
+          // Add coach response
+          const coachMessageId = `msg-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+          set((s) => ({
+            coachingSession: [
+              ...s.coachingSession,
+              {
+                id: coachMessageId,
+                role: 'coach' as const,
+                content: data.response,
+                timestamp: new Date().toISOString(),
+                sectionId,
+                suggestions: data.suggestions,
+              },
+            ],
+            isCoachLoading: false,
+            // Auto-advance phase if suggested
+            coachingPhase: data.nextPhase || s.coachingPhase,
+          }))
+        } catch (error) {
+          log.error('Coaching session error', error)
+          set({
+            isCoachLoading: false,
+            coachError: error instanceof Error ? error.message : 'Failed to get response',
+          })
+        }
+      },
+
+      clearCoachingSession: () => {
+        set({
+          coachingSession: [],
+          coachingMode: null,
+          coachingPhase: null,
+          isSessionActive: false,
+          coachError: null,
+        })
       },
 
       // ========== TAP Pitch Generation ==========
@@ -621,7 +770,7 @@ export const usePitchStore = create<PitchState>()(
     }),
     {
       name: 'totalaud-pitch-store',
-      version: 2, // Bump version for sync fields
+      version: 3, // Bump version for Intelligence Navigator (Phase 1.5)
     }
   )
 )
@@ -653,6 +802,15 @@ export const selectSyncStatus = (state: PitchState) => ({
   isSyncing: state.isSyncing,
   error: state.syncError,
   lastSyncedAt: state.lastSyncedAt,
+})
+
+export const selectCoachingSession = (state: PitchState) => ({
+  session: state.coachingSession,
+  mode: state.coachingMode,
+  phase: state.coachingPhase,
+  isActive: state.isSessionActive,
+  isLoading: state.isCoachLoading,
+  error: state.coachError,
 })
 
 // ============ Export Helpers ============

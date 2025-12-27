@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { IdentityPanel } from './IdentityPanel'
+import { CoachingSession } from './CoachingSession'
 import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
 import { TypingIndicator } from '@/components/ui/EmptyState'
@@ -64,6 +65,7 @@ export function PitchCanvas() {
     isCoachLoading,
     coachResponse,
     coachError,
+    isSessionActive, // Intelligence Navigator (Phase 1.5)
     selectType,
     updateSection,
     selectSection,
@@ -311,78 +313,80 @@ export function PitchCanvas() {
         </StaggeredEntrance>
       </div>
 
-      {/* AI Coach sidebar */}
+      {/* AI Coach sidebar - Intelligence Navigator (Phase 1.5) */}
       <AnimatePresence>
         {isCoachOpen && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 340, opacity: 1 }}
+            animate={{ width: 360, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="border-l border-white/5 bg-[#0F1113]/95 backdrop-blur-xl flex-shrink-0 relative z-20"
           >
-            <div className="p-6 h-full overflow-y-auto w-[340px]">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
-                  <span
-                    className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse"
-                    aria-hidden="true"
-                  />
-                  AI Coach
-                </h3>
-                <button
-                  onClick={() => closeCoach()}
-                  aria-label="Close AI coach panel"
-                  className="text-xs text-tap-grey hover:text-white transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-
-              {/* Loading state */}
-              {isCoachLoading && (
-                <div className="p-4 rounded-xl bg-tap-cyan/5 border border-tap-cyan/10 flex items-center gap-3">
-                  <TypingIndicator />
-                  <span className="text-xs text-tap-cyan/80">Thinking...</span>
-                </div>
-              )}
-
-              {/* Error state */}
-              {coachError && !isCoachLoading && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-tap-white/90">
-                  {coachError}
-                </div>
-              )}
-
-              {/* Coach response */}
-              {coachResponse && !isCoachLoading && (
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-sm text-tap-white/90 leading-relaxed whitespace-pre-wrap shadow-inner">
-                    {coachResponse}
+            <div className="h-full w-[360px]">
+              {/* Show CoachingSession for multi-turn conversations */}
+              {isSessionActive ? (
+                <CoachingSession />
+              ) : (
+                <div className="p-6 h-full overflow-y-auto">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse"
+                        aria-hidden="true"
+                      />
+                      AI Coach
+                    </h3>
+                    <button
+                      onClick={() => closeCoach()}
+                      aria-label="Close AI coach panel"
+                      className="text-xs text-tap-grey hover:text-white transition-colors"
+                    >
+                      Close
+                    </button>
                   </div>
 
-                  {/* Apply button (for rewrite action) */}
-                  {selectedSectionId && (
-                    <button
-                      onClick={() => {
-                        if (selectedSectionId && coachResponse) {
-                          applyCoachSuggestion(selectedSectionId, coachResponse)
-                        }
-                      }}
-                      aria-label="Apply AI coach suggestion to selected section"
-                      className="w-full py-2.5 text-xs font-semibold text-tap-black bg-tap-cyan hover:bg-tap-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
-                    >
-                      Apply to section
-                    </button>
+                  {/* Loading state */}
+                  {isCoachLoading && (
+                    <div className="p-4 rounded-xl bg-tap-cyan/5 border border-tap-cyan/10 flex items-center gap-3">
+                      <TypingIndicator />
+                      <span className="text-xs text-tap-cyan/80">Thinking...</span>
+                    </div>
                   )}
-                </div>
-              )}
 
-              {/* Default state */}
-              {!isCoachLoading && !coachResponse && !coachError && (
-                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-tap-grey leading-relaxed text-center">
-                  Select a section and click <strong>Improve</strong>, <strong>Suggest</strong>, or{' '}
-                  <strong>Rewrite</strong> to get real-time feedback.
+                  {/* Error state */}
+                  {coachError && !isCoachLoading && (
+                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-tap-white/90">
+                      {coachError}
+                    </div>
+                  )}
+
+                  {/* Coach response (legacy one-shot) */}
+                  {coachResponse && !isCoachLoading && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-sm text-tap-white/90 leading-relaxed whitespace-pre-wrap shadow-inner">
+                        {coachResponse}
+                      </div>
+
+                      {/* Apply button (for rewrite action) */}
+                      {selectedSectionId && (
+                        <button
+                          onClick={() => {
+                            if (selectedSectionId && coachResponse) {
+                              applyCoachSuggestion(selectedSectionId, coachResponse)
+                            }
+                          }}
+                          aria-label="Apply AI coach suggestion to selected section"
+                          className="w-full py-2.5 text-xs font-semibold text-tap-black bg-tap-cyan hover:bg-tap-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
+                        >
+                          Apply to section
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Default state with session starter */}
+                  {!isCoachLoading && !coachResponse && !coachError && <CoachingSession />}
                 </div>
               )}
             </div>
