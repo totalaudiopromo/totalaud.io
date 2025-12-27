@@ -195,7 +195,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             className="w-3 h-3 rounded-full"
             style={{
               backgroundColor: LANES.find((l) => l.id === lane)?.colour ?? '#6B7280',
-              boxShadowColor: `${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,
+              boxShadow: `0 0 8px ${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,
             }}
           />
           <span className="text-[11px] font-medium text-tap-grey/60 uppercase tracking-wider">

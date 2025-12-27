@@ -157,14 +157,14 @@ export function IdeaCard({
       onClick={onSelect}
       onDoubleClick={handleDoubleClick}
       className={`
-        absolute w-[220px] min-h-[100px] p-4 rounded-xl backdrop-blur-md transition-all duration-200 group
+        absolute w-[180px] sm:w-[220px] min-h-[90px] sm:min-h-[100px] p-3 sm:p-4 rounded-xl backdrop-blur-md transition-all duration-200 group
         ${isDragging ? 'cursor-grabbing z-50 scale-105 shadow-2xl' : 'cursor-grab z-10'}
         ${
           isSelected
             ? 'bg-[#161A1D] border-tap-cyan/40 shadow-[0_0_20px_-5px_rgba(58,169,190,0.3)]'
             : 'bg-[#161A1D]/80 border-white/5 hover:border-white/20 hover:bg-[#161A1D] shadow-lg'
         }
-        border
+        border touch-none
       `}
       style={{
         boxShadow: isSelected
@@ -175,9 +175,10 @@ export function IdeaCard({
       {/* Tag pill */}
       <button
         onClick={handleTagClick}
+        aria-label={`Category: ${card.tag}. Click to change category`}
         className="
-          inline-flex items-center gap-1.5 px-2.5 py-1 mb-3
-          rounded-full text-[10px] font-semibold uppercase tracking-wider
+          inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 mb-2 sm:mb-3
+          rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider
           border transition-all hover:scale-105
         "
         style={{
@@ -186,7 +187,11 @@ export function IdeaCard({
           color: tagColour.text,
         }}
       >
-        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tagColour.text }} />
+        <span
+          className="w-1.5 h-1.5 rounded-full"
+          style={{ backgroundColor: tagColour.text }}
+          aria-hidden="true"
+        />
         {card.tag}
       </button>
 
@@ -198,37 +203,37 @@ export function IdeaCard({
           onChange={(e) => setEditContent(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="w-full min-h-[60px] bg-transparent border-none outline-none resize-none text-sm text-tap-white leading-relaxed font-sans placeholder:text-tap-grey/30"
+          className="w-full min-h-[50px] sm:min-h-[60px] bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-tap-white leading-relaxed font-sans placeholder:text-tap-grey/30"
           autoFocus
         />
       ) : (
-        <p className="text-sm text-tap-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
+        <p className="text-xs sm:text-sm text-tap-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
           {card.content || <span className="text-tap-grey/40 italic">Double-click to edit...</span>}
         </p>
       )}
 
       {/* Action buttons (visible on hover/select) */}
       <div
-        className={`absolute top-3 right-3 flex gap-1.5 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        className={`absolute top-2 sm:top-3 right-2 sm:right-3 flex gap-1 sm:gap-1.5 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
       >
         {/* Send to Timeline button */}
         {onSendToTimeline && (
           <button
             onClick={handleSendToTimeline}
-            className="flex items-center justify-center w-6 h-6 rounded bg-tap-cyan/10 border border-tap-cyan/20 text-tap-cyan hover:bg-tap-cyan hover:text-tap-black transition-colors"
+            className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-tap-cyan/10 border border-tap-cyan/20 text-tap-cyan hover:bg-tap-cyan hover:text-tap-black transition-colors"
             aria-label="Send to Timeline"
             title="Add to Timeline"
           >
-            <span className="text-xs">→</span>
+            <span className="text-[10px] sm:text-xs">→</span>
           </button>
         )}
         {/* Delete button */}
         <button
           onClick={handleDeleteClick}
-          className="flex items-center justify-center w-6 h-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+          className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
           aria-label="Delete card"
         >
-          <span className="text-sm">×</span>
+          <span className="text-xs sm:text-sm">×</span>
         </button>
       </div>
     </motion.div>

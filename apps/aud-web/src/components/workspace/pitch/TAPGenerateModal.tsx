@@ -124,6 +124,10 @@ export function TAPGenerateModal() {
         onClick={handleClose}
       >
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tap-modal-title"
+          aria-describedby="tap-modal-description"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -154,6 +158,7 @@ export function TAPGenerateModal() {
           >
             <div>
               <h2
+                id="tap-modal-title"
                 style={{
                   margin: 0,
                   fontSize: 18,
@@ -164,6 +169,7 @@ export function TAPGenerateModal() {
                 Generate with TAP
               </h2>
               <p
+                id="tap-modal-description"
                 style={{
                   margin: 0,
                   marginTop: 4,
@@ -176,6 +182,7 @@ export function TAPGenerateModal() {
             </div>
             <button
               onClick={handleClose}
+              aria-label="Close modal"
               style={{
                 padding: 8,
                 fontSize: 18,
@@ -186,7 +193,7 @@ export function TAPGenerateModal() {
                 lineHeight: 1,
               }}
             >
-              ×
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 
@@ -336,6 +343,7 @@ export function TAPGenerateModal() {
                 {/* Artist Name */}
                 <div>
                   <label
+                    htmlFor="tap-artist-name"
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -344,13 +352,20 @@ export function TAPGenerateModal() {
                       marginBottom: 8,
                     }}
                   >
-                    Artist Name <span style={{ color: '#3AA9BE' }}>*</span>
+                    Artist Name{' '}
+                    <span style={{ color: '#3AA9BE' }} aria-hidden="true">
+                      *
+                    </span>
+                    <span className="sr-only">(required)</span>
                   </label>
                   <input
+                    id="tap-artist-name"
                     type="text"
                     value={artistName}
                     onChange={(e) => setArtistName(e.target.value)}
                     placeholder="Your artist or band name"
+                    required
+                    aria-required="true"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
@@ -368,6 +383,7 @@ export function TAPGenerateModal() {
                 {/* Track Title */}
                 <div>
                   <label
+                    htmlFor="tap-track-title"
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -376,13 +392,20 @@ export function TAPGenerateModal() {
                       marginBottom: 8,
                     }}
                   >
-                    Track Title <span style={{ color: '#3AA9BE' }}>*</span>
+                    Track Title{' '}
+                    <span style={{ color: '#3AA9BE' }} aria-hidden="true">
+                      *
+                    </span>
+                    <span className="sr-only">(required)</span>
                   </label>
                   <input
+                    id="tap-track-title"
                     type="text"
                     value={trackTitle}
                     onChange={(e) => setTrackTitle(e.target.value)}
                     placeholder="Name of the track you're pitching"
+                    required
+                    aria-required="true"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
@@ -401,6 +424,7 @@ export function TAPGenerateModal() {
                 <div style={{ display: 'flex', gap: 16 }}>
                   <div style={{ flex: 1 }}>
                     <label
+                      htmlFor="tap-genre"
                       style={{
                         display: 'block',
                         fontSize: 13,
@@ -412,6 +436,7 @@ export function TAPGenerateModal() {
                       Genre
                     </label>
                     <input
+                      id="tap-genre"
                       type="text"
                       value={genre}
                       onChange={(e) => setGenre(e.target.value)}
@@ -431,6 +456,7 @@ export function TAPGenerateModal() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <label
+                      htmlFor="tap-release-date"
                       style={{
                         display: 'block',
                         fontSize: 13,
@@ -442,6 +468,7 @@ export function TAPGenerateModal() {
                       Release Date
                     </label>
                     <input
+                      id="tap-release-date"
                       type="date"
                       value={releaseDate}
                       onChange={(e) => setReleaseDate(e.target.value)}
@@ -463,6 +490,7 @@ export function TAPGenerateModal() {
                 {/* Track Link */}
                 <div>
                   <label
+                    htmlFor="tap-track-link"
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -474,6 +502,7 @@ export function TAPGenerateModal() {
                     Track Link
                   </label>
                   <input
+                    id="tap-track-link"
                     type="url"
                     value={trackLink}
                     onChange={(e) => setTrackLink(e.target.value)}
@@ -495,6 +524,7 @@ export function TAPGenerateModal() {
                 {/* Key Hook */}
                 <div>
                   <label
+                    htmlFor="tap-key-hook"
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -503,8 +533,13 @@ export function TAPGenerateModal() {
                       marginBottom: 8,
                     }}
                   >
-                    Key Hook <span style={{ color: '#3AA9BE' }}>*</span>
+                    Key Hook{' '}
+                    <span style={{ color: '#3AA9BE' }} aria-hidden="true">
+                      *
+                    </span>
+                    <span className="sr-only">(required)</span>
                     <span
+                      id="tap-key-hook-hint"
                       style={{
                         fontWeight: 400,
                         color: 'rgba(255, 255, 255, 0.4)',
@@ -515,10 +550,14 @@ export function TAPGenerateModal() {
                     </span>
                   </label>
                   <textarea
+                    id="tap-key-hook"
                     value={keyHook}
                     onChange={(e) => setKeyHook(e.target.value)}
                     placeholder="What makes this track special? E.g. 'A dreamy synth-pop anthem about finding hope in urban isolation'"
                     rows={3}
+                    required
+                    aria-required="true"
+                    aria-describedby="tap-key-hook-hint"
                     style={{
                       width: '100%',
                       padding: '12px 14px',
@@ -536,8 +575,8 @@ export function TAPGenerateModal() {
                 </div>
 
                 {/* Tone selector */}
-                <div>
-                  <label
+                <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+                  <legend
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -547,12 +586,19 @@ export function TAPGenerateModal() {
                     }}
                   >
                     Tone
-                  </label>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  </legend>
+                  <div
+                    style={{ display: 'flex', gap: 8 }}
+                    role="radiogroup"
+                    aria-label="Select pitch tone"
+                  >
                     {TONE_OPTIONS.map((option) => (
                       <button
                         key={option.value}
                         onClick={() => setTone(option.value)}
+                        role="radio"
+                        aria-checked={tone === option.value}
+                        aria-label={`${option.label}: ${option.description}`}
                         style={{
                           flex: 1,
                           padding: '10px 12px',
@@ -575,11 +621,13 @@ export function TAPGenerateModal() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
                 {/* Error display */}
                 {tapError && (
                   <div
+                    role="alert"
+                    aria-live="polite"
                     style={{
                       padding: 12,
                       backgroundColor: 'rgba(220, 38, 38, 0.1)',

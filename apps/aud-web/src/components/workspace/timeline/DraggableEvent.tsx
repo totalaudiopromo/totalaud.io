@@ -41,10 +41,16 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
       }
     : undefined
 
+  const formattedDate = event.dateObj.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+  })
+
   return (
     <motion.div
       ref={setNodeRef}
       data-testid="timeline-event"
+      aria-label={`${event.title}, scheduled for ${formattedDate}. Click to edit or drag to move between lanes.`}
       {...listeners}
       {...attributes}
       onClick={handleClick}
@@ -97,12 +103,7 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
           color: 'rgba(255, 255, 255, 0.4)',
         }}
       >
-        <span>
-          {event.dateObj.toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'short',
-          })}
-        </span>
+        <span>{formattedDate}</span>
         {/* Scout source indicator */}
         {event.opportunityId && (
           <span

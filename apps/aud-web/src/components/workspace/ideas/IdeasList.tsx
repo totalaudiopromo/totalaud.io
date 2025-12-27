@@ -102,24 +102,23 @@ export function IdeasList({ className }: IdeasListProps) {
     >
       {/* Header row - simplified on mobile */}
       <div
+        className="ideas-list-header grid gap-2 sm:gap-3 px-3 py-2.5 text-[10px] font-medium text-white/40 uppercase tracking-wide border-b border-white/[0.06]"
         style={{
-          display: 'grid',
-          gridTemplateColumns: '24px 1fr 80px 50px',
-          gap: 12,
-          padding: '10px 12px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          fontSize: 10,
-          fontWeight: 500,
-          color: 'rgba(255, 255, 255, 0.4)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          gridTemplateColumns: '20px 1fr 40px',
         }}
       >
         <span></span>
         <span>Content</span>
-        <span>Created</span>
+        <span className="hidden sm:block">Date</span>
         <span></span>
       </div>
+      {/* Responsive grid columns */}
+      <style>{`
+        @media (min-width: 640px) {
+          .ideas-list-header { grid-template-columns: 24px 1fr 80px 50px !important; }
+          .ideas-list-row { grid-template-columns: 24px 1fr 80px 50px !important; }
+        }
+      `}</style>
 
       {/* List content */}
       <div
@@ -183,6 +182,7 @@ export function IdeasList({ className }: IdeasListProps) {
             {cards.map((card, index) => (
               <motion.div
                 key={card.id}
+                className="ideas-list-row"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -191,9 +191,9 @@ export function IdeasList({ className }: IdeasListProps) {
                 onDoubleClick={() => handleRowDoubleClick(card)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '24px 1fr 80px 50px',
-                  gap: 12,
-                  padding: '12px 12px',
+                  gridTemplateColumns: '20px 1fr 40px',
+                  gap: 8,
+                  padding: '10px 12px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                   cursor: 'pointer',
                   backgroundColor:
@@ -280,10 +280,10 @@ export function IdeasList({ className }: IdeasListProps) {
                   )}
                 </div>
 
-                {/* Date */}
+                {/* Date - hidden on mobile */}
                 <div
+                  className="hidden sm:flex"
                   style={{
-                    display: 'flex',
                     alignItems: 'center',
                     fontSize: 12,
                     color: 'rgba(255, 255, 255, 0.4)',

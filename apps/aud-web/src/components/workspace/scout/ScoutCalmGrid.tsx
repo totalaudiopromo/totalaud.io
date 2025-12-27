@@ -123,7 +123,13 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   }
 
   return (
-    <div className={`${className} p-5`} data-testid="scout-grid">
+    <div
+      id="scout-grid"
+      className={`${className} p-5`}
+      data-testid="scout-grid"
+      role="region"
+      aria-label="Opportunities grid"
+    >
       {/* Grid - 3 columns on desktop, fills width */}
       <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <AnimatePresence mode="popLayout">
@@ -145,8 +151,9 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
         <div className="mt-6 text-center">
           <button
             onClick={() => setVisibleCount((v) => v + ITEMS_PER_PAGE)}
+            aria-label={`Show more opportunities. ${opportunities.length - visibleCount} remaining`}
             className="
-              px-4 py-2 text-sm text-white/40 
+              px-4 py-2 text-sm text-white/40
               hover:text-white/60 transition-colors
               border border-white/[0.06] rounded-lg
               hover:border-white/[0.1]

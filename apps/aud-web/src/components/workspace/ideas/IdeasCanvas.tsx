@@ -117,7 +117,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
     [addCard, panOffset]
   )
 
-  // Handle panning
+  // Handle panning (mouse)
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
@@ -149,16 +149,64 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
     setIsPanning(false)
   }, [])
 
+  // Touch panning (two-finger)
+  const touchStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null)
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      // Two-finger touch initiates panning
+      if (e.touches.length === 2) {
+        const touch1 = e.touches[0]
+        const touch2 = e.touches[1]
+        const centerX = (touch1.clientX + touch2.clientX) / 2
+        const centerY = (touch1.clientY + touch2.clientY) / 2
+        touchStartRef.current = {
+          x: centerX,
+          y: centerY,
+          panX: panOffset.x,
+          panY: panOffset.y,
+        }
+        setIsPanning(true)
+      }
+    },
+    [panOffset]
+  )
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && touchStartRef.current) {
+      const touch1 = e.touches[0]
+      const touch2 = e.touches[1]
+      const centerX = (touch1.clientX + touch2.clientX) / 2
+      const centerY = (touch1.clientY + touch2.clientY) / 2
+
+      setPanOffset({
+        x: touchStartRef.current.panX + (centerX - touchStartRef.current.x),
+        y: touchStartRef.current.panY + (centerY - touchStartRef.current.y),
+      })
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    touchStartRef.current = null
+    setIsPanning(false)
+  }, [])
+
   return (
     <div
       ref={canvasRef}
+      role="region"
+      aria-label="Ideas canvas - double-click to add new ideas"
       onClick={handleCanvasClick}
       onDoubleClick={handleCanvasDoubleClick}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className={className}
+      tabIndex={0}
       style={{
         position: 'relative',
         width: '100%',
@@ -166,6 +214,8 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
         overflow: 'hidden',
         backgroundColor: '#0F1113',
         cursor: isPanning ? 'grabbing' : 'default',
+        touchAction: 'none',
+        outline: 'none',
       }}
     >
       {/* Grid background */}
@@ -233,25 +283,24 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
         </div>
       )}
 
-      {/* Pan hint - hidden on touch devices */}
-      {!isTouchDevice && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 12,
-            right: 12,
-            padding: '5px 10px',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            borderRadius: 6,
-            fontSize: 10,
-            color: 'rgba(255, 255, 255, 0.4)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            pointerEvents: 'none',
-          }}
-        >
-          Alt + drag to pan
-        </div>
-      )}
+      {/* Pan hint */}
+      <div
+        className="hidden sm:block"
+        style={{
+          position: 'absolute',
+          bottom: 12,
+          right: 12,
+          padding: '5px 10px',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          borderRadius: 6,
+          fontSize: 10,
+          color: 'rgba(255, 255, 255, 0.4)',
+          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+          pointerEvents: 'none',
+        }}
+      >
+        {isTouchDevice ? 'Two-finger drag to pan' : 'Alt + drag to pan'}
+      </div>
 
       {/* Starter ideas hint banner */}
       {hasStarterIdeas && (
