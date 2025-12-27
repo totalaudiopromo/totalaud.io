@@ -19,6 +19,7 @@ import {
   type SortMode,
 } from '@/stores/useIdeasStore'
 import { useToast } from '@/contexts/ToastContext'
+import { useOfflineDetection } from '@/hooks/useOfflineDetection'
 
 const TAGS: { key: IdeaTag; label: string; colour: string }[] = [
   { key: 'content', label: 'Content', colour: '#3AA9BE' },
@@ -127,6 +128,19 @@ export function IdeasToolbar() {
   // Toast for feedback
   const { ideaCreated, checkAndCelebrate } = useToast()
 
+  // Offline detection
+  const { isOnline, wasOffline, clearWasOffline } = useOfflineDetection()
+  const syncError = useIdeasStore((state) => state.syncError)
+  const syncToSupabase = useIdeasStore((state) => state.syncToSupabase)
+
+  // Auto-sync when coming back online
+  useEffect(() => {
+    if (wasOffline && isOnline) {
+      syncToSupabase()
+      clearWasOffline()
+    }
+  }, [wasOffline, isOnline, syncToSupabase, clearWasOffline])
+
   const handleAddCard = useCallback(() => {
     addCard('New idea...', filter ?? 'content')
     ideaCreated()
@@ -208,6 +222,53 @@ export function IdeasToolbar() {
 
   return (
     <>
+      {/* Offline/Error Banner */}
+      <AnimatePresence>
+        {(!isOnline || syncError) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '8px 12px',
+              backgroundColor: !isOnline ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              borderBottom: `1px solid ${!isOnline ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+              fontSize: 12,
+              color: !isOnline ? '#F59E0B' : '#EF4444',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>{!isOnline ? "You're offline" : 'Sync error'}</span>
+            <span style={{ opacity: 0.8 }}>
+              {!isOnline ? "— changes will sync when you're back online" : `— ${syncError}`}
+            </span>
+            {syncError && isOnline && (
+              <button
+                onClick={() => syncToSupabase()}
+                style={{
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: '#EF4444',
+                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Retry
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div
         style={{
           display: 'flex',
@@ -224,6 +285,8 @@ export function IdeasToolbar() {
       >
         {/* Left: Filter tabs - scrollable on mobile */}
         <div
+          role="tablist"
+          aria-label="Filter ideas by category"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -239,6 +302,9 @@ export function IdeasToolbar() {
         >
           {/* All tab */}
           <button
+            role="tab"
+            aria-selected={filter === null}
+            aria-controls="ideas-canvas"
             onClick={() => handleFilterClick(null)}
             style={{
               display: 'flex',
@@ -259,6 +325,7 @@ export function IdeasToolbar() {
           >
             All
             <span
+              aria-label={`${totalCards} ideas`}
               style={{
                 fontSize: 10,
                 padding: '1px 5px',
@@ -274,6 +341,9 @@ export function IdeasToolbar() {
           {TAGS.map((tag) => (
             <button
               key={tag.key}
+              role="tab"
+              aria-selected={filter === tag.key}
+              aria-controls="ideas-canvas"
               onClick={() => handleFilterClick(tag.key)}
               style={{
                 display: 'flex',
@@ -294,6 +364,7 @@ export function IdeasToolbar() {
               }}
             >
               <span
+                aria-hidden="true"
                 style={{
                   width: 6,
                   height: 6,
@@ -305,6 +376,7 @@ export function IdeasToolbar() {
               {tag.label}
               {cardCounts[tag.key] > 0 && (
                 <span
+                  aria-label={`${cardCounts[tag.key]} ideas`}
                   style={{
                     fontSize: 10,
                     padding: '1px 5px',
@@ -387,8 +459,8 @@ export function IdeasToolbar() {
             flexShrink: 0,
           }}
         >
-          {/* Sort dropdown */}
-          <div ref={sortRef} style={{ position: 'relative' }}>
+          {/* Sort dropdown - hidden on mobile */}
+          <div ref={sortRef} style={{ position: 'relative' }} className="hidden sm:block">
             <button
               onClick={() => setSortOpen(!sortOpen)}
               style={{
@@ -486,8 +558,8 @@ export function IdeasToolbar() {
             </button>
           </div>
 
-          {/* Export dropdown */}
-          <div ref={exportRef} style={{ position: 'relative' }}>
+          {/* Export dropdown - hidden on mobile */}
+          <div ref={exportRef} style={{ position: 'relative' }} className="hidden sm:block">
             <button
               onClick={() => setExportOpen(!exportOpen)}
               style={{
@@ -607,6 +679,10 @@ export function IdeasToolbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="clear-modal-title"
+            aria-describedby="clear-modal-description"
             style={{
               position: 'fixed',
               inset: 0,
@@ -638,6 +714,7 @@ export function IdeasToolbar() {
               }}
             >
               <h3
+                id="clear-modal-title"
                 style={{
                   margin: 0,
                   marginBottom: 12,
@@ -650,6 +727,7 @@ export function IdeasToolbar() {
                 Delete all ideas?
               </h3>
               <p
+                id="clear-modal-description"
                 style={{
                   margin: 0,
                   marginBottom: 20,

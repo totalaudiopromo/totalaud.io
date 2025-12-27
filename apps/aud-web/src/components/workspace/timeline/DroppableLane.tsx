@@ -26,6 +26,8 @@ export function DroppableLane({ lane, isOver, weekWidth, children }: DroppableLa
 
   return (
     <div
+      role="listbox"
+      aria-label={`${lane.label} lane - drop events here`}
       style={{
         flex: 1,
         display: 'flex',
@@ -51,6 +53,7 @@ export function DroppableLane({ lane, isOver, weekWidth, children }: DroppableLa
         }}
       >
         <div
+          aria-hidden="true"
           style={{
             width: 8,
             height: 8,

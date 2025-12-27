@@ -45,6 +45,7 @@ export function OpportunityCardCalm({
       }}
       tabIndex={0}
       role="button"
+      aria-label={`${opportunity.name}, ${TYPE_LABELS[opportunity.type]}${isAddedToTimeline ? ', added to timeline' : ''}${isPitched ? ', pitched' : ''}`}
       data-testid="opportunity-card"
       className="group relative h-full flex flex-col p-5 rounded-xl bg-[#161A1D] border border-white/5 overflow-hidden transition-all duration-300 hover:border-tap-cyan/30"
       onMouseEnter={() => setIsHovered(true)}

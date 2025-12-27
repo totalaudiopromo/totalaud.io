@@ -130,7 +130,11 @@ export function PitchCanvas() {
   // Template selection view
   if (!currentType) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] h-full p-6 overflow-y-auto">
+      <div
+        className="flex flex-col items-center justify-center min-h-[500px] h-full p-6 overflow-y-auto"
+        role="region"
+        aria-label="Pitch type selection"
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,43 +149,50 @@ export function PitchCanvas() {
           </p>
         </motion.div>
 
-        <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-2xl w-full">
-          {PITCH_TYPES.map((type) => (
-            <StaggerItem key={type.key} className="h-full">
-              <motion.button
-                onClick={() => selectType(type.key)}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-tap-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
-              >
-                {/* Hover Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div role="radiogroup" aria-label="Pitch type options">
+          <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-2xl w-full">
+            {PITCH_TYPES.map((type) => (
+              <StaggerItem key={type.key} className="h-full">
+                <motion.button
+                  onClick={() => selectType(type.key)}
+                  aria-label={`${type.label}: ${type.description}`}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-tap-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
+                >
+                  {/* Hover Gradient */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    aria-hidden="true"
+                  />
 
-                <span className="relative z-10 text-base font-semibold text-tap-white group-hover:text-white mb-2 block">
-                  {type.label}
-                </span>
-                <span className="relative z-10 text-xs text-tap-grey leading-relaxed">
-                  {type.description}
-                </span>
-              </motion.button>
-            </StaggerItem>
-          ))}
-        </StaggeredEntrance>
+                  <span className="relative z-10 text-base font-semibold text-tap-white group-hover:text-white mb-2 block">
+                    {type.label}
+                  </span>
+                  <span className="relative z-10 text-xs text-tap-grey leading-relaxed">
+                    {type.description}
+                  </span>
+                </motion.button>
+              </StaggerItem>
+            ))}
+          </StaggeredEntrance>
+        </div>
       </div>
     )
   }
 
   // Pitch editor view
   return (
-    <div className="flex h-full relative font-sans">
+    <div className="flex h-full relative font-sans" role="region" aria-label="Pitch editor">
       {/* Main editor */}
       <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
         {/* Back button */}
         <button
           onClick={() => resetPitch()}
+          aria-label="Back to pitch templates"
           className="flex items-center gap-2 px-3 py-2 mb-6 text-xs text-tap-grey hover:text-white transition-colors rounded-lg hover:bg-white/5"
         >
-          ← Back to templates
+          <span aria-hidden="true">←</span> Back to templates
         </button>
 
         {/* Pitch type header with TAP generate button */}
@@ -200,9 +211,9 @@ export function PitchCanvas() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleOpenTAPModal}
-            title={
+            aria-label={
               !isAuthenticated
-                ? 'Sign up to generate pitches with TAP'
+                ? 'Sign up to generate pitches with TAP AI'
                 : 'Generate a pitch using TAP AI'
             }
             className={`
@@ -214,7 +225,9 @@ export function PitchCanvas() {
               }
             `}
           >
-            <span className="text-sm">✦</span>
+            <span className="text-sm" aria-hidden="true">
+              ✦
+            </span>
             {showAuthPrompt ? 'Sign up to unlock' : 'Generate with TAP'}
           </motion.button>
         </div>
@@ -240,7 +253,11 @@ export function PitchCanvas() {
                 </div>
 
                 {/* Coach action buttons */}
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div
+                  className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  role="group"
+                  aria-label="AI coach actions"
+                >
                   {section.content && (
                     <CopyButton
                       text={section.content}
@@ -253,6 +270,7 @@ export function PitchCanvas() {
                       key={action}
                       onClick={() => requestCoach(section.id, action)}
                       disabled={isCoachLoading}
+                      aria-label={`${action} ${section.title} with AI coach`}
                       className="px-2.5 py-1 text-[10px] font-medium text-tap-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
                     >
                       {action}
@@ -263,7 +281,10 @@ export function PitchCanvas() {
 
               {/* Placeholder hint (only when empty) */}
               {!section.content && (
-                <div className="px-5 py-3 bg-tap-cyan/[0.03] border-b border-tap-cyan/5">
+                <div
+                  id={`${section.id}-hint`}
+                  className="px-5 py-3 bg-tap-cyan/[0.03] border-b border-tap-cyan/5"
+                >
                   <span className="text-xs text-tap-cyan/70 italic leading-relaxed">
                     {section.placeholder}
                   </span>
@@ -276,6 +297,8 @@ export function PitchCanvas() {
                 onChange={(e) => updateSection(section.id, e.target.value)}
                 onFocus={() => selectSection(section.id)}
                 placeholder="Start writing..."
+                aria-label={`${section.title} content`}
+                aria-describedby={!section.content ? `${section.id}-hint` : undefined}
                 className="w-full min-h-[120px] p-5 text-sm leading-relaxed text-tap-white bg-transparent border-none outline-none resize-none placeholder:text-tap-grey/30 focus:bg-white/[0.01] transition-colors"
                 style={{ resize: 'vertical' }}
               />
@@ -297,11 +320,15 @@ export function PitchCanvas() {
             <div className="p-6 h-full overflow-y-auto w-[340px]">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse" />
+                  <span
+                    className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse"
+                    aria-hidden="true"
+                  />
                   AI Coach
                 </h3>
                 <button
                   onClick={() => closeCoach()}
+                  aria-label="Close AI coach panel"
                   className="text-xs text-tap-grey hover:text-white transition-colors"
                 >
                   Close
@@ -338,6 +365,7 @@ export function PitchCanvas() {
                           applyCoachSuggestion(selectedSectionId, coachResponse)
                         }
                       }}
+                      aria-label="Apply AI coach suggestion to selected section"
                       className="w-full py-2.5 text-xs font-semibold text-tap-black bg-tap-cyan hover:bg-tap-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
                     >
                       Apply to section
@@ -366,9 +394,10 @@ export function PitchCanvas() {
           animate={{ scale: 1, opacity: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          aria-label="Open AI coach panel"
           className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-tap-black bg-tap-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
         >
-          <span>✨</span> Ask AI Coach
+          <span aria-hidden="true">✨</span> Ask AI Coach
         </motion.button>
       )}
 

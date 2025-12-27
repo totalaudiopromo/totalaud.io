@@ -202,6 +202,8 @@ export function TimelineCanvas() {
       onDragCancel={handleDragCancel}
     >
       <div
+        role="region"
+        aria-label="Timeline canvas - plan your release activities"
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -391,6 +393,7 @@ export function TimelineCanvas() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button
               onClick={handleScrollToToday}
+              aria-label="Scroll to today"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -415,7 +418,9 @@ export function TimelineCanvas() {
                 e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.2)'
               }}
             >
-              <span style={{ fontSize: 10 }}>◉</span>
+              <span style={{ fontSize: 10 }} aria-hidden="true">
+                ◉
+              </span>
               Today
             </button>
             <span

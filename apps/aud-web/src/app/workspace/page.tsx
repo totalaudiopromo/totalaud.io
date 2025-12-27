@@ -19,6 +19,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIdeasStore } from '@/stores/useIdeasStore'
+import { useWorkspacePreferences } from '@/hooks/useWorkspacePreferences'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
@@ -36,6 +37,10 @@ const IdeasList = dynamic(
 )
 const IdeasToolbar = dynamic(
   () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasToolbar })),
+  { ssr: false }
+)
+const IdeasUndoProvider = dynamic(
+  () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasUndoProvider })),
   { ssr: false }
 )
 const TimelineCanvas = dynamic(
@@ -100,17 +105,22 @@ function WorkspaceContent() {
   // Get view mode from Ideas store
   const ideasViewMode = useIdeasStore((state) => state.viewMode)
 
+  // Sync workspace preferences to Supabase
+  useWorkspacePreferences()
+
   const renderModeContent = () => {
     switch (mode) {
       case 'ideas':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <IdeasToolbar />
-            <TipBanner tipId="ideas" className="mx-4 mt-3" />
-            <div style={{ flex: 1, minHeight: 0 }}>
-              {ideasViewMode === 'canvas' ? <IdeasCanvas /> : <IdeasList />}
+          <IdeasUndoProvider>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <IdeasToolbar />
+              <TipBanner tipId="ideas" className="mx-4 mt-3" />
+              <div style={{ flex: 1, minHeight: 0 }}>
+                {ideasViewMode === 'canvas' ? <IdeasCanvas /> : <IdeasList />}
+              </div>
             </div>
-          </div>
+          </IdeasUndoProvider>
         )
 
       case 'timeline':

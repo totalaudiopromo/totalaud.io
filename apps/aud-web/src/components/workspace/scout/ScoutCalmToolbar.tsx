@@ -66,9 +66,10 @@ export function ScoutCalmToolbar() {
           {localSearch && (
             <button
               onClick={() => setLocalSearch('')}
+              aria-label="Clear search"
               className="absolute inset-y-0 right-0 pr-2 flex items-center text-tap-grey/50 hover:text-white transition-colors"
             >
-              <XMarkIcon className="h-4 w-4" />
+              <XMarkIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
           {/* Input focus glow */}
@@ -76,8 +77,15 @@ export function ScoutCalmToolbar() {
         </div>
 
         {/* Filters & Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-5 px-5 md:mx-0 md:px-0">
+        <div
+          role="tablist"
+          aria-label="Filter opportunities by type"
+          className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-5 px-5 md:mx-0 md:px-0"
+        >
           <button
+            role="tab"
+            aria-selected={!filters.type}
+            aria-controls="scout-grid"
             onClick={() => handleTypeFilter(null)}
             className={`
               flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200
@@ -90,6 +98,7 @@ export function ScoutCalmToolbar() {
           >
             All
             <span
+              aria-label={`${totalOpportunities} total opportunities`}
               className={`text-[10px] ${!filters.type ? 'text-tap-black/60' : 'text-tap-grey/60'}`}
             >
               {totalOpportunities}
@@ -106,6 +115,9 @@ export function ScoutCalmToolbar() {
             return (
               <button
                 key={type}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls="scout-grid"
                 onClick={() => handleTypeFilter(type)}
                 className={`
                   flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 whitespace-nowrap
@@ -122,7 +134,14 @@ export function ScoutCalmToolbar() {
                 }}
               >
                 {TYPE_LABELS[type]}
-                {count > 0 && <span className="opacity-60 text-[10px]">{count}</span>}
+                {count > 0 && (
+                  <span
+                    aria-label={`${count} ${TYPE_LABELS[type]} opportunities`}
+                    className="opacity-60 text-[10px]"
+                  >
+                    {count}
+                  </span>
+                )}
               </button>
             )
           })}
@@ -130,6 +149,7 @@ export function ScoutCalmToolbar() {
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
+              aria-label="Reset all filters"
               className="ml-auto md:ml-2 text-xs text-tap-cyan hover:text-tap-cyan/80 whitespace-nowrap px-2"
             >
               Reset

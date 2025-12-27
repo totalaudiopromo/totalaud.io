@@ -65,13 +65,18 @@ const HOW_IT_WORKS = [
   },
 ]
 
-// Magnetic button component
+// Magnetic button component (touch fallback - static on touch devices)
 function MagneticButton({ children, href }: { children: React.ReactNode; href: string }) {
   const buttonRef = useRef<HTMLAnchorElement>(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  }, [])
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!buttonRef.current) return
+    if (isTouchDevice || !buttonRef.current) return
     const rect = buttonRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
@@ -115,6 +120,7 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
         >
           {children}
           <motion.span
+            aria-hidden="true"
             animate={{ x: [0, 4, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -254,6 +260,7 @@ export function LandingPage() {
 
       {/* Sticky Navigation Header */}
       <motion.header
+        role="banner"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -280,9 +287,13 @@ export function LandingPage() {
             priority
           />
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <nav
+          aria-label="Main navigation"
+          style={{ display: 'flex', alignItems: 'center', gap: 16 }}
+        >
           <Link
             href="/login"
+            aria-label="Sign in to your account"
             style={{
               fontSize: '14px',
               fontWeight: 500,
@@ -299,6 +310,7 @@ export function LandingPage() {
           </Link>
           <Link
             href="/signup"
+            aria-label="Get started with a free account"
             style={{
               fontSize: '14px',
               fontWeight: 600,
@@ -315,7 +327,7 @@ export function LandingPage() {
           >
             Get started
           </Link>
-        </div>
+        </nav>
       </motion.header>
 
       {/* Grain overlay */}
@@ -362,6 +374,7 @@ export function LandingPage() {
           }}
         >
           <span
+            aria-hidden="true"
             style={{
               width: '6px',
               height: '6px',
@@ -599,21 +612,25 @@ export function LandingPage() {
 
       {/* How it works strip */}
       <section
+        aria-labelledby="how-it-works-heading"
         style={{
           padding: '64px 24px 40px',
           maxWidth: '1100px',
           margin: '0 auto',
         }}
       >
+        <h2 id="how-it-works-heading" className="sr-only">
+          How it works
+        </h2>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
             gap: '20px',
             background: 'rgba(255,255,255,0.02)',
             border: '1px solid rgba(58,169,190,0.08)',
             borderRadius: '16px',
-            padding: '20px',
+            padding: '16px',
           }}
         >
           {HOW_IT_WORKS.map((item, i) => (
@@ -674,6 +691,7 @@ export function LandingPage() {
 
       {/* Features Section */}
       <section
+        aria-labelledby="features-heading"
         style={{
           padding: '120px 24px 160px',
           maxWidth: '1100px',
@@ -692,6 +710,7 @@ export function LandingPage() {
           }}
         >
           <h2
+            id="features-heading"
             style={{
               fontSize: 'clamp(32px, 5vw, 48px)',
               fontWeight: 600,
@@ -722,7 +741,7 @@ export function LandingPage() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
             gap: '20px',
           }}
         >
@@ -740,6 +759,7 @@ export function LandingPage() {
 
       {/* Bottom CTA Section */}
       <section
+        aria-labelledby="cta-heading"
         style={{
           padding: '120px 24px 160px',
           textAlign: 'center',
@@ -767,6 +787,7 @@ export function LandingPage() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <h2
+            id="cta-heading"
             style={{
               fontSize: 'clamp(28px, 5vw, 44px)',
               fontWeight: 600,
@@ -818,6 +839,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer
+        role="contentinfo"
         style={{
           padding: '40px 24px',
           borderTop: '1px solid rgba(255, 255, 255, 0.06)',
@@ -872,7 +894,8 @@ export function LandingPage() {
               </a>
             </span>
           </div>
-          <div
+          <nav
+            aria-label="Footer navigation"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -881,6 +904,7 @@ export function LandingPage() {
           >
             <Link
               href="/privacy"
+              aria-label="Privacy policy"
               style={{
                 fontSize: '13px',
                 color: 'rgba(255, 255, 255, 0.35)',
@@ -893,6 +917,7 @@ export function LandingPage() {
             </Link>
             <Link
               href="/terms"
+              aria-label="Terms of service"
               style={{
                 fontSize: '13px',
                 color: 'rgba(255, 255, 255, 0.35)',
@@ -912,7 +937,7 @@ export function LandingPage() {
             >
               © {new Date().getFullYear()}
             </span>
-          </div>
+          </nav>
         </div>
       </footer>
 
