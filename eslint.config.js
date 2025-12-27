@@ -15,6 +15,8 @@ export default [
       '*.config.js',
       '*.config.ts',
       'pnpm-lock.yaml',
+      '**/*.d.ts',
+      '**/next-env.d.ts',
     ],
   },
   {
