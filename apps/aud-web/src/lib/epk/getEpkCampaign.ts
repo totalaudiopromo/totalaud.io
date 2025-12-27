@@ -2,6 +2,9 @@
 
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/serviceRole'
 import type { AssetAttachment } from '@/types/asset-attachment'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('EPK Campaign')
 
 export interface EpkCampaignData {
   id: string
@@ -74,15 +77,15 @@ export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignDat
   ])
 
   if (contextError) {
-    console.error('Failed to load campaign context', contextError)
+    log.error('Failed to load campaign context', contextError)
   }
 
   if (assetsError) {
-    console.error('Failed to load campaign assets', assetsError)
+    log.error('Failed to load campaign assets', assetsError)
   }
 
   if (campaignError) {
-    console.error('Failed to load campaign metadata', campaignError)
+    log.error('Failed to load campaign metadata', campaignError)
   }
 
   if (!context && !campaignRecord) {

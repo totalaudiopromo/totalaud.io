@@ -14,6 +14,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('User Profile')
 
 export type ProjectType = 'single' | 'ep' | 'album' | 'none'
 export type PrimaryGoal = 'discover' | 'plan' | 'pitch' | 'explore'
@@ -194,7 +197,7 @@ export const useUserProfileStore = create<UserProfileState>()(
             set({ isLoading: false })
           }
         } catch (error) {
-          console.error('Failed to load profile from Supabase:', error)
+          log.error('Failed to load profile from Supabase', error)
           set({
             syncError: error instanceof Error ? error.message : 'Failed to load profile',
             isLoading: false,
@@ -230,7 +233,7 @@ export const useUserProfileStore = create<UserProfileState>()(
           if (error) throw error
           set({ syncError: null })
         } catch (error) {
-          console.error('Failed to save profile to Supabase:', error)
+          log.error('Failed to save profile to Supabase', error)
           set({
             syncError: error instanceof Error ? error.message : 'Failed to save profile',
           })

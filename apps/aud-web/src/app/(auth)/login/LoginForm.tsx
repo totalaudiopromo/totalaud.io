@@ -14,6 +14,9 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Login')
 
 export function LoginForm() {
   const router = useRouter()
@@ -41,7 +44,7 @@ export function LoginForm() {
       })
 
       if (authError) {
-        console.error('Auth error:', authError)
+        log.error('Auth error', authError)
         throw authError
       }
 
@@ -51,7 +54,7 @@ export function LoginForm() {
       router.push('/workspace')
       router.refresh()
     } catch (err) {
-      console.error('Login error:', err)
+      log.error('Login error', err)
       const message = err instanceof Error ? err.message : 'Invalid email or password'
       setError(message)
     } finally {
@@ -396,17 +399,33 @@ export function LoginForm() {
         <motion.button
           variants={itemVariants}
           type="button"
+          disabled={isLoading}
           onClick={async () => {
-            const supabase = createBrowserSupabaseClient()
-            await supabase.auth.signInWithOAuth({
-              provider: 'google',
-              options: {
-                redirectTo: `${window.location.origin}/workspace`,
-              },
-            })
+            try {
+              setIsLoading(true)
+              const supabase = createBrowserSupabaseClient()
+              const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                  redirectTo: `${window.location.origin}/workspace`,
+                  queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                  },
+                },
+              })
+
+              if (error) throw error
+              // Redirect happens automatically
+            } catch (err) {
+              log.error('Google Sign In Error', err)
+              const message = err instanceof Error ? err.message : 'Failed to sign in with Google'
+              setError(message)
+              setIsLoading(false)
+            }
           }}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: isLoading ? 1 : 1.01 }}
+          whileTap={{ scale: isLoading ? 1 : 0.98 }}
           style={{
             width: '100%',
             padding: '14px 24px',
@@ -416,7 +435,8 @@ export function LoginForm() {
             backgroundColor: 'rgba(255, 255, 255, 0.06)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '10px',
-            cursor: 'pointer',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading ? 0.7 : 1,
             transition: 'all 0.2s ease',
             fontFamily: 'inherit',
             display: 'flex',

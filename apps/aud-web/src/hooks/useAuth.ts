@@ -12,6 +12,9 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('useAuth')
 
 interface AuthState {
   /** Current authenticated user, or null if guest */
@@ -45,7 +48,7 @@ export function useAuth(): AuthState {
       } = await supabase.auth.getUser()
       setUser(user)
     } catch (error) {
-      console.error('[useAuth] Error fetching user:', error)
+      log.error('Error fetching user', error)
       setUser(null)
     } finally {
       setLoading(false)
@@ -58,7 +61,7 @@ export function useAuth(): AuthState {
       await supabase.auth.signOut()
       setUser(null)
     } catch (error) {
-      console.error('[useAuth] Error signing out:', error)
+      log.error('Error signing out', error)
     }
   }, [supabase])
 

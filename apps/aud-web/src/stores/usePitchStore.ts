@@ -14,6 +14,9 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { SyncedPitchDraft } from '@/hooks/useSupabaseSync'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Pitch Store')
 
 // ============ Types ============
 
@@ -349,7 +352,7 @@ export const usePitchStore = create<PitchState>()(
             },
           })
         } catch (error) {
-          console.error('[Pitch Store] TAP generation error:', error)
+          log.error('TAP generation error', error)
           set({
             tapGenerationStatus: 'error',
             tapError: error instanceof Error ? error.message : 'Generation failed',
@@ -433,12 +436,12 @@ export const usePitchStore = create<PitchState>()(
             )
 
             if (error) {
-              console.error('[Pitch Store] Save draft error:', error)
+              log.error('Save draft error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Pitch Store] Sync error:', error)
+          log.error('Sync error', error)
         }
 
         return id
@@ -480,12 +483,12 @@ export const usePitchStore = create<PitchState>()(
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Pitch Store] Delete draft error:', error)
+              log.error('Delete draft error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Pitch Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -512,12 +515,12 @@ export const usePitchStore = create<PitchState>()(
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Pitch Store] Rename draft error:', error)
+              log.error('Rename draft error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Pitch Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -544,7 +547,7 @@ export const usePitchStore = create<PitchState>()(
             .order('updated_at', { ascending: false })
 
           if (error) {
-            console.error('[Pitch Store] Load error:', error)
+            log.error('Load error', error)
             set({ isLoading: false, syncError: error.message })
             return
           }
@@ -560,7 +563,7 @@ export const usePitchStore = create<PitchState>()(
             set({ isLoading: false })
           }
         } catch (error) {
-          console.error('[Pitch Store] Load error:', error)
+          log.error('Load error', error)
           set({
             isLoading: false,
             syncError: error instanceof Error ? error.message : 'Failed to load',
@@ -597,7 +600,7 @@ export const usePitchStore = create<PitchState>()(
               .upsert(supabaseDrafts, { onConflict: 'id' })
 
             if (error) {
-              console.error('[Pitch Store] Sync error:', error)
+              log.error('Sync error', error)
               set({ isSyncing: false, syncError: error.message })
               return
             }
@@ -608,7 +611,7 @@ export const usePitchStore = create<PitchState>()(
             lastSyncedAt: new Date().toISOString(),
           })
         } catch (error) {
-          console.error('[Pitch Store] Sync error:', error)
+          log.error('Sync error', error)
           set({
             isSyncing: false,
             syncError: error instanceof Error ? error.message : 'Sync failed',

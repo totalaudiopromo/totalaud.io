@@ -58,6 +58,7 @@ export function ScoutPreview() {
 
       {/* CTA Overlay */}
       <div
+        data-testid="auth-prompt"
         style={{
           position: 'absolute',
           inset: 0,

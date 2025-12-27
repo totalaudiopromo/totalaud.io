@@ -1,7 +1,14 @@
 'use client'
 
-import { create } from 'zustand'
+import { create, type StoreApi, type UseBoundStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
+
+type SetState<T> = (
+  partial: T | Partial<T> | ((state: T) => T | Partial<T>),
+  replace?: boolean
+) => void
+type GetState<T> = () => T
+type StoreInitialiser<T> = (set: SetState<T>, get: GetState<T>) => T
 
 /**
  * Stable Store Factory for Zustand
@@ -15,11 +22,14 @@ import { devtools } from 'zustand/middleware'
  * - Do NOT create the store during prerender.
  * - Only create once, on the client.
  */
-export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
-  let store: any = null
+export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
+  let store: UseBoundStore<StoreApi<T>> | null = null
   let storeCreated = false
 
-  function useBoundStore(selector?: any, equalityFn?: any) {
+  function useBoundStore<U>(
+    selector?: (state: T) => U,
+    equalityFn?: (a: U, b: U) => boolean
+  ): U | T {
     // Only create store on client-side (browser environment)
     if (typeof window === 'undefined') {
       // SSR: Return a dummy selector function that returns empty state
@@ -36,14 +46,18 @@ export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
     }
 
     // Use the store hook normally
-    if (selector) {
-      return store(selector, equalityFn)
+    if (selector && store) {
+      // Only pass equalityFn if it's defined
+      if (equalityFn) {
+        return store(selector, equalityFn)
+      }
+      return store(selector)
     }
-    return store
+    return store as unknown as T
   }
 
   // Also provide getState for imperative access
-  useBoundStore.getState = () => {
+  useBoundStore.getState = (): T => {
     if (typeof window === 'undefined') {
       return {} as T
     }
@@ -51,11 +65,14 @@ export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
       store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
       storeCreated = true
     }
-    return store.getState()
+    return store!.getState()
   }
 
   // Provide setState for imperative updates
-  useBoundStore.setState = (partial: any, replace?: boolean) => {
+  useBoundStore.setState = (
+    partial: T | Partial<T> | ((state: T) => T | Partial<T>),
+    replace?: boolean
+  ): void => {
     if (typeof window === 'undefined') {
       return
     }
@@ -63,8 +80,8 @@ export function createZustandStore<T>(initializer: (set: any, get: any) => T) {
       store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
       storeCreated = true
     }
-    return store.setState(partial, replace)
+    store!.setState(partial, replace)
   }
 
-  return useBoundStore as any
+  return useBoundStore
 }

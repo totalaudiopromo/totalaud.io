@@ -7,12 +7,12 @@ import { test, expect } from '@playwright/test'
 
 test.describe('MVP Core Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
   })
 
   test('should complete full user journey: Ideas → Scout → Timeline → Pitch', async ({ page }) => {
     // Step 1: Navigate to Workspace
-    await page.goto('http://localhost:3000/workspace')
+    await page.goto('/workspace')
 
     // Should start on Ideas mode by default
     await expect(page).toHaveURL(/mode=ideas/)
@@ -88,7 +88,7 @@ test.describe('MVP Core Flow', () => {
 
   test('should persist data across page reloads', async ({ page }) => {
     // Add an idea
-    await page.goto('http://localhost:3000/workspace?mode=ideas')
+    await page.goto('/workspace?mode=ideas')
     const addButton = page.getByRole('button', { name: /add idea/i })
     await addButton.click()
 
@@ -105,7 +105,7 @@ test.describe('MVP Core Flow', () => {
 
   test('should handle empty states gracefully', async ({ page }) => {
     // Clear localStorage to simulate fresh user
-    await page.goto('http://localhost:3000/workspace?mode=ideas')
+    await page.goto('/workspace?mode=ideas')
     await page.evaluate(() => localStorage.clear())
     await page.reload()
 
@@ -131,7 +131,7 @@ test.describe('MVP Core Flow', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 })
 
-    await page.goto('http://localhost:3000/workspace?mode=ideas')
+    await page.goto('/workspace?mode=ideas')
 
     // Should show mobile navigation
     await expect(page.locator('[data-testid="mobile-nav"]')).toBeVisible()
@@ -144,7 +144,7 @@ test.describe('MVP Core Flow', () => {
 
 test.describe('Authentication Flow', () => {
   test('should show auth prompt for protected features', async ({ page }) => {
-    await page.goto('http://localhost:3000/workspace?mode=scout')
+    await page.goto('/workspace?mode=scout')
 
     // If not authenticated, should show sign-in prompt
     const authPrompt = page.locator('[data-testid="auth-prompt"]')
@@ -158,7 +158,7 @@ test.describe('Authentication Flow', () => {
 test.describe('Performance', () => {
   test('should load workspace within 2 seconds', async ({ page }) => {
     const startTime = Date.now()
-    await page.goto('http://localhost:3000/workspace')
+    await page.goto('/workspace')
     await page.waitForSelector('[data-testid="workspace-container"]', { timeout: 2000 })
     const loadTime = Date.now() - startTime
 

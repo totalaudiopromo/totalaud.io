@@ -14,6 +14,9 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Supabase Sync')
 
 // Debounce delay for syncing (500ms)
 const SYNC_DEBOUNCE_MS = 500
@@ -57,7 +60,7 @@ export function useDebouncedSync<T>(
           try {
             await syncFn(pendingDataRef.current)
           } catch (error) {
-            console.error('[Supabase Sync] Error:', error)
+            log.error('Sync error', error)
           }
         }
       }, delay)

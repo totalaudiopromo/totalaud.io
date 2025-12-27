@@ -178,6 +178,7 @@ function WorkspaceContent() {
 
   return (
     <div
+      data-testid="workspace-container"
       style={{
         display: 'flex',
         flexDirection: 'column',

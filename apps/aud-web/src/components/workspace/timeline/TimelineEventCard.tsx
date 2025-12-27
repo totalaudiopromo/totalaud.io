@@ -192,7 +192,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         {/* Header with lane colour indicator */}
         <div className="flex items-center gap-3 mb-5">
           <div
-            className="w-3 h-3 rounded-full shadow-[0_0_12px]"
+            className="w-3 h-3 rounded-full"
             style={{
               backgroundColor: LANES.find((l) => l.id === lane)?.colour ?? '#6B7280',
               boxShadowColor: `${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,

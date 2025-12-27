@@ -14,6 +14,9 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { SyncedIdea } from '@/hooks/useSupabaseSync'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Ideas Store')
 
 export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
 export type SortMode = 'newest' | 'oldest' | 'alpha'
@@ -200,12 +203,12 @@ export const useIdeasStore = create<IdeasState>()(
               .insert(toSupabaseIdea(newCard, user.id))
 
             if (error) {
-              console.error('[Ideas Store] Insert error:', error)
+              log.error('Insert error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
 
         return id
@@ -236,12 +239,12 @@ export const useIdeasStore = create<IdeasState>()(
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Ideas Store] Update error:', error)
+              log.error('Update error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -267,12 +270,12 @@ export const useIdeasStore = create<IdeasState>()(
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Ideas Store] Delete error:', error)
+              log.error('Delete error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -306,11 +309,11 @@ export const useIdeasStore = create<IdeasState>()(
               .eq('user_id', user.id)
 
             if (error) {
-              console.error('[Ideas Store] Move error:', error)
+              log.error('Move error', error)
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -341,12 +344,12 @@ export const useIdeasStore = create<IdeasState>()(
             const { error } = await supabase.from('user_ideas').delete().eq('user_id', user.id)
 
             if (error) {
-              console.error('[Ideas Store] Clear all error:', error)
+              log.error('Clear all error', error)
               set({ syncError: error.message })
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -407,11 +410,11 @@ export const useIdeasStore = create<IdeasState>()(
               .in('id', starterIds)
 
             if (error) {
-              console.error('[Ideas Store] Dismiss starters error:', error)
+              log.error('Dismiss starters error', error)
             }
           }
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
         }
       },
 
@@ -438,7 +441,7 @@ export const useIdeasStore = create<IdeasState>()(
             .order('created_at', { ascending: false })
 
           if (error) {
-            console.error('[Ideas Store] Load error:', error)
+            log.error('Load error', error)
             set({ isLoading: false, syncError: error.message })
             return
           }
@@ -455,7 +458,7 @@ export const useIdeasStore = create<IdeasState>()(
             set({ isLoading: false })
           }
         } catch (error) {
-          console.error('[Ideas Store] Load error:', error)
+          log.error('Load error', error)
           set({
             isLoading: false,
             syncError: error instanceof Error ? error.message : 'Failed to load',
@@ -491,7 +494,7 @@ export const useIdeasStore = create<IdeasState>()(
             const { error } = await supabase.from('user_ideas').upsert(ideas, { onConflict: 'id' })
 
             if (error) {
-              console.error('[Ideas Store] Sync error:', error)
+              log.error('Sync error', error)
               set({ isSyncing: false, syncError: error.message })
               return
             }
@@ -502,7 +505,7 @@ export const useIdeasStore = create<IdeasState>()(
             lastSyncedAt: new Date().toISOString(),
           })
         } catch (error) {
-          console.error('[Ideas Store] Sync error:', error)
+          log.error('Sync error', error)
           set({
             isSyncing: false,
             syncError: error instanceof Error ? error.message : 'Sync failed',

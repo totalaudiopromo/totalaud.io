@@ -6,7 +6,10 @@ import { SectionHeader } from '@/components/console/ui/SectionHeader'
 import { Card } from '@/components/console/ui/Card'
 import { Badge } from '@/components/console/ui/Badge'
 import { useAutomations } from '@/hooks/useIntelligence'
+import { logger } from '@/lib/logger'
 import clsx from 'clsx'
+
+const log = logger.scope('Automations')
 
 const AUTOMATIONS = [
   {
@@ -61,7 +64,7 @@ export default function AutomationsPage() {
       const res = await automations.run(action, {})
       setResult(res)
     } catch (error) {
-      console.error('Automation error:', error)
+      log.error('Automation error', error)
       setResult({ success: false, error: 'Automation failed' })
     } finally {
       setLoading(false)

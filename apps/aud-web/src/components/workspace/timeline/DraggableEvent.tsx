@@ -44,6 +44,7 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
   return (
     <motion.div
       ref={setNodeRef}
+      data-testid="timeline-event"
       {...listeners}
       {...attributes}
       onClick={handleClick}

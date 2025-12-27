@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
@@ -95,7 +94,6 @@ export default async function Image() {
               style={{
                 fontSize: '80px',
                 fontWeight: 600,
-                color: '#fff',
                 letterSpacing: '-0.03em',
                 margin: 0,
                 padding: 0,

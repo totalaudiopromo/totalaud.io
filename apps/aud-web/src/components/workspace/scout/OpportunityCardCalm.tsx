@@ -45,6 +45,7 @@ export function OpportunityCardCalm({
       }}
       tabIndex={0}
       role="button"
+      data-testid="opportunity-card"
       className="group relative h-full flex flex-col p-5 rounded-xl bg-[#161A1D] border border-white/5 overflow-hidden transition-all duration-300 hover:border-tap-cyan/30"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -113,6 +114,7 @@ export function OpportunityCardCalm({
           <motion.button
             onClick={handleAdd}
             disabled={isAddedToTimeline}
+            aria-label={isAddedToTimeline ? 'Added to timeline' : 'Add to timeline'}
             whileTap={{ scale: 0.95 }}
             className={`
               flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-200
