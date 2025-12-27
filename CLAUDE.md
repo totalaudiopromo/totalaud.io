@@ -508,6 +508,90 @@ cd apps/aud-web && pnpm test  # Run tests
 
 ---
 
+## 🤖 DAN + THE CREATIVE CREW (Agent System)
+
+**Status**: Active - 11 specialised agents coordinated by Dan
+
+### The Orchestrator
+
+**Dan** coordinates all work across the Creative Crew. Describe what you need in plain English, Dan automatically delegates to the right specialist agents, runs them in parallel, and synthesises results.
+
+**Invoke Dan when**:
+- Task requires 2+ specialist agents
+- Multiple independent subtasks can run parallel
+- Deep specialised knowledge needed
+- Task will take >15 minutes
+
+### Core Mode Agents
+
+| Agent | Mode | Specialty | Triggers |
+|-------|------|-----------|----------|
+| **Ideas Curator** | Ideas | Organisation, tagging, canvas layouts | "organise", "ideas", "canvas" |
+| **Scout Navigator** | Scout | Opportunity discovery, filtering | "find", "opportunities", "playlists" |
+| **Timeline Planner** | Timeline | Release planning, scheduling | "plan", "release", "schedule" |
+| **Pitch Coach** | Pitch | Narrative crafting, bio writing | "bio", "pitch", "describe" |
+
+### Technical Specialists
+
+| Agent | Specialty | Triggers |
+|-------|-----------|----------|
+| **Quality Lead** | Testing, mobile UX, accessibility | "test", "mobile", "QA" |
+| **State Architect** | Zustand stores, sync patterns | "store", "state", "zustand" |
+| **Route Builder** | API routes, Zod validation | "api", "route", "endpoint" |
+| **Motion Director** | Framer Motion, animation tokens | "animation", "motion" |
+| **Discovery Specialist** | Contact classification, GDPR | "contacts", "enrich", "verify" |
+| **Supabase Engineer** | RLS policies, migrations | "database", "supabase", "rls" |
+
+### Global Skills (Available Across All Projects)
+
+These skills work in any project directory:
+
+- `systematic-debugging` - Bug investigation framework
+- `brainstorming` - Idea refinement before implementation
+- `test-runner` - Test suite execution
+- `mobile-first-validator` - Mobile UX standards
+- `accessibility-validator` - WCAG compliance
+- `changelog-generator` - Release notes generation
+
+### Skill Files Location
+
+All Creative Crew skills are in `.claude/skills/`:
+
+```text
+.claude/skills/
+├── dan/                    # Orchestrator
+├── ideas-curator/          # Ideas Mode
+├── scout-navigator/        # Scout Mode
+├── timeline-planner/       # Timeline Mode
+├── pitch-coach/            # Pitch Mode
+├── quality-lead/           # Testing & QA
+├── state-architect/        # Zustand stores
+├── route-builder/          # API routes
+├── motion-director/        # Animations
+├── discovery-specialist/   # Contact enrichment
+└── supabase-engineer/      # Database
+```
+
+### Example Usage
+
+**Feature development**:
+```
+"Build the Scout Mode filter panel"
+→ Dan activates: Scout Navigator, State Architect, Route Builder, Supabase Engineer
+→ All run in parallel
+→ Total time = slowest task (not sum of all)
+```
+
+**Pre-deployment**:
+```
+"Prepare for deployment"
+→ Dan activates: Quality Lead, Motion Director, State Architect
+→ Parallel QA checks
+→ 3-4x faster than sequential
+```
+
+---
+
 ## 🤖 CLAUDE CODE BEHAVIOUR RULES
 
 ### For Every Development Session
