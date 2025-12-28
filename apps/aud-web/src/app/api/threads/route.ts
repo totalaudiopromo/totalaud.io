@@ -172,7 +172,8 @@ export async function POST(request: NextRequest) {
 
     // If eventIds provided, update those events to reference this thread
     if (eventIds && eventIds.length > 0) {
-      const { error: updateError } = await supabase
+      // Type assertion needed until Supabase types are regenerated to include thread_id column
+      const { error: updateError } = await (supabase as any)
         .from('user_timeline_events')
         .update({ thread_id: thread.id })
         .in('id', eventIds)
