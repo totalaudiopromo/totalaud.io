@@ -27,7 +27,9 @@ export function getStripe(): Stripe {
 // For backwards compatibility - throws if Stripe not configured
 export const stripe = new Proxy({} as Stripe, {
   get(_, prop) {
-    return (getStripe() as Record<string, unknown>)[prop as string]
+    const stripeInstance = getStripe()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (stripeInstance as any)[prop as string]
   },
 })
 
