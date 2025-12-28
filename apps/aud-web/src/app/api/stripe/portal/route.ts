@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
 const log = logger.scope('StripePortal')
 
@@ -39,7 +40,7 @@ export async function POST() {
     // Create portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: profile.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/workspace`,
+      return_url: `${env.NEXT_PUBLIC_APP_URL}/workspace`,
     })
 
     log.info('Created portal session', { userId: user.id })

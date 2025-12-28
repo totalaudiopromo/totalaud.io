@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { stripe, getPriceId } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
 const log = logger.scope('StripeCheckout')
 
@@ -91,8 +92,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/workspace?checkout=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
+      success_url: `${env.NEXT_PUBLIC_APP_URL}/workspace?checkout=success`,
+      cancel_url: `${env.NEXT_PUBLIC_APP_URL}/pricing?checkout=cancelled`,
       subscription_data: {
         metadata: {
           supabase_user_id: user.id,
