@@ -71,7 +71,7 @@ export async function GET() {
     }
 
     // Fetch all threads for user
-    // Using type assertion as signal_threads may not be in generated types yet
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
     const { data: threads, error: fetchError } = await (supabase as any)
       .from('signal_threads')
       .select('*')
@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
     const { title, threadType, colour, eventIds } = validation.data
 
     // Insert thread
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
     const { data: thread, error: insertError } = await (supabase as any)
       .from('signal_threads')
       .insert({
@@ -170,9 +171,8 @@ export async function POST(request: NextRequest) {
     }
 
     // If eventIds provided, update those events to reference this thread
-    // Using type assertion as thread_id may not be in generated types yet
     if (eventIds && eventIds.length > 0) {
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('user_timeline_events')
         .update({ thread_id: thread.id })
         .in('id', eventIds)
@@ -260,6 +260,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update thread
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
     const { data: thread, error: updateError } = await (supabase as any)
       .from('signal_threads')
       .update(updateData)
@@ -280,23 +281,19 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Thread not found' }, { status: 404 })
     }
 
-    // If eventIds changed, update event references
-    // Using type assertion as thread_id may not be in generated types yet
+    // If eventIds changed, update event references atomically
+    // Uses RPC function to prevent race conditions between clear and set operations
     if (eventIds !== undefined) {
-      // First, clear thread_id from events that were previously linked
-      await (supabase as any)
-        .from('user_timeline_events')
-        .update({ thread_id: null })
-        .eq('thread_id', id)
-        .eq('user_id', session.user.id)
+      // Type assertion needed until Supabase types are regenerated to include signal_threads RPC
+      const { error: rpcError } = await (supabase as any).rpc('update_thread_events', {
+        p_thread_id: id,
+        p_user_id: session.user.id,
+        p_event_ids: eventIds,
+      })
 
-      // Then, set thread_id on the new events
-      if (eventIds.length > 0) {
-        await (supabase as any)
-          .from('user_timeline_events')
-          .update({ thread_id: id })
-          .in('id', eventIds)
-          .eq('user_id', session.user.id)
+      if (rpcError) {
+        log.warn('Failed to update thread-event links', { threadId: id, error: rpcError })
+        // Don't fail the request - thread update was successful
       }
     }
 
@@ -363,6 +360,7 @@ export async function DELETE(request: NextRequest) {
     const { id } = validation.data
 
     // Delete thread (RLS ensures user can only delete their own)
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
     const { error: deleteError } = await (supabase as any)
       .from('signal_threads')
       .delete()

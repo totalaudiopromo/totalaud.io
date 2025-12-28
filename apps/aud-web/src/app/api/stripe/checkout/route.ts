@@ -6,11 +6,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { stripe, getPriceId, type SubscriptionTier, type Currency } from '@/lib/stripe'
+import { stripe, getPriceId } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('StripeCheckout')
+
+// Zod schema for checkout request validation
+const checkoutSchema = z.object({
+  tier: z.enum(['starter', 'pro', 'pro_annual']),
+  currency: z.enum(['gbp', 'usd', 'eur']).optional().default('gbp'),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,16 +32,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    // Parse request body
+    // Parse and validate request body with Zod
     const body = await request.json()
-    const { tier, currency = 'gbp' } = body as {
-      tier: SubscriptionTier
-      currency?: Currency
+    const validated = checkoutSchema.safeParse(body)
+
+    if (!validated.success) {
+      log.warn('Invalid checkout request', { errors: validated.error.flatten() })
+      return NextResponse.json(
+        { error: 'Invalid request', details: validated.error.flatten().fieldErrors },
+        { status: 400 }
+      )
     }
 
-    if (!tier || !['starter', 'pro', 'pro_annual'].includes(tier)) {
-      return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
-    }
+    const { tier, currency } = validated.data
 
     // Get or create Stripe customer
     const { data: profile } = await supabase

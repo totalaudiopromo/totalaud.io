@@ -228,7 +228,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
         // Sync to Supabase
         if (user) {
           try {
-            // Note: Type assertion needed until Supabase types are regenerated
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             const { error } = await (supabase as any).from('signal_threads').insert({
               ...toSupabaseThread(newThread),
               created_at: now,
@@ -270,7 +270,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
             if (updates.threadType) supabaseUpdates.thread_type = updates.threadType
             if (updates.colour) supabaseUpdates.colour = updates.colour
 
-            // Note: Type assertion needed until Supabase types are regenerated
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             const { error } = await (supabase as any)
               .from('signal_threads')
               .update(supabaseUpdates)
@@ -302,7 +302,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // Note: Type assertion needed until Supabase types are regenerated
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             const { error } = await (supabase as any)
               .from('signal_threads')
               .delete()
@@ -348,6 +348,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             // Update thread event_ids
             await (supabase as any)
               .from('signal_threads')
@@ -390,6 +391,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             // Update thread event_ids
             await (supabase as any)
               .from('signal_threads')
@@ -460,6 +462,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             await (supabase as any)
               .from('signal_threads')
               .update({
@@ -495,7 +498,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
             return
           }
 
-          // Note: Type assertion needed until Supabase types are regenerated
+          // Type assertion needed until Supabase types are regenerated to include signal_threads
           const { data, error } = await (supabase as any)
             .from('signal_threads')
             .select('*')
@@ -553,7 +556,7 @@ export const useSignalThreadStore = create<SignalThreadState>()(
           }))
 
           if (supabaseThreads.length > 0) {
-            // Note: Type assertion needed until Supabase types are regenerated
+            // Type assertion needed until Supabase types are regenerated to include signal_threads
             const { error } = await (supabase as any)
               .from('signal_threads')
               .upsert(supabaseThreads, { onConflict: 'id' })
