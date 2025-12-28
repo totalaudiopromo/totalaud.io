@@ -131,7 +131,7 @@ export function ScoutToolbar() {
     color: 'rgba(255, 255, 255, 0.6)',
     cursor: 'pointer',
     transition: 'all 0.16s ease',
-    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
   } as const
 
   const dropdownStyle = {
@@ -164,7 +164,7 @@ export function ScoutToolbar() {
     borderRadius: 4,
     cursor: 'pointer',
     transition: 'background-color 0.12s ease',
-    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
   }
 
   return (
@@ -213,7 +213,7 @@ export function ScoutToolbar() {
             color: filters.type === null ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)',
             cursor: 'pointer',
             transition: 'all 0.16s ease',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             whiteSpace: 'nowrap',
           }}
         >
@@ -253,7 +253,7 @@ export function ScoutToolbar() {
                 color: isActive ? colour.text : 'rgba(255, 255, 255, 0.5)',
                 cursor: 'pointer',
                 transition: 'all 0.16s ease',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
               }}
@@ -314,7 +314,7 @@ export function ScoutToolbar() {
               outline: 'none',
               fontSize: 12,
               color: 'rgba(255, 255, 255, 0.9)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           />
           {localSearch && (
@@ -527,7 +527,7 @@ export function ScoutToolbar() {
           style={{
             fontSize: 11,
             color: 'rgba(255, 255, 255, 0.4)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             whiteSpace: 'nowrap',
           }}
         >
