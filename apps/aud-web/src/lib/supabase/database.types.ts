@@ -1,30 +1,10 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '13.0.5'
   }
   public: {
     Tables: {
@@ -500,6 +480,63 @@ export type Database = {
           updated_at?: string
           url?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      artists: {
+        Row: {
+          apple_music_artist_id: string | null
+          apple_music_url: string | null
+          bio: string | null
+          created_at: string | null
+          genre: string | null
+          id: string
+          instagram: string | null
+          is_primary: boolean | null
+          name: string
+          photo_url: string | null
+          spotify_artist_id: string | null
+          spotify_url: string | null
+          twitter: string | null
+          updated_at: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          apple_music_artist_id?: string | null
+          apple_music_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          genre?: string | null
+          id?: string
+          instagram?: string | null
+          is_primary?: boolean | null
+          name: string
+          photo_url?: string | null
+          spotify_artist_id?: string | null
+          spotify_url?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          apple_music_artist_id?: string | null
+          apple_music_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          genre?: string | null
+          id?: string
+          instagram?: string | null
+          is_primary?: boolean | null
+          name?: string
+          photo_url?: string | null
+          spotify_artist_id?: string | null
+          spotify_url?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -1263,8 +1300,11 @@ export type Database = {
           actual_reach: number | null
           artist_name: string | null
           budget: number | null
+          contact_email: string | null
+          contact_website: string | null
           cost_per_result: number | null
           created_at: string
+          description: string | null
           end_date: string | null
           genre: string | null
           goal_total: number | null
@@ -1282,6 +1322,7 @@ export type Database = {
           status: string | null
           streams: number | null
           success_rate: number | null
+          tagline: string | null
           target_reach: number | null
           title: string
           updated_at: string
@@ -1292,8 +1333,11 @@ export type Database = {
           actual_reach?: number | null
           artist_name?: string | null
           budget?: number | null
+          contact_email?: string | null
+          contact_website?: string | null
           cost_per_result?: number | null
           created_at?: string
+          description?: string | null
           end_date?: string | null
           genre?: string | null
           goal_total?: number | null
@@ -1311,6 +1355,7 @@ export type Database = {
           status?: string | null
           streams?: number | null
           success_rate?: number | null
+          tagline?: string | null
           target_reach?: number | null
           title: string
           updated_at?: string
@@ -1321,8 +1366,11 @@ export type Database = {
           actual_reach?: number | null
           artist_name?: string | null
           budget?: number | null
+          contact_email?: string | null
+          contact_website?: string | null
           cost_per_result?: number | null
           created_at?: string
+          description?: string | null
           end_date?: string | null
           genre?: string | null
           goal_total?: number | null
@@ -1340,6 +1388,7 @@ export type Database = {
           status?: string | null
           streams?: number | null
           success_rate?: number | null
+          tagline?: string | null
           target_reach?: number | null
           title?: string
           updated_at?: string
@@ -1741,6 +1790,39 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      credit_transactions: {
+        Row: {
+          amount_pence: number
+          balance_after_pence: number
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount_pence: number
+          balance_after_pence: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount_pence?: number
+          balance_after_pence?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       discovered_contacts: {
         Row: {
@@ -2278,6 +2360,72 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      follow_up_reminders: {
+        Row: {
+          campaign_id: string | null
+          completed_at: string | null
+          contact_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          priority: string | null
+          reminder_date: string
+          reminder_time: string | null
+          snoozed_until: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          completed_at?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string | null
+          reminder_date: string
+          reminder_time?: string | null
+          snoozed_until?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string | null
+          completed_at?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string | null
+          reminder_date?: string
+          reminder_time?: string | null
+          snoozed_until?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'follow_up_reminders_campaign_id_fkey'
+            columns: ['campaign_id']
+            isOneToOne: false
+            referencedRelation: 'campaigns'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'follow_up_reminders_contact_id_fkey'
+            columns: ['contact_id']
+            isOneToOne: false
+            referencedRelation: 'tracker_contacts'
+            referencedColumns: ['id']
+          },
+        ]
       }
       gmail_tracked_emails: {
         Row: {
@@ -3678,6 +3826,30 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_webhook_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          event_type: string
+          id: string
+          processed_at: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          event_type: string
+          id?: string
+          processed_at?: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          event_type?: string
+          id?: string
+          processed_at?: string
+        }
+        Relationships: []
+      }
       testing_results: {
         Row: {
           app: string
@@ -3743,6 +3915,214 @@ export type Database = {
           viewport?: string | null
         }
         Relationships: []
+      }
+      track_assets: {
+        Row: {
+          created_at: string | null
+          filename: string
+          id: string
+          mime_type: string | null
+          size: number | null
+          storage_key: string | null
+          track_id: string
+          type: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          filename: string
+          id?: string
+          mime_type?: string | null
+          size?: number | null
+          storage_key?: string | null
+          track_id: string
+          type: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          filename?: string
+          id?: string
+          mime_type?: string | null
+          size?: number | null
+          storage_key?: string | null
+          track_id?: string
+          type?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'track_assets_track_id_fkey'
+            columns: ['track_id']
+            isOneToOne: false
+            referencedRelation: 'tracks'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      tracker_contacts: {
+        Row: {
+          contact_count: number | null
+          created_at: string | null
+          email: string | null
+          id: string
+          last_contacted_at: string | null
+          name: string
+          notes: string | null
+          organisation: string | null
+          phone: string | null
+          platform: string | null
+          response_count: number | null
+          role: string | null
+          source: string | null
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          contact_count?: number | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_contacted_at?: string | null
+          name: string
+          notes?: string | null
+          organisation?: string | null
+          phone?: string | null
+          platform?: string | null
+          response_count?: number | null
+          role?: string | null
+          source?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          contact_count?: number | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_contacted_at?: string | null
+          name?: string
+          notes?: string | null
+          organisation?: string | null
+          phone?: string | null
+          platform?: string | null
+          response_count?: number | null
+          role?: string | null
+          source?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tracks: {
+        Row: {
+          analysis: Json | null
+          analysis_completed_at: string | null
+          analysis_error: string | null
+          analysis_started_at: string | null
+          analysis_status: string | null
+          apple_music_track_id: string | null
+          apple_music_url: string | null
+          artist_id: string | null
+          artist_name: string
+          artwork_key: string | null
+          artwork_url: string | null
+          audio_format: string | null
+          audio_key: string | null
+          audio_size: number | null
+          audio_url: string | null
+          created_at: string | null
+          duration: number | null
+          genre: string | null
+          id: string
+          isrc: string | null
+          release_date: string | null
+          release_type: string | null
+          spotify_track_id: string | null
+          spotify_url: string | null
+          title: string
+          upc: string | null
+          updated_at: string | null
+          user_id: string
+          waveform_data: Json | null
+        }
+        Insert: {
+          analysis?: Json | null
+          analysis_completed_at?: string | null
+          analysis_error?: string | null
+          analysis_started_at?: string | null
+          analysis_status?: string | null
+          apple_music_track_id?: string | null
+          apple_music_url?: string | null
+          artist_id?: string | null
+          artist_name: string
+          artwork_key?: string | null
+          artwork_url?: string | null
+          audio_format?: string | null
+          audio_key?: string | null
+          audio_size?: number | null
+          audio_url?: string | null
+          created_at?: string | null
+          duration?: number | null
+          genre?: string | null
+          id?: string
+          isrc?: string | null
+          release_date?: string | null
+          release_type?: string | null
+          spotify_track_id?: string | null
+          spotify_url?: string | null
+          title: string
+          upc?: string | null
+          updated_at?: string | null
+          user_id: string
+          waveform_data?: Json | null
+        }
+        Update: {
+          analysis?: Json | null
+          analysis_completed_at?: string | null
+          analysis_error?: string | null
+          analysis_started_at?: string | null
+          analysis_status?: string | null
+          apple_music_track_id?: string | null
+          apple_music_url?: string | null
+          artist_id?: string | null
+          artist_name?: string
+          artwork_key?: string | null
+          artwork_url?: string | null
+          audio_format?: string | null
+          audio_key?: string | null
+          audio_size?: number | null
+          audio_url?: string | null
+          created_at?: string | null
+          duration?: number | null
+          genre?: string | null
+          id?: string
+          isrc?: string | null
+          release_date?: string | null
+          release_type?: string | null
+          spotify_track_id?: string | null
+          spotify_url?: string | null
+          title?: string
+          upc?: string | null
+          updated_at?: string | null
+          user_id?: string
+          waveform_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'tracks_artist_id_fkey'
+            columns: ['artist_id']
+            isOneToOne: false
+            referencedRelation: 'artists'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_cohorts: {
         Row: {
@@ -3816,6 +4196,33 @@ export type Database = {
           user_agent?: string | null
           user_id?: string | null
           withdrawn_at?: string | null
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          balance_pence: number
+          created_at: string
+          total_purchased_pence: number
+          total_spent_pence: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance_pence?: number
+          created_at?: string
+          total_purchased_pence?: number
+          total_spent_pence?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance_pence?: number
+          created_at?: string
+          total_purchased_pence?: number
+          total_spent_pence?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -3983,6 +4390,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_beta_user: boolean | null
+          latest_analysis: Json | null
           onboarding_completed: boolean | null
           onboarding_skipped_at: string | null
           stripe_customer_id: string | null
@@ -3997,6 +4405,7 @@ export type Database = {
           full_name?: string | null
           id: string
           is_beta_user?: boolean | null
+          latest_analysis?: Json | null
           onboarding_completed?: boolean | null
           onboarding_skipped_at?: string | null
           stripe_customer_id?: string | null
@@ -4011,6 +4420,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_beta_user?: boolean | null
+          latest_analysis?: Json | null
           onboarding_completed?: boolean | null
           onboarding_skipped_at?: string | null
           stripe_customer_id?: string | null
@@ -4577,6 +4987,16 @@ export type Database = {
       }
     }
     Functions: {
+      add_credits: {
+        Args: {
+          p_amount_pence: number
+          p_description?: string
+          p_metadata?: Json
+          p_transaction_type?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       add_to_suppression_list: {
         Args: {
           p_added_by?: string
@@ -4637,6 +5057,15 @@ export type Database = {
       }
       can_create_campaign: { Args: { user_id_param: string }; Returns: boolean }
       cleanup_expired_invites: { Args: never; Returns: undefined }
+      deduct_credits: {
+        Args: {
+          p_amount_pence: number
+          p_description?: string
+          p_metadata?: Json
+          p_user_id: string
+        }
+        Returns: Json
+      }
       delete_expired_oauth_states: { Args: never; Returns: undefined }
       get_cohort_size: { Args: { p_cohort_date: string }; Returns: number }
       get_confidence_level: { Args: { p_score: number }; Returns: string }
@@ -4756,6 +5185,10 @@ export type Database = {
           templates_migrated: number
           user_email: string
         }[]
+      }
+      update_thread_events: {
+        Args: { p_event_ids: string[]; p_thread_id: string; p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
@@ -4883,9 +5316,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

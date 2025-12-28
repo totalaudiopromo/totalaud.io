@@ -335,7 +335,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
           borderRadius: 6,
           fontSize: 10,
           color: 'rgba(255, 255, 255, 0.4)',
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           pointerEvents: 'none',
         }}
       >
@@ -359,7 +359,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             borderRadius: 8,
             fontSize: 12,
             color: 'rgba(255, 255, 255, 0.6)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             pointerEvents: 'none',
             whiteSpace: 'nowrap',
           }}

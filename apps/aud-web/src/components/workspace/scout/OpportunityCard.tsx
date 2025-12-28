@@ -162,7 +162,7 @@ export function OpportunityCard({
             fontSize: 11,
             fontWeight: 500,
             color: typeColour.text,
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
           <span style={{ fontSize: 10 }}>{TYPE_ICONS[opportunity.type]}</span>
@@ -186,7 +186,7 @@ export function OpportunityCard({
                 color: getConfidenceColour(enrichedData.researchConfidence).text,
                 textTransform: 'uppercase',
                 letterSpacing: '0.03em',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
               title={enrichedData.contactIntelligence || 'Validated contact'}
             >
@@ -202,7 +202,7 @@ export function OpportunityCard({
               color: AUDIENCE_SIZE_COLOURS[opportunity.audienceSize],
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
             {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
@@ -219,7 +219,7 @@ export function OpportunityCard({
           fontWeight: 600,
           color: '#E8EAED',
           lineHeight: 1.3,
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -237,7 +237,7 @@ export function OpportunityCard({
             fontSize: 12,
             color: 'rgba(255, 255, 255, 0.5)',
             lineHeight: 1.5,
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -267,7 +267,7 @@ export function OpportunityCard({
                 borderRadius: 10,
                 fontSize: 10,
                 color: 'rgba(255, 255, 255, 0.6)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
               {genre}
@@ -281,7 +281,7 @@ export function OpportunityCard({
                 borderRadius: 10,
                 fontSize: 10,
                 color: 'rgba(255, 255, 255, 0.4)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
               +{opportunity.genres.length - 3}
@@ -326,7 +326,7 @@ export function OpportunityCard({
                     : '#3AA9BE',
               cursor: enrichmentStatus === 'loading' ? 'wait' : 'pointer',
               transition: 'all 0.16s ease',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               minWidth: 70,
             }}
             title={
@@ -367,7 +367,7 @@ export function OpportunityCard({
               color: copyFeedback ? '#49A36C' : 'rgba(255, 255, 255, 0.6)',
               cursor: 'pointer',
               transition: 'all 0.16s ease',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
             onMouseEnter={(e) => {
               if (!copyFeedback) {
@@ -410,7 +410,7 @@ export function OpportunityCard({
             color: isAddedToTimeline ? '#49A36C' : addFeedback ? '#49A36C' : '#0F1113',
             cursor: isAddedToTimeline ? 'default' : 'pointer',
             transition: 'all 0.16s ease',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
           {isAddedToTimeline ? '✓ Added' : addFeedback ? 'Added!' : '+ Timeline'}

@@ -120,7 +120,7 @@ export function ScoutPreview() {
               fontSize: 20,
               fontWeight: 600,
               color: 'rgba(255, 255, 255, 0.95)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
             Unlock 50+ opportunities
@@ -134,7 +134,7 @@ export function ScoutPreview() {
               fontSize: 14,
               lineHeight: 1.6,
               color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
             Radio stations, playlist curators, music blogs, and press contacts — all researched and
@@ -177,7 +177,7 @@ export function ScoutPreview() {
               marginTop: 16,
               fontSize: 13,
               color: 'rgba(255, 255, 255, 0.4)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
             Already have an account?{' '}
@@ -235,7 +235,7 @@ function PreviewCard({ opportunity, index }: { opportunity: Opportunity; index: 
             backgroundColor: typeColours.bg,
             border: `1px solid ${typeColours.border}`,
             borderRadius: 6,
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
           <span style={{ fontSize: 10 }}>{TYPE_ICONS[opportunity.type]}</span>
@@ -248,7 +248,7 @@ function PreviewCard({ opportunity, index }: { opportunity: Opportunity; index: 
             fontSize: 11,
             fontWeight: 500,
             color: audienceSizeColour,
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
           {AUDIENCE_SIZE_LABELS[opportunity.audienceSize]}
@@ -262,7 +262,7 @@ function PreviewCard({ opportunity, index }: { opportunity: Opportunity; index: 
           fontSize: 15,
           fontWeight: 600,
           color: 'rgba(255, 255, 255, 0.9)',
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -278,7 +278,7 @@ function PreviewCard({ opportunity, index }: { opportunity: Opportunity; index: 
           fontSize: 13,
           lineHeight: 1.5,
           color: 'rgba(255, 255, 255, 0.5)',
-          fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
@@ -299,7 +299,7 @@ function PreviewCard({ opportunity, index }: { opportunity: Opportunity; index: 
               color: 'rgba(255, 255, 255, 0.5)',
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
               borderRadius: 4,
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
             {genre}

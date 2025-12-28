@@ -103,9 +103,45 @@ const motionTokens = {
 - Modal/pane transitions use 240ms
 - Ambient/atmospheric effects use 400ms
 
-### Typography
-- **Primary**: Geist Sans / Inter
-- **Monospace**: Geist Mono / IBM Plex Mono
+### Typography & Font System
+
+totalaud.io uses **Geist** fonts loaded via Next.js `next/font/google`:
+
+- **Primary**: Geist Sans → CSS variable `--font-geist-sans`
+- **Monospace**: Geist Mono → CSS variable `--font-geist-mono`
+
+**Inline Styles (for components with style props):**
+
+```typescript
+// ✅ Correct - uses CSS variable with fallback
+fontFamily: 'var(--font-geist-sans), system-ui, sans-serif'
+fontFamily: 'var(--font-geist-mono), monospace'
+
+// ❌ Wrong - undefined variable (was a bug we fixed)
+fontFamily: 'var(--font-inter, ...)'
+
+// ❌ Wrong - hardcoded font name (font may not be loaded)
+fontFamily: 'JetBrains Mono'
+fontFamily: 'Inter'
+```
+
+**Tailwind Classes (preferred where possible):**
+
+```typescript
+// ✅ Correct - uses design system
+className="font-sans"  // Uses --font-geist-sans
+className="font-mono"  // Uses --font-geist-mono
+```
+
+**Never Do:**
+
+- ❌ Reference `--font-inter` (doesn't exist)
+- ❌ Hardcode font names like `'Inter'` or `'JetBrains Mono'`
+- ❌ Create new font CSS variables
+- ❌ Import fonts from Google CDN directly (use next/font)
+
+**Text Settings:**
+
 - **Line Height**: 1.4–1.6
 - **Max Width**: 70ch (optimal reading)
 

@@ -185,8 +185,7 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error } = await (supabase.from('user_timeline_events') as any).insert({
+            const { error } = await supabase.from('user_timeline_events').insert({
               ...toSupabaseEvent(newEvent, user.id),
               created_at: now,
               updated_at: now,
@@ -239,8 +238,8 @@ export const useTimelineStore = create<TimelineState>()(
             if (updates.url !== undefined) supabaseUpdates.url = updates.url
             if (updates.tags) supabaseUpdates.tags = updates.tags
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error } = await (supabase.from('user_timeline_events') as any)
+            const { error } = await supabase
+              .from('user_timeline_events')
               .update(supabaseUpdates)
               .eq('id', id)
               .eq('user_id', user.id)
@@ -270,8 +269,8 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error } = await (supabase.from('user_timeline_events') as any)
+            const { error } = await supabase
+              .from('user_timeline_events')
               .delete()
               .eq('id', id)
               .eq('user_id', user.id)
@@ -427,8 +426,8 @@ export const useTimelineStore = create<TimelineState>()(
           } = await supabase.auth.getUser()
 
           if (user) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabase.from('user_timeline_events') as any)
+            await supabase
+              .from('user_timeline_events')
               .update({
                 tracker_campaign_id: campaignId,
                 tracker_synced_at: syncedAt,
@@ -535,11 +534,9 @@ export const useTimelineStore = create<TimelineState>()(
           }))
 
           if (supabaseEvents.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error } = await (supabase.from('user_timeline_events') as any).upsert(
-              supabaseEvents,
-              { onConflict: 'id' }
-            )
+            const { error } = await supabase
+              .from('user_timeline_events')
+              .upsert(supabaseEvents, { onConflict: 'id' })
 
             if (error) {
               log.error('Sync error', error)

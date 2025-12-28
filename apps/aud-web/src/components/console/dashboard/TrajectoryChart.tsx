@@ -68,7 +68,7 @@ export function TrajectoryChart({ data }: TrajectoryChartProps) {
                 stroke="#6B7280"
                 style={{
                   fontSize: '10px',
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'var(--font-geist-mono), monospace',
                   textTransform: 'uppercase',
                 }}
                 tickFormatter={(v) => `+${v} Days`}
@@ -78,7 +78,7 @@ export function TrajectoryChart({ data }: TrajectoryChartProps) {
               />
               <YAxis
                 stroke="#6B7280"
-                style={{ fontSize: '10px', fontFamily: 'JetBrains Mono' }}
+                style={{ fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace' }}
                 tickLine={false}
                 axisLine={false}
                 dx={-10}

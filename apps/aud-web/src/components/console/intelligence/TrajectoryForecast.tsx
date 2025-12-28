@@ -50,9 +50,12 @@ export function TrajectoryForecast({
             <XAxis
               dataKey="day"
               stroke="#9CA3AF"
-              style={{ fontSize: '12px', fontFamily: 'JetBrains Mono' }}
+              style={{ fontSize: '12px', fontFamily: 'var(--font-geist-mono), monospace' }}
             />
-            <YAxis stroke="#9CA3AF" style={{ fontSize: '12px', fontFamily: 'JetBrains Mono' }} />
+            <YAxis
+              stroke="#9CA3AF"
+              style={{ fontSize: '12px', fontFamily: 'var(--font-geist-mono), monospace' }}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#161A1D',
