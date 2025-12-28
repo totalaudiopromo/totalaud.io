@@ -10,16 +10,15 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useTimelineStore, type ViewScale } from '@/stores/useTimelineStore'
 import { LANES, getLaneColour, type LaneType } from '@/types/timeline'
 import { PlusIcon, DocumentArrowDownIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
-
-type ViewMode = 'weeks' | 'months' | 'quarters'
 
 export function TimelineToolbar() {
   const events = useTimelineStore((state) => state.events)
   const addEvent = useTimelineStore((state) => state.addEvent)
-  const [viewMode, setViewMode] = useState<ViewMode>('weeks')
+  const viewScale = useTimelineStore((state) => state.viewScale)
+  const setViewScale = useTimelineStore((state) => state.setViewScale)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
 
@@ -126,19 +125,19 @@ export function TimelineToolbar() {
 
           {/* Right: View controls */}
           <div className="flex items-center gap-2">
-            {/* View mode toggle */}
+            {/* View scale toggle */}
             <div className="flex bg-white/5 rounded-ta-sm p-0.5">
-              {(['weeks', 'months', 'quarters'] as ViewMode[]).map((mode) => (
+              {(['weeks', 'months', 'quarters'] as ViewScale[]).map((scale) => (
                 <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
+                  key={scale}
+                  onClick={() => setViewScale(scale)}
                   className={`px-2.5 py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
-                    viewMode === mode
+                    viewScale === scale
                       ? 'font-medium text-ta-cyan bg-ta-cyan/15'
                       : 'font-normal text-ta-grey/60 hover:text-ta-grey'
                   }`}
                 >
-                  {mode}
+                  {scale}
                 </button>
               ))}
             </div>

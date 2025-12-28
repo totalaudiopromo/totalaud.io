@@ -18,6 +18,7 @@ import { OpportunityCardCalm } from './OpportunityCardCalm'
 import { ScoutPreview } from './ScoutPreview'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
+import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
 
 const ITEMS_PER_PAGE = 12
 
@@ -117,6 +118,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
               : emptyStates.scout.firstTime.description
           }
           variant="minimal"
+          action={!hasFilters ? <CrossModePrompt currentMode="scout" /> : undefined}
         />
       </div>
     )

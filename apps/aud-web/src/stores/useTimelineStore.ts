@@ -33,6 +33,8 @@ const log = logger.scope('TimelineStore')
 // Store Interface
 // ============================================================================
 
+export type ViewScale = 'weeks' | 'months' | 'quarters'
+
 interface TimelineState {
   // Data
   events: TimelineEvent[]
@@ -41,6 +43,7 @@ interface TimelineState {
 
   // View state
   selectedEventId: string | null
+  viewScale: ViewScale
 
   // TAP Tracker sync state (per-event)
   trackerSyncStatusById: Record<string, TrackerSyncStatus>
@@ -57,6 +60,7 @@ interface TimelineState {
   updateEvent: (id: string, updates: TimelineEventUpdate) => Promise<void>
   deleteEvent: (id: string) => Promise<void>
   selectEvent: (id: string | null) => void
+  setViewScale: (scale: ViewScale) => void
   clearSampleEvents: () => Promise<void>
   resetToSamples: () => void
 
@@ -149,6 +153,7 @@ export const useTimelineStore = create<TimelineState>()(
       loading: false,
       error: null,
       selectedEventId: null,
+      viewScale: 'weeks' as ViewScale,
 
       // TAP Tracker sync state
       trackerSyncStatusById: {},
@@ -286,6 +291,8 @@ export const useTimelineStore = create<TimelineState>()(
       },
 
       selectEvent: (id) => set({ selectedEventId: id }),
+
+      setViewScale: (scale) => set({ viewScale: scale }),
 
       clearSampleEvents: async () => {
         const sampleIds = get()

@@ -38,6 +38,7 @@ import { TimelineEventCard } from './TimelineEventCard'
 import { ThreadConnector } from './ThreadConnector'
 import { ThreadsPanel } from './ThreadsPanel'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
+import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
 
 // ============================================================================
 // Helpers
@@ -260,11 +261,7 @@ export function TimelineCanvas() {
               title={emptyStates.timeline.firstTime.title}
               description={emptyStates.timeline.firstTime.description}
               variant="large"
-              action={
-                <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255, 255, 255, 0.3)' }}>
-                  Visit <span style={{ color: '#3AA9BE' }}>Scout</span> to discover opportunities
-                </div>
-              }
+              action={<CrossModePrompt currentMode="timeline" />}
             />
           </div>
         )}

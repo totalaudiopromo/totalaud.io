@@ -42,6 +42,12 @@ const envSchema = z.object({
   STRIPE_PRICE_PRO_ANNUAL_GBP: z.string().optional(),
   STRIPE_PRICE_PRO_ANNUAL_USD: z.string().optional(),
   STRIPE_PRICE_PRO_ANNUAL_EUR: z.string().optional(),
+  STRIPE_PRICE_POWER_GBP: z.string().optional(),
+  STRIPE_PRICE_POWER_USD: z.string().optional(),
+  STRIPE_PRICE_POWER_EUR: z.string().optional(),
+  STRIPE_PRICE_POWER_ANNUAL_GBP: z.string().optional(),
+  STRIPE_PRICE_POWER_ANNUAL_USD: z.string().optional(),
+  STRIPE_PRICE_POWER_ANNUAL_EUR: z.string().optional(),
 
   // AI Provider
   ANTHROPIC_API_KEY: z
@@ -57,6 +63,9 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GOOGLE_REDIRECT_URI: z.string().url().optional(),
+
+  // Email (Resend)
+  RESEND_API_KEY: z.string().startsWith('re_', 'RESEND_API_KEY must start with re_').optional(),
 })
 
 // ============================================
@@ -151,4 +160,11 @@ export function isStripeConfigured(): boolean {
  */
 export function isAIConfigured(): boolean {
   return !!env.ANTHROPIC_API_KEY
+}
+
+/**
+ * Check if Email (Resend) is configured
+ */
+export function isEmailConfigured(): boolean {
+  return !!env.RESEND_API_KEY
 }

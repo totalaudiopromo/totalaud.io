@@ -48,10 +48,20 @@ export function LoginForm() {
         throw authError
       }
 
-      // Login successful - redirect will happen via middleware
+      // Login successful - check if onboarding is completed
+      // Fetch user profile to check onboarding status
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user?.id)
+        .single()
 
-      // Successful login - redirect to workspace
-      router.push('/workspace')
+      // Redirect based on onboarding status
+      if (!profileData?.onboarding_completed) {
+        router.push('/onboarding')
+      } else {
+        router.push('/workspace')
+      }
       router.refresh()
     } catch (err) {
       log.error('Login error', err)
@@ -404,6 +414,8 @@ export function LoginForm() {
             try {
               setIsLoading(true)
               const supabase = createBrowserSupabaseClient()
+              // For OAuth, we redirect to workspace and let the onboarding gate handle it
+              // The workspace layout will check onboarding status and redirect if needed
               const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
