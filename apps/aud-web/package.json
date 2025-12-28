@@ -27,6 +27,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.88.0",
+    "@tanstack/react-query": "5",
     "@total-audio/core-ai-provider": "workspace:*",
     "@total-audio/core-supabase": "workspace:*",
     "@total-audio/ui": "workspace:*",

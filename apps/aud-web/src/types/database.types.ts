@@ -423,69 +423,6 @@ export type Database = {
         }
         Relationships: []
       }
-      artist_identities: {
-        Row: {
-          id: string
-          user_id: string
-          brand_tone: string | null
-          brand_themes: string[] | null
-          brand_style: string | null
-          key_phrases: string[] | null
-          primary_motifs: string[] | null
-          emotional_range: string | null
-          unique_elements: string[] | null
-          one_liner: string | null
-          press_angle: string | null
-          pitch_hook: string | null
-          comparisons: string[] | null
-          bio_short: string | null
-          bio_long: string | null
-          last_generated_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          brand_tone?: string | null
-          brand_themes?: string[] | null
-          brand_style?: string | null
-          key_phrases?: string[] | null
-          primary_motifs?: string[] | null
-          emotional_range?: string | null
-          unique_elements?: string[] | null
-          one_liner?: string | null
-          press_angle?: string | null
-          pitch_hook?: string | null
-          comparisons?: string[] | null
-          bio_short?: string | null
-          bio_long?: string | null
-          last_generated_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          brand_tone?: string | null
-          brand_themes?: string[] | null
-          brand_style?: string | null
-          key_phrases?: string[] | null
-          primary_motifs?: string[] | null
-          emotional_range?: string | null
-          unique_elements?: string[] | null
-          one_liner?: string | null
-          press_angle?: string | null
-          pitch_hook?: string | null
-          comparisons?: string[] | null
-          bio_short?: string | null
-          bio_long?: string | null
-          last_generated_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       artist_assets: {
         Row: {
           byte_size: number | null
@@ -1853,6 +1790,39 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      credit_transactions: {
+        Row: {
+          amount_pence: number
+          balance_after_pence: number
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount_pence: number
+          balance_after_pence: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount_pence?: number
+          balance_after_pence?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       discovered_contacts: {
         Row: {
@@ -3808,51 +3778,6 @@ export type Database = {
           },
         ]
       }
-      signal_threads: {
-        Row: {
-          id: string
-          user_id: string
-          title: string
-          thread_type: string
-          colour: string | null
-          event_ids: string[] | null
-          narrative_summary: string | null
-          insights: string[] | null
-          start_date: string | null
-          end_date: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          thread_type: string
-          colour?: string | null
-          event_ids?: string[] | null
-          narrative_summary?: string | null
-          insights?: string[] | null
-          start_date?: string | null
-          end_date?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          thread_type?: string
-          colour?: string | null
-          event_ids?: string[] | null
-          narrative_summary?: string | null
-          insights?: string[] | null
-          start_date?: string | null
-          end_date?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       skills: {
         Row: {
           category: string
@@ -3903,25 +3828,25 @@ export type Database = {
       }
       stripe_webhook_events: {
         Row: {
-          id: string
+          created_at: string
           event_id: string
           event_type: string
+          id: string
           processed_at: string
-          created_at: string
         }
         Insert: {
-          id?: string
+          created_at?: string
           event_id: string
           event_type: string
+          id?: string
           processed_at?: string
-          created_at?: string
         }
         Update: {
-          id?: string
+          created_at?: string
           event_id?: string
           event_type?: string
+          id?: string
           processed_at?: string
-          created_at?: string
         }
         Relationships: []
       }
@@ -4274,6 +4199,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          balance_pence: number
+          created_at: string
+          total_purchased_pence: number
+          total_spent_pence: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance_pence?: number
+          created_at?: string
+          total_purchased_pence?: number
+          total_spent_pence?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance_pence?: number
+          created_at?: string
+          total_purchased_pence?: number
+          total_spent_pence?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_ideas: {
         Row: {
           content: string
@@ -4489,7 +4441,6 @@ export type Database = {
           opportunity_id: string | null
           source: string
           tags: string[] | null
-          thread_id: string | null
           title: string
           tracker_campaign_id: string | null
           tracker_synced_at: string | null
@@ -4507,7 +4458,6 @@ export type Database = {
           opportunity_id?: string | null
           source?: string
           tags?: string[] | null
-          thread_id?: string | null
           title: string
           tracker_campaign_id?: string | null
           tracker_synced_at?: string | null
@@ -4525,7 +4475,6 @@ export type Database = {
           opportunity_id?: string | null
           source?: string
           tags?: string[] | null
-          thread_id?: string | null
           title?: string
           tracker_campaign_id?: string | null
           tracker_synced_at?: string | null
@@ -4533,15 +4482,7 @@ export type Database = {
           url?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'user_timeline_events_thread_id_fkey'
-            columns: ['thread_id']
-            isOneToOne: false
-            referencedRelation: 'signal_threads'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       user_workspace_preferences: {
         Row: {
@@ -5046,6 +4987,16 @@ export type Database = {
       }
     }
     Functions: {
+      add_credits: {
+        Args: {
+          p_amount_pence: number
+          p_description?: string
+          p_metadata?: Json
+          p_transaction_type?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       add_to_suppression_list: {
         Args: {
           p_added_by?: string
@@ -5106,6 +5057,15 @@ export type Database = {
       }
       can_create_campaign: { Args: { user_id_param: string }; Returns: boolean }
       cleanup_expired_invites: { Args: never; Returns: undefined }
+      deduct_credits: {
+        Args: {
+          p_amount_pence: number
+          p_description?: string
+          p_metadata?: Json
+          p_user_id: string
+        }
+        Returns: Json
+      }
       delete_expired_oauth_states: { Args: never; Returns: undefined }
       get_cohort_size: { Args: { p_cohort_date: string }; Returns: number }
       get_confidence_level: { Args: { p_score: number }; Returns: string }
@@ -5225,6 +5185,10 @@ export type Database = {
           templates_migrated: number
           user_email: string
         }[]
+      }
+      update_thread_events: {
+        Args: { p_event_ids: string[]; p_thread_id: string; p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

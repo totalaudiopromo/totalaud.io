@@ -10,19 +10,25 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@total-audio/schemas-database'
 import { logger } from '@/lib/logger'
 import { env, getRequiredEnv } from '@/lib/env'
+import {
+  sendPaymentConfirmationEmail,
+  sendPaymentFailedEmail,
+  sendCancellationEmail,
+} from '@/lib/email'
 
 const log = logger.scope('StripeWebhook')
 
 // Lazy initialisation of admin client to allow env validation
-let _supabaseAdmin: ReturnType<typeof createClient> | null = null
+let _supabaseAdmin: SupabaseClient<Database> | null = null
 
-function getSupabaseAdmin() {
+function getSupabaseAdmin(): SupabaseClient<Database> {
   if (!_supabaseAdmin) {
     const serviceRoleKey = getRequiredEnv('SUPABASE_SERVICE_ROLE_KEY')
-    _supabaseAdmin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, serviceRoleKey)
+    _supabaseAdmin = createClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, serviceRoleKey)
   }
   return _supabaseAdmin
 }
@@ -62,8 +68,7 @@ function getTierFromPrice(priceId: string): string {
 async function isEventProcessed(eventId: string): Promise<boolean> {
   const supabaseAdmin = getSupabaseAdmin()
 
-  // Type assertion needed until Supabase types are regenerated to include stripe_webhook_events
-  const { data } = await (supabaseAdmin as any)
+  const { data } = await supabaseAdmin
     .from('stripe_webhook_events')
     .select('id')
     .eq('event_id', eventId)
@@ -78,8 +83,7 @@ async function isEventProcessed(eventId: string): Promise<boolean> {
 async function markEventProcessed(eventId: string, eventType: string): Promise<void> {
   const supabaseAdmin = getSupabaseAdmin()
 
-  // Type assertion needed until Supabase types are regenerated to include stripe_webhook_events
-  const { error } = await (supabaseAdmin as any).from('stripe_webhook_events').insert({
+  const { error } = await supabaseAdmin.from('stripe_webhook_events').insert({
     event_id: eventId,
     event_type: eventType,
     processed_at: new Date().toISOString(),
@@ -167,7 +171,24 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Tier display names for emails
+const tierDisplayNames: Record<string, string> = {
+  starter: 'Starter',
+  pro: 'Pro',
+  pro_annual: 'Pro (Annual)',
+  power: 'Power',
+  power_annual: 'Power (Annual)',
+}
+
+// Currency symbols for emails
+const currencySymbols: Record<string, string> = {
+  gbp: '£',
+  usd: '$',
+  eur: '€',
+}
+
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
+  const supabaseAdmin = getSupabaseAdmin()
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
 
@@ -176,6 +197,32 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   // Get subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   await handleSubscriptionChange(subscription)
+
+  // Send payment confirmation email
+  const { data: profile } = await supabaseAdmin
+    .from('user_profiles')
+    .select('email, artist_name')
+    .eq('stripe_customer_id', customerId)
+    .single()
+
+  if (profile?.email) {
+    const priceId = subscription.items.data[0]?.price.id
+    const tier = getTierFromPrice(priceId)
+    const price = subscription.items.data[0]?.price
+
+    const currency = currencySymbols[price?.currency || 'gbp'] || '£'
+    const amount = price?.unit_amount ? (price.unit_amount / 100).toFixed(2) : '0.00'
+    const isAnnual = tier.includes('annual')
+
+    await sendPaymentConfirmationEmail({
+      to: profile.email,
+      customerName: profile.artist_name || 'there',
+      tierName: tierDisplayNames[tier] || 'Pro',
+      amount,
+      currency,
+      billingCycle: isAnnual ? 'annual' : 'monthly',
+    })
+  }
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
@@ -183,8 +230,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string
 
   // Get user by Stripe customer ID
-  // Type assertion needed until Supabase types are regenerated
-  const { data: profile, error } = await (supabaseAdmin as any)
+  const { data: profile, error } = await supabaseAdmin
     .from('user_profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -200,7 +246,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const tier = getTierFromPrice(priceId)
 
   // Update user profile
-  const { error: updateError } = await (supabaseAdmin as any)
+  const { error: updateError } = await supabaseAdmin
     .from('user_profiles')
     .update({
       subscription_status: subscription.status,
@@ -226,8 +272,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string
 
   // Get user by Stripe customer ID
-  // Type assertion needed until Supabase types are regenerated
-  const { data: profile, error } = await (supabaseAdmin as any)
+  const { data: profile, error } = await supabaseAdmin
     .from('user_profiles')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -239,7 +284,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   }
 
   // Reset to no subscription
-  const { error: updateError } = await (supabaseAdmin as any)
+  const { error: updateError } = await supabaseAdmin
     .from('user_profiles')
     .update({
       subscription_status: 'cancelled',
@@ -261,8 +306,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string
 
   // Get user by Stripe customer ID
-  // Type assertion needed until Supabase types are regenerated
-  const { data: profile } = await (supabaseAdmin as any)
+  const { data: profile } = await supabaseAdmin
     .from('user_profiles')
     .select('id, email')
     .eq('stripe_customer_id', customerId)
@@ -274,7 +318,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   }
 
   // Update subscription status
-  const { error: updateError } = await (supabaseAdmin as any)
+  const { error: updateError } = await supabaseAdmin
     .from('user_profiles')
     .update({
       subscription_status: 'past_due',

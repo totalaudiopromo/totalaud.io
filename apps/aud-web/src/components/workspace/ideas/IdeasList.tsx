@@ -97,7 +97,7 @@ export function IdeasList({ className }: IdeasListProps) {
         flexDirection: 'column',
         height: '100%',
         backgroundColor: '#0F1113',
-        fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
       }}
     >
       {/* Header row - simplified on mobile */}

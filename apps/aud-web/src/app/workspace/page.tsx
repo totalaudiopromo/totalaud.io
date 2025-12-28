@@ -276,7 +276,7 @@ function WorkspaceContent() {
                     : 'rgba(255, 255, 255, 0.6)',
                 cursor: modeConfig.available ? 'pointer' : 'not-allowed',
                 transition: 'all 0.12s ease',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 position: 'relative',
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
@@ -321,7 +321,7 @@ function WorkspaceContent() {
               height: '100%',
               gap: 8,
               color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               fontSize: 13,
             }}
           >
@@ -387,7 +387,7 @@ export default function WorkspacePage() {
             height: '100vh',
             backgroundColor: '#0F1113',
             color: 'rgba(255, 255, 255, 0.5)',
-            fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
           Loading workspace...
