@@ -3,14 +3,16 @@
  * 2025 Brand Pivot - Cinematic Editorial
  *
  * Controls for the Timeline view with Add Event and Export
+ * Uses TAP design system tokens for consistent styling
  */
 
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { LANES, getLaneColour, type LaneType } from '@/types/timeline'
+import { PlusIcon, DocumentArrowDownIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 
 type ViewMode = 'weeks' | 'months' | 'quarters'
 
@@ -21,11 +23,24 @@ export function TimelineToolbar() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
 
+  const exportRef = useRef<HTMLDivElement>(null)
+
   // Add event form state
   const [newEventTitle, setNewEventTitle] = useState('')
   const [newEventDate, setNewEventDate] = useState(new Date().toISOString().slice(0, 10))
   const [newEventLane, setNewEventLane] = useState<LaneType>('promo')
   const [newEventDescription, setNewEventDescription] = useState('')
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleAddEvent = useCallback(() => {
     if (!newEventTitle.trim()) return
@@ -99,202 +114,81 @@ export function TimelineToolbar() {
 
   return (
     <>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '12px 24px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          backgroundColor: 'rgba(15, 17, 19, 0.95)',
-          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-          flexWrap: 'wrap',
-          gap: 12,
-        }}
-      >
-        {/* Left: Title and event count */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'rgba(255, 255, 255, 0.9)',
-            }}
-          >
-            Release Timeline
-          </h2>
-          <span
-            style={{
-              fontSize: 11,
-              padding: '4px 8px',
-              backgroundColor: 'rgba(58, 169, 190, 0.1)',
-              border: '1px solid rgba(58, 169, 190, 0.2)',
-              borderRadius: 4,
-              color: '#3AA9BE',
-            }}
-          >
-            {events.length} events
-          </span>
-        </div>
-
-        {/* Right: View controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* View mode toggle */}
-          <div
-            style={{
-              display: 'flex',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 6,
-              padding: 2,
-            }}
-          >
-            {(['weeks', 'months', 'quarters'] as ViewMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                style={{
-                  padding: '6px 10px',
-                  fontSize: 11,
-                  fontWeight: viewMode === mode ? 500 : 400,
-                  color: viewMode === mode ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
-                  backgroundColor: viewMode === mode ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
-                  border: 'none',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  transition: 'all 0.12s ease',
-                  textTransform: 'capitalize',
-                  fontFamily: 'inherit',
-                }}
-              >
-                {mode}
-              </button>
-            ))}
+      <div className="px-5 py-3 border-b border-white/5 bg-ta-black/95 backdrop-blur-ta sticky top-0 z-20">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* Left: Title and event count */}
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-ta-white">Release Timeline</h2>
+            <span className="text-xs px-2 py-1 bg-ta-cyan/10 border border-ta-cyan/20 rounded-ta-sm text-ta-cyan">
+              {events.length} events
+            </span>
           </div>
 
-          {/* Export dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '6px 10px',
-                fontSize: 11,
-                fontWeight: 400,
-                color: 'rgba(255, 255, 255, 0.6)',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: 'none',
-                borderRadius: 6,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              Export
-              <span style={{ fontSize: 9 }}>▼</span>
-            </button>
-            <AnimatePresence>
-              {showExportMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    marginTop: 4,
-                    backgroundColor: '#1A1D21',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 6,
-                    padding: 4,
-                    minWidth: 120,
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                    zIndex: 50,
-                  }}
+          {/* Right: View controls */}
+          <div className="flex items-center gap-2">
+            {/* View mode toggle */}
+            <div className="flex bg-white/5 rounded-ta-sm p-0.5">
+              {(['weeks', 'months', 'quarters'] as ViewMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`px-2.5 py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
+                    viewMode === mode
+                      ? 'font-medium text-ta-cyan bg-ta-cyan/15'
+                      : 'font-normal text-ta-grey/60 hover:text-ta-grey'
+                  }`}
                 >
-                  <button
-                    onClick={handleExportJSON}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '8px 12px',
-                      fontSize: 12,
-                      color: 'rgba(255, 255, 255, 0.8)',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
-                  >
-                    Export as JSON
-                  </button>
-                  <button
-                    onClick={handleExportMarkdown}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '8px 12px',
-                      fontSize: 12,
-                      color: 'rgba(255, 255, 255, 0.8)',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
-                  >
-                    Export as Markdown
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  {mode}
+                </button>
+              ))}
+            </div>
 
-          {/* Add event button */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '6px 12px',
-              fontSize: 12,
-              fontWeight: 500,
-              color: '#0F1113',
-              backgroundColor: '#3AA9BE',
-              border: 'none',
-              borderRadius: 6,
-              cursor: 'pointer',
-              transition: 'opacity 0.12s ease',
-              fontFamily: 'inherit',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '0.9'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '1'
-            }}
-          >
-            <span style={{ fontSize: 13 }}>+</span>
-            Add
-          </button>
+            {/* Export dropdown */}
+            <div ref={exportRef} className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="flex items-center gap-2 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+              >
+                <DocumentArrowDownIcon className="h-4 w-4" />
+                Export
+                <ChevronDownIcon className="h-3 w-3" />
+              </button>
+
+              <AnimatePresence>
+                {showExportMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-2 w-44 bg-ta-panel/98 border border-white/10 rounded-ta shadow-ta-lg overflow-hidden z-50"
+                  >
+                    {[
+                      { label: 'Export as JSON', action: handleExportJSON },
+                      { label: 'Export as Markdown', action: handleExportMarkdown },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={item.action}
+                        className="block w-full px-3 py-2.5 text-[13px] text-ta-white/70 text-left hover:bg-white/5 border-b border-white/5 last:border-0 transition-colors duration-120"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Add event button */}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium bg-ta-cyan text-ta-black rounded-ta-sm hover:opacity-90 transition-all duration-120"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Add
+            </button>
+          </div>
         </div>
       </div>
 
@@ -306,55 +200,20 @@ export function TimelineToolbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowAddModal(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 24,
-              zIndex: 100,
-            }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] p-6"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              style={{
-                backgroundColor: '#1A1D21',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 12,
-                width: '100%',
-                maxWidth: 400,
-                padding: 24,
-                boxShadow: '0 16px 48px rgba(0, 0, 0, 0.4)',
-              }}
+              className="w-full max-w-md p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
             >
-              <h3
-                style={{
-                  margin: 0,
-                  marginBottom: 20,
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                }}
-              >
-                Add Event
-              </h3>
+              <h3 className="text-base font-semibold text-ta-white mb-5">Add Event</h3>
 
               {/* Title */}
-              <div style={{ marginBottom: 16 }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: 11,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.5)',
-                    marginBottom: 6,
-                  }}
-                >
+              <div className="mb-4">
+                <label className="block text-[11px] font-medium text-ta-grey/60 mb-1.5">
                   Title *
                 </label>
                 <input
@@ -363,82 +222,34 @@ export function TimelineToolbar() {
                   onChange={(e) => setNewEventTitle(e.target.value)}
                   placeholder="Event title..."
                   autoFocus
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 6,
-                    fontSize: 14,
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
+                  className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180"
                 />
               </div>
 
               {/* Date & Lane row */}
-              <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: 11,
-                      fontWeight: 500,
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      marginBottom: 6,
-                    }}
-                  >
+              <div className="flex gap-3 mb-4">
+                <div className="flex-1">
+                  <label className="block text-[11px] font-medium text-ta-grey/60 mb-1.5">
                     Date
                   </label>
                   <input
                     type="date"
                     value={newEventDate}
                     onChange={(e) => setNewEventDate(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: 6,
-                      fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      outline: 'none',
-                      fontFamily: 'inherit',
-                      colorScheme: 'dark',
-                    }}
+                    className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: 11,
-                      fontWeight: 500,
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      marginBottom: 6,
-                    }}
-                  >
+                <div className="flex-1">
+                  <label className="block text-[11px] font-medium text-ta-grey/60 mb-1.5">
                     Lane
                   </label>
                   <select
                     value={newEventLane}
                     onChange={(e) => setNewEventLane(e.target.value as LaneType)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: 6,
-                      fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      outline: 'none',
-                      fontFamily: 'inherit',
-                      cursor: 'pointer',
-                    }}
+                    className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 cursor-pointer"
                   >
                     {LANES.map((lane) => (
-                      <option key={lane.id} value={lane.id} style={{ backgroundColor: '#1A1D21' }}>
+                      <option key={lane.id} value={lane.id} className="bg-ta-panel">
                         {lane.label}
                       </option>
                     ))}
@@ -447,16 +258,8 @@ export function TimelineToolbar() {
               </div>
 
               {/* Description */}
-              <div style={{ marginBottom: 20 }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: 11,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.5)',
-                    marginBottom: 6,
-                  }}
-                >
+              <div className="mb-5">
+                <label className="block text-[11px] font-medium text-ta-grey/60 mb-1.5">
                   Description (optional)
                 </label>
                 <textarea
@@ -464,53 +267,26 @@ export function TimelineToolbar() {
                   onChange={(e) => setNewEventDescription(e.target.value)}
                   placeholder="Add notes..."
                   rows={2}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 6,
-                    fontSize: 13,
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                    resize: 'none',
-                  }}
+                  className="w-full px-3 py-2.5 text-[13px] text-ta-white/80 bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 resize-none"
                 />
               </div>
 
               {/* Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setShowAddModal(false)}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: 6,
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
+                  className="px-4 py-2 text-[13px] font-medium text-ta-grey/70 bg-transparent border border-white/10 rounded-ta-sm hover:border-white/20 transition-all duration-120"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddEvent}
                   disabled={!newEventTitle.trim()}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: newEventTitle.trim() ? '#3AA9BE' : 'rgba(58, 169, 190, 0.3)',
-                    border: 'none',
-                    borderRadius: 6,
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: newEventTitle.trim() ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                    cursor: newEventTitle.trim() ? 'pointer' : 'not-allowed',
-                    fontFamily: 'inherit',
-                  }}
+                  className={`px-4 py-2 text-[13px] font-medium rounded-ta-sm transition-all duration-120 ${
+                    newEventTitle.trim()
+                      ? 'bg-ta-cyan text-ta-black hover:opacity-90'
+                      : 'bg-white/5 text-ta-grey/30 cursor-not-allowed'
+                  }`}
                 >
                   Add Event
                 </button>

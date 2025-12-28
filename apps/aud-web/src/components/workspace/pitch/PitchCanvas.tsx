@@ -17,6 +17,8 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
 import { TAPGenerateModal } from './TAPGenerateModal'
+import { IdentityPanel } from './IdentityPanel'
+import { CoachingSession } from './CoachingSession'
 import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
 import { TypingIndicator } from '@/components/ui/EmptyState'
@@ -63,6 +65,7 @@ export function PitchCanvas() {
     isCoachLoading,
     coachResponse,
     coachError,
+    isSessionActive, // Intelligence Navigator (Phase 1.5)
     selectType,
     updateSection,
     selectSection,
@@ -141,10 +144,10 @@ export function PitchCanvas() {
           transition={{ duration: 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="text-2xl font-semibold text-tap-white mb-2 tracking-tight">
+          <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
             Choose your pitch type
           </h2>
-          <p className="text-sm text-tap-grey max-w-md mx-auto">
+          <p className="text-sm text-ta-grey max-w-md mx-auto">
             Select a template to get started. Our AI coach will help you craft the perfect pitch.
           </p>
         </motion.div>
@@ -158,18 +161,18 @@ export function PitchCanvas() {
                   aria-label={`${type.label}: ${type.description}`}
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-tap-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
+                  className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-ta-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
                 >
                   {/* Hover Gradient */}
                   <div
-                    className="absolute inset-0 bg-gradient-to-br from-tap-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute inset-0 bg-gradient-to-br from-ta-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     aria-hidden="true"
                   />
 
-                  <span className="relative z-10 text-base font-semibold text-tap-white group-hover:text-white mb-2 block">
+                  <span className="relative z-10 text-base font-semibold text-ta-white group-hover:text-white mb-2 block">
                     {type.label}
                   </span>
-                  <span className="relative z-10 text-xs text-tap-grey leading-relaxed">
+                  <span className="relative z-10 text-xs text-ta-grey leading-relaxed">
                     {type.description}
                   </span>
                 </motion.button>
@@ -190,18 +193,21 @@ export function PitchCanvas() {
         <button
           onClick={() => resetPitch()}
           aria-label="Back to pitch templates"
-          className="flex items-center gap-2 px-3 py-2 mb-6 text-xs text-tap-grey hover:text-white transition-colors rounded-lg hover:bg-white/5"
+          className="flex items-center gap-2 px-3 py-2 mb-6 text-xs text-ta-grey hover:text-white transition-colors rounded-lg hover:bg-white/5"
         >
           <span aria-hidden="true">←</span> Back to templates
         </button>
 
+        {/* Identity Panel - collapsible */}
+        <IdentityPanel />
+
         {/* Pitch type header with TAP generate button */}
         <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h2 className="text-2xl font-semibold text-tap-white mb-2 tracking-tight">
+            <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
               {PITCH_TYPES.find((t) => t.key === currentType)?.label}
             </h2>
-            <p className="text-sm text-tap-grey">
+            <p className="text-sm text-ta-grey">
               {PITCH_TYPES.find((t) => t.key === currentType)?.description}
             </p>
           </div>
@@ -221,7 +227,7 @@ export function PitchCanvas() {
               ${
                 showAuthPrompt
                   ? 'bg-orange-500/10 border-orange-500/30 text-orange-500'
-                  : 'bg-tap-cyan/10 border-tap-cyan/30 text-tap-cyan hover:bg-tap-cyan/20 hover:border-tap-cyan/50'
+                  : 'bg-ta-cyan/10 border-ta-cyan/30 text-ta-cyan hover:bg-ta-cyan/20 hover:border-ta-cyan/50'
               }
             `}
           >
@@ -241,7 +247,7 @@ export function PitchCanvas() {
                 group rounded-xl border transition-all duration-300 overflow-hidden
                 ${
                   selectedSectionId === section.id
-                    ? 'bg-[#161A1D]/80 border-tap-cyan/30 shadow-[0_0_20px_-10px_rgba(58,169,190,0.2)]'
+                    ? 'bg-[#161A1D]/80 border-ta-cyan/30 shadow-[0_0_20px_-10px_rgba(58,169,190,0.2)]'
                     : 'bg-transparent border-white/5 hover:border-white/10'
                 }
               `}
@@ -249,7 +255,7 @@ export function PitchCanvas() {
               {/* Section header with coach actions */}
               <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-tap-cyan">{section.title}</span>
+                  <span className="text-sm font-medium text-ta-cyan">{section.title}</span>
                 </div>
 
                 {/* Coach action buttons */}
@@ -271,7 +277,7 @@ export function PitchCanvas() {
                       onClick={() => requestCoach(section.id, action)}
                       disabled={isCoachLoading}
                       aria-label={`${action} ${section.title} with AI coach`}
-                      className="px-2.5 py-1 text-[10px] font-medium text-tap-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
+                      className="px-2.5 py-1 text-[10px] font-medium text-ta-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
                     >
                       {action}
                     </button>
@@ -283,9 +289,9 @@ export function PitchCanvas() {
               {!section.content && (
                 <div
                   id={`${section.id}-hint`}
-                  className="px-5 py-3 bg-tap-cyan/[0.03] border-b border-tap-cyan/5"
+                  className="px-5 py-3 bg-ta-cyan/[0.03] border-b border-ta-cyan/5"
                 >
-                  <span className="text-xs text-tap-cyan/70 italic leading-relaxed">
+                  <span className="text-xs text-ta-cyan/70 italic leading-relaxed">
                     {section.placeholder}
                   </span>
                 </div>
@@ -299,7 +305,7 @@ export function PitchCanvas() {
                 placeholder="Start writing..."
                 aria-label={`${section.title} content`}
                 aria-describedby={!section.content ? `${section.id}-hint` : undefined}
-                className="w-full min-h-[120px] p-5 text-sm leading-relaxed text-tap-white bg-transparent border-none outline-none resize-none placeholder:text-tap-grey/30 focus:bg-white/[0.01] transition-colors"
+                className="w-full min-h-[120px] p-5 text-sm leading-relaxed text-ta-white bg-transparent border-none outline-none resize-none placeholder:text-ta-grey/30 focus:bg-white/[0.01] transition-colors"
                 style={{ resize: 'vertical' }}
               />
             </StaggerItem>
@@ -307,78 +313,80 @@ export function PitchCanvas() {
         </StaggeredEntrance>
       </div>
 
-      {/* AI Coach sidebar */}
+      {/* AI Coach sidebar - Intelligence Navigator (Phase 1.5) */}
       <AnimatePresence>
         {isCoachOpen && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 340, opacity: 1 }}
+            animate={{ width: 360, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="border-l border-white/5 bg-[#0F1113]/95 backdrop-blur-xl flex-shrink-0 relative z-20"
           >
-            <div className="p-6 h-full overflow-y-auto w-[340px]">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-semibold text-tap-white flex items-center gap-2">
-                  <span
-                    className="w-2 h-2 rounded-full bg-tap-cyan animate-pulse"
-                    aria-hidden="true"
-                  />
-                  AI Coach
-                </h3>
-                <button
-                  onClick={() => closeCoach()}
-                  aria-label="Close AI coach panel"
-                  className="text-xs text-tap-grey hover:text-white transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-
-              {/* Loading state */}
-              {isCoachLoading && (
-                <div className="p-4 rounded-xl bg-tap-cyan/5 border border-tap-cyan/10 flex items-center gap-3">
-                  <TypingIndicator />
-                  <span className="text-xs text-tap-cyan/80">Thinking...</span>
-                </div>
-              )}
-
-              {/* Error state */}
-              {coachError && !isCoachLoading && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-tap-white/90">
-                  {coachError}
-                </div>
-              )}
-
-              {/* Coach response */}
-              {coachResponse && !isCoachLoading && (
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-sm text-tap-white/90 leading-relaxed whitespace-pre-wrap shadow-inner">
-                    {coachResponse}
+            <div className="h-full w-[360px]">
+              {/* Show CoachingSession for multi-turn conversations */}
+              {isSessionActive ? (
+                <CoachingSession />
+              ) : (
+                <div className="p-6 h-full overflow-y-auto">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-sm font-semibold text-ta-white flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-full bg-ta-cyan animate-pulse"
+                        aria-hidden="true"
+                      />
+                      AI Coach
+                    </h3>
+                    <button
+                      onClick={() => closeCoach()}
+                      aria-label="Close AI coach panel"
+                      className="text-xs text-ta-grey hover:text-white transition-colors"
+                    >
+                      Close
+                    </button>
                   </div>
 
-                  {/* Apply button (for rewrite action) */}
-                  {selectedSectionId && (
-                    <button
-                      onClick={() => {
-                        if (selectedSectionId && coachResponse) {
-                          applyCoachSuggestion(selectedSectionId, coachResponse)
-                        }
-                      }}
-                      aria-label="Apply AI coach suggestion to selected section"
-                      className="w-full py-2.5 text-xs font-semibold text-tap-black bg-tap-cyan hover:bg-tap-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
-                    >
-                      Apply to section
-                    </button>
+                  {/* Loading state */}
+                  {isCoachLoading && (
+                    <div className="p-4 rounded-xl bg-ta-cyan/5 border border-ta-cyan/10 flex items-center gap-3">
+                      <TypingIndicator />
+                      <span className="text-xs text-ta-cyan/80">Thinking...</span>
+                    </div>
                   )}
-                </div>
-              )}
 
-              {/* Default state */}
-              {!isCoachLoading && !coachResponse && !coachError && (
-                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-tap-grey leading-relaxed text-center">
-                  Select a section and click <strong>Improve</strong>, <strong>Suggest</strong>, or{' '}
-                  <strong>Rewrite</strong> to get real-time feedback.
+                  {/* Error state */}
+                  {coachError && !isCoachLoading && (
+                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-ta-white/90">
+                      {coachError}
+                    </div>
+                  )}
+
+                  {/* Coach response (legacy one-shot) */}
+                  {coachResponse && !isCoachLoading && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 text-sm text-ta-white/90 leading-relaxed whitespace-pre-wrap shadow-inner">
+                        {coachResponse}
+                      </div>
+
+                      {/* Apply button (for rewrite action) */}
+                      {selectedSectionId && (
+                        <button
+                          onClick={() => {
+                            if (selectedSectionId && coachResponse) {
+                              applyCoachSuggestion(selectedSectionId, coachResponse)
+                            }
+                          }}
+                          aria-label="Apply AI coach suggestion to selected section"
+                          className="w-full py-2.5 text-xs font-semibold text-ta-black bg-ta-cyan hover:bg-ta-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
+                        >
+                          Apply to section
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Default state with session starter */}
+                  {!isCoachLoading && !coachResponse && !coachError && <CoachingSession />}
                 </div>
               )}
             </div>
@@ -395,7 +403,7 @@ export function PitchCanvas() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Open AI coach panel"
-          className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-tap-black bg-tap-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
+          className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ta-black bg-ta-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
         >
           <span aria-hidden="true">✨</span> Ask AI Coach
         </motion.button>

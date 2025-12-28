@@ -12,7 +12,7 @@
 
 'use client'
 
-import { useState, useCallback, Suspense } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIdeasStore } from '@/stores/useIdeasStore'
 import { useWorkspacePreferences } from '@/hooks/useWorkspacePreferences'
+import { useAuth } from '@/hooks/useAuth'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
@@ -104,9 +105,28 @@ function WorkspaceContent() {
 
   // Get view mode from Ideas store
   const ideasViewMode = useIdeasStore((state) => state.viewMode)
+  const loadFromSupabase = useIdeasStore((state) => state.loadFromSupabase)
+  const initStarterIdeas = useIdeasStore((state) => state.initStarterIdeas)
+  const isLoading = useIdeasStore((state) => state.isLoading)
+
+  // Auth state
+  const { isAuthenticated, loading: authLoading } = useAuth()
 
   // Sync workspace preferences to Supabase
   useWorkspacePreferences()
+
+  // Auth-aware data loading
+  useEffect(() => {
+    if (authLoading) return // Wait for auth check to complete
+
+    if (isAuthenticated) {
+      // Authenticated: Load ideas from Supabase
+      loadFromSupabase()
+    } else {
+      // Guest: Init starter ideas (localStorage fallback)
+      initStarterIdeas()
+    }
+  }, [isAuthenticated, authLoading, loadFromSupabase, initStarterIdeas])
 
   const renderModeContent = () => {
     switch (mode) {
@@ -291,18 +311,47 @@ function WorkspaceContent() {
 
       {/* Main content - add bottom padding on mobile for MobileNav */}
       <main style={{ flex: 1, minHeight: 0 }} className="pb-14 md:pb-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={mode}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            style={{ height: '100%' }}
+        {/* Show loading state while auth or data is loading */}
+        {(authLoading || isLoading) && mode === 'ideas' ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              gap: 8,
+              color: 'rgba(255, 255, 255, 0.5)',
+              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
+              fontSize: 13,
+            }}
           >
-            {renderModeContent()}
-          </motion.div>
-        </AnimatePresence>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{ animation: 'spin 1s linear infinite' }}
+            >
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+            </svg>
+            <span>Loading your ideas...</span>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{ height: '100%' }}
+            >
+              {renderModeContent()}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </main>
 
       {/* Mobile bottom navigation */}

@@ -48,7 +48,7 @@ export function ScoutCalmToolbar() {
         {/* Search Input - Ambient Style */}
         <div className="relative group max-w-sm w-full md:w-auto">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon className="h-4 w-4 text-tap-grey/50 group-focus-within:text-tap-cyan transition-colors" />
+            <MagnifyingGlassIcon className="h-4 w-4 text-ta-grey/50 group-focus-within:text-ta-cyan transition-colors" />
           </div>
           <input
             type="text"
@@ -58,8 +58,8 @@ export function ScoutCalmToolbar() {
             className="
               w-full md:w-64 pl-9 pr-8 py-2 text-sm
               bg-white/5 border border-white/10
-              rounded-xl text-tap-white placeholder:text-tap-grey/50
-              focus:outline-none focus:bg-white/10 focus:border-tap-cyan/30 focus:ring-1 focus:ring-tap-cyan/20
+              rounded-xl text-ta-white placeholder:text-ta-grey/50
+              focus:outline-none focus:bg-white/10 focus:border-ta-cyan/30 focus:ring-1 focus:ring-ta-cyan/20
               transition-all duration-300
             "
           />
@@ -67,13 +67,13 @@ export function ScoutCalmToolbar() {
             <button
               onClick={() => setLocalSearch('')}
               aria-label="Clear search"
-              className="absolute inset-y-0 right-0 pr-2 flex items-center text-tap-grey/50 hover:text-white transition-colors"
+              className="absolute inset-y-0 right-0 pr-2 flex items-center text-ta-grey/50 hover:text-white transition-colors"
             >
               <XMarkIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
           {/* Input focus glow */}
-          <div className="absolute inset-0 -z-10 bg-tap-cyan/5 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-xl" />
+          <div className="absolute inset-0 -z-10 bg-ta-cyan/5 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-xl" />
         </div>
 
         {/* Filters & Tabs */}
@@ -91,15 +91,15 @@ export function ScoutCalmToolbar() {
               flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200
               ${
                 !filters.type
-                  ? 'bg-white text-tap-black border-white'
-                  : 'bg-transparent text-tap-grey border-white/10 hover:border-white/20 hover:text-white'
+                  ? 'bg-white text-ta-black border-white'
+                  : 'bg-transparent text-ta-grey border-white/10 hover:border-white/20 hover:text-white'
               }
             `}
           >
             All
             <span
               aria-label={`${totalOpportunities} total opportunities`}
-              className={`text-[10px] ${!filters.type ? 'text-tap-black/60' : 'text-tap-grey/60'}`}
+              className={`text-[10px] ${!filters.type ? 'text-ta-black/60' : 'text-ta-grey/60'}`}
             >
               {totalOpportunities}
             </span>
@@ -124,7 +124,7 @@ export function ScoutCalmToolbar() {
                   ${
                     isActive
                       ? `border-opacity-100 bg-opacity-10`
-                      : 'bg-transparent border-transparent text-tap-grey hover:bg-white/5 hover:text-white'
+                      : 'bg-transparent border-transparent text-ta-grey hover:bg-white/5 hover:text-white'
                   }
                 `}
                 style={{
@@ -150,7 +150,7 @@ export function ScoutCalmToolbar() {
             <button
               onClick={resetFilters}
               aria-label="Reset all filters"
-              className="ml-auto md:ml-2 text-xs text-tap-cyan hover:text-tap-cyan/80 whitespace-nowrap px-2"
+              className="ml-auto md:ml-2 text-xs text-ta-cyan hover:text-ta-cyan/80 whitespace-nowrap px-2"
             >
               Reset
             </button>

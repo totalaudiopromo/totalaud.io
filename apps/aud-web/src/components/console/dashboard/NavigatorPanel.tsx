@@ -47,17 +47,17 @@ export function NavigatorPanel() {
   return (
     <Card className="relative overflow-hidden bg-gradient-to-br from-[#161A1D] to-[#0F1113] border border-white/5">
       {/* Ambient background glow */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-tap-cyan/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-ta-cyan/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
       <div className="relative flex items-start gap-4 z-10">
-        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-tap-cyan/20 to-tap-cyan/5 rounded-xl border border-tap-cyan/20 flex items-center justify-center animate-subtle-float">
-          <SparklesIcon className="w-5 h-5 text-tap-cyan" />
+        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-ta-cyan/20 to-ta-cyan/5 rounded-xl border border-ta-cyan/20 flex items-center justify-center animate-subtle-float">
+          <SparklesIcon className="w-5 h-5 text-ta-cyan" />
         </div>
 
         <div className="flex-1 space-y-4">
           <div>
-            <h3 className="text-lg font-medium text-tap-white tracking-tight mb-1">AI Navigator</h3>
-            <p className="text-sm text-tap-grey/80">
+            <h3 className="text-lg font-medium text-ta-white tracking-tight mb-1">AI Navigator</h3>
+            <p className="text-sm text-ta-grey/80">
               Ask questions about your campaign data and strategy.
             </p>
           </div>
@@ -70,11 +70,11 @@ export function NavigatorPanel() {
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAsk()}
                 placeholder="Ask the navigator anything..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-tap-white placeholder:text-white/20 focus:outline-none focus:bg-white/10 focus:border-tap-cyan/30 transition-all duration-300"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-ta-white placeholder:text-white/20 focus:outline-none focus:bg-white/10 focus:border-ta-cyan/30 transition-all duration-300"
                 disabled={loading}
               />
               {/* Input focus glow */}
-              <div className="absolute inset-0 -z-10 bg-tap-cyan/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-xl" />
+              <div className="absolute inset-0 -z-10 bg-ta-cyan/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-xl" />
             </div>
 
             <EnhancedButton
@@ -113,7 +113,7 @@ export function NavigatorPanel() {
                   <span />
                   <span />
                 </div>
-                <span className="text-xs font-medium text-tap-cyan tracking-wider uppercase animate-pulse">
+                <span className="text-xs font-medium text-ta-cyan tracking-wider uppercase animate-pulse">
                   Thinking
                 </span>
               </motion.div>
@@ -128,12 +128,12 @@ export function NavigatorPanel() {
                 className="space-y-4 pt-2"
               >
                 <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <p className="text-sm text-tap-white leading-relaxed">{answer.answer}</p>
+                  <p className="text-sm text-ta-white leading-relaxed">{answer.answer}</p>
                 </div>
 
                 {answer.recommendedActions && answer.recommendedActions.length > 0 && (
                   <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                    <p className="text-xs text-tap-grey font-medium uppercase tracking-wider mb-2 ml-1">
+                    <p className="text-xs text-ta-grey font-medium uppercase tracking-wider mb-2 ml-1">
                       Recommended Actions
                     </p>
                     <ul className="space-y-2">
@@ -145,8 +145,8 @@ export function NavigatorPanel() {
                           transition={{ delay: 0.2 + i * 0.1 }}
                           className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group"
                         >
-                          <div className="w-1.5 h-1.5 rounded-full bg-tap-cyan group-hover:shadow-[0_0_8px_rgba(58,169,190,0.8)] transition-all" />
-                          <span className="text-sm text-tap-white/90 group-hover:text-white transition-colors">
+                          <div className="w-1.5 h-1.5 rounded-full bg-ta-cyan group-hover:shadow-[0_0_8px_rgba(58,169,190,0.8)] transition-all" />
+                          <span className="text-sm text-ta-white/90 group-hover:text-white transition-colors">
                             {action}
                           </span>
                         </motion.li>

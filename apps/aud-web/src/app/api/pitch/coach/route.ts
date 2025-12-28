@@ -3,6 +3,7 @@
  * Phase 5: AI-powered pitch coaching
  *
  * Uses Anthropic Claude via @total-audio/core-ai-provider
+ * Enhanced with artist identity context from identity-kernel integration
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -38,7 +39,7 @@ const requestSchema = z.object({
 
 // ============ Prompts ============
 
-const SYSTEM_PROMPT = `You are a friendly, experienced music industry pitch coach with 15+ years of experience helping independent artists get radio airplay, press coverage, and playlist placements.
+const BASE_SYSTEM_PROMPT = `You are a friendly, experienced music industry pitch coach with 15+ years of experience helping independent artists get radio airplay, press coverage, and playlist placements.
 
 Your approach:
 - Be encouraging but honest
@@ -49,6 +50,61 @@ Your approach:
 - Reference real examples when helpful (BBC Radio 6 Music, NTS, The Line of Best Fit, etc.)
 
 Remember: The artist is the expert on their own music. Your job is to help them communicate it better.`
+
+// Build system prompt with optional identity context
+function buildSystemPrompt(identity: ArtistIdentity | null): string {
+  if (!identity || !identity.last_generated_at) {
+    return BASE_SYSTEM_PROMPT
+  }
+
+  const identityContext: string[] = []
+
+  if (identity.brand_tone) {
+    identityContext.push(`**Brand Tone**: ${identity.brand_tone}`)
+  }
+  if (identity.brand_themes && identity.brand_themes.length > 0) {
+    identityContext.push(`**Key Themes**: ${identity.brand_themes.join(', ')}`)
+  }
+  if (identity.brand_style) {
+    identityContext.push(`**Communication Style**: ${identity.brand_style}`)
+  }
+  if (identity.one_liner) {
+    identityContext.push(`**Their One-Liner**: "${identity.one_liner}"`)
+  }
+  if (identity.comparisons && identity.comparisons.length > 0) {
+    identityContext.push(`**Artist Comparisons**: ${identity.comparisons.join(' meets ')}`)
+  }
+  if (identity.pitch_hook) {
+    identityContext.push(`**Their Pitch Hook**: "${identity.pitch_hook}"`)
+  }
+
+  if (identityContext.length === 0) {
+    return BASE_SYSTEM_PROMPT
+  }
+
+  return `${BASE_SYSTEM_PROMPT}
+
+## Artist Identity Profile
+
+You have access to this artist's pre-defined identity profile. Use it to ensure your suggestions align with their established brand voice and style:
+
+${identityContext.join('\n')}
+
+When making suggestions, reference and reinforce these identity elements. Help them stay consistent with their brand.`
+}
+
+// Type for artist identity from database
+interface ArtistIdentity {
+  brand_tone: string | null
+  brand_themes: string[] | null
+  brand_style: string | null
+  key_phrases: string[] | null
+  one_liner: string | null
+  press_angle: string | null
+  pitch_hook: string | null
+  comparisons: string[] | null
+  last_generated_at: string | null
+}
 
 const ACTION_PROMPTS: Record<CoachAction, string> = {
   improve: `Review this section and suggest 2-3 specific improvements. Keep the artist's voice but make it more compelling. Format as bullet points.`,
@@ -119,6 +175,27 @@ export async function POST(request: NextRequest) {
 
     const { action, sectionId, sectionTitle, content, pitchType, allSections } = validated
 
+    // Fetch artist identity for context (optional, enhances suggestions)
+    // Note: Type assertion needed until Supabase types are regenerated
+    let artistIdentity: ArtistIdentity | null = null
+    try {
+      const { data: identity } = await (supabase as any)
+        .from('artist_identities')
+        .select(
+          'brand_tone, brand_themes, brand_style, key_phrases, one_liner, press_angle, pitch_hook, comparisons, last_generated_at'
+        )
+        .eq('user_id', session.user.id)
+        .single()
+
+      if (identity) {
+        artistIdentity = identity as ArtistIdentity
+        log.debug('Loaded artist identity for coaching context')
+      }
+    } catch {
+      // Identity not found or error - continue without it
+      log.debug('No artist identity found, using base prompts')
+    }
+
     // Build context
     const pitchContext = PITCH_CONTEXT[pitchType]
     const sectionGuidance = SECTION_GUIDANCE[sectionId] || ''
@@ -147,10 +224,13 @@ ${otherSectionsContext}
 ## Your Task
 ${actionPrompt}`
 
+    // Build system prompt with identity context if available
+    const systemPrompt = buildSystemPrompt(artistIdentity)
+
     // Call Claude
     const result = await completeWithAnthropic(
       [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage },
       ],
       {

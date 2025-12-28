@@ -17,9 +17,9 @@ export function Metric({ label, value, change, format = 'number' }: MetricProps)
 
   return (
     <div className="space-y-1">
-      <p className="text-xs text-tap-grey uppercase tracking-wider">{label}</p>
+      <p className="text-xs text-ta-grey uppercase tracking-wider">{label}</p>
       <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-mono font-semibold text-tap-white">{formattedValue()}</p>
+        <p className="text-2xl font-mono font-semibold text-ta-white">{formattedValue()}</p>
         {change && (
           <span
             className={clsx('text-xs font-mono', {

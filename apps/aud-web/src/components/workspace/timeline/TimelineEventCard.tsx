@@ -198,43 +198,43 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
               boxShadow: `0 0 8px ${LANES.find((l) => l.id === lane)?.colour ?? '#6B7280'}40`,
             }}
           />
-          <span className="text-[11px] font-medium text-tap-grey/60 uppercase tracking-wider">
+          <span className="text-[11px] font-medium text-ta-grey/60 uppercase tracking-wider">
             Edit Event
           </span>
         </div>
 
         {/* Title input */}
         <div className="mb-4">
-          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Title</label>
+          <label className="block text-[11px] font-medium text-ta-grey mb-1.5">Title</label>
           <input
             ref={titleRef}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Event title..."
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white placeholder-tap-grey/30 focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors"
           />
         </div>
 
         {/* Date input */}
         <div className="mb-4">
-          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Date</label>
+          <label className="block text-[11px] font-medium text-ta-grey mb-1.5">Date</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors [color-scheme:dark]"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors [color-scheme:dark]"
           />
         </div>
 
         {/* Lane select */}
         <div className="mb-4">
-          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Lane</label>
+          <label className="block text-[11px] font-medium text-ta-grey mb-1.5">Lane</label>
           <div className="relative">
             <select
               value={lane}
               onChange={(e) => setLane(e.target.value as LaneType)}
-              className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors appearance-none cursor-pointer"
+              className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors appearance-none cursor-pointer"
             >
               {LANES.map((l) => (
                 <option key={l.id} value={l.id} className="bg-[#1A1D21]">
@@ -248,7 +248,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
 
         {/* Description textarea */}
         <div className="mb-5">
-          <label className="block text-[11px] font-medium text-tap-grey mb-1.5">
+          <label className="block text-[11px] font-medium text-ta-grey mb-1.5">
             Description (optional)
           </label>
           <textarea
@@ -256,19 +256,19 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add notes..."
             rows={3}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-tap-white placeholder-tap-grey/30 focus:outline-none focus:border-tap-cyan/50 focus:bg-white/10 transition-colors resize-none min-h-[80px]"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors resize-none min-h-[80px]"
           />
         </div>
 
         {/* URL display (if present) */}
         {event.url && (
           <div className="mb-5">
-            <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Link</label>
+            <label className="block text-[11px] font-medium text-ta-grey mb-1.5">Link</label>
             <a
               href={event.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-xs text-tap-cyan truncate hover:underline"
+              className="block text-xs text-ta-cyan truncate hover:underline"
             >
               {event.url}
             </a>
@@ -278,12 +278,12 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         {/* Tags display (if present) */}
         {event.tags && event.tags.length > 0 && (
           <div className="mb-5">
-            <label className="block text-[11px] font-medium text-tap-grey mb-1.5">Tags</label>
+            <label className="block text-[11px] font-medium text-ta-grey mb-1.5">Tags</label>
             <div className="flex flex-wrap gap-2">
               {event.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 text-[11px] bg-tap-cyan/15 rounded text-tap-grey/80 border border-tap-cyan/10"
+                  className="px-2 py-1 text-[11px] bg-ta-cyan/15 rounded text-ta-grey/80 border border-ta-cyan/10"
                 >
                   {tag}
                 </span>
@@ -299,20 +299,20 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
               ${
                 isSynced
                   ? 'bg-emerald-500/10 border-emerald-500/20'
-                  : 'bg-tap-cyan/5 border-tap-cyan/15'
+                  : 'bg-ta-cyan/5 border-ta-cyan/15'
               }
             `}
           >
             <div>
               <div
                 className={`text-[11px] font-semibold uppercase tracking-wider mb-0.5
-                  ${isSynced ? 'text-emerald-500' : 'text-tap-grey'}
+                  ${isSynced ? 'text-emerald-500' : 'text-ta-grey'}
                 `}
               >
                 {isSynced ? '✓ Logged to TAP Tracker' : 'TAP Tracker'}
               </div>
               {isSynced && event.trackerSyncedAt && (
-                <div className="text-[11px] text-tap-grey/50">
+                <div className="text-[11px] text-ta-grey/50">
                   Synced {new Date(event.trackerSyncedAt).toLocaleDateString('en-GB')}
                 </div>
               )}
@@ -334,8 +334,8 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                     showAuthPrompt
                       ? 'bg-orange-500/10 border-orange-500/30 text-orange-500'
                       : syncStatus === 'syncing'
-                        ? 'bg-transparent text-tap-cyan/60 border-tap-cyan/30'
-                        : 'bg-transparent text-tap-cyan border-tap-cyan/30 hover:bg-tap-cyan/10'
+                        ? 'bg-transparent text-ta-cyan/60 border-ta-cyan/30'
+                        : 'bg-transparent text-ta-cyan border-ta-cyan/30 hover:bg-ta-cyan/10'
                   }
                   ${!canSync && syncStatus !== 'idle' ? 'cursor-wait' : 'cursor-pointer'}
                 `}
@@ -344,7 +344,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                   'Sign up to unlock'
                 ) : syncStatus === 'syncing' ? (
                   <>
-                    <span className="w-3 h-3 border-2 border-tap-cyan/30 border-t-tap-cyan rounded-full animate-spin" />
+                    <span className="w-3 h-3 border-2 border-ta-cyan/30 border-t-ta-cyan rounded-full animate-spin" />
                     Syncing...
                   </>
                 ) : syncStatus === 'error' ? (
@@ -382,7 +382,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                 exit={{ opacity: 0 }}
                 className="flex items-center gap-2"
               >
-                <span className="text-xs text-tap-grey/60">Delete?</span>
+                <span className="text-xs text-ta-grey/60">Delete?</span>
                 <button
                   onClick={handleDelete}
                   className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded hover:bg-red-600 transition-colors"
@@ -391,7 +391,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-3 py-1.5 bg-transparent border border-white/20 text-tap-grey text-xs font-medium rounded hover:text-white transition-colors"
+                  className="px-3 py-1.5 bg-transparent border border-white/20 text-ta-grey text-xs font-medium rounded hover:text-white transition-colors"
                 >
                   No
                 </button>
@@ -414,7 +414,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-transparent border border-white/10 text-tap-grey text-xs font-medium rounded-lg hover:text-white transition-colors"
+              className="px-4 py-2 bg-transparent border border-white/10 text-ta-grey text-xs font-medium rounded-lg hover:text-white transition-colors"
             >
               Cancel
             </button>
@@ -425,8 +425,8 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
                 px-4 py-2 border-none rounded-lg text-xs font-medium transition-all
                 ${
                   hasChanges
-                    ? 'bg-tap-cyan text-tap-black hover:bg-tap-cyan/90 cursor-pointer'
-                    : 'bg-tap-cyan/20 text-white/50 cursor-not-allowed'
+                    ? 'bg-ta-cyan text-ta-black hover:bg-ta-cyan/90 cursor-pointer'
+                    : 'bg-ta-cyan/20 text-white/50 cursor-not-allowed'
                 }
               `}
             >
@@ -436,7 +436,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         </div>
 
         {/* Keyboard hint */}
-        <div className="mt-3 text-center text-[10px] text-tap-grey/30">
+        <div className="mt-3 text-center text-[10px] text-ta-grey/30">
           ⌘Enter to save • Esc to cancel
         </div>
       </motion.div>

@@ -419,25 +419,55 @@ Highest leverage area.
 
 ## 13. Pricing Strategy
 
-**Free Tier:**
+### Philosophy
 
-- Ideas Mode
-- Timeline (basic)
-- Pitch Mode (limited coaching)
-- Scout (5 opportunities/day)
-- Save 1 Project
+No free tier — we want committed artists, not tyre-kickers. The Starter tier is accessible (less than a Spotify subscription) while filtering out time-wasters. We're here to help indie artists on a budget, not extract maximum revenue.
 
-**Pro Tier — £12/month (Coming soon):**
+### Tiers
 
-- Unlimited Scout opportunities
-- Full Timeline
-- Advanced Pitch coaching
-- Save unlimited projects
-- Export everywhere
-- Early access features
+**Starter — £5/month ($6 USD, €6 EUR)**
 
-**Landing Page CTA:** "Start for Free →"
+- Ideas Mode (full access)
+- Scout Mode (10 opportunities/day view limit)
+- Timeline Mode (1 active project)
+- Pitch Mode (3 AI coach requests/month)
+- No export
+
+**Pro — £19/month ($24 USD, €22 EUR)**
+
+- Everything unlimited
+- Unlimited Scout access
+- Unlimited projects
+- Unlimited AI coaching
+- Export everywhere (markdown, PDF)
+- Priority new features
+
+**Pro Annual — £149/year ($189 USD, €179 EUR)**
+
+- ~35% discount (effective £12.40/month)
+- All Pro features
+- Locks in pricing
+
+### International Pricing
+
+Display local currency prices for trust:
+
+| Region | Starter | Pro Monthly | Pro Annual |
+|--------|---------|-------------|------------|
+| UK | £5 | £19 | £149 |
+| US | $6 | $24 | $189 |
+| EU | €6 | €22 | €179 |
+
+### Landing Page CTA
+
+"Start for £5/month →" (or localised equivalent)
+
+### Value Positioning
+
+- Starter: "Less than a coffee a week"
+- Pro: "Less than one Groover campaign — and you get it every month"
+- Annual: "Best value — save 35%"
 
 ---
 
-*Last Updated: November 2025*
+*Last Updated: December 2025*

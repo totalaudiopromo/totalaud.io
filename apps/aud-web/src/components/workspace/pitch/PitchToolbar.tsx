@@ -3,11 +3,12 @@
  * Phase 5: Export and Draft Management
  *
  * Controls for the Pitch editor including save, load, and export
+ * Uses TAP design system tokens for consistent styling
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   usePitchStore,
@@ -15,6 +16,12 @@ import {
   buildPitchPlainText,
   selectHasContent,
 } from '@/stores/usePitchStore'
+import {
+  DocumentArrowDownIcon,
+  FolderIcon,
+  ChevronDownIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 
 export function PitchToolbar() {
   const [showExportMenu, setShowExportMenu] = useState(false)
@@ -22,6 +29,9 @@ export function PitchToolbar() {
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [draftName, setDraftName] = useState('')
   const [copyFeedback, setCopyFeedback] = useState(false)
+
+  const exportRef = useRef<HTMLDivElement>(null)
+  const draftsRef = useRef<HTMLDivElement>(null)
 
   const {
     currentType,
@@ -35,6 +45,20 @@ export function PitchToolbar() {
   } = usePitchStore()
 
   const hasContent = usePitchStore(selectHasContent)
+
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false)
+      }
+      if (draftsRef.current && !draftsRef.current.contains(e.target as Node)) {
+        setShowDraftsMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // Export handlers
   const handleCopyToClipboard = async () => {
@@ -77,13 +101,11 @@ export function PitchToolbar() {
     if (!currentType) return
 
     if (currentDraftId) {
-      // Update existing draft
       const existingDraft = drafts.find((d) => d.id === currentDraftId)
       if (existingDraft) {
         saveDraft(existingDraft.name)
       }
     } else {
-      // Show modal for new draft name
       setDraftName('')
       setShowSaveModal(true)
     }
@@ -97,335 +119,153 @@ export function PitchToolbar() {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '12px 24px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-        backgroundColor: 'rgba(15, 17, 19, 0.95)',
-        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-      }}
-    >
-      {/* Left: Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <h2
-          style={{
-            margin: 0,
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'rgba(255, 255, 255, 0.9)',
-          }}
-        >
-          Pitch Builder
-        </h2>
-        <span
-          style={{
-            fontSize: 12,
-            padding: '4px 8px',
-            backgroundColor: 'rgba(58, 169, 190, 0.1)',
-            border: '1px solid rgba(58, 169, 190, 0.2)',
-            borderRadius: 4,
-            color: '#3AA9BE',
-          }}
-        >
-          AI-Powered
-        </span>
-        {isDirty && (
-          <span
-            style={{
-              fontSize: 11,
-              color: 'rgba(255, 255, 255, 0.4)',
-              fontStyle: 'italic',
-            }}
-          >
-            Unsaved changes
-          </span>
-        )}
-      </div>
+    <>
+      <div className="px-5 py-3 border-b border-white/5 bg-ta-black/95 backdrop-blur-ta sticky top-0 z-20">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* Left: Title */}
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-ta-white">Pitch Builder</h2>
+            <span className="text-xs px-2 py-1 bg-ta-cyan/10 border border-ta-cyan/20 rounded-ta-sm text-ta-cyan">
+              AI-Powered
+            </span>
+            {isDirty && <span className="text-[11px] text-ta-grey/60 italic">Unsaved changes</span>}
+          </div>
 
-      {/* Right: Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
-        {/* Drafts dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => {
-              setShowDraftsMenu(!showDraftsMenu)
-              setShowExportMenu(false)
-            }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 14px',
-              fontSize: 13,
-              fontWeight: 400,
-              color: 'rgba(255, 255, 255, 0.6)',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              cursor: 'pointer',
-              transition: 'all 0.12s ease',
-              fontFamily: 'inherit',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
-              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'
-            }}
-          >
-            Drafts
-            {drafts.length > 0 && (
-              <span
-                style={{
-                  fontSize: 10,
-                  padding: '2px 6px',
-                  backgroundColor: 'rgba(58, 169, 190, 0.2)',
-                  borderRadius: 10,
-                  color: '#3AA9BE',
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            {/* Drafts dropdown */}
+            <div ref={draftsRef} className="relative">
+              <button
+                onClick={() => {
+                  setShowDraftsMenu(!showDraftsMenu)
+                  setShowExportMenu(false)
                 }}
+                className="flex items-center gap-2 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
               >
-                {drafts.length}
-              </span>
-            )}
-          </button>
-
-          <AnimatePresence>
-            {showDraftsMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.15 }}
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: 240,
-                  backgroundColor: 'rgba(15, 17, 19, 0.98)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 8,
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                  overflow: 'hidden',
-                  zIndex: 100,
-                }}
-              >
-                {drafts.length === 0 ? (
-                  <div
-                    style={{
-                      padding: 16,
-                      fontSize: 13,
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      textAlign: 'center',
-                    }}
-                  >
-                    No saved drafts yet
-                  </div>
-                ) : (
-                  drafts.map((draft) => (
-                    <div
-                      key={draft.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 14px',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.1s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
-                      }}
-                    >
-                      <div
-                        onClick={() => {
-                          loadDraft(draft.id)
-                          setShowDraftsMenu(false)
-                        }}
-                        style={{ flex: 1 }}
-                      >
-                        <div
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 500,
-                            color:
-                              currentDraftId === draft.id ? '#3AA9BE' : 'rgba(255, 255, 255, 0.8)',
-                          }}
-                        >
-                          {draft.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            color: 'rgba(255, 255, 255, 0.4)',
-                            marginTop: 2,
-                          }}
-                        >
-                          {draft.type} • {new Date(draft.updatedAt).toLocaleDateString('en-GB')}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteDraft(draft.id)
-                        }}
-                        style={{
-                          padding: '4px 8px',
-                          fontSize: 11,
-                          color: 'rgba(255, 255, 255, 0.4)',
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#ef4444'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))
+                <FolderIcon className="h-4 w-4" />
+                Drafts
+                {drafts.length > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-ta-cyan/20 rounded-ta-pill text-ta-cyan">
+                    {drafts.length}
+                  </span>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                <ChevronDownIcon className="h-3 w-3" />
+              </button>
 
-        {/* Export dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => {
-              setShowExportMenu(!showExportMenu)
-              setShowDraftsMenu(false)
-            }}
-            disabled={!hasContent}
-            style={{
-              padding: '8px 14px',
-              fontSize: 13,
-              fontWeight: 400,
-              color: hasContent ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.3)',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 6,
-              cursor: hasContent ? 'pointer' : 'not-allowed',
-              transition: 'all 0.12s ease',
-              fontFamily: 'inherit',
-            }}
-            onMouseEnter={(e) => {
-              if (hasContent) {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
-                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-              e.currentTarget.style.color = hasContent
-                ? 'rgba(255, 255, 255, 0.6)'
-                : 'rgba(255, 255, 255, 0.3)'
-            }}
-          >
-            {copyFeedback ? 'Copied!' : 'Export'}
-          </button>
-
-          <AnimatePresence>
-            {showExportMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.15 }}
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: 180,
-                  backgroundColor: 'rgba(15, 17, 19, 0.98)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 8,
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                  overflow: 'hidden',
-                  zIndex: 100,
-                }}
-              >
-                {[
-                  { label: 'Copy to clipboard', action: handleCopyToClipboard },
-                  { label: 'Download .md', action: handleDownloadMarkdown },
-                  { label: 'Download .txt', action: handleDownloadText },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={item.action}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '10px 14px',
-                      fontSize: 13,
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                      transition: 'background-color 0.1s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+              <AnimatePresence>
+                {showDraftsMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-2 w-60 bg-ta-panel/98 border border-white/10 rounded-ta shadow-ta-lg overflow-hidden z-50"
                   >
-                    {item.label}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                    {drafts.length === 0 ? (
+                      <div className="p-4 text-[13px] text-ta-grey/60 text-center">
+                        No saved drafts yet
+                      </div>
+                    ) : (
+                      drafts.map((draft) => (
+                        <div
+                          key={draft.id}
+                          className="flex items-center justify-between px-3 py-2.5 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors duration-120"
+                        >
+                          <div
+                            onClick={() => {
+                              loadDraft(draft.id)
+                              setShowDraftsMenu(false)
+                            }}
+                            className="flex-1"
+                          >
+                            <div
+                              className={`text-[13px] font-medium ${
+                                currentDraftId === draft.id ? 'text-ta-cyan' : 'text-ta-white/80'
+                              }`}
+                            >
+                              {draft.name}
+                            </div>
+                            <div className="text-[11px] text-ta-grey/50 mt-0.5">
+                              {draft.type} • {new Date(draft.updatedAt).toLocaleDateString('en-GB')}
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              deleteDraft(draft.id)
+                            }}
+                            className="p-1 text-ta-grey/40 hover:text-ta-error transition-colors"
+                          >
+                            <XMarkIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-        {/* Save button */}
-        <button
-          onClick={handleSave}
-          disabled={!currentType || !hasContent}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '8px 14px',
-            fontSize: 13,
-            fontWeight: 500,
-            color: currentType && hasContent ? '#0F1113' : 'rgba(255, 255, 255, 0.3)',
-            backgroundColor: currentType && hasContent ? '#3AA9BE' : 'rgba(255, 255, 255, 0.05)',
-            border: 'none',
-            borderRadius: 6,
-            cursor: currentType && hasContent ? 'pointer' : 'not-allowed',
-            transition: 'opacity 0.12s ease',
-            fontFamily: 'inherit',
-          }}
-          onMouseEnter={(e) => {
-            if (currentType && hasContent) {
-              e.currentTarget.style.opacity = '0.9'
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = '1'
-          }}
-        >
-          {currentDraftId ? 'Update Draft' : 'Save Draft'}
-        </button>
+            {/* Export dropdown */}
+            <div ref={exportRef} className="relative">
+              <button
+                onClick={() => {
+                  setShowExportMenu(!showExportMenu)
+                  setShowDraftsMenu(false)
+                }}
+                disabled={!hasContent}
+                className={`flex items-center gap-2 px-3 py-2 text-[13px] bg-transparent border border-white/10 rounded-ta-sm transition-all duration-120 ${
+                  hasContent
+                    ? 'text-ta-grey hover:text-ta-white hover:border-white/20'
+                    : 'text-ta-grey/30 cursor-not-allowed'
+                }`}
+              >
+                <DocumentArrowDownIcon className="h-4 w-4" />
+                {copyFeedback ? 'Copied!' : 'Export'}
+                <ChevronDownIcon className="h-3 w-3" />
+              </button>
+
+              <AnimatePresence>
+                {showExportMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-2 w-44 bg-ta-panel/98 border border-white/10 rounded-ta shadow-ta-lg overflow-hidden z-50"
+                  >
+                    {[
+                      { label: 'Copy to clipboard', action: handleCopyToClipboard },
+                      { label: 'Download .md', action: handleDownloadMarkdown },
+                      { label: 'Download .txt', action: handleDownloadText },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={item.action}
+                        className="block w-full px-3 py-2.5 text-[13px] text-ta-white/70 text-left hover:bg-white/5 border-b border-white/5 last:border-0 transition-colors duration-120"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Save button */}
+            <button
+              onClick={handleSave}
+              disabled={!currentType || !hasContent}
+              className={`flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium rounded-ta-sm transition-all duration-120 ${
+                currentType && hasContent
+                  ? 'bg-ta-cyan text-ta-black hover:opacity-90'
+                  : 'bg-white/5 text-ta-grey/30 cursor-not-allowed'
+              }`}
+            >
+              {currentDraftId ? 'Update Draft' : 'Save Draft'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Save modal */}
@@ -435,15 +275,7 @@ export function PitchToolbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000,
-            }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] p-6"
             onClick={() => setShowSaveModal(false)}
           >
             <motion.div
@@ -451,80 +283,36 @@ export function PitchToolbar() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              style={{
-                width: 360,
-                padding: 24,
-                backgroundColor: '#1a1c1e',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 12,
-                boxShadow: '0 16px 64px rgba(0, 0, 0, 0.5)',
-              }}
+              className="w-full max-w-sm p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
             >
-              <h3
-                style={{
-                  margin: 0,
-                  marginBottom: 16,
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: '#F7F8F9',
-                }}
-              >
-                Save Draft
-              </h3>
+              <h3 className="text-base font-semibold text-ta-white mb-4">Save Draft</h3>
               <input
                 type="text"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 placeholder="Enter a name for your draft..."
                 autoFocus
-                style={{
-                  width: '100%',
-                  padding: '12px 14px',
-                  fontSize: 14,
-                  color: '#F7F8F9',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 8,
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  marginBottom: 16,
-                }}
+                className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 mb-4"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSaveNewDraft()
                   if (e.key === 'Escape') setShowSaveModal(false)
                 }}
               />
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setShowSaveModal(false)}
-                  style={{
-                    padding: '10px 16px',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 6,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
+                  className="px-4 py-2 text-[13px] font-medium text-ta-grey/70 bg-transparent border border-white/10 rounded-ta-sm hover:border-white/20 transition-all duration-120"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveNewDraft}
                   disabled={!draftName.trim()}
-                  style={{
-                    padding: '10px 16px',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: draftName.trim() ? '#0F1113' : 'rgba(255, 255, 255, 0.3)',
-                    backgroundColor: draftName.trim() ? '#3AA9BE' : 'rgba(255, 255, 255, 0.05)',
-                    border: 'none',
-                    borderRadius: 6,
-                    cursor: draftName.trim() ? 'pointer' : 'not-allowed',
-                    fontFamily: 'inherit',
-                  }}
+                  className={`px-4 py-2 text-[13px] font-medium rounded-ta-sm transition-all duration-120 ${
+                    draftName.trim()
+                      ? 'bg-ta-cyan text-ta-black hover:opacity-90'
+                      : 'bg-white/5 text-ta-grey/30 cursor-not-allowed'
+                  }`}
                 >
                   Save
                 </button>
@@ -533,6 +321,6 @@ export function PitchToolbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }

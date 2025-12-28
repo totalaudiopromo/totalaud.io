@@ -45,32 +45,30 @@ export function NarrativeThreadView({ thread }: NarrativeThreadViewProps) {
     <div className="space-y-6">
       {/* Summary */}
       <Card>
-        <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">narrative summary</h3>
-        <p className="text-sm text-tap-white leading-relaxed lowercase">
-          {thread.narrativeSummary}
-        </p>
+        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">narrative summary</h3>
+        <p className="text-sm text-ta-white leading-relaxed lowercase">{thread.narrativeSummary}</p>
       </Card>
 
       {/* Milestones */}
       {thread.milestones.length > 0 && (
         <Card>
-          <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">key milestones</h3>
+          <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">key milestones</h3>
           <div className="space-y-4">
             {thread.milestones.map((milestone) => (
               <div
                 key={milestone.id}
-                className="p-4 bg-tap-cyan/10 rounded-lg border border-tap-cyan/20"
+                className="p-4 bg-ta-cyan/10 rounded-lg border border-ta-cyan/20"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-20 text-xs text-tap-grey font-mono">
+                  <div className="flex-shrink-0 w-20 text-xs text-ta-grey font-mono">
                     {format(milestone.date, 'MMM dd, yyyy')}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-tap-white lowercase font-semibold mb-1">
+                    <p className="text-sm text-ta-white lowercase font-semibold mb-1">
                       {milestone.title}
                     </p>
-                    <p className="text-xs text-tap-grey lowercase mb-2">{milestone.description}</p>
-                    <p className="text-xs text-tap-cyan lowercase">impact: {milestone.impact}</p>
+                    <p className="text-xs text-ta-grey lowercase mb-2">{milestone.description}</p>
+                    <p className="text-xs text-ta-cyan lowercase">impact: {milestone.impact}</p>
                   </div>
                 </div>
               </div>
@@ -81,19 +79,19 @@ export function NarrativeThreadView({ thread }: NarrativeThreadViewProps) {
 
       {/* Timeline */}
       <Card>
-        <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">full timeline</h3>
+        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">full timeline</h3>
         <div className="space-y-3">
           {thread.events.map((event) => (
             <div
               key={event.id}
-              className="flex items-start gap-3 p-3 bg-tap-black/30 rounded-lg border border-tap-panel/30"
+              className="flex items-start gap-3 p-3 bg-ta-black/30 rounded-lg border border-ta-panel/30"
             >
-              <div className="flex-shrink-0 w-20 text-xs text-tap-grey font-mono">
+              <div className="flex-shrink-0 w-20 text-xs text-ta-grey font-mono">
                 {format(event.date, 'MMM dd')}
               </div>
               <div className="flex-1">
-                <p className="text-sm text-tap-white lowercase mb-1">{event.title}</p>
-                <p className="text-xs text-tap-grey lowercase mb-2">{event.description}</p>
+                <p className="text-sm text-ta-white lowercase mb-1">{event.title}</p>
+                <p className="text-xs text-ta-grey lowercase mb-2">{event.description}</p>
                 <Badge variant={getEventColor(event.type)} size="sm">
                   {event.type.replace('_', ' ')}
                 </Badge>
@@ -106,11 +104,11 @@ export function NarrativeThreadView({ thread }: NarrativeThreadViewProps) {
       {/* Insights */}
       {thread.insights.length > 0 && (
         <Card>
-          <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">insights</h3>
+          <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">insights</h3>
           <ul className="space-y-2">
             {thread.insights.map((insight, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-tap-white">
-                <span className="text-tap-cyan">→</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-ta-white">
+                <span className="text-ta-cyan">→</span>
                 <span className="lowercase">{insight}</span>
               </li>
             ))}

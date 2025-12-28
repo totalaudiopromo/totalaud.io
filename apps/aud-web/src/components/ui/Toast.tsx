@@ -9,11 +9,17 @@
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+export interface ToastAction {
+  label: string
+  onClick: () => void
+}
+
 export interface Toast {
   id: string
   message: string
   type: 'success' | 'info' | 'error' | 'celebration'
   duration?: number
+  action?: ToastAction
 }
 
 interface ToastProps {
@@ -95,10 +101,40 @@ function ToastItem({ toast, onDismiss }: ToastProps) {
           fontWeight: 500,
           color: '#F7F8F9',
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          flex: 1,
         }}
       >
         {toast.message}
       </span>
+      {toast.action && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            toast.action?.onClick()
+            onDismiss(toast.id)
+          }}
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: `1px solid ${style.border}`,
+            borderRadius: 4,
+            padding: '4px 10px',
+            fontSize: 12,
+            fontWeight: 600,
+            color: style.accent,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            transition: 'background 120ms ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          {toast.action.label}
+        </button>
+      )}
     </motion.div>
   )
 }

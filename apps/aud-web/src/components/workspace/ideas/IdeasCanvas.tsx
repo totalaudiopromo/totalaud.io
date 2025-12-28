@@ -16,9 +16,11 @@ import {
   selectFilteredCards,
   selectHasStarterIdeas,
   type IdeaTag,
+  type IdeaCard as IdeaCardType,
 } from '@/stores/useIdeasStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
+import { useIdeasUndo, useIdeasUndoKeyboard } from '@/hooks/useIdeasUndo'
 import { IdeaCard } from './IdeaCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { getLaneColour, type LaneType } from '@/types/timeline'
@@ -56,7 +58,45 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
 
   // Timeline store for cross-mode connection
   const addTimelineEvent = useTimelineStore((state) => state.addEvent)
-  const { addedToTimeline } = useToast()
+  const { addedToTimeline, ideaDeleted } = useToast()
+
+  // Undo/Redo hooks
+  const { trackDelete, trackUpdate, getCardSnapshot, restoreLastDeleted } = useIdeasUndo()
+  useIdeasUndoKeyboard() // Enable Cmd+Z / Cmd+Shift+Z
+
+  // Handler to delete with undo tracking
+  const handleDelete = useCallback(
+    async (card: IdeaCardType) => {
+      // Track for undo
+      trackDelete(card)
+      // Delete from store
+      await deleteCard(card.id)
+      // Show toast with undo button
+      ideaDeleted(async () => {
+        await restoreLastDeleted()
+      })
+    },
+    [trackDelete, deleteCard, ideaDeleted, restoreLastDeleted]
+  )
+
+  // Handler to update with undo tracking
+  const handleUpdate = useCallback(
+    async (cardId: string, updates: Partial<IdeaCardType>) => {
+      const before = getCardSnapshot(cardId)
+      if (before) {
+        // Only track meaningful updates (content, tag changes)
+        const trackableFields = ['content', 'tag'] as const
+        const hasTrackableChange = trackableFields.some(
+          (field) => updates[field] !== undefined && updates[field] !== before[field]
+        )
+        if (hasTrackableChange) {
+          trackUpdate(cardId, before, updates)
+        }
+      }
+      await updateCard(cardId, updates)
+    },
+    [getCardSnapshot, trackUpdate, updateCard]
+  )
 
   // Handler to send idea to timeline
   const handleSendToTimeline = useCallback(
@@ -249,8 +289,8 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             isSelected={card.id === selectedCardId}
             onSelect={() => selectCard(card.id)}
             onMove={(position) => moveCard(card.id, position)}
-            onUpdate={(updates) => updateCard(card.id, updates)}
-            onDelete={() => deleteCard(card.id)}
+            onUpdate={(updates) => handleUpdate(card.id, updates)}
+            onDelete={() => handleDelete(card)}
             onSendToTimeline={() => handleSendToTimeline(card)}
           />
         ))}

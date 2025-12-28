@@ -21,7 +21,7 @@ export function Tabbed({ tabs, defaultTab }: TabbedProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 border-b border-tap-panel pb-2">
+      <div className="flex gap-2 border-b border-ta-panel pb-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -29,8 +29,8 @@ export function Tabbed({ tabs, defaultTab }: TabbedProps) {
             className={clsx(
               'px-4 py-2 text-sm font-medium lowercase transition-colors duration-180',
               {
-                'text-tap-cyan border-b-2 border-tap-cyan': activeTab === tab.id,
-                'text-tap-grey hover:text-tap-white': activeTab !== tab.id,
+                'text-ta-cyan border-b-2 border-ta-cyan': activeTab === tab.id,
+                'text-ta-grey hover:text-ta-white': activeTab !== tab.id,
               }
             )}
           >

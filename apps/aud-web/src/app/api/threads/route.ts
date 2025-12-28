@@ -1,0 +1,386 @@
+/**
+ * Signal Threads API Route
+ * Phase 2: CRUD operations for timeline story arcs
+ *
+ * Endpoints:
+ * - GET: List all threads for the authenticated user
+ * - POST: Create a new thread
+ * - PATCH: Update an existing thread
+ * - DELETE: Remove a thread
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { logger } from '@/lib/logger'
+import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+
+const log = logger.scope('ThreadsAPI')
+
+// ============ Validation Schemas ============
+
+const threadTypeSchema = z.enum(['narrative', 'campaign', 'creative', 'scene', 'performance'])
+
+const createThreadSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
+  threadType: threadTypeSchema,
+  colour: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex colour')
+    .optional(),
+  eventIds: z.array(z.string().uuid()).optional(),
+})
+
+const updateThreadSchema = z.object({
+  id: z.string().uuid('Invalid thread ID'),
+  title: z.string().min(1).max(100).optional(),
+  threadType: threadTypeSchema.optional(),
+  colour: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
+  eventIds: z.array(z.string().uuid()).optional(),
+  narrativeSummary: z.string().max(2000).nullable().optional(),
+  insights: z.array(z.string()).optional(),
+})
+
+const deleteThreadSchema = z.object({
+  id: z.string().uuid('Invalid thread ID'),
+})
+
+// ============ GET: List Threads ============
+
+export async function GET() {
+  try {
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify authentication' },
+        { status: 500 }
+      )
+    }
+
+    if (!session) {
+      log.warn('Unauthenticated request to list threads')
+      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    }
+
+    // Fetch all threads for user
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
+    const { data: threads, error: fetchError } = await (supabase as any)
+      .from('signal_threads')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+
+    if (fetchError) {
+      log.error('Failed to fetch threads', fetchError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch threads' },
+        { status: 500 }
+      )
+    }
+
+    log.info('Fetched threads', { userId: session.user.id, count: threads?.length || 0 })
+
+    // Transform to camelCase for frontend
+    const transformedThreads = (threads || []).map((t: any) => ({
+      id: t.id,
+      userId: t.user_id,
+      title: t.title,
+      threadType: t.thread_type,
+      colour: t.colour,
+      eventIds: t.event_ids || [],
+      narrativeSummary: t.narrative_summary,
+      insights: t.insights || [],
+      startDate: t.start_date,
+      endDate: t.end_date,
+      createdAt: t.created_at,
+      updatedAt: t.updated_at,
+    }))
+
+    return NextResponse.json({ success: true, data: transformedThreads })
+  } catch (error) {
+    log.error('Error listing threads', error)
+    return NextResponse.json({ success: false, error: 'Failed to list threads' }, { status: 500 })
+  }
+}
+
+// ============ POST: Create Thread ============
+
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify authentication' },
+        { status: 500 }
+      )
+    }
+
+    if (!session) {
+      log.warn('Unauthenticated request to create thread')
+      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    }
+
+    // Parse and validate body
+    const body = await request.json()
+    const validation = createThreadSchema.safeParse(body)
+
+    if (!validation.success) {
+      log.warn('Invalid thread creation request', { errors: validation.error.errors })
+      return NextResponse.json(
+        { success: false, error: validation.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const { title, threadType, colour, eventIds } = validation.data
+
+    // Insert thread
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
+    const { data: thread, error: insertError } = await (supabase as any)
+      .from('signal_threads')
+      .insert({
+        user_id: session.user.id,
+        title,
+        thread_type: threadType,
+        colour: colour || '#3AA9BE',
+        event_ids: eventIds || [],
+      })
+      .select()
+      .single()
+
+    if (insertError) {
+      log.error('Failed to create thread', insertError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to create thread' },
+        { status: 500 }
+      )
+    }
+
+    // If eventIds provided, update those events to reference this thread
+    if (eventIds && eventIds.length > 0) {
+      // Type assertion needed until Supabase types are regenerated to include thread_id column
+      const { error: updateError } = await (supabase as any)
+        .from('user_timeline_events')
+        .update({ thread_id: thread.id })
+        .in('id', eventIds)
+        .eq('user_id', session.user.id)
+
+      if (updateError) {
+        log.warn('Failed to link events to thread', { error: updateError })
+        // Don't fail the request, thread was created successfully
+      }
+    }
+
+    log.info('Created thread', { threadId: thread.id, title, type: threadType })
+
+    // Transform to camelCase
+    const transformedThread = {
+      id: thread.id,
+      userId: thread.user_id,
+      title: thread.title,
+      threadType: thread.thread_type,
+      colour: thread.colour,
+      eventIds: thread.event_ids || [],
+      narrativeSummary: thread.narrative_summary,
+      insights: thread.insights || [],
+      startDate: thread.start_date,
+      endDate: thread.end_date,
+      createdAt: thread.created_at,
+      updatedAt: thread.updated_at,
+    }
+
+    return NextResponse.json({ success: true, data: transformedThread }, { status: 201 })
+  } catch (error) {
+    log.error('Error creating thread', error)
+    return NextResponse.json({ success: false, error: 'Failed to create thread' }, { status: 500 })
+  }
+}
+
+// ============ PATCH: Update Thread ============
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify authentication' },
+        { status: 500 }
+      )
+    }
+
+    if (!session) {
+      log.warn('Unauthenticated request to update thread')
+      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    }
+
+    // Parse and validate body
+    const body = await request.json()
+    const validation = updateThreadSchema.safeParse(body)
+
+    if (!validation.success) {
+      log.warn('Invalid thread update request', { errors: validation.error.errors })
+      return NextResponse.json(
+        { success: false, error: validation.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const { id, title, threadType, colour, eventIds, narrativeSummary, insights } = validation.data
+
+    // Build update object
+    const updateData: Record<string, any> = {}
+    if (title !== undefined) updateData.title = title
+    if (threadType !== undefined) updateData.thread_type = threadType
+    if (colour !== undefined) updateData.colour = colour
+    if (eventIds !== undefined) updateData.event_ids = eventIds
+    if (narrativeSummary !== undefined) updateData.narrative_summary = narrativeSummary
+    if (insights !== undefined) updateData.insights = insights
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 })
+    }
+
+    // Update thread
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
+    const { data: thread, error: updateError } = await (supabase as any)
+      .from('signal_threads')
+      .update(updateData)
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+      .select()
+      .single()
+
+    if (updateError) {
+      log.error('Failed to update thread', updateError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to update thread' },
+        { status: 500 }
+      )
+    }
+
+    if (!thread) {
+      return NextResponse.json({ success: false, error: 'Thread not found' }, { status: 404 })
+    }
+
+    // If eventIds changed, update event references atomically
+    // Uses RPC function to prevent race conditions between clear and set operations
+    if (eventIds !== undefined) {
+      // Type assertion needed until Supabase types are regenerated to include signal_threads RPC
+      const { error: rpcError } = await (supabase as any).rpc('update_thread_events', {
+        p_thread_id: id,
+        p_user_id: session.user.id,
+        p_event_ids: eventIds,
+      })
+
+      if (rpcError) {
+        log.warn('Failed to update thread-event links', { threadId: id, error: rpcError })
+        // Don't fail the request - thread update was successful
+      }
+    }
+
+    log.info('Updated thread', { threadId: id })
+
+    // Transform to camelCase
+    const transformedThread = {
+      id: thread.id,
+      userId: thread.user_id,
+      title: thread.title,
+      threadType: thread.thread_type,
+      colour: thread.colour,
+      eventIds: thread.event_ids || [],
+      narrativeSummary: thread.narrative_summary,
+      insights: thread.insights || [],
+      startDate: thread.start_date,
+      endDate: thread.end_date,
+      createdAt: thread.created_at,
+      updatedAt: thread.updated_at,
+    }
+
+    return NextResponse.json({ success: true, data: transformedThread })
+  } catch (error) {
+    log.error('Error updating thread', error)
+    return NextResponse.json({ success: false, error: 'Failed to update thread' }, { status: 500 })
+  }
+}
+
+// ============ DELETE: Remove Thread ============
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      log.error('Failed to verify session', sessionError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify authentication' },
+        { status: 500 }
+      )
+    }
+
+    if (!session) {
+      log.warn('Unauthenticated request to delete thread')
+      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    }
+
+    // Parse body for thread ID
+    const body = await request.json()
+    const validation = deleteThreadSchema.safeParse(body)
+
+    if (!validation.success) {
+      log.warn('Invalid thread delete request', { errors: validation.error.errors })
+      return NextResponse.json(
+        { success: false, error: validation.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const { id } = validation.data
+
+    // Delete thread (RLS ensures user can only delete their own)
+    // Type assertion needed until Supabase types are regenerated to include signal_threads
+    const { error: deleteError } = await (supabase as any)
+      .from('signal_threads')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+
+    if (deleteError) {
+      log.error('Failed to delete thread', deleteError)
+      return NextResponse.json(
+        { success: false, error: 'Failed to delete thread' },
+        { status: 500 }
+      )
+    }
+
+    log.info('Deleted thread', { threadId: id })
+
+    return NextResponse.json({ success: true, data: { id } })
+  } catch (error) {
+    log.error('Error deleting thread', error)
+    return NextResponse.json({ success: false, error: 'Failed to delete thread' }, { status: 500 })
+  }
+}

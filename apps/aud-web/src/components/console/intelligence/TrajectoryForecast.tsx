@@ -41,7 +41,7 @@ export function TrajectoryForecast({
       {/* Forecast Chart */}
       <Card>
         <div className="flex items-start justify-between mb-4">
-          <h3 className="text-lg font-semibold text-tap-white lowercase">90-day forecast</h3>
+          <h3 className="text-lg font-semibold text-ta-white lowercase">90-day forecast</h3>
           <Badge variant="info">{(confidence * 100).toFixed(0)}% confidence</Badge>
         </div>
         <ResponsiveContainer width="100%" height={350}>
@@ -83,7 +83,7 @@ export function TrajectoryForecast({
 
       {/* Opportunity Windows */}
       <Card>
-        <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">opportunity windows</h3>
+        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">opportunity windows</h3>
         <div className="space-y-3">
           {opportunityWindows.map((window, i) => (
             <div key={i} className="p-4 bg-green-500/10 rounded-lg border border-green-500/20">
@@ -92,7 +92,7 @@ export function TrajectoryForecast({
                   {window.start} → {window.end}
                 </p>
               </div>
-              <p className="text-sm text-tap-white lowercase">{window.reason}</p>
+              <p className="text-sm text-ta-white lowercase">{window.reason}</p>
             </div>
           ))}
         </div>
@@ -101,10 +101,10 @@ export function TrajectoryForecast({
       {/* Risk Indicators */}
       {riskIndicators.length > 0 && (
         <Card>
-          <h3 className="text-lg font-semibold text-tap-white lowercase mb-4">risk indicators</h3>
+          <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">risk indicators</h3>
           <ul className="space-y-2">
             {riskIndicators.map((risk, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-tap-white">
+              <li key={i} className="flex items-start gap-2 text-sm text-ta-white">
                 <span className="text-red-400">!</span>
                 <span className="lowercase">{risk}</span>
               </li>

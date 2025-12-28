@@ -29,13 +29,13 @@ export default function ThreadsPage() {
       label: 'narrative',
       content: narrativeLoading ? (
         <Card>
-          <p className="text-tap-grey lowercase">loading narrative thread...</p>
+          <p className="text-ta-grey lowercase">loading narrative thread...</p>
         </Card>
       ) : narrativeThread ? (
         <NarrativeThreadView thread={narrativeThread} />
       ) : (
         <Card>
-          <p className="text-tap-grey lowercase">
+          <p className="text-ta-grey lowercase">
             no narrative thread available yet. your story will build as you use the platform.
           </p>
         </Card>
@@ -46,13 +46,13 @@ export default function ThreadsPage() {
       label: 'campaign',
       content: campaignLoading ? (
         <Card>
-          <p className="text-tap-grey lowercase">loading campaign thread...</p>
+          <p className="text-ta-grey lowercase">loading campaign thread...</p>
         </Card>
       ) : campaignThread ? (
         <NarrativeThreadView thread={campaignThread} />
       ) : (
         <Card>
-          <p className="text-tap-grey lowercase">
+          <p className="text-ta-grey lowercase">
             no campaign thread available yet. start a campaign to see your progress.
           </p>
         </Card>
@@ -63,13 +63,13 @@ export default function ThreadsPage() {
       label: 'creative',
       content: creativeLoading ? (
         <Card>
-          <p className="text-tap-grey lowercase">loading creative thread...</p>
+          <p className="text-ta-grey lowercase">loading creative thread...</p>
         </Card>
       ) : creativeThread ? (
         <NarrativeThreadView thread={creativeThread} />
       ) : (
         <Card>
-          <p className="text-tap-grey lowercase">
+          <p className="text-ta-grey lowercase">
             no creative thread available yet. add ideas to build your creative timeline.
           </p>
         </Card>

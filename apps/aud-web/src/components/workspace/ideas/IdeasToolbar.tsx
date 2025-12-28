@@ -2,7 +2,7 @@
  * IdeasToolbar Component
  *
  * Professional toolbar with search, sort, view toggle, export, and filter tabs.
- * Calm, minimal, Apple-like design.
+ * Uses TAP design system tokens for consistent styling.
  */
 
 'use client'
@@ -13,6 +13,7 @@ import {
   useIdeasStore,
   selectCardCountByTag,
   selectFilteredCards,
+  selectSyncStatus,
   buildMarkdownExport,
   buildPlainTextExport,
   type IdeaTag,
@@ -20,6 +21,17 @@ import {
 } from '@/stores/useIdeasStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useOfflineDetection } from '@/hooks/useOfflineDetection'
+import {
+  MagnifyingGlassIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
+  ChevronDownIcon,
+  PlusIcon,
+  ArrowPathIcon,
+  CheckIcon,
+  CloudIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
 
 const TAGS: { key: IdeaTag; label: string; colour: string }[] = [
   { key: 'content', label: 'Content', colour: '#3AA9BE' },
@@ -33,35 +45,6 @@ const SORT_OPTIONS: { key: SortMode; label: string }[] = [
   { key: 'oldest', label: 'Oldest first' },
   { key: 'alpha', label: 'A to Z' },
 ]
-
-// Simple SVG icons
-const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="11" cy="11" r="8" />
-    <path d="M21 21l-4.35-4.35" />
-  </svg>
-)
-
-const GridIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-  </svg>
-)
-
-const ListIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-  </svg>
-)
-
-const ChevronIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M6 9l6 6 6-6" />
-  </svg>
-)
 
 export function IdeasToolbar() {
   const filter = useIdeasStore((state) => state.filter)
@@ -128,9 +111,9 @@ export function IdeasToolbar() {
   // Toast for feedback
   const { ideaCreated, checkAndCelebrate } = useToast()
 
-  // Offline detection
+  // Offline detection and sync status
   const { isOnline, wasOffline, clearWasOffline } = useOfflineDetection()
-  const syncError = useIdeasStore((state) => state.syncError)
+  const syncStatus = useIdeasStore(selectSyncStatus)
   const syncToSupabase = useIdeasStore((state) => state.syncToSupabase)
 
   // Auto-sync when coming back online
@@ -175,92 +158,30 @@ export function IdeasToolbar() {
     }
   }, [clearConfirmText, clearAllCards])
 
-  const buttonBase = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '6px 10px',
-    backgroundColor: 'transparent',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: 4,
-    fontSize: 12,
-    fontWeight: 400,
-    color: 'rgba(255, 255, 255, 0.6)',
-    cursor: 'pointer',
-    transition: 'all 0.16s ease',
-    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-  } as const
-
-  const dropdownStyle = {
-    position: 'absolute' as const,
-    top: '100%',
-    right: 0,
-    marginTop: 4,
-    minWidth: 160,
-    backgroundColor: 'rgba(15, 17, 19, 0.98)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: 6,
-    padding: 4,
-    zIndex: 50,
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-  }
-
-  const dropdownItemStyle = {
-    display: 'block',
-    width: '100%',
-    padding: '8px 12px',
-    textAlign: 'left' as const,
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    transition: 'background-color 0.12s ease',
-    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-  }
-
   return (
     <>
       {/* Offline/Error Banner */}
       <AnimatePresence>
-        {(!isOnline || syncError) && (
+        {(!isOnline || syncStatus.error) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              padding: '8px 12px',
-              backgroundColor: !isOnline ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-              borderBottom: `1px solid ${!isOnline ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              fontSize: 12,
-              color: !isOnline ? '#F59E0B' : '#EF4444',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
+            className={`flex items-center justify-center gap-2 px-3 py-2 text-xs border-b ${
+              !isOnline
+                ? 'bg-ta-warning/10 border-ta-warning/20 text-ta-warning'
+                : 'bg-ta-error/10 border-ta-error/20 text-ta-error'
+            }`}
           >
-            <span style={{ fontWeight: 500 }}>{!isOnline ? "You're offline" : 'Sync error'}</span>
-            <span style={{ opacity: 0.8 }}>
-              {!isOnline ? "— changes will sync when you're back online" : `— ${syncError}`}
+            <span className="font-medium">{!isOnline ? "You're offline" : 'Sync error'}</span>
+            <span className="opacity-80">
+              {!isOnline ? "— changes will sync when you're back online" : `— ${syncStatus.error}`}
             </span>
-            {syncError && isOnline && (
+            {syncStatus.error && isOnline && (
               <button
                 onClick={() => syncToSupabase()}
-                style={{
-                  padding: '4px 10px',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  color: '#EF4444',
-                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
+                className="px-2.5 py-1 text-[11px] font-medium text-ta-error bg-ta-error/15 border border-ta-error/30 rounded-ta-sm cursor-pointer"
               >
                 Retry
               </button>
@@ -269,36 +190,12 @@ export function IdeasToolbar() {
         )}
       </AnimatePresence>
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
-          padding: '10px 12px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          backgroundColor: 'rgba(15, 17, 19, 0.95)',
-          backdropFilter: 'blur(8px)',
-          minHeight: 52,
-          flexWrap: 'wrap',
-        }}
-      >
+      <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-white/5 bg-ta-black/95 backdrop-blur-ta min-h-[52px] flex-wrap">
         {/* Left: Filter tabs - scrollable on mobile */}
         <div
           role="tablist"
           aria-label="Filter ideas by category"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-            flexShrink: 1,
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch',
-            minWidth: 0,
-            flex: '1 1 auto',
-          }}
+          className="flex items-center gap-0.5 flex-shrink overflow-x-auto scrollbar-none min-w-0 flex-1"
         >
           {/* All tab */}
           <button
@@ -306,32 +203,16 @@ export function IdeasToolbar() {
             aria-selected={filter === null}
             aria-controls="ideas-canvas"
             onClick={() => handleFilterClick(null)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '6px 12px',
-              backgroundColor: filter === null ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: 12,
-              fontWeight: filter === null ? 500 : 400,
-              color: filter === null ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)',
-              cursor: 'pointer',
-              transition: 'all 0.16s ease',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-              whiteSpace: 'nowrap',
-            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 border-none rounded-ta-sm text-xs whitespace-nowrap transition-all duration-120 ${
+              filter === null
+                ? 'bg-white/8 font-medium text-ta-white/90'
+                : 'bg-transparent font-normal text-ta-grey/60 hover:text-ta-grey'
+            }`}
           >
             All
             <span
               aria-label={`${totalCards} ideas`}
-              style={{
-                fontSize: 10,
-                padding: '1px 5px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: 8,
-              }}
+              className="text-[10px] px-1.5 py-0.5 bg-white/10 rounded-ta-pill"
             >
               {totalCards}
             </span>
@@ -345,30 +226,17 @@ export function IdeasToolbar() {
               aria-selected={filter === tag.key}
               aria-controls="ideas-canvas"
               onClick={() => handleFilterClick(tag.key)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '6px 10px',
-                backgroundColor: filter === tag.key ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                border: 'none',
-                borderRadius: 4,
-                fontSize: 12,
-                fontWeight: filter === tag.key ? 500 : 400,
-                color: filter === tag.key ? tag.colour : 'rgba(255, 255, 255, 0.5)',
-                cursor: 'pointer',
-                transition: 'all 0.16s ease',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
+              className={`flex items-center gap-1 px-2.5 py-1.5 border-none rounded-ta-sm text-xs whitespace-nowrap flex-shrink-0 transition-all duration-120 ${
+                filter === tag.key
+                  ? 'bg-white/8 font-medium'
+                  : 'bg-transparent font-normal text-ta-grey/60 hover:text-ta-grey'
+              }`}
+              style={{ color: filter === tag.key ? tag.colour : undefined }}
             >
               <span
                 aria-hidden="true"
+                className="w-1.5 h-1.5 rounded-full"
                 style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
                   backgroundColor: tag.colour,
                   opacity: filter === tag.key ? 1 : 0.5,
                 }}
@@ -377,12 +245,7 @@ export function IdeasToolbar() {
               {cardCounts[tag.key] > 0 && (
                 <span
                   aria-label={`${cardCounts[tag.key]} ideas`}
-                  style={{
-                    fontSize: 10,
-                    padding: '1px 5px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 8,
-                  }}
+                  className="text-[10px] px-1.5 py-0.5 bg-white/10 rounded-ta-pill"
                 >
                   {cardCounts[tag.key]}
                 </span>
@@ -392,84 +255,39 @@ export function IdeasToolbar() {
         </div>
 
         {/* Centre: Search - collapses on mobile */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            flex: '0 1 180px',
-            minWidth: 100,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              flex: 1,
-              padding: '6px 10px',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: 4,
-            }}
-          >
-            <span style={{ color: 'rgba(255, 255, 255, 0.4)', display: 'flex' }}>
-              <SearchIcon />
-            </span>
+        <div className="flex items-center gap-2 flex-[0_1_180px] min-w-[100px]">
+          <div className="flex items-center gap-2 flex-1 px-2.5 py-1.5 bg-white/5 border border-white/5 rounded-ta-sm">
+            <MagnifyingGlassIcon className="h-3.5 w-3.5 text-ta-grey/50" />
             <input
               type="text"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               placeholder="Search ideas..."
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: 12,
-                color: 'rgba(255, 255, 255, 0.9)',
-                fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-              }}
+              className="flex-1 bg-transparent border-none outline-none text-xs text-ta-white/90 placeholder:text-ta-grey/40"
             />
             {localSearch && (
               <button
                 onClick={() => setLocalSearch('')}
-                style={{
-                  padding: 0,
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'rgba(255, 255, 255, 0.4)',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                  lineHeight: 1,
-                }}
+                className="p-0 bg-transparent border-none text-ta-grey/50 hover:text-ta-grey cursor-pointer"
               >
-                x
+                <XMarkIcon className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
         </div>
 
         {/* Right: Actions - compact on mobile */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            flexShrink: 0,
-          }}
-        >
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {/* Sort dropdown - hidden on mobile */}
-          <div ref={sortRef} style={{ position: 'relative' }} className="hidden sm:block">
+          <div ref={sortRef} className="relative hidden sm:block">
             <button
               onClick={() => setSortOpen(!sortOpen)}
-              style={{
-                ...buttonBase,
-                backgroundColor: sortOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
+                sortOpen ? 'bg-white/8' : ''
+              }`}
             >
               {SORT_OPTIONS.find((o) => o.key === sortMode)?.label}
-              <ChevronIcon />
+              <ChevronDownIcon className="h-3 w-3" />
             </button>
             <AnimatePresence>
               {sortOpen && (
@@ -478,7 +296,7 @@ export function IdeasToolbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.16 }}
-                  style={dropdownStyle}
+                  className="absolute top-full right-0 mt-1 min-w-[160px] bg-ta-black/98 border border-white/10 rounded-ta-sm p-1 z-50 shadow-ta-lg"
                 >
                   {SORT_OPTIONS.map((option) => (
                     <button
@@ -487,19 +305,9 @@ export function IdeasToolbar() {
                         setSortMode(option.key)
                         setSortOpen(false)
                       }}
-                      style={{
-                        ...dropdownItemStyle,
-                        backgroundColor:
-                          sortMode === option.key ? 'rgba(255, 255, 255, 0.06)' : 'transparent',
-                        fontWeight: sortMode === option.key ? 500 : 400,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          sortMode === option.key ? 'rgba(255, 255, 255, 0.06)' : 'transparent'
-                      }}
+                      className={`block w-full px-3 py-2 text-left text-xs text-ta-white/70 bg-transparent border-none rounded-ta-sm cursor-pointer transition-colors duration-120 hover:bg-white/5 ${
+                        sortMode === option.key ? 'bg-white/5 font-medium' : 'font-normal'
+                      }`}
                     >
                       {option.label}
                     </button>
@@ -510,65 +318,41 @@ export function IdeasToolbar() {
           </div>
 
           {/* View toggle */}
-          <div
-            style={{
-              display: 'flex',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 4,
-              padding: 2,
-            }}
-          >
+          <div className="flex bg-white/5 rounded-ta-sm p-0.5">
             <button
               onClick={() => setViewMode('canvas')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 6,
-                backgroundColor: viewMode === 'canvas' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                border: 'none',
-                borderRadius: 3,
-                color:
-                  viewMode === 'canvas' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.16s ease',
-              }}
+              className={`flex items-center justify-center p-1.5 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
+                viewMode === 'canvas'
+                  ? 'bg-white/10 text-ta-white/90'
+                  : 'bg-transparent text-ta-grey/50 hover:text-ta-grey'
+              }`}
               title="Canvas view"
             >
-              <GridIcon />
+              <Squares2X2Icon className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 6,
-                backgroundColor: viewMode === 'list' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                border: 'none',
-                borderRadius: 3,
-                color:
-                  viewMode === 'list' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.16s ease',
-              }}
+              className={`flex items-center justify-center p-1.5 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
+                viewMode === 'list'
+                  ? 'bg-white/10 text-ta-white/90'
+                  : 'bg-transparent text-ta-grey/50 hover:text-ta-grey'
+              }`}
               title="List view"
             >
-              <ListIcon />
+              <ListBulletIcon className="h-3.5 w-3.5" />
             </button>
           </div>
 
           {/* Export dropdown - hidden on mobile */}
-          <div ref={exportRef} style={{ position: 'relative' }} className="hidden sm:block">
+          <div ref={exportRef} className="relative hidden sm:block">
             <button
               onClick={() => setExportOpen(!exportOpen)}
-              style={{
-                ...buttonBase,
-                backgroundColor: exportOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
+                exportOpen ? 'bg-white/8' : ''
+              }`}
             >
               {exportFeedback || 'Export'}
-              <ChevronIcon />
+              <ChevronDownIcon className="h-3 w-3" />
             </button>
             <AnimatePresence>
               {exportOpen && (
@@ -577,66 +361,33 @@ export function IdeasToolbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.16 }}
-                  style={dropdownStyle}
+                  className="absolute top-full right-0 mt-1 min-w-[180px] bg-ta-black/98 border border-white/10 rounded-ta-sm p-1 z-50 shadow-ta-lg"
                 >
                   <button
                     onClick={() => handleExport('markdown', false)}
-                    style={dropdownItemStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+                    className="block w-full px-3 py-2 text-left text-xs text-ta-white/70 bg-transparent border-none rounded-ta-sm cursor-pointer transition-colors duration-120 hover:bg-white/5"
                   >
                     Export all as Markdown
                   </button>
                   <button
                     onClick={() => handleExport('text', false)}
-                    style={dropdownItemStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+                    className="block w-full px-3 py-2 text-left text-xs text-ta-white/70 bg-transparent border-none rounded-ta-sm cursor-pointer transition-colors duration-120 hover:bg-white/5"
                   >
                     Export all as Plain text
                   </button>
                   <button
                     onClick={() => handleExport('markdown', true)}
-                    style={dropdownItemStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+                    className="block w-full px-3 py-2 text-left text-xs text-ta-white/70 bg-transparent border-none rounded-ta-sm cursor-pointer transition-colors duration-120 hover:bg-white/5"
                   >
                     Export visible as Markdown
                   </button>
-                  <div
-                    style={{
-                      height: 1,
-                      backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                      margin: '4px 0',
-                    }}
-                  />
+                  <div className="h-px bg-white/5 my-1" />
                   <button
                     onClick={() => {
                       setExportOpen(false)
                       setShowClearModal(true)
                     }}
-                    style={{
-                      ...dropdownItemStyle,
-                      color: '#EF4444',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
+                    className="block w-full px-3 py-2 text-left text-xs text-ta-error bg-transparent border-none rounded-ta-sm cursor-pointer transition-colors duration-120 hover:bg-ta-error/10"
                   >
                     Clear all ideas...
                   </button>
@@ -645,27 +396,52 @@ export function IdeasToolbar() {
             </AnimatePresence>
           </div>
 
+          {/* Sync status indicator - hidden when offline (banner shows) */}
+          {isOnline && !syncStatus.error && (
+            <div
+              aria-live="polite"
+              aria-label={
+                syncStatus.isLoading
+                  ? 'Loading ideas'
+                  : syncStatus.isSyncing
+                    ? 'Syncing changes'
+                    : 'All changes saved'
+              }
+              className={`hidden sm:flex items-center gap-1 px-2 py-1 text-[11px] ${
+                syncStatus.isLoading || syncStatus.isSyncing
+                  ? 'text-ta-grey/60'
+                  : 'text-ta-success/80'
+              }`}
+            >
+              {syncStatus.isLoading ? (
+                <>
+                  <ArrowPathIcon className="h-3 w-3 animate-spin" />
+                  <span>Loading...</span>
+                </>
+              ) : syncStatus.isSyncing ? (
+                <>
+                  <ArrowPathIcon className="h-3 w-3 animate-spin" />
+                  <span>Syncing...</span>
+                </>
+              ) : (
+                <>
+                  <span className="flex items-center justify-center w-3.5 h-3.5 rounded-full bg-ta-success/15">
+                    <CheckIcon className="h-2.5 w-2.5" />
+                  </span>
+                  <span>Saved</span>
+                </>
+              )}
+            </div>
+          )}
+
           {/* Add button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleAddCard}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '6px 14px',
-              backgroundColor: '#3AA9BE',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: 12,
-              fontWeight: 500,
-              color: '#0F1113',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-            }}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-ta-cyan border-none rounded-ta-sm text-xs font-medium text-ta-black cursor-pointer"
           >
-            <span style={{ fontSize: 14, lineHeight: 1 }}>+</span>
+            <PlusIcon className="h-3.5 w-3.5" />
             Add
           </motion.button>
         </div>
@@ -683,16 +459,7 @@ export function IdeasToolbar() {
             aria-modal="true"
             aria-labelledby="clear-modal-title"
             aria-describedby="clear-modal-description"
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 100,
-              padding: 24,
-            }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] p-6"
             onClick={() => {
               setShowClearModal(false)
               setClearConfirmText('')
@@ -704,51 +471,18 @@ export function IdeasToolbar() {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              style={{
-                backgroundColor: 'rgba(15, 17, 19, 0.98)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: 8,
-                padding: 24,
-                maxWidth: 400,
-                width: '100%',
-              }}
+              className="w-full max-w-sm p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
             >
-              <h3
-                id="clear-modal-title"
-                style={{
-                  margin: 0,
-                  marginBottom: 12,
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: '#F7F8F9',
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                }}
-              >
+              <h3 id="clear-modal-title" className="m-0 mb-3 text-base font-semibold text-ta-white">
                 Delete all ideas?
               </h3>
               <p
                 id="clear-modal-description"
-                style={{
-                  margin: 0,
-                  marginBottom: 20,
-                  fontSize: 13,
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  lineHeight: 1.5,
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                }}
+                className="m-0 mb-5 text-[13px] text-ta-grey/70 leading-relaxed"
               >
                 This will permanently delete all {totalCards} ideas. Type{' '}
-                <code
-                  style={{
-                    padding: '2px 6px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 4,
-                    fontSize: 12,
-                  }}
-                >
-                  DELETE
-                </code>{' '}
-                to confirm.
+                <code className="px-1.5 py-0.5 bg-white/10 rounded-ta-sm text-xs">DELETE</code> to
+                confirm.
               </p>
               <input
                 type="text"
@@ -756,55 +490,26 @@ export function IdeasToolbar() {
                 onChange={(e) => setClearConfirmText(e.target.value)}
                 placeholder="Type DELETE"
                 autoFocus
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  fontSize: 13,
-                  color: '#F7F8F9',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 4,
-                  outline: 'none',
-                  marginBottom: 16,
-                  fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                }}
+                className="w-full px-3 py-2.5 text-[13px] text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 mb-4"
               />
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => {
                     setShowClearModal(false)
                     setClearConfirmText('')
                   }}
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 4,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                  }}
+                  className="px-4 py-2 text-[13px] font-medium text-ta-grey/70 bg-transparent border border-white/10 rounded-ta-sm hover:border-white/20 cursor-pointer transition-all duration-120"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleClearAll}
                   disabled={clearConfirmText !== 'DELETE'}
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: clearConfirmText === 'DELETE' ? '#fff' : 'rgba(255, 255, 255, 0.3)',
-                    backgroundColor:
-                      clearConfirmText === 'DELETE' ? '#EF4444' : 'rgba(239, 68, 68, 0.2)',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: clearConfirmText === 'DELETE' ? 'pointer' : 'not-allowed',
-                    fontFamily: 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                    transition: 'all 0.16s ease',
-                  }}
+                  className={`px-4 py-2 text-[13px] font-medium border-none rounded-ta-sm transition-all duration-120 ${
+                    clearConfirmText === 'DELETE'
+                      ? 'bg-ta-error text-white cursor-pointer'
+                      : 'bg-ta-error/20 text-ta-grey/40 cursor-not-allowed'
+                  }`}
                 >
                   Delete all
                 </button>
