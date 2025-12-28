@@ -200,6 +200,69 @@ export type Database = {
           },
         ]
       }
+      artist_identities: {
+        Row: {
+          id: string
+          user_id: string
+          brand_tone: string | null
+          brand_themes: string[] | null
+          brand_style: string | null
+          key_phrases: string[] | null
+          primary_motifs: string[] | null
+          emotional_range: string | null
+          unique_elements: string[] | null
+          one_liner: string | null
+          press_angle: string | null
+          pitch_hook: string | null
+          comparisons: string[] | null
+          bio_short: string | null
+          bio_long: string | null
+          last_generated_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          brand_tone?: string | null
+          brand_themes?: string[] | null
+          brand_style?: string | null
+          key_phrases?: string[] | null
+          primary_motifs?: string[] | null
+          emotional_range?: string | null
+          unique_elements?: string[] | null
+          one_liner?: string | null
+          press_angle?: string | null
+          pitch_hook?: string | null
+          comparisons?: string[] | null
+          bio_short?: string | null
+          bio_long?: string | null
+          last_generated_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          brand_tone?: string | null
+          brand_themes?: string[] | null
+          brand_style?: string | null
+          key_phrases?: string[] | null
+          primary_motifs?: string[] | null
+          emotional_range?: string | null
+          unique_elements?: string[] | null
+          one_liner?: string | null
+          press_angle?: string | null
+          pitch_hook?: string | null
+          comparisons?: string[] | null
+          bio_short?: string | null
+          bio_long?: string | null
+          last_generated_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agent_sessions: {
         Row: {
           agent_name: string
@@ -3678,6 +3741,75 @@ export type Database = {
         }
         Relationships: []
       }
+      signal_threads: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          thread_type: string
+          colour: string | null
+          event_ids: string[] | null
+          narrative_summary: string | null
+          insights: string[] | null
+          start_date: string | null
+          end_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          thread_type: string
+          colour?: string | null
+          event_ids?: string[] | null
+          narrative_summary?: string | null
+          insights?: string[] | null
+          start_date?: string | null
+          end_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          thread_type?: string
+          colour?: string | null
+          event_ids?: string[] | null
+          narrative_summary?: string | null
+          insights?: string[] | null
+          start_date?: string | null
+          end_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stripe_webhook_events: {
+        Row: {
+          id: string
+          event_id: string
+          event_type: string
+          processed_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          event_type: string
+          processed_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          event_type?: string
+          processed_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       testing_results: {
         Row: {
           app: string
@@ -4031,6 +4163,7 @@ export type Database = {
           opportunity_id: string | null
           source: string
           tags: string[] | null
+          thread_id: string | null
           title: string
           tracker_campaign_id: string | null
           tracker_synced_at: string | null
@@ -4048,6 +4181,7 @@ export type Database = {
           opportunity_id?: string | null
           source?: string
           tags?: string[] | null
+          thread_id?: string | null
           title: string
           tracker_campaign_id?: string | null
           tracker_synced_at?: string | null
@@ -4065,6 +4199,7 @@ export type Database = {
           opportunity_id?: string | null
           source?: string
           tags?: string[] | null
+          thread_id?: string | null
           title?: string
           tracker_campaign_id?: string | null
           tracker_synced_at?: string | null
@@ -4072,7 +4207,15 @@ export type Database = {
           url?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'user_timeline_events_thread_id_fkey'
+            columns: ['thread_id']
+            isOneToOne: false
+            referencedRelation: 'signal_threads'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_workspace_preferences: {
         Row: {

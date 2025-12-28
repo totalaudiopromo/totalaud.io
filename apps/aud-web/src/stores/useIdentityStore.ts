@@ -233,8 +233,7 @@ export const useIdentityStore = create<IdentityState>()(
             return
           }
 
-          // Note: Type assertion needed until Supabase types are regenerated
-          const { data, error } = await (supabase as any)
+          const { data, error } = await supabase
             .from('artist_identities')
             .select('*')
             .eq('user_id', user.id)
@@ -290,8 +289,7 @@ export const useIdentityStore = create<IdentityState>()(
             updatedAt: new Date().toISOString(),
           }
 
-          // Note: Type assertion needed until Supabase types are regenerated
-          const { error } = await (supabase as any)
+          const { error } = await supabase
             .from('artist_identities')
             .upsert(toSupabaseIdentity(updatedIdentity), { onConflict: 'user_id' })
 

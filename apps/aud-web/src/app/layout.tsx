@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
+import { QueryProvider } from '@/lib/react-query'
 import './globals.css'
 
 const geistSans = Geist({
@@ -93,7 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <FlowCoreThemeProvider bodyClassName={`${geistSans.className} ${geistMono.className}`.trim()}>
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </FlowCoreThemeProvider>
     </html>
   )
