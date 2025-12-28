@@ -27,7 +27,7 @@ type AuthenticatedHandler<T = unknown> = (
   context?: T
 ) => Promise<NextResponse>
 
-type RouteHandler<T = unknown> = (request: NextRequest, context?: T) => Promise<NextResponse>
+export type RouteHandler<T = unknown> = (request: NextRequest, context?: T) => Promise<NextResponse>
 
 /**
  * Authentication middleware wrapper
