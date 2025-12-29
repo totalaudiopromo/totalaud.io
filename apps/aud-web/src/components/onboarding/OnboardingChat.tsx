@@ -13,7 +13,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Loader2 } from 'lucide-react'
+import { Send, Loader2, ArrowRight } from 'lucide-react'
 import {
   useUserProfileStore,
   type PrimaryGoal,
@@ -79,7 +79,7 @@ export function OnboardingChat() {
 
   // Handle completion and redirect
   const handleComplete = useCallback(
-    (data: OnboardingData) => {
+    async (data: OnboardingData) => {
       // Save profile
       setProfile({
         artistName: data.artistName || '',
@@ -92,6 +92,18 @@ export function OnboardingChat() {
         goals: [],
       })
       completeOnboarding()
+
+      // Send welcome email (fire and forget - don't block redirect)
+      fetch('/api/email/welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistName: data.artistName || 'Artist',
+          primaryGoal: data.primaryGoal || 'explore',
+        }),
+      }).catch((err) => {
+        log.warn('Failed to trigger welcome email', err)
+      })
 
       // Redirect based on goal
       const modeMap: Record<PrimaryGoal, string> = {
@@ -240,16 +252,19 @@ export function OnboardingChat() {
         </div>
         <button
           onClick={handleSkip}
+          className="skip-button"
           style={{
             fontSize: 13,
-            color: 'rgba(255, 255, 255, 0.4)',
-            backgroundColor: 'transparent',
-            border: 'none',
+            color: 'rgba(255, 255, 255, 0.5)',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: 8,
             cursor: 'pointer',
-            padding: '8px 12px',
+            padding: '8px 14px',
+            transition: 'all 0.15s ease',
           }}
         >
-          Skip for now
+          Skip →
         </button>
       </header>
 
@@ -371,6 +386,44 @@ export function OnboardingChat() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Continue to Workspace button - shown after first response */}
+      {messages.length > 2 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          style={{
+            padding: '0 24px 16px',
+            maxWidth: 640,
+            width: '100%',
+            margin: '0 auto',
+          }}
+        >
+          <button
+            onClick={handleSkip}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '14px 20px',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#3AA9BE',
+              backgroundColor: 'rgba(58, 169, 190, 0.1)',
+              border: '1px solid rgba(58, 169, 190, 0.25)',
+              borderRadius: 12,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            Continue to Workspace
+            <ArrowRight size={16} />
+          </button>
+        </motion.div>
+      )}
+
       {/* Input */}
       <form
         onSubmit={handleSubmit}
@@ -444,7 +497,7 @@ export function OnboardingChat() {
         </p>
       </form>
 
-      {/* Spinner animation */}
+      {/* Animations and hover effects */}
       <style jsx global>{`
         @keyframes spin {
           from {
@@ -453,6 +506,11 @@ export function OnboardingChat() {
           to {
             transform: rotate(360deg);
           }
+        }
+        .skip-button:hover {
+          background-color: rgba(255, 255, 255, 0.08) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+          color: rgba(255, 255, 255, 0.7) !important;
         }
       `}</style>
     </div>

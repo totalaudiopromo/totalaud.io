@@ -25,6 +25,7 @@ import { TypingIndicator } from '@/components/ui/EmptyState'
 import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
 
 import { CopyButton } from '@/components/ui/CopyButton'
+import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
 
 // Pitch template options
 const PITCH_TYPES: { key: PitchType; label: string; description: string }[] = [
@@ -180,6 +181,9 @@ export function PitchCanvas() {
             ))}
           </StaggeredEntrance>
         </div>
+
+        {/* Cross-mode prompt */}
+        <CrossModePrompt currentMode="pitch" />
       </div>
     )
   }

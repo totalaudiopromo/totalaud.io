@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 import { QueryProvider } from '@/lib/react-query'
+import { JsonLd } from '@/components/seo'
+import { generateOrganizationSchema } from '@/lib/seo'
 import './globals.css'
 
 const geistSans = Geist({
@@ -91,9 +93,12 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const organizationSchema = generateOrganizationSchema()
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <FlowCoreThemeProvider bodyClassName={`${geistSans.className} ${geistMono.className}`.trim()}>
+        <JsonLd schema={organizationSchema} id="organization-schema" />
         <QueryProvider>{children}</QueryProvider>
       </FlowCoreThemeProvider>
     </html>

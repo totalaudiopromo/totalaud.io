@@ -11,7 +11,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  AnimatePresence,
+  useMotionTemplate,
+} from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
@@ -239,6 +246,18 @@ export function LandingPage() {
   const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0])
   const heroY = useTransform(smoothProgress, [0, 0.2], [0, -100])
   const heroScale = useTransform(smoothProgress, [0, 0.15], [1, 0.95])
+
+  // Workspace mockup responds to scroll - tilt and glow intensify
+  const mockupRotateX = useTransform(smoothProgress, [0, 0.12], [2, -4])
+  const mockupGlow = useTransform(smoothProgress, [0, 0.1], [0.1, 0.3])
+  const mockupY = useTransform(smoothProgress, [0, 0.15], [0, -30])
+
+  // Features section parallax - subtle float effect
+  const featuresY = useTransform(smoothProgress, [0.3, 0.6], [60, 0])
+  const featuresOpacity = useTransform(smoothProgress, [0.25, 0.4], [0, 1])
+
+  // Mockup box shadow with dynamic glow
+  const mockupBoxShadow = useMotionTemplate`0 40px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(58, 169, 190, ${mockupGlow})`
 
   return (
     <div
@@ -498,7 +517,7 @@ export function LandingPage() {
           </span>
         </motion.div>
 
-        {/* Product Preview - Floating Workspace Mockup */}
+        {/* Product Preview - Floating Workspace Mockup (scroll-responsive) */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
@@ -508,25 +527,18 @@ export function LandingPage() {
             width: '100%',
             maxWidth: '900px',
             perspective: '1200px',
+            y: mockupY,
           }}
         >
           <motion.div
-            animate={{
-              rotateX: [2, -1, 2],
-              y: [0, -8, 0],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
             style={{
               position: 'relative',
               borderRadius: '16px',
               overflow: 'hidden',
               background: '#0F1113',
               border: '1px solid rgba(58, 169, 190, 0.2)',
-              boxShadow: '0 40px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(58, 169, 190, 0.1)',
+              rotateX: mockupRotateX,
+              boxShadow: mockupBoxShadow,
             }}
           >
             {/* Browser window chrome */}
@@ -881,9 +893,13 @@ export function LandingPage() {
         </motion.div>
       </motion.section>
 
-      {/* How it works strip */}
-      <section
+      {/* How it works strip - staggered scroll reveal */}
+      <motion.section
         aria-labelledby="how-it-works-heading"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         style={{
           padding: '64px 24px 40px',
           maxWidth: '1100px',
@@ -905,8 +921,16 @@ export function LandingPage() {
           }}
         >
           {HOW_IT_WORKS.map((item, i) => (
-            <div
+            <motion.div
               key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{
+                duration: 0.5,
+                delay: i * 0.15,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'auto 1fr',
@@ -914,7 +938,15 @@ export function LandingPage() {
                 alignItems: 'start',
               }}
             >
-              <div
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.4,
+                  delay: i * 0.15 + 0.1,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
                 style={{
                   width: 36,
                   height: 36,
@@ -930,7 +962,7 @@ export function LandingPage() {
                 }}
               >
                 0{i + 1}
-              </div>
+              </motion.div>
               <div>
                 <div
                   style={{
@@ -955,18 +987,20 @@ export function LandingPage() {
                   {item.detail}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      {/* Features Section */}
-      <section
+      {/* Features Section - with subtle parallax float */}
+      <motion.section
         aria-labelledby="features-heading"
         style={{
           padding: '120px 24px 160px',
           maxWidth: '1100px',
           margin: '0 auto',
+          y: featuresY,
+          opacity: featuresOpacity,
         }}
       >
         {/* Section header */}
@@ -1019,7 +1053,7 @@ export function LandingPage() {
             <FeatureCard key={feature.id} feature={feature} index={index} />
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* Social Proof Section */}
       <SocialProof />

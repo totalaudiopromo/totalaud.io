@@ -14,6 +14,11 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@total-audio/schemas-database'
 import { logger } from '@/lib/logger'
 import { env, getRequiredEnv } from '@/lib/env'
+import {
+  sendPaymentConfirmationEmail,
+  sendPaymentFailedEmail,
+  sendCancellationEmail,
+} from '@/lib/email'
 
 const log = logger.scope('StripeWebhook')
 
@@ -48,9 +53,23 @@ function getTierFromPrice(priceId: string): string {
     env.STRIPE_PRICE_PRO_ANNUAL_EUR,
   ].filter(Boolean)
 
+  const powerPrices = [
+    env.STRIPE_PRICE_POWER_GBP,
+    env.STRIPE_PRICE_POWER_USD,
+    env.STRIPE_PRICE_POWER_EUR,
+  ].filter(Boolean)
+
+  const powerAnnualPrices = [
+    env.STRIPE_PRICE_POWER_ANNUAL_GBP,
+    env.STRIPE_PRICE_POWER_ANNUAL_USD,
+    env.STRIPE_PRICE_POWER_ANNUAL_EUR,
+  ].filter(Boolean)
+
   if (starterPrices.includes(priceId)) return 'starter'
   if (proPrices.includes(priceId)) return 'pro'
   if (proAnnualPrices.includes(priceId)) return 'pro_annual'
+  if (powerPrices.includes(priceId)) return 'power'
+  if (powerAnnualPrices.includes(priceId)) return 'power_annual'
 
   log.warn('Unknown price ID, defaulting to starter', { priceId })
   return 'starter'
@@ -166,7 +185,24 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Tier display names for emails
+const tierDisplayNames: Record<string, string> = {
+  starter: 'Starter',
+  pro: 'Pro',
+  pro_annual: 'Pro (Annual)',
+  power: 'Power',
+  power_annual: 'Power (Annual)',
+}
+
+// Currency symbols for emails
+const currencySymbols: Record<string, string> = {
+  gbp: '£',
+  usd: '$',
+  eur: '€',
+}
+
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
+  const supabaseAdmin = getSupabaseAdmin()
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
 
@@ -175,6 +211,32 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   // Get subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   await handleSubscriptionChange(subscription)
+
+  // Send payment confirmation email
+  const { data: profile } = await supabaseAdmin
+    .from('user_profiles')
+    .select('email, full_name')
+    .eq('stripe_customer_id', customerId)
+    .single()
+
+  if (profile?.email) {
+    const priceId = subscription.items.data[0]?.price.id
+    const tier = getTierFromPrice(priceId)
+    const price = subscription.items.data[0]?.price
+
+    const currency = currencySymbols[price?.currency || 'gbp'] || '£'
+    const amount = price?.unit_amount ? (price.unit_amount / 100).toFixed(2) : '0.00'
+    const isAnnual = tier.includes('annual')
+
+    await sendPaymentConfirmationEmail({
+      to: profile.email,
+      customerName: profile.full_name || 'there',
+      tierName: tierDisplayNames[tier] || 'Pro',
+      amount,
+      currency,
+      billingCycle: isAnnual ? 'annual' : 'monthly',
+    })
+  }
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
@@ -223,10 +285,10 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const supabaseAdmin = getSupabaseAdmin()
   const customerId = subscription.customer as string
 
-  // Get user by Stripe customer ID
+  // Get user by Stripe customer ID - include email and tier for cancellation email
   const { data: profile, error } = await supabaseAdmin
     .from('user_profiles')
-    .select('id')
+    .select('id, email, full_name, subscription_tier')
     .eq('stripe_customer_id', customerId)
     .single()
 
@@ -234,6 +296,19 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     log.error('User not found for customer', { customerId, error })
     return
   }
+
+  // Calculate access end date (end of current billing period)
+  // Cast to access Stripe subscription properties
+  const sub = subscription as unknown as { current_period_end?: number }
+  const accessEndDate = sub.current_period_end
+    ? new Date(sub.current_period_end * 1000).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : 'the end of your billing period'
+
+  const previousTier = profile.subscription_tier
 
   // Reset to no subscription
   const { error: updateError } = await supabaseAdmin
@@ -251,16 +326,26 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   }
 
   log.info('Subscription cancelled', { userId: profile.id })
+
+  // Send cancellation email
+  if (profile.email) {
+    await sendCancellationEmail({
+      to: profile.email,
+      customerName: profile.full_name || 'there',
+      tierName: tierDisplayNames[previousTier || 'pro'] || 'Pro',
+      accessEndDate,
+    })
+  }
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const supabaseAdmin = getSupabaseAdmin()
   const customerId = invoice.customer as string
 
-  // Get user by Stripe customer ID
+  // Get user by Stripe customer ID - include full name and tier for email
   const { data: profile } = await supabaseAdmin
     .from('user_profiles')
-    .select('id, email')
+    .select('id, email, full_name, subscription_tier')
     .eq('stripe_customer_id', customerId)
     .single()
 
@@ -285,5 +370,19 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   log.warn('Payment failed', { userId: profile.id, invoiceId: invoice.id })
 
-  // TODO: Send email notification about failed payment
+  // Send payment failed email
+  if (profile.email) {
+    // Generate Stripe customer portal URL for updating payment method
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${env.NEXT_PUBLIC_APP_URL}/workspace`,
+    })
+
+    await sendPaymentFailedEmail({
+      to: profile.email,
+      customerName: profile.full_name || 'there',
+      tierName: tierDisplayNames[profile.subscription_tier || 'pro'] || 'Pro',
+      portalUrl: portalSession.url,
+    })
+  }
 }

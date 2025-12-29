@@ -140,13 +140,23 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Try to parse as JSON first
-      parsed = JSON.parse(textContent.text)
+      // Try to extract JSON from the response (Claude sometimes wraps it in text)
+      const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        parsed = JSON.parse(jsonMatch[0])
+      } else {
+        throw new Error('No JSON found')
+      }
     } catch {
       // If not valid JSON, treat the whole response as a message
-      // This handles cases where Claude doesn't follow the format
+      // Strip any JSON-like content to show clean text
+      const cleanMessage = textContent.text
+        .replace(/```json[\s\S]*?```/g, '')
+        .replace(/\{[\s\S]*\}/g, '')
+        .trim()
+
       parsed = {
-        message: textContent.text,
+        message: cleanMessage || "That's great! Tell me more about your music.",
         extractedData: {},
         isComplete: false,
       }

@@ -25,7 +25,7 @@ import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
-import { TipBanner } from '@/components/onboarding'
+import { TipBanner, ModeTour } from '@/components/onboarding'
 
 // Dynamic imports for code splitting - each mode loads only when needed
 const IdeasCanvas = dynamic(
@@ -70,6 +70,10 @@ const ScoutCalmToolbar = dynamic(
 )
 const ScoutCalmGrid = dynamic(
   () => import('@/components/workspace/scout').then((m) => ({ default: m.ScoutCalmGrid })),
+  { ssr: false }
+)
+const OpportunityDetailPanel = dynamic(
+  () => import('@/components/workspace/scout').then((m) => ({ default: m.OpportunityDetailPanel })),
   { ssr: false }
 )
 
@@ -198,6 +202,8 @@ function WorkspaceContent() {
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               <ScoutCalmGrid />
             </div>
+            {/* Detail panel - slides in when opportunity selected */}
+            <OpportunityDetailPanel />
           </div>
         )
 
@@ -362,6 +368,9 @@ function WorkspaceContent() {
 
       {/* Sidebar overlay */}
       <SidebarOverlay />
+
+      {/* Mode tour - shows on first visit to each mode */}
+      <ModeTour mode={mode} />
 
       {/* Responsive styles for nav */}
       <style>{`
