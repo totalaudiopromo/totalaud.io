@@ -34,7 +34,7 @@ export const stripe = new Proxy({} as Stripe, {
 })
 
 // Subscription tiers
-export type SubscriptionTier = 'starter' | 'pro' | 'pro_annual'
+export type SubscriptionTier = 'starter' | 'pro' | 'pro_annual' | 'power' | 'power_annual'
 export type Currency = 'gbp' | 'usd' | 'eur'
 
 // Price configuration (lazy getter to use validated env)
@@ -54,6 +54,16 @@ function getPriceIds(): Record<SubscriptionTier, Record<Currency, string | undef
       gbp: env.STRIPE_PRICE_PRO_ANNUAL_GBP,
       usd: env.STRIPE_PRICE_PRO_ANNUAL_USD,
       eur: env.STRIPE_PRICE_PRO_ANNUAL_EUR,
+    },
+    power: {
+      gbp: env.STRIPE_PRICE_POWER_GBP,
+      usd: env.STRIPE_PRICE_POWER_USD,
+      eur: env.STRIPE_PRICE_POWER_EUR,
+    },
+    power_annual: {
+      gbp: env.STRIPE_PRICE_POWER_ANNUAL_GBP,
+      usd: env.STRIPE_PRICE_POWER_ANNUAL_USD,
+      eur: env.STRIPE_PRICE_POWER_ANNUAL_EUR,
     },
   }
 }
@@ -78,6 +88,16 @@ export const DISPLAY_PRICES: Record<SubscriptionTier, Record<Currency, string>> 
     usd: '$189',
     eur: '€179',
   },
+  power: {
+    gbp: '£79',
+    usd: '$99',
+    eur: '€89',
+  },
+  power_annual: {
+    gbp: '£649',
+    usd: '$799',
+    eur: '€749',
+  },
 }
 
 // Tier limits for feature gating
@@ -87,18 +107,45 @@ export const TIER_LIMITS = {
     timelineProjects: 1,
     pitchCoachPerMonth: 3,
     canExport: false,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
   },
   pro: {
     scoutViewsPerDay: Infinity,
     timelineProjects: Infinity,
     pitchCoachPerMonth: Infinity,
     canExport: true,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
   },
   pro_annual: {
     scoutViewsPerDay: Infinity,
     timelineProjects: Infinity,
     pitchCoachPerMonth: Infinity,
     canExport: true,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
+  },
+  power: {
+    scoutViewsPerDay: Infinity,
+    timelineProjects: Infinity,
+    pitchCoachPerMonth: Infinity,
+    canExport: true,
+    whiteLabelEpk: true,
+    prioritySupport: true,
+    creditDiscount: 0.2,
+  },
+  power_annual: {
+    scoutViewsPerDay: Infinity,
+    timelineProjects: Infinity,
+    pitchCoachPerMonth: Infinity,
+    canExport: true,
+    whiteLabelEpk: true,
+    prioritySupport: true,
+    creditDiscount: 0.2,
   },
 } as const
 
@@ -170,7 +217,8 @@ export function getEffectiveTier(
 
   // Normalise tier name
   const tier = subscriptionTier.toLowerCase().replace('-', '_')
-  if (tier === 'starter' || tier === 'pro' || tier === 'pro_annual') {
+  const validTiers: SubscriptionTier[] = ['starter', 'pro', 'pro_annual', 'power', 'power_annual']
+  if (validTiers.includes(tier as SubscriptionTier)) {
     return tier as SubscriptionTier
   }
 

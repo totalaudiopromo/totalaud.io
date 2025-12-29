@@ -28,6 +28,13 @@ const PRO_FEATURES = [
   { text: 'Priority Features', description: 'Early access to new tools' },
 ]
 
+const POWER_FEATURES = [
+  { text: 'Everything in Pro', description: 'Plus agency-grade features' },
+  { text: 'White-Label EPKs', description: 'Remove totalaud.io branding' },
+  { text: 'Priority Support', description: 'Direct access to our team' },
+  { text: '20% Credit Discount', description: 'On all contact enrichment' },
+]
+
 interface PricingTierProps {
   title: string
   price: string
@@ -405,7 +412,17 @@ export function PricingPreview() {
           ctaText={billingPeriod === 'annual' ? 'Get Pro Annual' : 'Get Pro'}
           ctaHref={billingPeriod === 'annual' ? '/signup?tier=pro_annual' : '/signup?tier=pro'}
           isPro
-          highlight="Best Value"
+          highlight="Most Popular"
+        />
+        <PricingTier
+          title="Power"
+          price={billingPeriod === 'annual' ? '£649' : '£79'}
+          pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
+          priceNote={billingPeriod === 'annual' ? 'Effective £54/month — save 32%' : undefined}
+          features={POWER_FEATURES}
+          ctaText={billingPeriod === 'annual' ? 'Get Power Annual' : 'Get Power'}
+          ctaHref={billingPeriod === 'annual' ? '/signup?tier=power_annual' : '/signup?tier=power'}
+          highlight="For Labels & Agencies"
         />
       </div>
 

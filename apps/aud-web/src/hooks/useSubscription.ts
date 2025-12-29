@@ -10,39 +10,76 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { useAuth } from './useAuth'
-import { getStripe } from '@/lib/stripe/client'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('useSubscription')
 
-export type SubscriptionTier = 'starter' | 'pro' | 'pro_annual' | null
+export type SubscriptionTier = 'starter' | 'pro' | 'pro_annual' | 'power' | 'power_annual' | null
 export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'cancelled' | null
+
+// Valid tier values for type checking
+const VALID_TIERS = ['starter', 'pro', 'pro_annual', 'power', 'power_annual'] as const
+type ValidTier = (typeof VALID_TIERS)[number]
+
+function isValidTier(value: string): value is ValidTier {
+  return VALID_TIERS.includes(value as ValidTier)
+}
 
 interface TierLimits {
   scoutViewsPerDay: number
   timelineProjects: number
   pitchCoachPerMonth: number
   canExport: boolean
+  whiteLabelEpk: boolean
+  prioritySupport: boolean
+  creditDiscount: number
 }
 
-const TIER_LIMITS: Record<NonNullable<SubscriptionTier>, TierLimits> = {
+const TIER_LIMITS: Record<ValidTier, TierLimits> = {
   starter: {
     scoutViewsPerDay: 10,
     timelineProjects: 1,
     pitchCoachPerMonth: 3,
     canExport: false,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
   },
   pro: {
     scoutViewsPerDay: Infinity,
     timelineProjects: Infinity,
     pitchCoachPerMonth: Infinity,
     canExport: true,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
   },
   pro_annual: {
     scoutViewsPerDay: Infinity,
     timelineProjects: Infinity,
     pitchCoachPerMonth: Infinity,
     canExport: true,
+    whiteLabelEpk: false,
+    prioritySupport: false,
+    creditDiscount: 0,
+  },
+  power: {
+    scoutViewsPerDay: Infinity,
+    timelineProjects: Infinity,
+    pitchCoachPerMonth: Infinity,
+    canExport: true,
+    whiteLabelEpk: true,
+    prioritySupport: true,
+    creditDiscount: 0.2,
+  },
+  power_annual: {
+    scoutViewsPerDay: Infinity,
+    timelineProjects: Infinity,
+    pitchCoachPerMonth: Infinity,
+    canExport: true,
+    whiteLabelEpk: true,
+    prioritySupport: true,
+    creditDiscount: 0.2,
   },
 }
 
@@ -51,6 +88,9 @@ const NO_SUBSCRIPTION_LIMITS: TierLimits = {
   timelineProjects: 0,
   pitchCoachPerMonth: 0,
   canExport: false,
+  whiteLabelEpk: false,
+  prioritySupport: false,
+  creditDiscount: 0,
 }
 
 interface SubscriptionState {
@@ -64,10 +104,12 @@ interface SubscriptionState {
   isSubscribed: boolean
   /** True if user is on Pro tier (monthly or annual) */
   isPro: boolean
+  /** True if user is on Power tier (monthly or annual) */
+  isPower: boolean
   /** Feature limits for current tier */
   limits: TierLimits
   /** Start checkout flow for a tier */
-  checkout: (tier: 'starter' | 'pro' | 'pro_annual') => Promise<void>
+  checkout: (tier: ValidTier) => Promise<void>
   /** Open customer portal to manage subscription */
   openPortal: () => Promise<void>
   /** Refresh subscription state */
@@ -104,8 +146,8 @@ export function useSubscription(): SubscriptionState {
         setStatus(null)
       } else {
         const tierValue = profile?.subscription_tier?.toLowerCase().replace('-', '_')
-        if (tierValue === 'starter' || tierValue === 'pro' || tierValue === 'pro_annual') {
-          setTier(tierValue as SubscriptionTier)
+        if (tierValue && isValidTier(tierValue)) {
+          setTier(tierValue)
         } else {
           setTier(null)
         }
@@ -141,8 +183,8 @@ export function useSubscription(): SubscriptionState {
         },
         (payload) => {
           const newTier = payload.new.subscription_tier?.toLowerCase().replace('-', '_')
-          if (newTier === 'starter' || newTier === 'pro' || newTier === 'pro_annual') {
-            setTier(newTier as SubscriptionTier)
+          if (newTier && isValidTier(newTier)) {
+            setTier(newTier)
           } else {
             setTier(null)
           }
@@ -159,7 +201,7 @@ export function useSubscription(): SubscriptionState {
 
   // Start checkout flow
   const checkout = useCallback(
-    async (selectedTier: 'starter' | 'pro' | 'pro_annual') => {
+    async (selectedTier: ValidTier) => {
       if (!isAuthenticated) {
         // Redirect to login first
         window.location.href = `/login?redirect=/pricing&tier=${selectedTier}`
@@ -222,6 +264,10 @@ export function useSubscription(): SubscriptionState {
     return isSubscribed && (tier === 'pro' || tier === 'pro_annual')
   }, [isSubscribed, tier])
 
+  const isPower = useMemo(() => {
+    return isSubscribed && (tier === 'power' || tier === 'power_annual')
+  }, [isSubscribed, tier])
+
   const limits = useMemo(() => {
     if (!tier || !isSubscribed) return NO_SUBSCRIPTION_LIMITS
     return TIER_LIMITS[tier]
@@ -233,6 +279,7 @@ export function useSubscription(): SubscriptionState {
     loading,
     isSubscribed,
     isPro,
+    isPower,
     limits,
     checkout,
     openPortal,
