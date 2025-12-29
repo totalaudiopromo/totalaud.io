@@ -96,11 +96,12 @@ function WorkspaceContent() {
     modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'ideas'
   )
 
-  // Checkout success celebration state
+  // Checkout status state (success, error, cancelled)
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false)
+  const [showCheckoutError, setShowCheckoutError] = useState(false)
   const checkoutStatus = searchParams?.get('checkout')
 
-  // Handle checkout success
+  // Handle checkout status
   useEffect(() => {
     if (checkoutStatus === 'success') {
       setShowCheckoutSuccess(true)
@@ -112,6 +113,20 @@ function WorkspaceContent() {
       const hideTimeout = setTimeout(() => {
         setShowCheckoutSuccess(false)
       }, 5000)
+      return () => {
+        clearTimeout(timeout)
+        clearTimeout(hideTimeout)
+      }
+    } else if (checkoutStatus === 'error' || checkoutStatus === 'cancelled') {
+      setShowCheckoutError(true)
+      // Remove the checkout param from URL after a short delay
+      const timeout = setTimeout(() => {
+        router.replace('/workspace', { scroll: false })
+      }, 500)
+      // Auto-hide the error after 8 seconds
+      const hideTimeout = setTimeout(() => {
+        setShowCheckoutError(false)
+      }, 8000)
       return () => {
         clearTimeout(timeout)
         clearTimeout(hideTimeout)
@@ -455,6 +470,82 @@ function WorkspaceContent() {
             </div>
             <button
               onClick={() => setShowCheckoutSuccess(false)}
+              style={{
+                marginLeft: 8,
+                padding: 4,
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderRadius: 4,
+                cursor: 'pointer',
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontSize: 16,
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Checkout Error/Cancelled Toast */}
+      <AnimatePresence>
+        {showCheckoutError && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+              position: 'fixed',
+              bottom: 80,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              padding: '16px 24px',
+              backgroundColor: 'rgba(251, 191, 36, 0.15)',
+              border: '1px solid rgba(251, 191, 36, 0.3)',
+              borderRadius: 12,
+              backdropFilter: 'blur(12px)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              zIndex: 100,
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            <span style={{ fontSize: 24 }}>⚠️</span>
+            <div>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#FBBF24',
+                  margin: 0,
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                }}
+              >
+                Checkout not completed
+              </p>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  margin: '4px 0 0 0',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                }}
+              >
+                You can upgrade anytime from{' '}
+                <Link href="/settings" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
+                  Settings
+                </Link>{' '}
+                or{' '}
+                <Link href="/pricing" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
+                  Pricing
+                </Link>
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCheckoutError(false)}
               style={{
                 marginLeft: 8,
                 padding: 4,
