@@ -16,7 +16,7 @@ const log = logger.scope('StripeCheckout')
 
 // Zod schema for checkout request validation
 const checkoutSchema = z.object({
-  tier: z.enum(['starter', 'pro', 'pro_annual']),
+  tier: z.enum(['starter', 'pro', 'pro_annual', 'power', 'power_annual']),
   currency: z.enum(['gbp', 'usd', 'eur']).optional().default('gbp'),
 })
 
