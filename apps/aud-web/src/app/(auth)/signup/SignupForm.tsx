@@ -30,9 +30,41 @@ const FEATURE_HEADERS: Record<string, { title: string; subtitle: string }> = {
   },
 }
 
+// Tier-specific headers for pricing flow
+const TIER_HEADERS: Record<string, { title: string; subtitle: string }> = {
+  starter: {
+    title: 'Get started with Starter',
+    subtitle: '£5/month — all the essentials',
+  },
+  pro: {
+    title: 'Get started with Pro',
+    subtitle: '£19/month — unlimited everything',
+  },
+  pro_annual: {
+    title: 'Get started with Pro Annual',
+    subtitle: '£149/year — save 35%',
+  },
+  power: {
+    title: 'Get started with Power',
+    subtitle: '£79/month — for labels & agencies',
+  },
+  power_annual: {
+    title: 'Get started with Power Annual',
+    subtitle: '£649/year — save 32%',
+  },
+}
+
 const DEFAULT_HEADER = {
   title: 'Create your account',
   subtitle: 'Start building your music career',
+}
+
+// Valid tier values
+const VALID_TIERS = ['starter', 'pro', 'pro_annual', 'power', 'power_annual'] as const
+type ValidTier = (typeof VALID_TIERS)[number]
+
+function isValidTier(value: string | null): value is ValidTier {
+  return value !== null && VALID_TIERS.includes(value as ValidTier)
 }
 
 export function SignupForm() {
@@ -40,10 +72,16 @@ export function SignupForm() {
   const searchParams = useSearchParams()
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
 
-  // Get feature from URL params for contextual messaging
+  // Get feature or tier from URL params for contextual messaging
   const feature = searchParams.get('feature')
-  const headerContent =
-    feature && FEATURE_HEADERS[feature] ? FEATURE_HEADERS[feature] : DEFAULT_HEADER
+  const tier = searchParams.get('tier')
+
+  // Determine header content: tier takes precedence, then feature, then default
+  const headerContent = isValidTier(tier)
+    ? TIER_HEADERS[tier]
+    : feature && FEATURE_HEADERS[feature]
+      ? FEATURE_HEADERS[feature]
+      : DEFAULT_HEADER
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -83,7 +121,30 @@ export function SignupForm() {
 
       // Check if user was created successfully
       if (data.user) {
-        // Redirect to onboarding on successful signup
+        // If a tier was specified, redirect to checkout
+        if (isValidTier(tier)) {
+          // Trigger checkout flow for the selected tier
+          try {
+            const response = await fetch('/api/stripe/checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tier }),
+            })
+
+            const checkoutData = await response.json()
+
+            if (checkoutData.url) {
+              // Redirect to Stripe Checkout
+              window.location.href = checkoutData.url
+              return
+            }
+          } catch {
+            // If checkout fails, still redirect to onboarding
+            console.error('Checkout redirect failed, continuing to onboarding')
+          }
+        }
+
+        // Redirect to onboarding on successful signup (or if no tier/checkout failed)
         router.push('/onboarding')
       } else {
         // This shouldn't happen with email verification disabled
@@ -156,9 +217,9 @@ export function SignupForm() {
         <p
           style={{
             fontSize: '16px',
-            color: feature ? '#3AA9BE' : 'rgba(255, 255, 255, 0.6)',
+            color: isValidTier(tier) || feature ? '#3AA9BE' : 'rgba(255, 255, 255, 0.6)',
             lineHeight: 1.5,
-            fontWeight: feature ? 500 : 400,
+            fontWeight: isValidTier(tier) || feature ? 500 : 400,
           }}
         >
           {headerContent.subtitle}
