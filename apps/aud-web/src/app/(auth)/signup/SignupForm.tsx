@@ -137,14 +137,21 @@ export function SignupForm() {
               // Redirect to Stripe Checkout
               window.location.href = checkoutData.url
               return
+            } else {
+              // Checkout API didn't return URL - go to workspace with error param
+              console.error('Checkout API did not return URL:', checkoutData)
+              router.push('/workspace?checkout=error')
+              return
             }
-          } catch {
-            // If checkout fails, still redirect to onboarding
-            console.error('Checkout redirect failed, continuing to onboarding')
+          } catch (checkoutError) {
+            // If checkout fails, go to workspace (not onboarding) so they can retry from settings
+            console.error('Checkout redirect failed:', checkoutError)
+            router.push('/workspace?checkout=error')
+            return
           }
         }
 
-        // Redirect to onboarding on successful signup (or if no tier/checkout failed)
+        // No tier specified - redirect to onboarding for profile setup
         router.push('/onboarding')
       } else {
         // This shouldn't happen with email verification disabled
