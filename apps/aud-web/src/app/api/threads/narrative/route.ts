@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import type { SignalThreadRow } from '@/types/signal-thread'
 
 const log = logger.scope('ThreadNarrativeAPI')
 
@@ -104,12 +105,16 @@ export async function POST(request: NextRequest) {
     const { threadId } = validation.data
 
     // Fetch the thread
-    const { data: thread, error: threadError } = await (supabase as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const threadResult = await (supabase as any)
       .from('signal_threads')
       .select('*')
       .eq('id', threadId)
       .eq('user_id', session.user.id)
       .single()
+
+    const thread = threadResult.data as SignalThreadRow | null
+    const threadError = threadResult.error
 
     if (threadError || !thread) {
       log.warn('Thread not found', { threadId })
@@ -118,12 +123,19 @@ export async function POST(request: NextRequest) {
 
     // Fetch connected events
     const eventIds = thread.event_ids || []
-    let events: any[] = []
+    interface TimelineEventRow {
+      id: string
+      title: string
+      event_date: string
+      event_type?: string | null
+      description: string | null
+    }
+    let events: TimelineEventRow[] = []
 
     if (eventIds.length > 0) {
       const { data: eventData, error: eventsError } = await supabase
         .from('user_timeline_events')
-        .select('*')
+        .select('id, title, event_date, description')
         .in('id', eventIds)
         .eq('user_id', session.user.id)
         .order('event_date', { ascending: true })
@@ -136,7 +148,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      events = eventData || []
+      events = (eventData || []) as TimelineEventRow[]
     }
 
     // Need at least one event to generate narrative
@@ -158,7 +170,7 @@ export async function POST(request: NextRequest) {
       .join('\n\n')
 
     // Calculate date range
-    const dates = events.filter((e) => e.event_date).map((e) => new Date(e.event_date))
+    const dates = events.filter((e) => e.event_date).map((e) => new Date(e.event_date as string))
     const dateRange =
       dates.length > 0
         ? `${dates[0].toLocaleDateString('en-GB')} to ${dates[dates.length - 1].toLocaleDateString('en-GB')}`
@@ -208,6 +220,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update thread with narrative
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateError } = await (supabase as any)
       .from('signal_threads')
       .update({

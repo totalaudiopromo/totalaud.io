@@ -185,7 +185,7 @@ export function LoginForm() {
           <p
             style={{
               fontSize: '15px',
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(255, 255, 255, 0.85)',
               lineHeight: 1.5,
             }}
           >
@@ -394,7 +394,7 @@ export function LoginForm() {
                 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent)',
             }}
           />
-          <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.4)' }}>or</span>
+          <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.8)' }}>or</span>
           <div
             style={{
               flex: 1,
@@ -484,7 +484,7 @@ export function LoginForm() {
           style={{
             textAlign: 'center',
             fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: 'rgba(255, 255, 255, 0.85)',
             margin: 0,
           }}
         >

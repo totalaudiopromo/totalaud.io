@@ -122,13 +122,13 @@ export function ScoutToolbar() {
     display: 'flex',
     alignItems: 'center',
     gap: 6,
-    padding: '6px 10px',
+    padding: '10px 12px',
     backgroundColor: 'transparent',
     border: '1px solid rgba(255, 255, 255, 0.08)',
     borderRadius: 4,
     fontSize: 12,
     fontWeight: 400,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgba(255, 255, 255, 0.9)',
     cursor: 'pointer',
     transition: 'all 0.16s ease',
     fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
@@ -204,13 +204,13 @@ export function ScoutToolbar() {
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            padding: '6px 12px',
+            padding: '10px 12px',
             backgroundColor: filters.type === null ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
             border: 'none',
             borderRadius: 4,
             fontSize: 12,
             fontWeight: filters.type === null ? 500 : 400,
-            color: filters.type === null ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)',
+            color: filters.type === null ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.85)',
             cursor: 'pointer',
             transition: 'all 0.16s ease',
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
@@ -244,13 +244,13 @@ export function ScoutToolbar() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '6px 10px',
+                padding: '10px 12px',
                 backgroundColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                 border: 'none',
                 borderRadius: 4,
                 fontSize: 12,
                 fontWeight: isActive ? 500 : 400,
-                color: isActive ? colour.text : 'rgba(255, 255, 255, 0.5)',
+                color: isActive ? colour.text : 'rgba(255, 255, 255, 0.85)',
                 cursor: 'pointer',
                 transition: 'all 0.16s ease',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
@@ -299,7 +299,7 @@ export function ScoutToolbar() {
             borderRadius: 4,
           }}
         >
-          <span style={{ color: 'rgba(255, 255, 255, 0.4)', display: 'flex' }}>
+          <span style={{ color: 'rgba(255, 255, 255, 0.8)', display: 'flex' }}>
             <SearchIcon />
           </span>
           <input
@@ -324,7 +324,7 @@ export function ScoutToolbar() {
                 padding: 0,
                 backgroundColor: 'transparent',
                 border: 'none',
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 cursor: 'pointer',
                 fontSize: 14,
                 lineHeight: 1,
@@ -506,15 +506,15 @@ export function ScoutToolbar() {
             onClick={resetFilters}
             style={{
               ...buttonBase,
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(255, 255, 255, 0.85)',
               borderColor: 'rgba(255, 255, 255, 0.06)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'
+              e.currentTarget.style.color = 'rgba(255, 255, 255, 1)'
               e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
+              e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)'
               e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)'
             }}
           >
@@ -526,7 +526,7 @@ export function ScoutToolbar() {
         <span
           style={{
             fontSize: 11,
-            color: 'rgba(255, 255, 255, 0.4)',
+            color: 'rgba(255, 255, 255, 0.8)',
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             whiteSpace: 'nowrap',
           }}
