@@ -33,8 +33,6 @@ export interface ReleaseTemplate {
   name: string
   /** Short description */
   description: string
-  /** Emoji icon for display */
-  icon: string
   /** Duration hint (e.g., "8 weeks") */
   duration: string
   /** Template tasks */
@@ -63,7 +61,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'single',
     name: 'Single Release',
     description: 'Standard 8-week promo cycle for a single track',
-    icon: '🎵',
     duration: '8 weeks',
     tasks: [
       // Pre-release phase
@@ -163,7 +160,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'ep',
     name: 'EP Release',
     description: 'Extended 12-week campaign for EP with lead single',
-    icon: '💿',
     duration: '12 weeks',
     tasks: [
       // Pre-release - earlier start
@@ -284,7 +280,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'album',
     name: 'Album Release',
     description: 'Full 16-week campaign for album with multiple singles',
-    icon: '📀',
     duration: '16 weeks',
     tasks: [
       {
@@ -395,7 +390,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'festival',
     name: 'Festival Submission',
     description: 'Campaign timed around festival application deadlines',
-    icon: '🎪',
     duration: '10 weeks',
     tasks: [
       {
@@ -464,7 +458,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'remix-collab',
     name: 'Remix/Collab',
     description: 'Coordinated release with another artist or remixer',
-    icon: '🤝',
     duration: '6 weeks',
     tasks: [
       {
@@ -533,7 +526,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'music-video',
     name: 'Music Video',
     description: 'Video premiere campaign with visual content focus',
-    icon: '🎬',
     duration: '8 weeks',
     tasks: [
       {
@@ -609,7 +601,6 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
     id: 'live-tour',
     name: 'Live/Tour',
     description: 'Show announcement and ticket sales campaign',
-    icon: '🎤',
     duration: '10 weeks',
     tasks: [
       {
@@ -707,11 +698,10 @@ export function getTemplateById(id: string): ReleaseTemplate | undefined {
 /**
  * Get all template IDs and names (for quick selection UI)
  */
-export function getTemplateOptions(): { id: string; name: string; icon: string }[] {
+export function getTemplateOptions(): { id: string; name: string }[] {
   return RELEASE_TEMPLATES.map((t) => ({
     id: t.id,
     name: t.name,
-    icon: t.icon,
   }))
 }
 

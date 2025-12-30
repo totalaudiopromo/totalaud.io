@@ -258,32 +258,27 @@ export function TemplateSelector({ isOpen, onClose }: TemplateSelectorProps) {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      {/* Icon and name */}
-                      <div
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}
-                      >
-                        <span style={{ fontSize: 28 }}>{template.icon}</span>
-                        <div>
-                          <h3
-                            style={{
-                              fontSize: 15,
-                              fontWeight: 600,
-                              color: '#F7F8F9',
-                              margin: 0,
-                            }}
-                          >
-                            {template.name}
-                          </h3>
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: '#3AA9BE',
-                              fontWeight: 500,
-                            }}
-                          >
-                            {template.duration}
-                          </span>
-                        </div>
+                      {/* Name and duration */}
+                      <div style={{ marginBottom: 12 }}>
+                        <h3
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: '#F7F8F9',
+                            margin: 0,
+                          }}
+                        >
+                          {template.name}
+                        </h3>
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: '#3AA9BE',
+                            fontWeight: 500,
+                          }}
+                        >
+                          {template.duration}
+                        </span>
                       </div>
 
                       {/* Description */}
@@ -353,7 +348,6 @@ export function TemplateSelector({ isOpen, onClose }: TemplateSelectorProps) {
                     marginBottom: 24,
                   }}
                 >
-                  <span style={{ fontSize: 40 }}>{selectedTemplate?.icon}</span>
                   <div>
                     <h3
                       style={{
