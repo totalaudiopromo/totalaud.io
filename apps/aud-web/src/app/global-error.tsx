@@ -6,6 +6,9 @@
 
 'use client'
 
+import { useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
+
 export default function GlobalError({
   error,
   reset,
@@ -13,6 +16,16 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    // Report to Sentry - logger may not be available at this level
+    Sentry.captureException(error, {
+      tags: {
+        errorBoundary: 'global',
+        digest: error.digest,
+      },
+    })
+  }, [error])
+
   return (
     <html lang="en">
       <body>

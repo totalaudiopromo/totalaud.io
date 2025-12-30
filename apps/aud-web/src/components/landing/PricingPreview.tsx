@@ -2,8 +2,8 @@
  * PricingPreview Component
  * totalaud.io - December 2025
  *
- * New pricing: Starter (£5), Pro (£19), Pro Annual (£149)
- * No free tier - committed artists only
+ * Pricing: Starter (£5), Pro (£19/£182yr), Power (£79/£758yr)
+ * 20% annual discount - affordable for indie artists
  */
 
 'use client'
@@ -380,7 +380,7 @@ export function PricingPreview() {
                 color: '#3AA9BE',
               }}
             >
-              Save 35%
+              Save 20%
             </span>
           </button>
         </div>
@@ -405,9 +405,9 @@ export function PricingPreview() {
         />
         <PricingTier
           title="Pro"
-          price={billingPeriod === 'annual' ? '£149' : '£19'}
+          price={billingPeriod === 'annual' ? '£182' : '£19'}
           pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-          priceNote={billingPeriod === 'annual' ? 'Effective £12.40/month — save 35%' : undefined}
+          priceNote={billingPeriod === 'annual' ? 'Effective £15.17/month — save 20%' : undefined}
           features={PRO_FEATURES}
           ctaText={billingPeriod === 'annual' ? 'Get Pro Annual' : 'Get Pro'}
           ctaHref={billingPeriod === 'annual' ? '/signup?tier=pro_annual' : '/signup?tier=pro'}
@@ -416,9 +416,9 @@ export function PricingPreview() {
         />
         <PricingTier
           title="Power"
-          price={billingPeriod === 'annual' ? '£649' : '£79'}
+          price={billingPeriod === 'annual' ? '£758' : '£79'}
           pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-          priceNote={billingPeriod === 'annual' ? 'Effective £54/month — save 32%' : undefined}
+          priceNote={billingPeriod === 'annual' ? 'Effective £63.17/month — save 20%' : undefined}
           features={POWER_FEATURES}
           ctaText={billingPeriod === 'annual' ? 'Get Power Annual' : 'Get Power'}
           ctaHref={billingPeriod === 'annual' ? '/signup?tier=power_annual' : '/signup?tier=power'}

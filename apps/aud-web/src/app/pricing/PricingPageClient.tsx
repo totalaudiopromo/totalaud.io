@@ -514,7 +514,7 @@ export function PricingPageClient() {
                   color: '#3AA9BE',
                 }}
               >
-                Save 35%
+                Save 20%
               </span>
             </button>
           </div>
@@ -542,9 +542,9 @@ export function PricingPageClient() {
           />
           <PricingTier
             title="Pro"
-            price={billingPeriod === 'annual' ? '£149' : '£19'}
+            price={billingPeriod === 'annual' ? '£182' : '£19'}
             pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-            priceNote={billingPeriod === 'annual' ? 'Effective £12.40/month — save 35%' : undefined}
+            priceNote={billingPeriod === 'annual' ? 'Effective £15.17/month — save 20%' : undefined}
             features={PRO_FEATURES}
             tier={billingPeriod === 'annual' ? 'pro_annual' : 'pro'}
             isPro
@@ -556,9 +556,9 @@ export function PricingPageClient() {
           />
           <PricingTier
             title="Power"
-            price={billingPeriod === 'annual' ? '£649' : '£79'}
+            price={billingPeriod === 'annual' ? '£758' : '£79'}
             pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-            priceNote={billingPeriod === 'annual' ? 'Effective £54/month — save 32%' : undefined}
+            priceNote={billingPeriod === 'annual' ? 'Effective £63.17/month — save 20%' : undefined}
             features={POWER_FEATURES}
             tier={billingPeriod === 'annual' ? 'power_annual' : 'power'}
             highlight="For Labels & Agencies"
