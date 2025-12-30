@@ -153,7 +153,7 @@ export function IdeaCard({
         duration: 0.2,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ scale: isSelected || isDragging ? 1 : 1.02, y: -2 }}
+      whileHover={{ scale: isSelected || isDragging ? 1 : 1.02 }}
       onClick={onSelect}
       onDoubleClick={handleDoubleClick}
       className={`

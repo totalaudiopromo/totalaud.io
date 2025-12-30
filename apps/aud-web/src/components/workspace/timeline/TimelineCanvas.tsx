@@ -29,7 +29,7 @@ import {
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core'
-import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useTimelineStore, type ViewScale } from '@/stores/useTimelineStore'
 import { useSignalThreadStore } from '@/stores/useSignalThreadStore'
 import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { DraggableEvent } from './DraggableEvent'
@@ -54,10 +54,55 @@ function getWeeksInRange(start: Date, weeks: number): Date[] {
   return result
 }
 
+function getMonthsInRange(start: Date, months: number): Date[] {
+  const result: Date[] = []
+  const current = new Date(start)
+  // Start from beginning of month
+  current.setDate(1)
+  for (let i = 0; i < months; i++) {
+    result.push(new Date(current))
+    current.setMonth(current.getMonth() + 1)
+  }
+  return result
+}
+
+function getQuartersInRange(start: Date, quarters: number): Date[] {
+  const result: Date[] = []
+  const current = new Date(start)
+  // Start from beginning of current quarter
+  const quarterMonth = Math.floor(current.getMonth() / 3) * 3
+  current.setMonth(quarterMonth, 1)
+  for (let i = 0; i < quarters; i++) {
+    result.push(new Date(current))
+    current.setMonth(current.getMonth() + 3)
+  }
+  return result
+}
+
 function formatWeek(date: Date): string {
   const day = date.getDate()
   const month = date.toLocaleDateString('en-GB', { month: 'short' })
   return `${day} ${month}`
+}
+
+function formatMonth(date: Date): string {
+  return date.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })
+}
+
+function formatQuarter(date: Date): string {
+  const quarter = Math.floor(date.getMonth() / 3) + 1
+  const year = date.getFullYear().toString().slice(-2)
+  return `Q${quarter} '${year}`
+}
+
+// View scale configuration
+const VIEW_SCALE_CONFIG: Record<
+  ViewScale,
+  { count: number; columnWidth: number; daysPerUnit: number }
+> = {
+  weeks: { count: 12, columnWidth: 120, daysPerUnit: 7 },
+  months: { count: 6, columnWidth: 180, daysPerUnit: 30 },
+  quarters: { count: 4, columnWidth: 240, daysPerUnit: 91 },
 }
 
 // ============================================================================
@@ -67,6 +112,7 @@ function formatWeek(date: Date): string {
 export function TimelineCanvas() {
   const events = useTimelineStore((state) => state.events)
   const updateEvent = useTimelineStore((state) => state.updateEvent)
+  const viewScale = useTimelineStore((state) => state.viewScale)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
   const [editingEventId, setEditingEventId] = useState<string | null>(null)
@@ -101,24 +147,61 @@ export function TimelineCanvas() {
     [events, editingEventId]
   )
 
-  // Timeline starts from today and spans 12 weeks
-  const today = useMemo(() => {
+  // Get view scale configuration
+  const scaleConfig = VIEW_SCALE_CONFIG[viewScale]
+  const columnWidth = scaleConfig.columnWidth
+
+  // Timeline starts from today and spans based on view scale
+  const startDate = useMemo(() => {
     const now = new Date()
-    // Start from beginning of current week (Monday)
-    const day = now.getDay()
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-    return new Date(now.setDate(diff))
-  }, [])
-  const startDate = today
-  const weeks = getWeeksInRange(startDate, 12)
-  const weekWidth = 120
+    if (viewScale === 'weeks') {
+      // Start from beginning of current week (Monday)
+      const day = now.getDay()
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+      return new Date(now.setDate(diff))
+    } else if (viewScale === 'months') {
+      // Start from beginning of current month
+      return new Date(now.getFullYear(), now.getMonth(), 1)
+    } else {
+      // Start from beginning of current quarter
+      const quarterMonth = Math.floor(now.getMonth() / 3) * 3
+      return new Date(now.getFullYear(), quarterMonth, 1)
+    }
+  }, [viewScale])
+
+  // Get time columns based on view scale
+  const timeColumns = useMemo(() => {
+    switch (viewScale) {
+      case 'weeks':
+        return getWeeksInRange(startDate, scaleConfig.count)
+      case 'months':
+        return getMonthsInRange(startDate, scaleConfig.count)
+      case 'quarters':
+        return getQuartersInRange(startDate, scaleConfig.count)
+    }
+  }, [viewScale, startDate, scaleConfig.count])
+
+  // Format column header based on view scale
+  const formatColumnHeader = useCallback(
+    (date: Date): string => {
+      switch (viewScale) {
+        case 'weeks':
+          return formatWeek(date)
+        case 'months':
+          return formatMonth(date)
+        case 'quarters':
+          return formatQuarter(date)
+      }
+    },
+    [viewScale]
+  )
 
   // Calculate today's position for scrolling
   const getTodayPosition = useCallback((): number => {
     const now = new Date()
     const daysDiff = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    return Math.max(0, (daysDiff / 7) * weekWidth)
-  }, [startDate, weekWidth])
+    return Math.max(0, (daysDiff / scaleConfig.daysPerUnit) * columnWidth)
+  }, [startDate, scaleConfig.daysPerUnit, columnWidth])
 
   // Scroll to today on mount
   useEffect(() => {
@@ -171,9 +254,9 @@ export function TimelineCanvas() {
   const getEventPosition = useCallback(
     (date: Date): number => {
       const daysDiff = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-      return (daysDiff / 7) * weekWidth + 16
+      return (daysDiff / scaleConfig.daysPerUnit) * columnWidth + 16
     },
-    [startDate, weekWidth]
+    [startDate, scaleConfig.daysPerUnit, columnWidth]
   )
 
   // Get the active event being dragged
@@ -265,7 +348,7 @@ export function TimelineCanvas() {
             />
           </div>
         )}
-        {/* Timeline header with weeks */}
+        {/* Timeline header with time columns */}
         <div
           style={{
             display: 'flex',
@@ -295,7 +378,7 @@ export function TimelineCanvas() {
             </span>
           </div>
 
-          {/* Week headers - scrollable */}
+          {/* Time column headers - scrollable */}
           <div
             ref={scrollRef}
             style={{
@@ -304,11 +387,11 @@ export function TimelineCanvas() {
               display: 'flex',
             }}
           >
-            {weeks.map((week, i) => (
+            {timeColumns.map((column, i) => (
               <div
                 key={i}
                 style={{
-                  width: weekWidth,
+                  width: columnWidth,
                   flexShrink: 0,
                   padding: '12px 8px',
                   borderRight: '1px solid rgba(255, 255, 255, 0.03)',
@@ -322,7 +405,7 @@ export function TimelineCanvas() {
                     color: 'rgba(255, 255, 255, 0.5)',
                   }}
                 >
-                  {formatWeek(week)}
+                  {formatColumnHeader(column)}
                 </span>
               </div>
             ))}
@@ -345,7 +428,7 @@ export function TimelineCanvas() {
               key={lane.id}
               lane={lane}
               isOver={overId === lane.id}
-              weekWidth={weekWidth}
+              weekWidth={columnWidth}
             >
               {eventsWithDates
                 .filter((e) => e.lane === lane.id)

@@ -12,7 +12,13 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTimelineStore, type ViewScale } from '@/stores/useTimelineStore'
 import { LANES, getLaneColour, type LaneType } from '@/types/timeline'
-import { PlusIcon, DocumentArrowDownIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import {
+  PlusIcon,
+  DocumentArrowDownIcon,
+  ChevronDownIcon,
+  RectangleStackIcon,
+} from '@heroicons/react/24/outline'
+import { TemplateSelector } from './TemplateSelector'
 
 export function TimelineToolbar() {
   const events = useTimelineStore((state) => state.events)
@@ -21,6 +27,7 @@ export function TimelineToolbar() {
   const setViewScale = useTimelineStore((state) => state.setViewScale)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
 
@@ -179,6 +186,15 @@ export function TimelineToolbar() {
               </AnimatePresence>
             </div>
 
+            {/* Templates button */}
+            <button
+              onClick={() => setShowTemplateSelector(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+            >
+              <RectangleStackIcon className="h-4 w-4" />
+              Templates
+            </button>
+
             {/* Add event button */}
             <button
               onClick={() => setShowAddModal(true)}
@@ -294,6 +310,12 @@ export function TimelineToolbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+      />
     </>
   )
 }
