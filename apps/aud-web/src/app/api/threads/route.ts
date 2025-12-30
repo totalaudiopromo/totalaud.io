@@ -13,6 +13,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import type { SignalThreadRow } from '@/types/signal-thread'
+import { transformThreadRow } from '@/types/signal-thread'
 
 const log = logger.scope('ThreadsAPI')
 
@@ -72,11 +74,15 @@ export async function GET() {
 
     // Fetch all threads for user
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const { data: threads, error: fetchError } = await (supabase as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const threadsResult = await (supabase as any)
       .from('signal_threads')
       .select('*')
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
+
+    const threads = threadsResult.data as SignalThreadRow[] | null
+    const fetchError = threadsResult.error
 
     if (fetchError) {
       log.error('Failed to fetch threads', fetchError)
@@ -89,20 +95,7 @@ export async function GET() {
     log.info('Fetched threads', { userId: session.user.id, count: threads?.length || 0 })
 
     // Transform to camelCase for frontend
-    const transformedThreads = (threads || []).map((t: any) => ({
-      id: t.id,
-      userId: t.user_id,
-      title: t.title,
-      threadType: t.thread_type,
-      colour: t.colour,
-      eventIds: t.event_ids || [],
-      narrativeSummary: t.narrative_summary,
-      insights: t.insights || [],
-      startDate: t.start_date,
-      endDate: t.end_date,
-      createdAt: t.created_at,
-      updatedAt: t.updated_at,
-    }))
+    const transformedThreads = (threads || []).map(transformThreadRow)
 
     return NextResponse.json({ success: true, data: transformedThreads })
   } catch (error) {
@@ -150,7 +143,8 @@ export async function POST(request: NextRequest) {
 
     // Insert thread
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const { data: thread, error: insertError } = await (supabase as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const insertResult = await (supabase as any)
       .from('signal_threads')
       .insert({
         user_id: session.user.id,
@@ -162,6 +156,9 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
+    const thread = insertResult.data as SignalThreadRow | null
+    const insertError = insertResult.error
+
     if (insertError) {
       log.error('Failed to create thread', insertError)
       return NextResponse.json(
@@ -170,12 +167,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!thread) {
+      log.error('Thread insert returned no data')
+      return NextResponse.json(
+        { success: false, error: 'Failed to create thread' },
+        { status: 500 }
+      )
+    }
+
     // If eventIds provided, update those events to reference this thread
     if (eventIds && eventIds.length > 0) {
-      // Type assertion needed until Supabase types are regenerated to include thread_id column
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('user_timeline_events')
-        .update({ thread_id: thread.id })
+        .update({ thread_id: thread.id } as Record<string, unknown>)
         .in('id', eventIds)
         .eq('user_id', session.user.id)
 
@@ -188,20 +192,7 @@ export async function POST(request: NextRequest) {
     log.info('Created thread', { threadId: thread.id, title, type: threadType })
 
     // Transform to camelCase
-    const transformedThread = {
-      id: thread.id,
-      userId: thread.user_id,
-      title: thread.title,
-      threadType: thread.thread_type,
-      colour: thread.colour,
-      eventIds: thread.event_ids || [],
-      narrativeSummary: thread.narrative_summary,
-      insights: thread.insights || [],
-      startDate: thread.start_date,
-      endDate: thread.end_date,
-      createdAt: thread.created_at,
-      updatedAt: thread.updated_at,
-    }
+    const transformedThread = transformThreadRow(thread)
 
     return NextResponse.json({ success: true, data: transformedThread }, { status: 201 })
   } catch (error) {
@@ -248,7 +239,7 @@ export async function PATCH(request: NextRequest) {
     const { id, title, threadType, colour, eventIds, narrativeSummary, insights } = validation.data
 
     // Build update object
-    const updateData: Record<string, any> = {}
+    const updateData: Record<string, unknown> = {}
     if (title !== undefined) updateData.title = title
     if (threadType !== undefined) updateData.thread_type = threadType
     if (colour !== undefined) updateData.colour = colour
@@ -262,13 +253,17 @@ export async function PATCH(request: NextRequest) {
 
     // Update thread
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const { data: thread, error: updateError } = await (supabase as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateResult = await (supabase as any)
       .from('signal_threads')
       .update(updateData)
       .eq('id', id)
       .eq('user_id', session.user.id)
       .select()
       .single()
+
+    const thread = updateResult.data as SignalThreadRow | null
+    const updateError = updateResult.error
 
     if (updateError) {
       log.error('Failed to update thread', updateError)
@@ -285,15 +280,15 @@ export async function PATCH(request: NextRequest) {
     // If eventIds changed, update event references atomically
     // Uses RPC function to prevent race conditions between clear and set operations
     if (eventIds !== undefined) {
-      // Type assertion needed until Supabase types are regenerated to include signal_threads RPC
-      const { error: rpcError } = await (supabase as any).rpc('update_thread_events', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rpcResult = await (supabase.rpc as any)('update_thread_events', {
         p_thread_id: id,
         p_user_id: session.user.id,
         p_event_ids: eventIds,
       })
 
-      if (rpcError) {
-        log.warn('Failed to update thread-event links', { threadId: id, error: rpcError })
+      if (rpcResult.error) {
+        log.warn('Failed to update thread-event links', { threadId: id, error: rpcResult.error })
         // Don't fail the request - thread update was successful
       }
     }
@@ -301,20 +296,7 @@ export async function PATCH(request: NextRequest) {
     log.info('Updated thread', { threadId: id })
 
     // Transform to camelCase
-    const transformedThread = {
-      id: thread.id,
-      userId: thread.user_id,
-      title: thread.title,
-      threadType: thread.thread_type,
-      colour: thread.colour,
-      eventIds: thread.event_ids || [],
-      narrativeSummary: thread.narrative_summary,
-      insights: thread.insights || [],
-      startDate: thread.start_date,
-      endDate: thread.end_date,
-      createdAt: thread.created_at,
-      updatedAt: thread.updated_at,
-    }
+    const transformedThread = transformThreadRow(thread)
 
     return NextResponse.json({ success: true, data: transformedThread })
   } catch (error) {
@@ -362,6 +344,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete thread (RLS ensures user can only delete their own)
     // Type assertion needed until Supabase types are regenerated to include signal_threads
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: deleteError } = await (supabase as any)
       .from('signal_threads')
       .delete()

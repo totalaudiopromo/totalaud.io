@@ -206,7 +206,7 @@ export function IdeasToolbar() {
             className={`flex items-center gap-1.5 px-3 py-1.5 border-none rounded-ta-sm text-xs whitespace-nowrap transition-all duration-120 ${
               filter === null
                 ? 'bg-white/8 font-medium text-ta-white/90'
-                : 'bg-transparent font-normal text-ta-grey/60 hover:text-ta-grey'
+                : 'bg-transparent font-normal text-ta-grey/80 hover:text-ta-grey'
             }`}
           >
             All
@@ -229,7 +229,7 @@ export function IdeasToolbar() {
               className={`flex items-center gap-1 px-2.5 py-1.5 border-none rounded-ta-sm text-xs whitespace-nowrap flex-shrink-0 transition-all duration-120 ${
                 filter === tag.key
                   ? 'bg-white/8 font-medium'
-                  : 'bg-transparent font-normal text-ta-grey/60 hover:text-ta-grey'
+                  : 'bg-transparent font-normal text-ta-grey/80 hover:text-ta-grey'
               }`}
               style={{ color: filter === tag.key ? tag.colour : undefined }}
             >
@@ -268,7 +268,7 @@ export function IdeasToolbar() {
             {localSearch && (
               <button
                 onClick={() => setLocalSearch('')}
-                className="p-0 bg-transparent border-none text-ta-grey/50 hover:text-ta-grey cursor-pointer"
+                className="p-2.5 -m-1.5 bg-transparent border-none text-ta-grey/50 hover:text-ta-grey cursor-pointer"
               >
                 <XMarkIcon className="h-3.5 w-3.5" />
               </button>
@@ -321,25 +321,25 @@ export function IdeasToolbar() {
           <div className="flex bg-white/5 rounded-ta-sm p-0.5">
             <button
               onClick={() => setViewMode('canvas')}
-              className={`flex items-center justify-center p-1.5 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
+              className={`flex items-center justify-center p-3 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
                 viewMode === 'canvas'
                   ? 'bg-white/10 text-ta-white/90'
                   : 'bg-transparent text-ta-grey/50 hover:text-ta-grey'
               }`}
               title="Canvas view"
             >
-              <Squares2X2Icon className="h-3.5 w-3.5" />
+              <Squares2X2Icon className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`flex items-center justify-center p-1.5 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
+              className={`flex items-center justify-center p-3 border-none rounded-[3px] cursor-pointer transition-all duration-120 ${
                 viewMode === 'list'
                   ? 'bg-white/10 text-ta-white/90'
                   : 'bg-transparent text-ta-grey/50 hover:text-ta-grey'
               }`}
               title="List view"
             >
-              <ListBulletIcon className="h-3.5 w-3.5" />
+              <ListBulletIcon className="h-4 w-4" />
             </button>
           </div>
 

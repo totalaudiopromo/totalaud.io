@@ -221,7 +221,7 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
         style={{
           fontSize: '15px',
           lineHeight: 1.7,
-          color: 'rgba(255, 255, 255, 0.55)',
+          color: 'rgba(255, 255, 255, 0.85)',
           margin: 0,
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
         }}
@@ -462,7 +462,7 @@ export function LandingPage() {
           style={{
             fontSize: 'clamp(16px, 2vw, 20px)',
             lineHeight: 1.6,
-            color: 'rgba(255, 255, 255, 0.55)',
+            color: 'rgba(255, 255, 255, 0.85)',
             textAlign: 'center',
             marginBottom: '56px',
             maxWidth: '520px',
@@ -499,7 +499,7 @@ export function LandingPage() {
           <span
             style={{
               fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.35)',
+              color: 'rgba(255, 255, 255, 0.8)',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
@@ -583,7 +583,7 @@ export function LandingPage() {
                   marginLeft: 'auto',
                   marginRight: 'auto',
                   fontSize: '11px',
-                  color: 'rgba(255, 255, 255, 0.4)',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   fontFamily: 'var(--font-geist-mono), monospace',
                 }}
               >
@@ -626,7 +626,7 @@ export function LandingPage() {
                       borderRadius: '6px',
                       fontSize: '12px',
                       fontWeight: i === 0 ? 500 : 400,
-                      color: i === 0 ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
+                      color: i === 0 ? '#3AA9BE' : 'rgba(255, 255, 255, 0.85)',
                       background: i === 0 ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
                       fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                       position: 'relative',
@@ -684,7 +684,7 @@ export function LandingPage() {
                   border: '1px solid rgba(255, 255, 255, 0.06)',
                   borderRadius: '6px',
                   fontSize: '11px',
-                  color: 'rgba(255, 255, 255, 0.4)',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 }}
               >
@@ -714,7 +714,7 @@ export function LandingPage() {
                       borderRadius: '4px',
                       fontSize: '10px',
                       fontWeight: 500,
-                      color: tab.active ? '#F7F8F9' : tab.colour || 'rgba(255, 255, 255, 0.5)',
+                      color: tab.active ? '#F7F8F9' : tab.colour || 'rgba(255, 255, 255, 0.85)',
                       background: tab.active ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                       fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                     }}
@@ -760,7 +760,7 @@ export function LandingPage() {
                   </svg>
                 </div>
                 <div style={{ padding: '4px 6px' }}>
-                  <svg width="10" height="10" fill="rgba(255,255,255,0.4)">
+                  <svg width="10" height="10" fill="rgba(255,255,255,0.8)">
                     <rect x="0" y="0" width="10" height="2" />
                     <rect x="0" y="4" width="10" height="2" />
                     <rect x="0" y="8" width="10" height="2" />
@@ -980,7 +980,7 @@ export function LandingPage() {
                   style={{
                     fontSize: 14,
                     lineHeight: 1.6,
-                    color: 'rgba(255,255,255,0.6)',
+                    color: 'rgba(255,255,255,0.9)',
                     fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                   }}
                 >
@@ -1027,13 +1027,13 @@ export function LandingPage() {
           >
             Everything you need.
             <br />
-            <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Nothing you don't.</span>
+            <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Nothing you don't.</span>
           </h2>
           <p
             style={{
               fontSize: '17px',
               lineHeight: 1.7,
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(255, 255, 255, 0.85)',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
@@ -1107,7 +1107,7 @@ export function LandingPage() {
             style={{
               fontSize: '17px',
               lineHeight: 1.6,
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'rgba(255, 255, 255, 0.85)',
               marginBottom: '48px',
               maxWidth: '420px',
               margin: '0 auto 48px',
@@ -1121,7 +1121,7 @@ export function LandingPage() {
             style={{
               marginTop: '16px',
               fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.35)',
+              color: 'rgba(255, 255, 255, 0.8)',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
@@ -1166,7 +1166,7 @@ export function LandingPage() {
             <span
               style={{
                 fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.25)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
@@ -1176,12 +1176,12 @@ export function LandingPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: 'rgba(255, 255, 255, 0.4)',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   textDecoration: 'none',
                   transition: 'color 0.2s ease',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)')}
               >
                 Total Audio Promo
               </a>
@@ -1200,7 +1200,7 @@ export function LandingPage() {
               aria-label="Privacy policy"
               style={{
                 fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.35)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 textDecoration: 'none',
                 transition: 'color 0.2s ease',
@@ -1213,7 +1213,7 @@ export function LandingPage() {
               aria-label="Terms of service"
               style={{
                 fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.35)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 textDecoration: 'none',
                 transition: 'color 0.2s ease',
@@ -1224,7 +1224,7 @@ export function LandingPage() {
             <span
               style={{
                 fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.25)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >

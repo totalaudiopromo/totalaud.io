@@ -61,7 +61,7 @@ export function OpportunityCard({
       case 'Low':
         return { bg: 'rgba(249, 115, 22, 0.15)', text: '#F97316' }
       default:
-        return { bg: 'rgba(255, 255, 255, 0.06)', text: 'rgba(255, 255, 255, 0.5)' }
+        return { bg: 'rgba(255, 255, 255, 0.06)', text: 'rgba(255, 255, 255, 0.85)' }
     }
   }
 
@@ -235,7 +235,7 @@ export function OpportunityCard({
             margin: 0,
             marginBottom: 12,
             fontSize: 12,
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: 'rgba(255, 255, 255, 0.85)',
             lineHeight: 1.5,
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             display: '-webkit-box',
@@ -266,7 +266,7 @@ export function OpportunityCard({
                 backgroundColor: 'rgba(255, 255, 255, 0.06)',
                 borderRadius: 10,
                 fontSize: 10,
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.9)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
@@ -280,7 +280,7 @@ export function OpportunityCard({
                 backgroundColor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: 10,
                 fontSize: 10,
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
