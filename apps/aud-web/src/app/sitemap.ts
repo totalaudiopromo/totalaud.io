@@ -1,5 +1,19 @@
+/**
+ * Dynamic Sitemap Generation for totalaud.io
+ * Generates sitemap.xml at build time for all static and pSEO pages
+ *
+ * Total pages generated:
+ * - Static: ~10 pages
+ * - Genres: 30+ pages
+ * - Locations: 30+ pages
+ * - Use-cases: 15+ pages
+ * - Comparisons: 10+ pages
+ * = 95+ indexed pages for SEO
+ */
+
 import { MetadataRoute } from 'next'
 import { getAllGenreSlugs, getAllLocationSlugs, getAllUseCaseSlugs } from '@/lib/seo'
+import { getAllComparisonSlugs } from '@/lib/seo/comparisons'
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://totalaud.io'
 
@@ -15,15 +29,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${siteUrl}/login`,
+      url: `${siteUrl}/pricing`,
       lastModified: now,
       changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/login`,
+      lastModified: now,
+      changeFrequency: 'yearly',
       priority: 0.5,
     },
     {
       url: `${siteUrl}/signup`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: 'yearly',
       priority: 0.8,
     },
     {
@@ -44,23 +64,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+  ]
+
+  // pSEO index pages (hub pages)
+  const indexPages: MetadataRoute.Sitemap = [
     {
       url: `${siteUrl}/genre`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${siteUrl}/location`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${siteUrl}/for`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/compare`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
   ]
 
@@ -88,5 +118,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...genrePages, ...locationPages, ...useCasePages]
+  // Comparison pSEO pages (high priority for competitive keywords)
+  const comparisonPages: MetadataRoute.Sitemap = getAllComparisonSlugs().map((slug) => ({
+    url: `${siteUrl}/compare/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  return [
+    ...staticPages,
+    ...indexPages,
+    ...genrePages,
+    ...locationPages,
+    ...useCasePages,
+    ...comparisonPages,
+  ]
 }
