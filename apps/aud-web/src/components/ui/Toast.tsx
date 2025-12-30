@@ -8,6 +8,7 @@
 
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { spring, duration } from '@/lib/motion'
 
 export interface ToastAction {
   label: string
@@ -66,11 +67,7 @@ function ToastItem({ toast, onDismiss }: ToastProps) {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{
-        type: 'spring',
-        stiffness: 400,
-        damping: 25,
-      }}
+      transition={spring.snappy}
       onClick={() => onDismiss(toast.id)}
       className="cursor-pointer"
       style={{
@@ -123,7 +120,7 @@ function ToastItem({ toast, onDismiss }: ToastProps) {
             color: style.accent,
             cursor: 'pointer',
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-            transition: 'background 120ms ease',
+            transition: `background ${duration.fast * 1000}ms ease`,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'

@@ -17,6 +17,8 @@ import { ToastProvider } from '@/contexts/ToastContext'
 import { TipsProvider } from '@/components/onboarding'
 import { useUserProfileStore } from '@/stores/useUserProfileStore'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { CommandPalette } from '@/components/ui/CommandPalette'
+import { OfflineIndicator } from '@/components/ui/OfflineIndicator'
 
 function OnboardingGate({ children }: { children: ReactNode }) {
   const router = useRouter()
@@ -106,6 +108,8 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   return (
     <TipsProvider>
       <ToastProvider>
+        <CommandPalette />
+        <OfflineIndicator />
         <OnboardingGate>{children}</OnboardingGate>
       </ToastProvider>
     </TipsProvider>
