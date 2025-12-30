@@ -10,11 +10,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
 
 const log = logger.scope('CreditsAPI')
-
-// Price per contact enrichment in pence
-export const ENRICHMENT_COST_PENCE = 20 // £0.20 per contact
 
 // ============================================================================
 // Types

@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
-import { ENRICHMENT_COST_PENCE } from '../route'
+import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
 
 const log = logger.scope('CreditsDeductAPI')
 

@@ -85,11 +85,11 @@ export const emptyStates = {
   timeline: {
     firstTime: {
       title: 'Plan your release',
-      description: 'Add opportunities from Scout or create custom events.',
+      description: 'Start with a template or add custom events.',
     },
     noResults: {
       title: 'Nothing scheduled',
-      description: 'Head to Scout to find opportunities.',
+      description: 'Use Templates to get started quickly.',
     },
   },
   pitch: {
