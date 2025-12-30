@@ -7,6 +7,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('Root Error')
@@ -20,6 +21,14 @@ export default function Error({
 }) {
   useEffect(() => {
     log.error('Root error', error)
+
+    // Report to Sentry with digest for server-side correlation
+    Sentry.captureException(error, {
+      tags: {
+        errorBoundary: 'root',
+        digest: error.digest,
+      },
+    })
   }, [error])
 
   return (

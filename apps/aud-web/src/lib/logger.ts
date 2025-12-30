@@ -3,7 +3,10 @@
  *
  * Structured logging with levels and scopes.
  * In production, only warn and error are shown.
+ * Errors are automatically reported to Sentry when configured.
  */
+
+import * as Sentry from '@sentry/nextjs'
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -12,6 +15,7 @@ interface LoggerOptions {
 }
 
 const isDev = process.env.NODE_ENV !== 'production'
+const isSentryEnabled = !!process.env.NEXT_PUBLIC_SENTRY_DSN || !!process.env.SENTRY_DSN
 
 function formatMessage(level: LogLevel, scope: string | undefined, message: string): string {
   const timestamp = new Date().toISOString()
@@ -37,10 +41,44 @@ function createLogger(options?: LoggerOptions) {
 
     warn: (message: string, data?: Record<string, unknown>) => {
       console.warn(formatMessage('warn', scope, message), data ?? '')
+
+      // Add breadcrumb to Sentry for context
+      if (isSentryEnabled) {
+        Sentry.addBreadcrumb({
+          category: scope || 'app',
+          message,
+          level: 'warning',
+          data,
+        })
+      }
     },
 
     error: (message: string, error?: unknown, data?: Record<string, unknown>) => {
       console.error(formatMessage('error', scope, message), error ?? '', data ?? '')
+
+      // Report to Sentry
+      if (isSentryEnabled) {
+        Sentry.withScope((sentryScope) => {
+          // Add scope as tag
+          if (scope) {
+            sentryScope.setTag('component', scope)
+          }
+
+          // Add extra data
+          if (data) {
+            sentryScope.setExtras(data)
+          }
+
+          // Capture the error
+          if (error instanceof Error) {
+            Sentry.captureException(error)
+          } else if (error) {
+            Sentry.captureMessage(`${message}: ${String(error)}`, 'error')
+          } else {
+            Sentry.captureMessage(message, 'error')
+          }
+        })
+      }
     },
 
     scope: (newScope: string) => createLogger({ scope: newScope }),

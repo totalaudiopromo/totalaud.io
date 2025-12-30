@@ -72,6 +72,8 @@ function getPriceIds(): Record<SubscriptionTier, Record<Currency, string | undef
 export const PRICE_IDS = getPriceIds()
 
 // Display prices for UI
+// Pro: £19/month, £182/year (20% off, effective £15.17/month)
+// Power: £79/month, £758/year (20% off, effective £63.17/month)
 export const DISPLAY_PRICES: Record<SubscriptionTier, Record<Currency, string>> = {
   starter: {
     gbp: '£5',
@@ -84,9 +86,9 @@ export const DISPLAY_PRICES: Record<SubscriptionTier, Record<Currency, string>> 
     eur: '€22',
   },
   pro_annual: {
-    gbp: '£149',
-    usd: '$189',
-    eur: '€179',
+    gbp: '£182',
+    usd: '$229',
+    eur: '€209',
   },
   power: {
     gbp: '£79',
@@ -94,9 +96,9 @@ export const DISPLAY_PRICES: Record<SubscriptionTier, Record<Currency, string>> 
     eur: '€89',
   },
   power_annual: {
-    gbp: '£649',
-    usd: '$799',
-    eur: '€749',
+    gbp: '£758',
+    usd: '$949',
+    eur: '€859',
   },
 }
 

@@ -66,6 +66,10 @@ const envSchema = z.object({
 
   // Email (Resend)
   RESEND_API_KEY: z.string().startsWith('re_', 'RESEND_API_KEY must start with re_').optional(),
+
+  // Sentry Error Monitoring
+  SENTRY_DSN: z.string().url().optional(),
+  SENTRY_AUTH_TOKEN: z.string().optional(),
 })
 
 // ============================================
@@ -167,4 +171,11 @@ export function isAIConfigured(): boolean {
  */
 export function isEmailConfigured(): boolean {
   return !!env.RESEND_API_KEY
+}
+
+/**
+ * Check if Sentry is configured
+ */
+export function isSentryConfigured(): boolean {
+  return !!env.SENTRY_DSN
 }
