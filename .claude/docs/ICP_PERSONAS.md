@@ -5,6 +5,37 @@
 
 ---
 
+## Testing System
+
+These personas are implemented as automated testing agents. See `apps/aud-web/tests/personas/` for:
+
+```bash
+# Run all persona tests
+pnpm test:personas
+
+# Run specific persona (e.g., Maya)
+pnpm test:persona "Maya"
+
+# Seed realistic content for demos
+pnpm seed:persona maya
+
+# Seed all personas
+pnpm seed:personas
+
+# Generate localStorage data (no Supabase needed)
+pnpm seed:persona --local maya
+```
+
+**Files:**
+
+- `personas.ts` — Persona definitions and data factories
+- `scenario-runner.ts` — Scenario execution engine
+- `persona-tests.spec.ts` — Playwright test specs
+- `report-generator.ts` — Session report generation
+- `seed-content.ts` — Content seeding utilities
+
+---
+
 ## Persona 1: Maya Chen — The Bedroom Producer
 
 ### Demographics

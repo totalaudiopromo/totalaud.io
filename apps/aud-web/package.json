@@ -15,7 +15,12 @@
     "test:unit:watch": "vitest",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "test:report": "playwright show-report tests/output/report"
+    "test:report": "playwright show-report tests/output/report",
+    "test:personas": "playwright test tests/personas/persona-tests.spec.ts",
+    "test:personas:headed": "playwright test tests/personas/persona-tests.spec.ts --headed",
+    "test:persona": "playwright test tests/personas/persona-tests.spec.ts --grep",
+    "seed:persona": "npx ts-node tests/personas/seed-content.ts",
+    "seed:personas": "npx ts-node tests/personas/seed-content.ts --all"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.0",
@@ -64,6 +69,7 @@
     "jsdom": "^26.0.0",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
+    "ts-node": "^10.9.2",
     "typescript": "5.6.3",
     "vitest": "^4.0.3"
   }
