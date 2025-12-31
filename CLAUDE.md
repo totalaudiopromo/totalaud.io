@@ -191,7 +191,7 @@ refactor(hooks): extract presence logic to custom hook
 **Location**: `/Users/chrisschofield/workspace/active/totalaud.io`
 **Status**: Post-Pivot - Building Calm Creative Workspace (November 2025)
 **Purpose**: A minimal, calm workspace helping artists with ideas, opportunities, plans, and pitch
-**Live URL**: https://aud-web-production.up.railway.app
+**Live URL**: <https://totalaud.io>
 **PRD**: See [PRD.md](PRD.md) for full product requirements
 
 **Product Vision**:
@@ -888,7 +888,8 @@ railway open                # Open project in Railway dashboard
 **Start Command**: `cd apps/aud-web && pnpm start`
 **Config File**: `railway.json` (in repository root)
 **Project ID**: `43846fc7-5c12-4285-a5e0-14275f0e4857`
-**Live URL**: https://aud-web-production.up.railway.app
+**Live URL**: https://totalaud.io
+**Railway Domain**: https://aud-web-production.up.railway.app (redirects to above)
 
 **Why Railway Over Vercel**:
 - Vercel had persistent monorepo detection issues (70+ failed deployments)
@@ -902,7 +903,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://ucncbighzqudaszewjrv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ANTHROPIC_API_KEY=<anthropic-key>
-NEXT_PUBLIC_APP_URL=https://aud-web-production.up.railway.app
+NEXT_PUBLIC_APP_URL=https://totalaud.io
 NODE_ENV=production
 ```
 
@@ -1155,9 +1156,9 @@ Project-specific documentation files:
 ---
 
 **Last Updated**: November 2025
-**Status**: Post-Pivot Phase 1 - Foundation cleanup for Calm Creative Workspace
-**Recent Work**: PRD pivot from multi-agent OS to calm 4-mode workspace
-**Live URL**: <https://aud-web-production.up.railway.app>
-**Next**: Archive OS/agent packages, enable Scout tab, polish Ideas Mode
+**Status**: Phase 7 Complete - Beta Release Ready
+**Recent Work**: Phase 7 polish - motion tokens, accessibility, Playwright tests
+**Live URL**: <https://totalaud.io>
+**Next**: Beta user invites, feedback collection
 **Development Focus**: Calm, minimal workspace for independent artists
 **PRD**: See [PRD.md](PRD.md) for complete product requirements
