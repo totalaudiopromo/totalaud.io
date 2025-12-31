@@ -12,6 +12,7 @@
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { transition, duration } from '@/lib/motion'
 import type { Opportunity, EnrichedContact, EnrichmentStatus } from '@/types/scout'
 import {
   TYPE_ICONS,
@@ -121,7 +122,7 @@ export function OpportunityCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.16 }}
+      transition={transition.fast}
       onClick={onSelect}
       style={{
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -129,7 +130,7 @@ export function OpportunityCard({
         borderRadius: 8,
         padding: 16,
         cursor: 'pointer',
-        transition: 'all 0.16s ease',
+        transition: `all ${duration.fast * 1000}ms ease`,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
@@ -325,7 +326,7 @@ export function OpportunityCard({
                     ? '#F97316'
                     : '#3AA9BE',
               cursor: enrichmentStatus === 'loading' ? 'wait' : 'pointer',
-              transition: 'all 0.16s ease',
+              transition: `all ${duration.fast * 1000}ms ease`,
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               minWidth: 70,
             }}
@@ -366,7 +367,7 @@ export function OpportunityCard({
               fontWeight: 500,
               color: copyFeedback ? '#49A36C' : 'rgba(255, 255, 255, 0.6)',
               cursor: 'pointer',
-              transition: 'all 0.16s ease',
+              transition: `all ${duration.fast * 1000}ms ease`,
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
             onMouseEnter={(e) => {
@@ -409,7 +410,7 @@ export function OpportunityCard({
             fontWeight: 500,
             color: isAddedToTimeline ? '#49A36C' : addFeedback ? '#49A36C' : '#0F1113',
             cursor: isAddedToTimeline ? 'default' : 'pointer',
-            transition: 'all 0.16s ease',
+            transition: `all ${duration.fast * 1000}ms ease`,
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
