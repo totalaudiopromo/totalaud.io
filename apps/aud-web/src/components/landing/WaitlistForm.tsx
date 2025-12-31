@@ -1,0 +1,208 @@
+/**
+ * Waitlist Form Component - totalaud.io
+ *
+ * ConvertKit integration for waitlist signups.
+ * Uses ConvertKit's form action URL (no API key needed for basic forms).
+ *
+ * NOTE: Create a form in ConvertKit dashboard first:
+ * 1. Create form: "totalaud.io Waitlist"
+ * 2. Add tag: "totalaud-waitlist"
+ * 3. Set CONVERTKIT_FORM_ID env variable
+ */
+
+'use client'
+
+import { useState, FormEvent } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+type FormState = 'idle' | 'submitting' | 'success' | 'error'
+
+export function WaitlistForm() {
+  const [email, setEmail] = useState('')
+  const [formState, setFormState] = useState<FormState>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const formId = process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+
+    if (!email || !email.includes('@')) {
+      setFormState('error')
+      setErrorMessage('Please enter a valid email address')
+      return
+    }
+
+    setFormState('submitting')
+    setErrorMessage('')
+
+    try {
+      // ConvertKit form submission
+      // If no form ID, simulate success for development
+      if (!formId) {
+        console.log('[WaitlistForm] No CONVERTKIT_FORM_ID set, simulating success')
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        setFormState('success')
+        return
+      }
+
+      const response = await fetch(`https://api.convertkit.com/v3/forms/${formId}/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          api_key: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
+          email,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe')
+      }
+
+      setFormState('success')
+    } catch {
+      setFormState('error')
+      setErrorMessage('Something went wrong. Please try again.')
+    }
+  }
+
+  return (
+    <div>
+      <AnimatePresence mode="wait">
+        {formState === 'success' ? (
+          <motion.div
+            key="success"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            style={{
+              padding: '20px 24px',
+              backgroundColor: 'rgba(58, 169, 190, 0.1)',
+              borderRadius: '12px',
+              border: '1px solid rgba(58, 169, 190, 0.3)',
+              textAlign: 'center',
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: '15px',
+                color: '#3AA9BE',
+                fontWeight: 500,
+              }}
+            >
+              You&apos;re on the list! We&apos;ll be in touch.
+            </p>
+          </motion.div>
+        ) : (
+          <motion.form
+            key="form"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                disabled={formState === 'submitting'}
+                style={{
+                  flex: 1,
+                  minWidth: '200px',
+                  padding: '14px 18px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  color: '#F7F8F9',
+                  fontSize: '15px',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'rgba(58, 169, 190, 0.5)'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+                }}
+              />
+              <button
+                type="submit"
+                disabled={formState === 'submitting'}
+                style={{
+                  padding: '14px 24px',
+                  background:
+                    formState === 'submitting'
+                      ? 'rgba(58, 169, 190, 0.5)'
+                      : 'linear-gradient(135deg, #3AA9BE 0%, #2D8A9C 100%)',
+                  color: '#0A0B0C',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  cursor: formState === 'submitting' ? 'not-allowed' : 'pointer',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  boxShadow: '0 0 40px rgba(58, 169, 190, 0.2)',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseOver={(e) => {
+                  if (formState !== 'submitting') {
+                    e.currentTarget.style.transform = 'scale(1.02)'
+                    e.currentTarget.style.boxShadow = '0 0 60px rgba(58, 169, 190, 0.3)'
+                  }
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'
+                  e.currentTarget.style.boxShadow = '0 0 40px rgba(58, 169, 190, 0.2)'
+                }}
+              >
+                {formState === 'submitting' ? 'Joining...' : 'Join waitlist'}
+              </button>
+            </div>
+
+            {formState === 'error' && errorMessage && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  margin: 0,
+                  fontSize: '13px',
+                  color: '#ef4444',
+                }}
+              >
+                {errorMessage}
+              </motion.p>
+            )}
+
+            <p
+              style={{
+                margin: 0,
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.4)',
+              }}
+            >
+              No spam. We&apos;ll email you when we launch.
+            </p>
+          </motion.form>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}

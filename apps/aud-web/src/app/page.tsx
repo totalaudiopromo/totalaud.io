@@ -4,9 +4,15 @@
  *
  * Aesthetic: Cinematic Editorial
  * A24 film credits meets Bloomberg design meets Ableton's restraint
+ *
+ * NOTE: Coming Soon mode controlled by preview cookie.
+ * - Public users see ComingSoonLanding
+ * - Preview users (with cookie) see full LandingPage
  */
 
+import { cookies } from 'next/headers'
 import { LandingPage } from '@/components/landing/LandingPage'
+import { ComingSoonLanding } from '@/components/landing/ComingSoonLanding'
 
 export const metadata = {
   title: 'totalaud.io - Your music deserves to be heard',
@@ -19,6 +25,13 @@ export const metadata = {
   },
 }
 
-export default function Page() {
-  return <LandingPage />
+export default async function Page() {
+  const cookieStore = await cookies()
+  const hasPreviewAccess = cookieStore.get('totalaud_preview_access')?.value === 'true'
+
+  if (hasPreviewAccess) {
+    return <LandingPage />
+  }
+
+  return <ComingSoonLanding />
 }

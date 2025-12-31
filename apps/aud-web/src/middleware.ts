@@ -2,6 +2,7 @@
  * Next.js Middleware
  *
  * Handles:
+ * - Coming Soon mode (preview access via secret URL)
  * - Rate limiting (in-memory, per IP)
  * - Security headers
  *
@@ -13,6 +14,43 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+
+// ============================================================================
+// Coming Soon / Preview Access Configuration
+// ============================================================================
+
+const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY || 'totalaud-preview-2025'
+const PREVIEW_COOKIE = 'totalaud_preview_access'
+
+// Routes that should redirect to coming soon (unless preview access)
+const GATED_ROUTES = ['/workspace', '/login', '/signup', '/onboarding']
+
+/**
+ * Check if preview access should be granted or route should be gated
+ * Returns: { shouldGate: boolean, setPreviewCookie: boolean }
+ */
+function checkPreviewAccess(request: NextRequest): {
+  shouldGate: boolean
+  setPreviewCookie: boolean
+} {
+  const { pathname, searchParams } = request.nextUrl
+
+  // Check for preview key in URL
+  const previewParam = searchParams.get('preview')
+  if (previewParam === PREVIEW_KEY) {
+    return { shouldGate: false, setPreviewCookie: true }
+  }
+
+  // Check for existing preview cookie
+  const hasPreviewAccess = request.cookies.get(PREVIEW_COOKIE)?.value === 'true'
+  if (hasPreviewAccess) {
+    return { shouldGate: false, setPreviewCookie: false }
+  }
+
+  // Check if this is a gated route
+  const isGatedRoute = GATED_ROUTES.some((route) => pathname.startsWith(route))
+  return { shouldGate: isGatedRoute, setPreviewCookie: false }
+}
 
 // ============================================================================
 // Rate Limiting Configuration
@@ -119,6 +157,29 @@ export function middleware(request: NextRequest) {
     pathname.includes('.') // Skip files with extensions (images, etc.)
   ) {
     return NextResponse.next()
+  }
+
+  // ========================================
+  // Coming Soon / Preview Access Check
+  // ========================================
+  const { shouldGate, setPreviewCookie } = checkPreviewAccess(request)
+
+  // If preview key provided, set cookie and redirect to clean URL
+  if (setPreviewCookie) {
+    const cleanUrl = new URL(pathname, request.url)
+    const response = NextResponse.redirect(cleanUrl)
+    response.cookies.set(PREVIEW_COOKIE, 'true', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    })
+    return response
+  }
+
+  // If route is gated and no preview access, redirect to home
+  if (shouldGate) {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)
