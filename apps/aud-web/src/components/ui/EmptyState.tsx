@@ -8,6 +8,7 @@
 
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
+import { transition, duration } from '@/lib/motion'
 
 interface EmptyStateProps {
   title: string
@@ -29,7 +30,7 @@ export function EmptyState({ title, description, action, variant = 'default' }: 
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
+      transition={transition.slow}
       className="empty-state"
       style={{ padding: size.padding }}
     >
@@ -45,7 +46,7 @@ export function EmptyState({ title, description, action, variant = 'default' }: 
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
+          transition={{ delay: duration.normal, ...transition.normal }}
           style={{ marginTop: 16 }}
         >
           {action}
@@ -106,19 +107,27 @@ export const emptyStates = {
 
 // Typing indicator for AI responses
 export function TypingIndicator() {
+  // Use longer duration for ambient/looping animations
+  const loopDuration = 1.4
+
   return (
     <div className="typing-indicator">
       <motion.span
         animate={{ opacity: [0.2, 1, 0.2], y: [0, -2, 0] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: loopDuration, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.span
         animate={{ opacity: [0.2, 1, 0.2], y: [0, -2, 0] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+        transition={{ duration: loopDuration, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
       />
       <motion.span
         animate={{ opacity: [0.2, 1, 0.2], y: [0, -2, 0] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+        transition={{
+          duration: loopDuration,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: duration.slow,
+        }}
       />
     </div>
   )

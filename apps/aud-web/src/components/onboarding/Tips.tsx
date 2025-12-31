@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { transition } from '@/lib/motion'
 
 // Tip definitions
 interface TipConfig {
@@ -145,7 +146,7 @@ export function TipBanner({ tipId, className = '' }: TipBannerProps) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.2 }}
+        transition={transition.normal}
         className={`
           flex items-start gap-3 px-4 py-3
           bg-[#3AA9BE]/10 border border-[#3AA9BE]/20

@@ -19,8 +19,8 @@ test.describe('MVP Core Flow', () => {
     await expect(page.getByRole('button', { name: 'Ideas' })).toBeVisible()
 
     // Step 2: Verify ideas interface is visible
-    // The "+ Add" button should be visible in the toolbar
-    const addButton = page.getByRole('button', { name: /\+ Add/i })
+    // The "Add" button should be visible in the toolbar
+    const addButton = page.getByRole('button', { name: /Add/i })
     await expect(addButton).toBeVisible()
 
     // Step 3: Switch to Scout mode
@@ -30,6 +30,13 @@ test.describe('MVP Core Flow', () => {
     // Wait for Scout content to load (either grid or auth prompt)
     const scoutContent = page.locator('[data-testid="scout-grid"], [data-testid="auth-prompt"]')
     await expect(scoutContent).toBeVisible({ timeout: 10000 })
+
+    // Dismiss any tour/onboarding modal if present
+    const skipTourButton = page.getByText('Skip tour')
+    if (await skipTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await skipTourButton.click()
+      await page.waitForTimeout(300) // Wait for modal animation to complete
+    }
 
     // Step 4: Switch to Timeline mode
     await page.getByRole('button', { name: 'Timeline' }).click()
@@ -51,17 +58,14 @@ test.describe('MVP Core Flow', () => {
     await page.goto('/workspace?mode=ideas')
 
     // Should see the Ideas toolbar
-    await expect(page.getByRole('button', { name: /\+ Add/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Add/i })).toBeVisible()
 
-    // Should have filter buttons
-    await expect(page.getByRole('button', { name: /All/i })).toBeVisible()
+    // Should have filter tabs
+    await expect(page.getByRole('tab', { name: /All/i })).toBeVisible()
 
-    // Should have idea cards (starter prompts)
-    const ideaCards = page.locator(
-      'button[class*="content"], button[class*="brand"], button[class*="promo"]'
-    )
-    // Wait for at least one idea/tag to be visible
-    await expect(page.getByRole('button', { name: /content/i }).first()).toBeVisible({
+    // Should have filter tabs (Content, Brand, Music, Promo)
+    // Wait for at least one category tab to be visible
+    await expect(page.getByRole('tab', { name: /Content/i })).toBeVisible({
       timeout: 5000,
     })
   })

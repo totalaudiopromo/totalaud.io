@@ -12,6 +12,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { IdeaCard as IdeaCardType, IdeaTag } from '@/stores/useIdeasStore'
+import { transition, duration } from '@/lib/motion'
 
 const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }> = {
   content: {
@@ -149,10 +150,7 @@ export function IdeaCard({
         x: card.position.x,
         y: card.position.y,
       }}
-      transition={{
-        duration: 0.2,
-        ease: [0.22, 1, 0.36, 1],
-      }}
+      transition={transition.normal}
       whileHover={{ scale: isSelected || isDragging ? 1 : 1.02 }}
       onClick={onSelect}
       onDoubleClick={handleDoubleClick}
@@ -214,7 +212,8 @@ export function IdeaCard({
 
       {/* Action buttons (visible on hover/select) */}
       <div
-        className={`absolute top-2 sm:top-3 right-2 sm:right-3 flex gap-1 sm:gap-1.5 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        className={`absolute top-2 sm:top-3 right-2 sm:right-3 flex gap-1 sm:gap-1.5 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        style={{ transitionDuration: `${duration.normal * 1000}ms` }}
       >
         {/* Send to Timeline button */}
         {onSendToTimeline && (

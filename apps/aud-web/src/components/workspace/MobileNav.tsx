@@ -10,6 +10,7 @@
 
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
+import { transition } from '@/lib/motion'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -130,7 +131,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
               <motion.div
                 layoutId="mobile-nav-indicator"
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-ta-cyan rounded-sm"
-                transition={{ duration: 0.12 }}
+                transition={transition.fast}
               />
             )}
           </button>

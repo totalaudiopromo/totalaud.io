@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import clsx from 'clsx'
+import { stagger, transition, easing } from '@/lib/motion'
 
 interface StaggeredEntranceProps {
   children: ReactNode
@@ -19,7 +20,7 @@ export function StaggeredEntrance({ children, className, delay = 0 }: StaggeredE
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.1,
+            staggerChildren: stagger.slow,
             delayChildren: delay,
           },
         },
@@ -45,8 +46,8 @@ export function StaggerItem({ children, className }: StaggerItemProps) {
           opacity: 1,
           y: 0,
           transition: {
-            duration: 0.5,
-            ease: [0.23, 1, 0.32, 1], // ease-out-quart-ish
+            duration: transition.normal.duration,
+            ease: easing.standard,
           },
         },
       }}

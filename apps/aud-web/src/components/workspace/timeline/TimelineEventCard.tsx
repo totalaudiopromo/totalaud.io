@@ -11,6 +11,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { transition } from '@/lib/motion'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore, type PitchType } from '@/stores/usePitchStore'
 import { useScoutStore } from '@/stores/useScoutStore'
@@ -176,7 +177,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
+      transition={transition.fast}
       onClick={onClose}
       className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-50 backdrop-blur-sm"
     >
@@ -184,7 +185,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        transition={{ duration: 0.2 }}
+        transition={transition.normal}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         className="bg-[#1A1D21] border border-white/10 rounded-xl w-full max-w-md p-6 shadow-2xl relative"
