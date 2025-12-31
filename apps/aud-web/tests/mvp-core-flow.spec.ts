@@ -42,12 +42,26 @@ test.describe('MVP Core Flow', () => {
     await page.getByRole('button', { name: 'Timeline' }).click()
     await expect(page).toHaveURL(/mode=timeline/)
 
+    // Dismiss any tour modal if present
+    const timelineTourButton = page.getByText('Skip tour')
+    if (await timelineTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await timelineTourButton.click()
+      await page.waitForTimeout(300)
+    }
+
     // Timeline should show (either events or empty state)
     await expect(page.locator('main')).toBeVisible()
 
     // Step 5: Switch to Pitch mode
     await page.getByRole('button', { name: 'Pitch' }).click()
     await expect(page).toHaveURL(/mode=pitch/)
+
+    // Dismiss any tour modal if present
+    const pitchTourButton = page.getByText('Skip tour')
+    if (await pitchTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await pitchTourButton.click()
+      await page.waitForTimeout(300)
+    }
 
     // Pitch mode should load
     await expect(page.locator('main')).toBeVisible()

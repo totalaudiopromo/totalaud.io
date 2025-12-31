@@ -80,19 +80,22 @@ export function OnboardingChat() {
   // Handle completion and redirect
   const handleComplete = useCallback(
     async (data: OnboardingData) => {
-      // Save profile
-      setProfile({
-        artistName: data.artistName || '',
-        genre: data.genre || '',
-        vibe: data.vibe || '',
-        projectType: data.projectType || 'none',
-        projectTitle: data.projectTitle || '',
-        releaseDate: data.releaseDate || null,
-        primaryGoal: data.primaryGoal || 'explore',
-        goals: [],
-      })
+      // Save profile (skip auto-sync to avoid race condition with completeOnboarding)
+      setProfile(
+        {
+          artistName: data.artistName || '',
+          genre: data.genre || '',
+          vibe: data.vibe || '',
+          projectType: data.projectType || 'none',
+          projectTitle: data.projectTitle || '',
+          releaseDate: data.releaseDate || null,
+          primaryGoal: data.primaryGoal || 'explore',
+          goals: [],
+        },
+        true
+      ) // skipSync = true
 
-      // Complete onboarding and wait for database save
+      // Complete onboarding and wait for database save (this will save everything including onboardingCompleted: true)
       await completeOnboarding()
 
       // Send welcome email (fire and forget - don't block redirect)
@@ -204,11 +207,14 @@ export function OnboardingChat() {
   }
 
   const handleSkip = async () => {
-    // Set minimal profile and go to workspace
-    setProfile({
-      artistName: collectedData.artistName || 'Artist',
-      primaryGoal: 'explore',
-    })
+    // Set minimal profile (skip auto-sync to avoid race condition)
+    setProfile(
+      {
+        artistName: collectedData.artistName || 'Artist',
+        primaryGoal: 'explore',
+      },
+      true
+    ) // skipSync = true
     await completeOnboarding()
     router.push('/workspace')
   }

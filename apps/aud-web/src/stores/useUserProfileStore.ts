@@ -51,7 +51,7 @@ interface UserProfileState {
   syncError: string | null
 
   // Actions
-  setProfile: (profile: Partial<UserProfile>) => void
+  setProfile: (profile: Partial<UserProfile>, skipSync?: boolean) => void
   updateProfile: (updates: Partial<UserProfile>) => void
   completeOnboarding: () => Promise<void>
   resetProfile: () => void
@@ -87,7 +87,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       isLoading: false,
       syncError: null,
 
-      setProfile: (profile) => {
+      setProfile: (profile, skipSync = false) => {
         const now = new Date().toISOString()
         set({
           profile: {
@@ -97,8 +97,10 @@ export const useUserProfileStore = create<UserProfileState>()(
             updatedAt: now,
           },
         })
-        // Trigger async save
-        get().saveToSupabase()
+        // Trigger async save unless explicitly skipped (e.g., during onboarding when completeOnboarding will handle it)
+        if (!skipSync) {
+          get().saveToSupabase()
+        }
       },
 
       updateProfile: (updates) => {
