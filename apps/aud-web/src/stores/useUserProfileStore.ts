@@ -53,7 +53,7 @@ interface UserProfileState {
   // Actions
   setProfile: (profile: Partial<UserProfile>) => void
   updateProfile: (updates: Partial<UserProfile>) => void
-  completeOnboarding: () => void
+  completeOnboarding: () => Promise<void>
   resetProfile: () => void
 
   // Sync
@@ -116,9 +116,12 @@ export const useUserProfileStore = create<UserProfileState>()(
         get().saveToSupabase()
       },
 
-      completeOnboarding: () => {
+      completeOnboarding: async () => {
         const current = get().profile
-        if (!current) return
+        if (!current) {
+          log.warn('completeOnboarding called but no profile exists')
+          return
+        }
 
         const now = new Date().toISOString()
         set({
@@ -129,7 +132,10 @@ export const useUserProfileStore = create<UserProfileState>()(
             updatedAt: now,
           },
         })
-        get().saveToSupabase()
+
+        log.info('Completing onboarding, saving to Supabase...')
+        await get().saveToSupabase()
+        log.info('Onboarding completion saved')
       },
 
       resetProfile: () => {
@@ -207,7 +213,10 @@ export const useUserProfileStore = create<UserProfileState>()(
 
       saveToSupabase: async () => {
         const profile = get().profile
-        if (!profile) return
+        if (!profile) {
+          log.debug('saveToSupabase: No profile to save')
+          return
+        }
 
         try {
           const supabase = createBrowserSupabaseClient()
@@ -215,7 +224,16 @@ export const useUserProfileStore = create<UserProfileState>()(
             data: { user },
           } = await supabase.auth.getUser()
 
-          if (!user) return // Guest user, localStorage only
+          if (!user) {
+            log.debug('saveToSupabase: No authenticated user, localStorage only')
+            return
+          }
+
+          log.debug('saveToSupabase: Upserting profile', {
+            userId: user.id,
+            email: user.email,
+            onboardingCompleted: profile.onboardingCompleted,
+          })
 
           // Note: Only saving columns that exist in totalaud.io user_profiles table
           // Extended profile fields (genre, vibe, projectType, etc.) are stored in localStorage only
@@ -230,7 +248,12 @@ export const useUserProfileStore = create<UserProfileState>()(
             { onConflict: 'id' }
           )
 
-          if (error) throw error
+          if (error) {
+            log.error('saveToSupabase: Upsert failed', error)
+            throw error
+          }
+
+          log.debug('saveToSupabase: Profile saved successfully')
           set({ syncError: null })
         } catch (error) {
           log.error('Failed to save profile to Supabase', error)

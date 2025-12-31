@@ -91,7 +91,9 @@ export function OnboardingChat() {
         primaryGoal: data.primaryGoal || 'explore',
         goals: [],
       })
-      completeOnboarding()
+
+      // Complete onboarding and wait for database save
+      await completeOnboarding()
 
       // Send welcome email (fire and forget - don't block redirect)
       fetch('/api/email/welcome', {
@@ -201,13 +203,13 @@ export function OnboardingChat() {
     sendMessage(value)
   }
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     // Set minimal profile and go to workspace
     setProfile({
       artistName: collectedData.artistName || 'Artist',
       primaryGoal: 'explore',
     })
-    completeOnboarding()
+    await completeOnboarding()
     router.push('/workspace')
   }
 
