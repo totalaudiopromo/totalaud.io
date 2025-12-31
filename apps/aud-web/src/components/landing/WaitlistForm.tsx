@@ -16,6 +16,9 @@
 import { useState, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { env } from '@/lib/env'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('WaitlistForm')
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -23,6 +26,7 @@ export function WaitlistForm() {
   const [email, setEmail] = useState('')
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
 
   const formId = env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
   const apiKey = env.NEXT_PUBLIC_CONVERTKIT_API_KEY
@@ -43,7 +47,7 @@ export function WaitlistForm() {
       // ConvertKit form submission
       // If no form ID, simulate success for development
       if (!formId) {
-        console.log('[WaitlistForm] No CONVERTKIT_FORM_ID set, simulating success')
+        log.info('No CONVERTKIT_FORM_ID set, simulating success')
         await new Promise((resolve) => setTimeout(resolve, 1000))
         setFormState('success')
         return
@@ -120,7 +124,7 @@ export function WaitlistForm() {
                 flexWrap: 'wrap',
               }}
             >
-              <input
+              <motion.input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -128,6 +132,10 @@ export function WaitlistForm() {
                 aria-label="Email address"
                 required
                 disabled={formState === 'submitting'}
+                animate={{
+                  borderColor: isFocused ? 'rgba(58, 169, 190, 0.5)' : 'rgba(255, 255, 255, 0.1)',
+                }}
+                transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   flex: 1,
                   minWidth: '200px',
@@ -139,14 +147,9 @@ export function WaitlistForm() {
                   fontSize: '15px',
                   fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                   outline: 'none',
-                  transition: 'border-color 0.2s ease',
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(58, 169, 190, 0.5)'
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-                }}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <motion.button
                 type="submit"

@@ -239,13 +239,15 @@ export function ComingSoonLanding() {
             filter: 'drop-shadow(0 0 30px rgba(58, 169, 190, 0.3))',
           }}
         >
-          <Image
-            src="/brand/svg/ta-logo-cyan.svg"
-            alt="totalaud.io - home"
-            width={48}
-            height={48}
-            priority
-          />
+          <Link href="/" aria-label="totalaud.io home">
+            <Image
+              src="/brand/svg/ta-logo-cyan.svg"
+              alt="totalaud.io logo"
+              width={48}
+              height={48}
+              priority
+            />
+          </Link>
         </motion.div>
       </header>
 
@@ -411,36 +413,35 @@ export function ComingSoonLanding() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.7 }}
         >
-          <Link
-            href="/pricing"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '15px',
-              fontWeight: 500,
-              color: '#3AA9BE',
-              textDecoration: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(58, 169, 190, 0.1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-            }}
+          <motion.div
+            whileHover={{ backgroundColor: 'rgba(58, 169, 190, 0.1)' }}
+            transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: 'inline-block', borderRadius: '8px' }}
           >
-            View pricing
-            <motion.span
-              animate={{ x: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              aria-hidden="true"
+            <Link
+              href="/pricing"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '15px',
+                fontWeight: 500,
+                color: '#3AA9BE',
+                textDecoration: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+              }}
             >
-              →
-            </motion.span>
-          </Link>
+              View pricing
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                aria-hidden="true"
+              >
+                →
+              </motion.span>
+            </Link>
+          </motion.div>
         </motion.div>
       </main>
 
@@ -472,32 +473,38 @@ export function ComingSoonLanding() {
             justifyContent: 'center',
           }}
         >
-          <Link
-            href="/privacy"
-            style={{
-              fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.5)',
-              textDecoration: 'none',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
+          <motion.div
+            whileHover={{ color: '#3AA9BE' }}
+            transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            style={{ color: 'rgba(255, 255, 255, 0.5)' }}
           >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            style={{
-              fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.5)',
-              textDecoration: 'none',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
+            <Link
+              href="/privacy"
+              style={{
+                fontSize: '13px',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              Privacy
+            </Link>
+          </motion.div>
+          <motion.div
+            whileHover={{ color: '#3AA9BE' }}
+            transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            style={{ color: 'rgba(255, 255, 255, 0.5)' }}
           >
-            Terms
-          </Link>
+            <Link
+              href="/terms"
+              style={{
+                fontSize: '13px',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              Terms
+            </Link>
+          </motion.div>
         </nav>
       </footer>
 
