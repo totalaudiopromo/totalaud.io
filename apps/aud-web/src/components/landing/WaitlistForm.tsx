@@ -125,6 +125,8 @@ export function WaitlistForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
+                aria-label="Email address"
+                required
                 disabled={formState === 'submitting'}
                 style={{
                   flex: 1,
