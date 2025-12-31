@@ -12,31 +12,81 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { WaitlistForm } from './WaitlistForm'
 
-// The 4 core modes to tease
+// The 4 core modes to tease - using simple SVG icons for calm aesthetic
 const MODES = [
   {
     id: 'ideas',
     name: 'Ideas',
     description: 'Capture inspiration',
-    icon: '💡',
+    // Lightbulb icon
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <path d="M9 21h6M12 3a6 6 0 0 0-6 6c0 2.22 1.21 4.16 3 5.19V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.81c1.79-1.03 3-2.97 3-5.19a6 6 0 0 0-6-6z" />
+      </svg>
+    ),
   },
   {
     id: 'scout',
     name: 'Scout',
     description: 'Find opportunities',
-    icon: '🔍',
+    // Search/magnifying glass icon
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+    ),
   },
   {
     id: 'timeline',
     name: 'Timeline',
     description: 'Plan your release',
-    icon: '📅',
+    // Calendar icon
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </svg>
+    ),
   },
   {
     id: 'pitch',
     name: 'Pitch',
     description: 'Craft your story',
-    icon: '✍️',
+    // Pen/edit icon
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+      </svg>
+    ),
   },
 ]
 
@@ -146,7 +196,7 @@ export function ComingSoonLanding() {
                 border: '1px solid rgba(255, 255, 255, 0.06)',
               }}
             >
-              <span style={{ fontSize: '24px' }} role="img" aria-label={mode.name}>
+              <span style={{ color: '#3AA9BE' }} aria-hidden="true">
                 {mode.icon}
               </span>
               <span
