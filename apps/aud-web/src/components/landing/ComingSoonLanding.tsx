@@ -218,6 +218,37 @@ export function ComingSoonLanding() {
         }}
       />
 
+      {/* Header with logo */}
+      <header
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          padding: '24px',
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 10,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            filter: 'drop-shadow(0 0 30px rgba(58, 169, 190, 0.3))',
+          }}
+        >
+          <Image
+            src="/brand/svg/ta-logo-cyan.svg"
+            alt="totalaud.io - home"
+            width={48}
+            height={48}
+            priority
+          />
+        </motion.div>
+      </header>
+
       {/* Main content */}
       <main
         style={{
@@ -234,25 +265,6 @@ export function ComingSoonLanding() {
           zIndex: 1,
         }}
       >
-        {/* Logo with glow */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-          style={{
-            marginBottom: '40px',
-            filter: 'drop-shadow(0 0 30px rgba(58, 169, 190, 0.3))',
-          }}
-        >
-          <Image
-            src="/brand/svg/ta-logo-cyan.svg"
-            alt="totalaud.io"
-            width={72}
-            height={72}
-            priority
-          />
-        </motion.div>
-
         {/* Badge - matching main landing */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -452,7 +464,8 @@ export function ComingSoonLanding() {
         >
           Built by radio promotion veterans in the UK
         </p>
-        <div
+        <nav
+          aria-label="Legal"
           style={{
             display: 'flex',
             gap: '24px',
@@ -485,7 +498,7 @@ export function ComingSoonLanding() {
           >
             Terms
           </Link>
-        </div>
+        </nav>
       </footer>
 
       {/* Global styles for gradient animation */}
