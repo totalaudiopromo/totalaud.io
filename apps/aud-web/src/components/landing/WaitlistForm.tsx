@@ -49,12 +49,12 @@ export function WaitlistForm() {
         return
       }
 
-      // Kit API v4 endpoint - uses api.kit.com and email_address parameter
+      // Kit API v4 endpoint - uses X-Kit-Api-Key header
       const response = await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
+          'X-Kit-Api-Key': apiKey || '',
         },
         body: JSON.stringify({
           email_address: email,
