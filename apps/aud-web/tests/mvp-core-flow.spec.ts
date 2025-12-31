@@ -23,6 +23,13 @@ test.describe('MVP Core Flow', () => {
     const addButton = page.getByRole('button', { name: /Add/i })
     await expect(addButton).toBeVisible()
 
+    // Dismiss Ideas tour modal if present
+    const ideasTourButton = page.getByText('Skip tour')
+    if (await ideasTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await ideasTourButton.click()
+      await page.waitForTimeout(300) // Wait for modal animation to complete
+    }
+
     // Step 3: Switch to Scout mode
     await page.getByRole('button', { name: 'Scout' }).click()
     await expect(page).toHaveURL(/mode=scout/)
@@ -32,9 +39,9 @@ test.describe('MVP Core Flow', () => {
     await expect(scoutContent).toBeVisible({ timeout: 10000 })
 
     // Dismiss any tour/onboarding modal if present
-    const skipTourButton = page.getByText('Skip tour')
-    if (await skipTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await skipTourButton.click()
+    const scoutTourButton = page.getByText('Skip tour')
+    if (await scoutTourButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await scoutTourButton.click()
       await page.waitForTimeout(300) // Wait for modal animation to complete
     }
 
