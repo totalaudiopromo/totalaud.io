@@ -11,6 +11,10 @@
  * - /api/tap/*: 20 req/min (external API calls)
  * - /api/scout: 30 req/min (database queries)
  * - /api/*: 60 req/min (default)
+ *
+ * NOTE: Middleware runs at the edge, so we access process.env directly here
+ * but validate the value at runtime rather than importing from @/lib/env
+ * which may not be available in edge runtime.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -19,8 +23,17 @@ import { NextRequest, NextResponse } from 'next/server'
 // Coming Soon / Preview Access Configuration
 // ============================================================================
 
-const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY || 'totalaud-preview-2025'
+// Default preview key used if env var not set (should be changed in production)
+const DEFAULT_PREVIEW_KEY = 'totalaud-preview-2025'
+const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY || DEFAULT_PREVIEW_KEY
 const PREVIEW_COOKIE = 'totalaud_preview_access'
+
+// Log warning if using default preview key in production
+if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY) {
+  console.warn(
+    '[Middleware] Warning: Using default PREVIEW_ACCESS_KEY. Set PREVIEW_ACCESS_KEY env var for production.'
+  )
+}
 
 // Routes that should redirect to coming soon (unless preview access)
 const GATED_ROUTES = ['/workspace', '/login', '/signup', '/onboarding']

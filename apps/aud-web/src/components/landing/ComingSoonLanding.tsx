@@ -165,19 +165,12 @@ export function ComingSoonLanding() {
           releases, craft pitches — all in one place.
         </motion.p>
 
-        {/* 4 Mode Icons */}
+        {/* 4 Mode Icons - Mobile-first: 2 cols on small screens, 4 on sm+ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '16px',
-            marginBottom: '48px',
-            width: '100%',
-            maxWidth: '480px',
-          }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12 w-full max-w-[480px]"
         >
           {MODES.map((mode, index) => (
             <motion.div
@@ -185,38 +178,13 @@ export function ComingSoonLanding() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '16px 8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-              }}
+              className="flex flex-col items-center gap-2 px-2 py-4 rounded-xl border border-white/[0.06] bg-white/[0.03]"
             >
-              <span style={{ color: '#3AA9BE' }} aria-hidden="true">
+              <span className="text-[#3AA9BE]" aria-hidden="true">
                 {mode.icon}
               </span>
-              <span
-                style={{
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  color: '#F7F8F9',
-                }}
-              >
-                {mode.name}
-              </span>
-              <span
-                style={{
-                  fontSize: '11px',
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  textAlign: 'center',
-                }}
-              >
-                {mode.description}
-              </span>
+              <span className="text-[13px] font-medium text-[#F7F8F9]">{mode.name}</span>
+              <span className="text-[11px] text-white/50 text-center">{mode.description}</span>
             </motion.div>
           ))}
         </motion.div>

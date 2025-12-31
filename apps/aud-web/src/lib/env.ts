@@ -70,6 +70,16 @@ const envSchema = z.object({
   // Sentry Error Monitoring
   SENTRY_DSN: z.string().url().optional(),
   SENTRY_AUTH_TOKEN: z.string().optional(),
+
+  // Coming Soon / Preview Access
+  PREVIEW_ACCESS_KEY: z
+    .string()
+    .min(8, 'PREVIEW_ACCESS_KEY must be at least 8 characters')
+    .optional(),
+
+  // ConvertKit (totalaud.io waitlist - separate from TAP)
+  NEXT_PUBLIC_CONVERTKIT_FORM_ID: z.string().optional(),
+  NEXT_PUBLIC_CONVERTKIT_API_KEY: z.string().optional(),
 })
 
 // ============================================
@@ -90,6 +100,8 @@ function validateEnv(): Env {
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      NEXT_PUBLIC_CONVERTKIT_FORM_ID: process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID,
+      NEXT_PUBLIC_CONVERTKIT_API_KEY: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
       NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
     } as Env
   }

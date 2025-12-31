@@ -7,13 +7,14 @@
  * NOTE: Create a form in ConvertKit dashboard first:
  * 1. Create form: "totalaud.io Waitlist"
  * 2. Add tag: "totalaud-waitlist"
- * 3. Set CONVERTKIT_FORM_ID env variable
+ * 3. Set NEXT_PUBLIC_CONVERTKIT_FORM_ID env variable
  */
 
 'use client'
 
 import { useState, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { env } from '@/lib/env'
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -22,7 +23,8 @@ export function WaitlistForm() {
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const formId = process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
+  const formId = env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
+  const apiKey = env.NEXT_PUBLIC_CONVERTKIT_API_KEY
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -52,7 +54,7 @@ export function WaitlistForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          api_key: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
+          api_key: apiKey,
           email,
         }),
       })
@@ -142,7 +144,7 @@ export function WaitlistForm() {
                   e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'
                 }}
               />
-              <button
+              <motion.button
                 type="submit"
                 disabled={formState === 'submitting'}
                 style={{
@@ -158,23 +160,29 @@ export function WaitlistForm() {
                   fontWeight: 600,
                   fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                   cursor: formState === 'submitting' ? 'not-allowed' : 'pointer',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                   boxShadow: '0 0 40px rgba(58, 169, 190, 0.2)',
                   whiteSpace: 'nowrap',
+                  outline: 'none',
                 }}
-                onMouseOver={(e) => {
-                  if (formState !== 'submitting') {
-                    e.currentTarget.style.transform = 'scale(1.02)'
-                    e.currentTarget.style.boxShadow = '0 0 60px rgba(58, 169, 190, 0.3)'
-                  }
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)'
-                  e.currentTarget.style.boxShadow = '0 0 40px rgba(58, 169, 190, 0.2)'
-                }}
+                whileHover={
+                  formState !== 'submitting'
+                    ? { scale: 1.02, boxShadow: '0 0 60px rgba(58, 169, 190, 0.3)' }
+                    : {}
+                }
+                whileFocus={
+                  formState !== 'submitting'
+                    ? {
+                        scale: 1.02,
+                        boxShadow:
+                          '0 0 60px rgba(58, 169, 190, 0.4), 0 0 0 3px rgba(58, 169, 190, 0.5)',
+                      }
+                    : {}
+                }
+                whileTap={formState !== 'submitting' ? { scale: 0.98 } : {}}
+                transition={{ duration: 0.12 }}
               >
                 {formState === 'submitting' ? 'Joining...' : 'Join waitlist'}
-              </button>
+              </motion.button>
             </div>
 
             {formState === 'error' && errorMessage && (
