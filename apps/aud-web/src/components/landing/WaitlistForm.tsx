@@ -1,13 +1,14 @@
 /**
  * Waitlist Form Component - totalaud.io
  *
- * ConvertKit integration for waitlist signups.
- * Uses ConvertKit's form action URL (no API key needed for basic forms).
+ * Kit (ConvertKit) v4 API integration for waitlist signups.
+ * Uses the v4 API endpoint: api.kit.com/v4/forms/:id/subscribers
  *
- * NOTE: Create a form in ConvertKit dashboard first:
+ * NOTE: Create a form in Kit dashboard first:
  * 1. Create form: "totalaud.io Waitlist"
  * 2. Add tag: "totalaud-waitlist"
  * 3. Set NEXT_PUBLIC_CONVERTKIT_FORM_ID env variable
+ * 4. Set NEXT_PUBLIC_CONVERTKIT_API_KEY env variable (v4 key starting with kit_)
  */
 
 'use client'
@@ -48,14 +49,15 @@ export function WaitlistForm() {
         return
       }
 
-      const response = await fetch(`https://api.convertkit.com/v3/forms/${formId}/subscribe`, {
+      // Kit API v4 endpoint - uses api.kit.com and email_address parameter
+      const response = await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          api_key: apiKey,
-          email,
+          email_address: email,
         }),
       })
 
