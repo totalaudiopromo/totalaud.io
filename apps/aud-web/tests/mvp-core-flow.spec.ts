@@ -19,8 +19,8 @@ test.describe('MVP Core Flow', () => {
     await expect(page.getByRole('button', { name: 'Ideas' })).toBeVisible()
 
     // Step 2: Verify ideas interface is visible
-    // The "+ Add" button should be visible in the toolbar
-    const addButton = page.getByRole('button', { name: /\+ Add/i })
+    // The "Add" button should be visible in the toolbar
+    const addButton = page.getByRole('button', { name: /Add/i })
     await expect(addButton).toBeVisible()
 
     // Step 3: Switch to Scout mode
@@ -51,7 +51,7 @@ test.describe('MVP Core Flow', () => {
     await page.goto('/workspace?mode=ideas')
 
     // Should see the Ideas toolbar
-    await expect(page.getByRole('button', { name: /\+ Add/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Add/i })).toBeVisible()
 
     // Should have filter buttons
     await expect(page.getByRole('button', { name: /All/i })).toBeVisible()
