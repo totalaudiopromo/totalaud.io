@@ -12,9 +12,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import type { SignalThreadRow } from '@/types/signal-thread'
 import { transformThreadRow } from '@/types/signal-thread'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('ThreadsAPI')
 
@@ -53,29 +53,18 @@ const deleteThreadSchema = z.object({
 
 export async function GET() {
   try {
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to list threads')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to list threads')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Fetch all threads for user
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const threadsResult = await (supabase as any)
+    const threadsResult = await supabase
       .from('signal_threads')
       .select('*')
       .eq('user_id', session.user.id)
@@ -108,24 +97,15 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to create thread')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to create thread')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Parse and validate body
     const body = await request.json()
@@ -142,9 +122,7 @@ export async function POST(request: NextRequest) {
     const { title, threadType, colour, eventIds } = validation.data
 
     // Insert thread
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const insertResult = await (supabase as any)
+    const insertResult = await supabase
       .from('signal_threads')
       .insert({
         user_id: session.user.id,
@@ -205,24 +183,15 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to update thread')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to update thread')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Parse and validate body
     const body = await request.json()
@@ -252,9 +221,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update thread
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateResult = await (supabase as any)
+    const updateResult = await supabase
       .from('signal_threads')
       .update(updateData)
       .eq('id', id)
@@ -280,8 +247,7 @@ export async function PATCH(request: NextRequest) {
     // If eventIds changed, update event references atomically
     // Uses RPC function to prevent race conditions between clear and set operations
     if (eventIds !== undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rpcResult = await (supabase.rpc as any)('update_thread_events', {
+      const rpcResult = await supabase.rpc('update_thread_events', {
         p_thread_id: id,
         p_user_id: session.user.id,
         p_event_ids: eventIds,
@@ -309,24 +275,15 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to delete thread')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to delete thread')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Parse body for thread ID
     const body = await request.json()
@@ -343,9 +300,7 @@ export async function DELETE(request: NextRequest) {
     const { id } = validation.data
 
     // Delete thread (RLS ensures user can only delete their own)
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: deleteError } = await (supabase as any)
+    const { error: deleteError } = await supabase
       .from('signal_threads')
       .delete()
       .eq('id', id)

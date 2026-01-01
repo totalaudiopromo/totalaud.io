@@ -5,23 +5,14 @@
  * Separated from implementation for testability and reuse.
  */
 
+import type { IdeaTag, SortMode, ViewMode, IdeaCard } from '@/types/ideas'
+import type { SyncState } from '@/types/sync'
+
 // ============================================================================
 // Domain Types
 // ============================================================================
 
-export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
-export type SortMode = 'newest' | 'oldest' | 'alpha'
-export type ViewMode = 'canvas' | 'list'
-
-export interface IdeaCard {
-  id: string
-  content: string
-  tag: IdeaTag
-  position: { x: number; y: number }
-  createdAt: string
-  updatedAt: string
-  isStarter?: boolean
-}
+export type { IdeaTag, SortMode, ViewMode, IdeaCard } from '@/types/ideas'
 
 // ============================================================================
 // State Interface (Pure Data)
@@ -48,16 +39,7 @@ export interface IdeasStateData {
 // Sync State Interface
 // ============================================================================
 
-export interface IdeasSyncState {
-  /** Whether data is loading from Supabase */
-  isLoading: boolean
-  /** Whether data is syncing to Supabase */
-  isSyncing: boolean
-  /** Sync error message */
-  syncError: string | null
-  /** Last successful sync timestamp */
-  lastSyncedAt: string | null
-}
+export interface IdeasSyncState extends SyncState {}
 
 // ============================================================================
 // Actions Interface
@@ -65,7 +47,12 @@ export interface IdeasSyncState {
 
 export interface IdeasActions {
   // CRUD
-  addCard: (content: string, tag: IdeaTag, position?: { x: number; y: number }) => Promise<string>
+  addCard: (
+    content: string,
+    tag: IdeaTag,
+    position?: { x: number; y: number },
+    seed?: number
+  ) => Promise<string>
   updateCard: (id: string, updates: Partial<Pick<IdeaCard, 'content' | 'tag'>>) => Promise<void>
   deleteCard: (id: string) => Promise<void>
   moveCard: (id: string, position: { x: number; y: number }) => Promise<void>

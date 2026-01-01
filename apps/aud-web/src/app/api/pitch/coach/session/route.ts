@@ -10,15 +10,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
+import type { CoachingMode, CoachingPhase, PitchType } from '@/types/pitch'
 
 const log = logger.scope('PitchCoachSessionAPI')
-
-// ============ Types ============
-
-type CoachingMode = 'quick' | 'guided'
-type CoachingPhase = 'foundation' | 'refinement' | 'optimisation'
-type PitchType = 'radio' | 'press' | 'playlist' | 'custom'
 
 interface HistoryMessage {
   role: 'user' | 'coach'
@@ -279,25 +274,15 @@ function shouldAdvancePhase(
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to coaching session')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to coaching session')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     const body = await request.json()
     const validated = requestSchema.parse(body)
@@ -307,8 +292,7 @@ export async function POST(request: NextRequest) {
     // Fetch artist identity for context (optional enhancement)
     let artistIdentity: ArtistIdentity | null = null
     try {
-      // Note: Type assertion needed until Supabase types are regenerated
-      const { data: identity } = await (supabase as any)
+      const { data: identity } = await supabase
         .from('artist_identities')
         .select(
           'brand_tone, brand_themes, brand_style, key_phrases, one_liner, press_angle, pitch_hook, comparisons, last_generated_at'

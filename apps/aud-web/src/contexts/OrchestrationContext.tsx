@@ -18,6 +18,7 @@ import type {
 } from '@/types/console'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { logger } from '@/lib/logger'
+import { generateId } from '@/lib/id'
 import { toast } from 'sonner'
 
 const log = logger.scope('OrchestrationContext')
@@ -114,7 +115,7 @@ export function OrchestrationProvider({ children, campaignId }: OrchestrationPro
     async (logInput: Omit<OutreachLog, 'id' | 'timestamp'>) => {
       try {
         const newLog: OutreachLog = {
-          id: `outreach-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          id: generateId('outreach'),
           ...logInput,
           timestamp: new Date().toISOString(),
           campaign_id: logInput.campaign_id || campaignId,

@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('IntelAgentAPI')
 
@@ -43,20 +43,12 @@ export async function POST(req: NextRequest) {
       sessionId,
     })
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     if (userId && userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -70,11 +62,7 @@ export async function POST(req: NextRequest) {
       try {
         log.debug('Fetching document assets for user', { userId: resolvedUserId })
 
-        // Type assertion needed due to @supabase/auth-helpers-nextjs 0.10.0
-        // not fully supporting the new Database type format with __InternalSupabase.
-        // TODO: Migrate to @supabase/ssr to resolve this properly.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: assets, error } = await (supabase as any)
+        const { data: assets, error } = await supabase
           .from('artist_assets')
           .select('*')
           .eq('user_id', resolvedUserId)
@@ -126,8 +114,7 @@ export async function POST(req: NextRequest) {
     // Save results to database if authenticated
     if (session && sessionId) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any).from('agent_results').insert({
+        await supabase.from('agent_results').insert({
           user_id: resolvedUserId,
           session_id: sessionId,
           agent_type: 'intel',
@@ -186,7 +173,7 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error: 'Intel generation failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Intel generation failed',
       },
       { status: 500 }
     )

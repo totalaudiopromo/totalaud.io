@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('AssetUpdateAPI')
 
@@ -61,21 +61,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
-
+    const { supabase, session } = auth
     const userId = session.user.id
 
     // Verify asset exists and user owns it
@@ -122,7 +113,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Failed to update asset',
-          details: updateError.message,
         },
         { status: 500 }
       )
@@ -157,7 +147,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )

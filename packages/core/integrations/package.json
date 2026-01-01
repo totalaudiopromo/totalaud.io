@@ -8,6 +8,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "@total-audio/core-logger": "workspace:*",
     "googleapis": "^144.0.0",
     "nanoid": "^5.1.6"
   },

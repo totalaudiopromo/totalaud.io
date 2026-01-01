@@ -11,8 +11,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { tapClient, TotalAudioApiError } from '@/lib/tap-client'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('TAPTrackerCampaigns')
 
@@ -41,51 +41,40 @@ const createCampaignSchema = z.object({
  * GET /api/tap/tracker/campaigns
  * List all campaigns with metrics and patterns
  */
-/**
- * Helper to verify authentication
- */
-async function verifyAuth() {
-  const supabase = await createRouteSupabaseClient()
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession()
-
-  return { session, sessionError, supabase }
-}
-
 export async function GET() {
   try {
-    // Authenticate request
-    const { session, sessionError } = await verifyAuth()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'AUTH_ERROR',
-            message: 'Failed to verify authentication',
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'AUTH_ERROR',
+              message: 'Failed to verify authentication',
+            },
           },
-        },
-        { status: 500 }
-      )
+          { status: 500 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'UNAUTHORISED',
+              message: 'Authentication required',
+            },
+          },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to Tracker campaigns GET')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to Tracker campaigns GET')
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'UNAUTHORISED',
-            message: 'Authentication required',
-          },
-        },
-        { status: 401 }
-      )
-    }
+    const { session } = auth
 
     // Check if Tracker is configured
     if (!tapClient.isConfigured('tracker')) {
@@ -120,7 +109,7 @@ export async function GET() {
           success: false,
           error: {
             code: error.code,
-            message: error.message,
+            message: 'Tracker service error',
           },
         },
         { status: error.status }
@@ -147,36 +136,38 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const { session, sessionError } = await verifyAuth()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'AUTH_ERROR',
-            message: 'Failed to verify authentication',
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'AUTH_ERROR',
+              message: 'Failed to verify authentication',
+            },
           },
-        },
-        { status: 500 }
-      )
+          { status: 500 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'UNAUTHORISED',
+              message: 'Authentication required',
+            },
+          },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to Tracker campaigns POST')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to Tracker campaigns POST')
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'UNAUTHORISED',
-            message: 'Authentication required',
-          },
-        },
-        { status: 401 }
-      )
-    }
+    const { session } = auth
 
     // Check if Tracker is configured
     if (!tapClient.isConfigured('tracker')) {
@@ -234,7 +225,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: {
             code: error.code,
-            message: error.message,
+            message: 'Tracker service error',
           },
         },
         { status: error.status }

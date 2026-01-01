@@ -14,6 +14,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
+import { generateId } from '@/lib/id'
 
 const log = logger.scope('SignalThreadStore')
 
@@ -142,7 +143,7 @@ interface SignalThreadState {
 // ============================================================================
 
 function generateThreadId(): string {
-  return `thread-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+  return generateId('thread')
 }
 
 function fromSupabaseThread(data: DatabaseThread): SignalThread {

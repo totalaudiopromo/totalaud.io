@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import type { OutreachLog } from '@/lib/tracker-with-assets'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth, type AuthContext } from '@/lib/api/auth'
 
 const log = logger.scope('TrackerAgentAPI')
 
@@ -35,20 +35,12 @@ export async function POST(req: NextRequest) {
 
     log.info('Tracker request received', { sessionId, userId, campaignId })
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     if (userId && userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -94,7 +86,7 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error: 'Tracker fetch failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Tracker fetch failed',
       },
       { status: 500 }
     )
@@ -117,7 +109,7 @@ interface DbOutreachLog {
 }
 
 async function fetchOutreachLogs(
-  supabase: Awaited<ReturnType<typeof createRouteSupabaseClient>>,
+  supabase: AuthContext['supabase'],
   params: { sessionId: string; userId: string; campaignId: string }
 ): Promise<OutreachLog[]> {
   const { sessionId, userId, campaignId } = params

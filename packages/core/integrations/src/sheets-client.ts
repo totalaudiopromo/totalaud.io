@@ -11,6 +11,9 @@
  */
 
 import { google } from 'googleapis'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('SheetsClient')
 
 export interface SheetsMetrics {
   totalContacts: number
@@ -81,7 +84,7 @@ export class SheetsClient {
         lastSyncAt: new Date().toISOString(),
       }
     } catch (error) {
-      console.error('[SheetsClient] Error fetching metrics:', error)
+      log.error('Error fetching metrics', error)
       return {
         totalContacts: 0,
         newContacts: 0,
@@ -118,7 +121,7 @@ export class SheetsClient {
 
       return contacts
     } catch (error) {
-      console.error('[SheetsClient] Error getting contacts:', error)
+      log.error('Error getting contacts', error)
       return []
     }
   }
@@ -145,7 +148,7 @@ export class SheetsClient {
         sheetCount: spreadsheet.sheets?.length || 0,
       }
     } catch (error) {
-      console.error('[SheetsClient] Error getting metadata:', error)
+      log.error('Error getting metadata', error)
       return {
         lastModified: new Date().toISOString(),
         title: '',
@@ -205,7 +208,7 @@ export class SheetsClient {
         errors: [],
       }
     } catch (error) {
-      console.error('[SheetsClient] Error adding contacts:', error)
+      log.error('Error adding contacts', error)
       return {
         success: false,
         added: 0,
@@ -256,7 +259,7 @@ export class SheetsClient {
         message: `Updated ${email} status to ${newStatus}`,
       }
     } catch (error) {
-      console.error('[SheetsClient] Error updating contact:', error)
+      log.error('Error updating contact', error)
       return {
         success: false,
         message: (error as Error).message,
@@ -293,7 +296,7 @@ export class SheetsClient {
         return true
       })
     } catch (error) {
-      console.error('[SheetsClient] Error searching contacts:', error)
+      log.error('Error searching contacts', error)
       return []
     }
   }
@@ -338,7 +341,7 @@ export class SheetsClient {
         addedThisWeek,
       }
     } catch (error) {
-      console.error('[SheetsClient] Error getting statistics:', error)
+      log.error('Error getting statistics', error)
       return {
         total: 0,
         byStatus: {},

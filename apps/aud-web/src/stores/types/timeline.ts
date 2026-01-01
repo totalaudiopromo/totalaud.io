@@ -6,6 +6,7 @@
  */
 
 import type { Opportunity } from '@/types/scout'
+import type { SyncState } from '@/types/sync'
 
 // ============================================================================
 // Domain Types
@@ -84,16 +85,7 @@ export interface TimelineTrackerState {
 // Supabase Sync State
 // ============================================================================
 
-export interface TimelineSyncState {
-  /** Whether data is loading from Supabase */
-  isLoading: boolean
-  /** Whether data is syncing to Supabase */
-  isSyncing: boolean
-  /** Sync error message */
-  syncError: string | null
-  /** Last successful sync timestamp */
-  lastSyncedAt: string | null
-}
+export interface TimelineSyncState extends SyncState {}
 
 // ============================================================================
 // Actions Interface

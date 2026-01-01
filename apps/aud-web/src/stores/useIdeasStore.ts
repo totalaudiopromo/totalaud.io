@@ -15,22 +15,14 @@ import { persist } from 'zustand/middleware'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { SyncedIdea } from '@/hooks/useSupabaseSync'
 import { logger } from '@/lib/logger'
+import { generateId } from '@/lib/id'
+import type { IdeaCard, IdeaTag, SortMode, ViewMode } from '@/types/ideas'
+import type { IdeasState } from '@/stores/types/ideas'
+
+export type { IdeaCard, IdeaTag, SortMode, ViewMode } from '@/types/ideas'
+export type { IdeasState } from '@/stores/types/ideas'
 
 const log = logger.scope('Ideas Store')
-
-export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
-export type SortMode = 'newest' | 'oldest' | 'alpha'
-export type ViewMode = 'canvas' | 'list'
-
-export interface IdeaCard {
-  id: string
-  content: string
-  tag: IdeaTag
-  position: { x: number; y: number }
-  createdAt: string
-  updatedAt: string
-  isStarter?: boolean
-}
 
 // Starter ideas for new users
 const STARTER_IDEAS: Omit<IdeaCard, 'id' | 'createdAt' | 'updatedAt'>[] = [
@@ -54,48 +46,24 @@ const STARTER_IDEAS: Omit<IdeaCard, 'id' | 'createdAt' | 'updatedAt'>[] = [
   },
 ]
 
-interface IdeasState {
-  cards: IdeaCard[]
-  filter: IdeaTag | null
-  selectedCardId: string | null
-  searchQuery: string
-  sortMode: SortMode
-  viewMode: ViewMode
-  hasSeenStarters: boolean
-
-  // Sync state
-  isLoading: boolean
-  isSyncing: boolean
-  syncError: string | null
-  lastSyncedAt: string | null
-
-  // Actions
-  addCard: (content: string, tag: IdeaTag, position?: { x: number; y: number }) => Promise<string>
-  updateCard: (id: string, updates: Partial<Pick<IdeaCard, 'content' | 'tag'>>) => Promise<void>
-  deleteCard: (id: string) => Promise<void>
-  moveCard: (id: string, position: { x: number; y: number }) => Promise<void>
-  setFilter: (tag: IdeaTag | null) => void
-  selectCard: (id: string | null) => void
-  clearAllCards: () => Promise<void>
-  setSearchQuery: (query: string) => void
-  setSortMode: (mode: SortMode) => void
-  setViewMode: (mode: ViewMode) => void
-  initStarterIdeas: () => void
-  dismissStarterIdeas: () => Promise<void>
-
-  // Sync actions
-  loadFromSupabase: () => Promise<void>
-  syncToSupabase: () => Promise<void>
+function generateIdeaId(): string {
+  return generateId('idea')
 }
 
-function generateId(): string {
-  return `idea-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e4).toString(16)}`
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
 
-function getRandomPosition(): { x: number; y: number } {
+function getRandomPosition(seed?: number): { x: number; y: number } {
+  const rng = seed === undefined ? Math.random : mulberry32(seed)
   return {
-    x: 100 + Math.floor(Math.random() * 400),
-    y: 100 + Math.floor(Math.random() * 300),
+    x: 100 + Math.floor(rng() * 400),
+    y: 100 + Math.floor(rng() * 300),
   }
 }
 
@@ -171,15 +139,15 @@ export const useIdeasStore = create<IdeasState>()(
 
       // ========== CRUD Actions ==========
 
-      addCard: async (content, tag, position) => {
-        const id = generateId()
+      addCard: async (content, tag, position, seed) => {
+        const id = generateIdeaId()
         const now = new Date().toISOString()
 
         const newCard: IdeaCard = {
           id,
           content,
           tag,
-          position: position ?? getRandomPosition(),
+          position: position ?? getRandomPosition(seed),
           createdAt: now,
           updatedAt: now,
         }

@@ -8,9 +8,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('CreditsAPI')
 
@@ -50,33 +50,27 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<CreditsResponse | CreditsError>> {
   try {
-    const supabase = await createRouteSupabaseClient()
-
-    // Check authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Session error', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
-        { status: 401 }
-      )
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
+          { status: 401 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
-        { status: 401 }
-      )
-    }
+    const { supabase, session } = auth
 
     // Fetch or create credits record
     // Note: user_credits table added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('user_credits')
       .select('balance_pence, total_purchased_pence, total_spent_pence')
       .eq('user_id', session.user.id)
@@ -132,20 +126,17 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<{ success: boolean; newBalance?: number; error?: string }>> {
   try {
-    const supabase = await createRouteSupabaseClient()
-
-    // Check authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      )
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 }),
+      onUnauthenticated: () =>
+        NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 }),
+    })
+    if (auth instanceof NextResponse) {
+      return auth
     }
+
+    const { supabase, session } = auth
 
     // Parse body
     const body: AddCreditsBody = await request.json()
@@ -165,8 +156,7 @@ export async function POST(
 
     // Call the add_credits function
     // Note: add_credits function added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.rpc as any)('add_credits', {
+    const { data, error } = await supabase.rpc('add_credits', {
       p_user_id: session.user.id,
       p_amount_pence: amountPence,
       p_transaction_type: transactionType,

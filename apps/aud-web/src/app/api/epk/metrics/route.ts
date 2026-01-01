@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('EPKMetricsAPI')
 
@@ -41,22 +41,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'groupBy must be region or device' }, { status: 400 })
     }
 
-    const supabase = await createRouteSupabaseClient()
-
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to EPK metrics')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to EPK metrics')
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Fetch analytics data
     const { data: analytics, error: analyticsError } = await supabase

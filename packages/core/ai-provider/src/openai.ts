@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
 import type { AIMessage, AICompletionOptions, AICompletionResult } from './types'
 
 // Lazy-load the OpenAI client to avoid build-time errors when OPENAI_API_KEY is not set
@@ -18,10 +19,14 @@ export async function completeWithOpenAI(
   options: AICompletionOptions = {}
 ): Promise<AICompletionResult> {
   const model = options.model || 'gpt-4o'
+  const mappedMessages: ChatCompletionMessageParam[] = messages.map((message) => ({
+    role: message.role,
+    content: message.content,
+  }))
 
   const completion = await getOpenAIClient().chat.completions.create({
     model,
-    messages: messages as any,
+    messages: mappedMessages,
     temperature: options.temperature ?? 0.7,
     max_tokens: options.max_tokens ?? 2000,
   })

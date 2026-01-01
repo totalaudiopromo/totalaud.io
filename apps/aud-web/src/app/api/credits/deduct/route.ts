@@ -8,9 +8,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('CreditsDeductAPI')
 
@@ -39,20 +39,23 @@ interface DeductCreditsResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<DeductCreditsResponse>> {
   try {
-    const supabase = await createRouteSupabaseClient()
-
-    // Check authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
-        { status: 401 }
-      )
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
+          { status: 401 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
+      return auth
     }
+
+    const { supabase, session } = auth
 
     // Parse body
     const body: DeductCreditsBody = await request.json()
@@ -67,8 +70,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<DeductCre
 
     // Call the deduct_credits function
     // Note: deduct_credits function added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.rpc as any)('deduct_credits', {
+    const { data, error } = await supabase.rpc('deduct_credits', {
       p_user_id: session.user.id,
       p_amount_pence: ENRICHMENT_COST_PENCE,
       p_description: `Contact enrichment: ${opportunityName || opportunityId}`,

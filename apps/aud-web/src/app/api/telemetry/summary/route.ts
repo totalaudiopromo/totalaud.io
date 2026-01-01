@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('TelemetrySummaryAPI')
 
@@ -74,20 +74,12 @@ export async function GET(request: NextRequest) {
     const periodParam = searchParams.get('period') || '7d'
     const days = parsePeriod(periodParam)
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { session, supabase } = auth
 
     const userId = session.user.id
 
@@ -98,8 +90,7 @@ export async function GET(request: NextRequest) {
 
     // Build query
     // Note: flow_telemetry table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query = (supabase as any)
+    let query = supabase
       .from('flow_telemetry')
       .select('*')
       .eq('user_id', userId)
@@ -119,7 +110,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Database query failed',
-          details: error.message,
         },
         { status: 500 }
       )
@@ -249,7 +239,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )

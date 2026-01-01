@@ -7,10 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { stripe, getPriceId } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('StripeCheckout')
 
@@ -22,16 +22,13 @@ const checkoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = await createServerSupabaseClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
+
+    const { supabase, session: authSession } = auth
+    const user = authSession.user
 
     // Parse and validate request body with Zod
     const body = await request.json()
@@ -83,7 +80,7 @@ export async function POST(request: NextRequest) {
     const mode = tier === 'pro_annual' ? 'subscription' : 'subscription'
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode,
       line_items: [
@@ -112,10 +109,10 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       tier,
       currency,
-      sessionId: session.id,
+      sessionId: checkoutSession.id,
     })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
     log.error('Checkout session error', error)
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })

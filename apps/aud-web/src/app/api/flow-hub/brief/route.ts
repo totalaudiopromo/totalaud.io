@@ -24,8 +24,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 import Anthropic from '@anthropic-ai/sdk'
+import { env } from '@/lib/env'
 
 const log = logger.scope('FlowHubBriefAPI')
 
@@ -43,22 +44,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'period must be 7, 30, or 90' }, { status: 400 })
     }
 
-    const supabase = await createRouteSupabaseClient()
-
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to flow hub brief')
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { session, supabase } = auth
 
     const userId = session.user.id
 
@@ -66,8 +57,7 @@ export async function POST(req: NextRequest) {
 
     // Fetch summary data
     // Note: flow_hub_summary_cache table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: summaryRow, error: summaryError } = await (supabase as any)
+    const { data: summaryRow, error: summaryError } = await supabase
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -109,7 +99,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey = env.ANTHROPIC_API_KEY
 
     if (!apiKey) {
       log.error('ANTHROPIC_API_KEY not configured')
@@ -152,8 +142,7 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('flow_hub_summary_cache')
       .update({ metrics: updatedMetrics })
       .eq('user_id', userId)

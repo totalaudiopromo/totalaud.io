@@ -11,8 +11,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import type { SignalThreadRow } from '@/types/signal-thread'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('ThreadNarrativeAPI')
 
@@ -71,24 +71,15 @@ Return ONLY the JSON object, no other text.`
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to generate narrative')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to generate narrative')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Parse and validate body
     const body = await request.json()
@@ -105,8 +96,7 @@ export async function POST(request: NextRequest) {
     const { threadId } = validation.data
 
     // Fetch the thread
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const threadResult = await (supabase as any)
+    const threadResult = await supabase
       .from('signal_threads')
       .select('*')
       .eq('id', threadId)
@@ -220,8 +210,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update thread with narrative
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('signal_threads')
       .update({
         narrative_summary: narrativeData.narrativeSummary,

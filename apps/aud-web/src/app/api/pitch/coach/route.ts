@@ -10,14 +10,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
+import type { CoachAction, PitchType } from '@/types/pitch'
 
 const log = logger.scope('PitchCoachAPI')
-
-// ============ Types ============
-
-type CoachAction = 'improve' | 'suggest' | 'rewrite'
-type PitchType = 'radio' | 'press' | 'playlist' | 'custom'
 
 // ============ Validation ============
 
@@ -150,25 +146,15 @@ const SECTION_GUIDANCE: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to pitch coach')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to pitch coach')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     const body = await request.json()
     const validated = requestSchema.parse(body)
@@ -176,10 +162,9 @@ export async function POST(request: NextRequest) {
     const { action, sectionId, sectionTitle, content, pitchType, allSections } = validated
 
     // Fetch artist identity for context (optional, enhances suggestions)
-    // Note: Type assertion needed until Supabase types are regenerated
     let artistIdentity: ArtistIdentity | null = null
     try {
-      const { data: identity } = await (supabase as any)
+      const { data: identity } = await supabase
         .from('artist_identities')
         .select(
           'brand_tone, brand_themes, brand_style, key_phrases, one_liner, press_angle, pitch_hook, comparisons, last_generated_at'

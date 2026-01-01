@@ -11,6 +11,9 @@
  */
 
 import { google } from 'googleapis'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('GmailClient')
 
 export interface GmailMetrics {
   sent: number
@@ -68,7 +71,7 @@ export class GmailClient {
         lastSyncAt: new Date().toISOString(),
       }
     } catch (error) {
-      console.error('[GmailClient] Error fetching metrics:', error)
+      log.error('Error fetching metrics', error)
       throw error
     }
   }
@@ -89,7 +92,7 @@ export class GmailClient {
 
       return response.data.resultSizeEstimate || 0
     } catch (error) {
-      console.error('[GmailClient] Error getting sent emails:', error)
+      log.error('Error getting sent emails', error)
       return 0
     }
   }
@@ -110,7 +113,7 @@ export class GmailClient {
 
       return response.data.resultSizeEstimate || 0
     } catch (error) {
-      console.error('[GmailClient] Error getting replies:', error)
+      log.error('Error getting replies', error)
       return 0
     }
   }
@@ -155,13 +158,13 @@ export class GmailClient {
           }
         } catch (err) {
           // Skip if thread fetch fails
-          console.warn('[GmailClient] Failed to fetch thread:', message.threadId)
+          log.warn('Failed to fetch thread', { threadId: message.threadId })
         }
       }
 
       return followUpsNeeded
     } catch (error) {
-      console.error('[GmailClient] Error getting follow-ups:', error)
+      log.error('Error getting follow-ups', error)
       return 0
     }
   }
@@ -196,7 +199,7 @@ export class GmailClient {
         },
       }
     } catch (error) {
-      console.error('[GmailClient] Error tracking sent email:', error)
+      log.error('Error tracking sent email', error)
       throw error
     }
   }
@@ -246,7 +249,7 @@ export class GmailClient {
           })
         }
       } catch (error) {
-        console.warn('[GmailClient] Failed to check thread:', threadId)
+        log.warn('Failed to check thread', { threadId })
         results.push({
           threadId,
           hasReply: false,
@@ -276,7 +279,7 @@ export class GmailClient {
         threadsTotal: response.data.threadsTotal || 0,
       }
     } catch (error) {
-      console.error('[GmailClient] Error getting user profile:', error)
+      log.error('Error getting user profile', error)
       throw error
     }
   }
@@ -325,7 +328,7 @@ export class GmailClient {
         threadId: response.data.threadId,
       }
     } catch (error) {
-      console.error('[GmailClient] Failed to send email:', error)
+      log.error('Failed to send email', error)
       throw error
     }
   }

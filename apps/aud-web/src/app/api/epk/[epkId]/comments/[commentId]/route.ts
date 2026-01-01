@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('EpkCommentDetailAPI')
 
@@ -15,24 +15,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
     }
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to retrieve session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: commentRecord, error: commentError } = await (supabase as any)
+    const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -66,8 +57,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('epk_comments')
       .update({ body: body.body })
       .eq('id', commentId)
@@ -91,24 +81,15 @@ export async function DELETE(
   try {
     const { epkId, commentId } = await params
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to retrieve session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: commentRecord, error: commentError } = await (supabase as any)
+    const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -142,11 +123,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: deleteError } = await (supabase as any)
-      .from('epk_comments')
-      .delete()
-      .eq('id', commentId)
+    const { error: deleteError } = await supabase.from('epk_comments').delete().eq('id', commentId)
 
     if (deleteError) {
       log.error('Failed to delete comment', deleteError)

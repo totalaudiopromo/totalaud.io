@@ -18,8 +18,10 @@ import {
   getTemplateLaneColour,
 } from '@/lib/timeline/templates'
 import { useTimelineStore } from '@/stores/useTimelineStore'
-import { generateEventId, LANES } from '@/types/timeline'
 import type { LaneType, NewTimelineEvent } from '@/types/timeline'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('TemplateSelector')
 
 // ============================================================================
 // Types
@@ -94,7 +96,7 @@ export function TemplateSelector({ isOpen, onClose }: TemplateSelectorProps) {
 
       handleClose()
     } catch (error) {
-      console.error('Failed to load template:', error)
+      log.error('Failed to load template', error)
       setIsLoading(false)
     }
   }, [selectedTemplate, releaseDate, addEvent, clearSampleEvents, handleClose])

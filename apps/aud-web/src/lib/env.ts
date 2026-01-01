@@ -11,6 +11,9 @@
  */
 
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Env')
 
 // ============================================
 // Schema Definition
@@ -114,11 +117,11 @@ function validateEnv(): Env {
       .map(([key, messages]) => `  ${key}: ${messages?.join(', ')}`)
       .join('\n')
 
-    console.error('❌ Invalid environment variables:\n' + errorMessages)
+    log.error('Invalid environment variables', undefined, { errors: errorMessages })
 
     // In development, continue with warnings
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ Continuing with invalid env vars in development mode')
+      log.warn('Continuing with invalid env vars in development mode')
       return process.env as unknown as Env
     }
 

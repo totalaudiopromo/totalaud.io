@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 import { z } from 'zod'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('NavigatorAPI')
 
@@ -32,15 +33,9 @@ When answering, always provide:
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
     // Validate input
@@ -56,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     const { question } = validationResult.data
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey = env.ANTHROPIC_API_KEY
     if (!apiKey) {
       log.error('ANTHROPIC_API_KEY not configured')
       return NextResponse.json({ error: 'AI service not configured' }, { status: 503 })

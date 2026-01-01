@@ -370,6 +370,9 @@ importers:
 
   packages/core/integrations:
     dependencies:
+      '@total-audio/core-logger':
+        specifier: workspace:*
+        version: link:../logger
       '@total-audio/core-supabase':
         specifier: workspace:*
         version: link:../supabase
@@ -3118,6 +3121,12 @@ packages:
     dependencies:
       undici-types: 6.21.0
 
+  /@types/node@20.19.27:
+    resolution: {integrity: sha512-N2clP5pJhB2YnZJ3PIHFk5RkygRX5WO/5f0WC08tp0wd+sv0rsJk3MqWn3CbNmT2J505a5336jaQj4ph1AdMug==}
+    dependencies:
+      undici-types: 6.21.0
+    dev: false
+
   /@types/node@22.19.3:
     resolution: {integrity: sha512-1N9SBnWYOJTrNZCdh/yJE+t910Y128BoyY+zBLWhL3r0TYzlTmFdXrPwHL9DyFZmlEXNQQolTZh3KHV31QDhyA==}
     dependencies:
@@ -5856,7 +5865,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 20.19.22
+      '@types/node': 20.19.27
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: false

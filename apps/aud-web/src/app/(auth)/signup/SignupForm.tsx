@@ -13,6 +13,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('SignupForm')
 
 // Feature-specific contextual headers
 const FEATURE_HEADERS: Record<string, { title: string; subtitle: string }> = {
@@ -139,13 +142,13 @@ export function SignupForm() {
               return
             } else {
               // Checkout API didn't return URL - go to workspace with error param
-              console.error('Checkout API did not return URL:', checkoutData)
+              log.error('Checkout API did not return URL', undefined, { checkoutData })
               router.push('/workspace?checkout=error')
               return
             }
           } catch (checkoutError) {
             // If checkout fails, go to workspace (not onboarding) so they can retry from settings
-            console.error('Checkout redirect failed:', checkoutError)
+            log.error('Checkout redirect failed', checkoutError)
             router.push('/workspace?checkout=error')
             return
           }

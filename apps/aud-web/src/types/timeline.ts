@@ -13,6 +13,8 @@
  * Integrates with TAP Tracker for optional campaign logging.
  */
 
+import { generateId } from '@/lib/id'
+
 // ============================================================================
 // Lane Types
 // ============================================================================
@@ -114,6 +116,8 @@ export type TimelineEventUpdate = Partial<Omit<TimelineEvent, 'id' | 'createdAt'
  * Sample events for demo purposes.
  * These are loaded as initial state but can be cleared.
  */
+const SAMPLE_EVENT_TIMESTAMP = '2025-01-01T12:00:00.000Z'
+
 export const SAMPLE_EVENTS: TimelineEvent[] = [
   {
     id: 'sample-1',
@@ -123,8 +127,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#8B5CF6',
     description: 'Send to mastering engineer',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-2',
@@ -134,8 +138,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#8B5CF6',
     description: 'DistroKid / TuneCore submission',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-3',
@@ -145,8 +149,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#3AA9BE',
     description: 'Single drops on all platforms',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-4',
@@ -156,8 +160,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#F59E0B',
     description: 'BBC Radio 1, 6 Music outreach',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-5',
@@ -167,8 +171,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#F59E0B',
     description: 'Spotify editorial submissions',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-6',
@@ -178,8 +182,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#EC4899',
     description: 'One-day shoot in London',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-7',
@@ -189,8 +193,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#EC4899',
     description: '15s clips for TikTok/Reels',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
   {
     id: 'sample-8',
@@ -200,8 +204,8 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     colour: '#10B981',
     description: 'Analyse streaming data',
     source: 'sample',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: SAMPLE_EVENT_TIMESTAMP,
+    updatedAt: SAMPLE_EVENT_TIMESTAMP,
   },
 ]
 
@@ -220,5 +224,5 @@ export function getLaneColour(lane: LaneType): string {
  * Generate a unique event ID.
  */
 export function generateEventId(): string {
-  return `evt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  return generateId('evt')
 }

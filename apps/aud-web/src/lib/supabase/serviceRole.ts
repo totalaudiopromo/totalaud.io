@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@total-audio/schemas-database'
+import type { SupabaseDatabase } from '@/types/supabase'
 
-let cachedClient: ReturnType<typeof createClient<Database>> | null = null
+let cachedClient: ReturnType<typeof createClient<SupabaseDatabase>> | null = null
 
 export function getSupabaseServiceRoleClient() {
   if (cachedClient) {
@@ -17,7 +17,7 @@ export function getSupabaseServiceRoleClient() {
     )
   }
 
-  cachedClient = createClient<Database>(supabaseUrl, serviceRoleKey, {
+  cachedClient = createClient<SupabaseDatabase>(supabaseUrl, serviceRoleKey, {
     auth: {
       persistSession: false,
     },

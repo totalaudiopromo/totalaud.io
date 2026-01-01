@@ -8,26 +8,20 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { getSupabaseServiceRoleClient } from '@/lib/supabase/serviceRole'
 import { logger } from '@/lib/logger'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('AccountDeleteAPI')
 
 export async function DELETE() {
   try {
-    // Get the current user from session
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
-
-    if (userError || !user) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    const userId = user.id
+    const userId = auth.session.user.id
 
     // Get admin client with service role for deletion
     const adminClient = getSupabaseServiceRoleClient()

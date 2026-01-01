@@ -10,8 +10,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { tapClient, TotalAudioApiError } from '@/lib/tap-client'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('TAPPitchGenerate')
 
@@ -36,39 +36,33 @@ const generateRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'AUTH_ERROR',
-            message: 'Failed to verify authentication',
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'AUTH_ERROR',
+              message: 'Failed to verify authentication',
+            },
           },
-        },
-        { status: 500 }
-      )
-    }
-
-    if (!session) {
+          { status: 500 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'UNAUTHORISED',
+              message: 'Authentication required',
+            },
+          },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
       log.warn('Unauthenticated request to Pitch generate')
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'UNAUTHORISED',
-            message: 'Authentication required',
-          },
-        },
-        { status: 401 }
-      )
+      return auth
     }
 
     // Check if Pitch is configured
@@ -133,7 +127,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: {
             code: error.code,
-            message: error.message,
+            message: 'Pitch generation failed',
           },
         },
         { status: error.status }

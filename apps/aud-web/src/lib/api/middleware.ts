@@ -12,10 +12,13 @@ import type { Session, User } from '@supabase/supabase-js'
 
 const log = logger.scope('APIMiddleware')
 
+type RouteSupabaseClient = Awaited<ReturnType<typeof createRouteSupabaseClient>>
+
 // Types
 export interface AuthenticatedContext {
   user: User
   session: Session
+  supabase: RouteSupabaseClient
 }
 
 export interface AuthenticatedRequest extends NextRequest {
@@ -67,6 +70,7 @@ export function withAuth<T = unknown>(handler: AuthenticatedHandler<T>): RouteHa
       authenticatedRequest.auth = {
         user: session.user,
         session,
+        supabase,
       }
 
       return handler(authenticatedRequest, context)
@@ -85,7 +89,7 @@ interface RateLimitConfig {
   maxRequests: number // Max requests per window
 }
 
-// In-memory rate limit store (for production, use Redis)
+// In-memory rate limit store (per-instance only; for production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
 /**

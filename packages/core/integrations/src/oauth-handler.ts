@@ -13,6 +13,9 @@
 
 import { nanoid } from 'nanoid'
 import crypto from 'crypto'
+import { logger } from '@total-audio/core-logger'
+
+const log = logger.scope('OAuthHandler')
 
 export type IntegrationType = 'gmail' | 'google_sheets' | 'airtable' | 'mailchimp' | 'spotify'
 
@@ -211,7 +214,7 @@ export class OAuthHandler {
 
       return tokens
     } catch (error) {
-      console.error('[OAuthHandler] Token exchange error:', error)
+      log.error('Token exchange error', error)
       throw error
     }
   }
@@ -257,7 +260,7 @@ export class OAuthHandler {
 
       return tokens
     } catch (error) {
-      console.error('[OAuthHandler] Token refresh error:', error)
+      log.error('Token refresh error', error)
       throw error
     }
   }

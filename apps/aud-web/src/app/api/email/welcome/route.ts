@@ -9,8 +9,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { sendWelcomeEmail } from '@/lib/email'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('API:Welcome Email')
 
@@ -22,16 +22,12 @@ const requestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
+
+    const user = auth.session.user
 
     // Parse and validate request body
     const body = await request.json()

@@ -9,6 +9,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import { ToastContainer, Toast, ToastAction } from '@/components/ui/Toast'
 import { getRandomMessage, triggerHaptic, checkMilestone } from '@/lib/celebrations'
+import { generateId } from '@/lib/id'
 
 interface ToastContextValue {
   addToast: (message: string, type?: Toast['type'], duration?: number, action?: ToastAction) => void
@@ -37,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const addToast = useCallback(
     (message: string, type: Toast['type'] = 'success', duration = 3000, action?: ToastAction) => {
-      const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`
+      const id = generateId('toast')
       setToasts((prev) => [...prev, { id, message, type, duration, action }])
 
       // Haptic feedback on mobile

@@ -6,25 +6,22 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('StripePortal')
 
 export async function POST() {
   try {
-    // Get authenticated user
-    const supabase = await createServerSupabaseClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
+
+    const { supabase, session: authSession } = auth
+    const user = authSession.user
 
     // Get Stripe customer ID
     const { data: profile } = await supabase
@@ -38,14 +35,14 @@ export async function POST() {
     }
 
     // Create portal session
-    const session = await stripe.billingPortal.sessions.create({
+    const portalSession = await stripe.billingPortal.sessions.create({
       customer: profile.stripe_customer_id,
       return_url: `${env.NEXT_PUBLIC_APP_URL}/workspace`,
     })
 
     log.info('Created portal session', { userId: user.id })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: portalSession.url })
   } catch (error) {
     log.error('Portal session error', error)
     return NextResponse.json({ error: 'Failed to create portal session' }, { status: 500 })

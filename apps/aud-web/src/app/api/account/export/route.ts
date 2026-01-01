@@ -7,8 +7,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('AccountExport')
 
@@ -30,17 +30,13 @@ async function safeQuery<T>(
 }
 
 export async function GET() {
-  const supabase = await createServerSupabaseClient()
-
-  // Get authenticated user
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  const auth = await requireAuth()
+  if (auth instanceof NextResponse) {
+    return auth
   }
+
+  const { supabase, session } = auth
+  const user = session.user
 
   log.info('Data export requested', { userId: user.id })
 

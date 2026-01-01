@@ -18,6 +18,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('Middleware')
 
 // ============================================================================
 // Coming Soon / Preview Access Configuration
@@ -30,9 +33,7 @@ const PREVIEW_COOKIE = 'totalaud_preview_access'
 
 // Log warning if using default preview key in production
 if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY) {
-  console.warn(
-    '[Middleware] Warning: Using default PREVIEW_ACCESS_KEY. Set PREVIEW_ACCESS_KEY env var for production.'
-  )
+  log.warn('Using default PREVIEW_ACCESS_KEY. Set PREVIEW_ACCESS_KEY env var for production.')
 }
 
 // Routes that should redirect to coming soon (unless preview access)

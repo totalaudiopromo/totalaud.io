@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('AgentRunAPI')
 
@@ -25,21 +25,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { role, input, loopContext, originOS } = agentRunRequestSchema.parse(body)
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
-
+    const { session } = auth
     const userId = session.user.id
 
     log.info('Agent run request received', {
@@ -73,7 +64,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: 'Agent run failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Agent run failed',
       },
       { status: 500 }
     )

@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('FlowHubSummaryAPI')
 
@@ -26,20 +26,12 @@ export async function GET(req: NextRequest) {
     const periodParam = parseInt(searchParams.get('period') || '7', 10)
     const period = ALLOWED_PERIODS.has(periodParam) ? periodParam : 7
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { session, supabase } = auth
 
     const userId = session.user.id
     const now = new Date()
@@ -47,8 +39,7 @@ export async function GET(req: NextRequest) {
     periodStart.setDate(periodStart.getDate() - period)
 
     // Note: flow_hub_summary_cache table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: cachedSummary, error: cacheError } = await (supabase as any)
+    const { data: cachedSummary, error: cacheError } = await supabase
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -66,8 +57,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!summary || !isCacheHit) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: refreshError } = await (supabase as any).rpc('refresh_flow_hub_summary', {
+      const { error: refreshError } = await supabase.rpc('refresh_flow_hub_summary', {
         uid: userId,
       })
 
@@ -76,8 +66,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const refreshed = await (supabase as any)
+      const refreshed = await supabase
         .from('flow_hub_summary_cache')
         .select('metrics, generated_at, expires_at')
         .eq('user_id', userId)

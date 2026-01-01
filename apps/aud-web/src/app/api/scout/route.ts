@@ -16,9 +16,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import type { Opportunity, OpportunityType, AudienceSize, OpportunitySource } from '@/types/scout'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('ScoutAPI')
 
@@ -113,29 +113,23 @@ export async function GET(
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
     const offset = parseInt(searchParams.get('offset') || '0', 10)
 
-    // Create authenticated client
-    const supabase = await createRouteSupabaseClient()
-
-    // Check authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Session error', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
-        { status: 401 }
-      )
+    const auth = await requireAuth({
+      onSessionError: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication error', code: 'AUTH_ERROR' },
+          { status: 401 }
+        ),
+      onUnauthenticated: () =>
+        NextResponse.json(
+          { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
+          { status: 401 }
+        ),
+    })
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required', code: 'UNAUTHENTICATED' },
-        { status: 401 }
-      )
-    }
+    const { supabase } = auth
 
     // Build query
     let query = supabase

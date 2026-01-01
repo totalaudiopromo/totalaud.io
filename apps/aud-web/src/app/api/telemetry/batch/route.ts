@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('TelemetryBatchAPI')
 
@@ -81,20 +81,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { session, supabase } = auth
 
     const userId = session.user.id
 
@@ -110,8 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Batch insert to Supabase
     // Note: flow_telemetry table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('flow_telemetry')
       .insert(eventsToInsert)
       .select('id')
@@ -121,7 +112,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Database insert failed',
-          details: error.message,
         },
         { status: 500 }
       )
@@ -146,7 +136,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )

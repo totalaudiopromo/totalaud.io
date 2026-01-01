@@ -21,6 +21,7 @@ import {
   determineOutletType,
 } from '@/lib/discovery'
 import { logger } from '@/lib/logger'
+import { generateId } from '@/lib/id'
 
 const log = logger.scope('Scout Discovery')
 
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
       const outletType = determineOutletType(sourceDomain, url)
 
       contacts.push({
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: generateId('contact'),
         email,
         name: null, // Would need more sophisticated extraction
         role: null, // Would need more sophisticated extraction
@@ -180,9 +181,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response)
   } catch (error) {
     log.error('Discovery error', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Discovery failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Discovery failed' }, { status: 500 })
   }
 }

@@ -8,6 +8,10 @@ import jsPDF from 'jspdf'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('PDFExport')
+const PDF_MARGINS = { top: 25, left: 20 }
+const PDF_PAGE_BREAK_Y = 260
+const PDF_SECTION_BREAK_Y = 250
+const PDF_FOOTER_Y = 285
 
 interface TimelineEvent {
   id: string
@@ -43,14 +47,14 @@ export async function exportTimelineToPDF(
     // Header
     doc.setFontSize(24)
     doc.setTextColor(15, 17, 19) // #0F1113
-    doc.text(title, 20, 25)
+    doc.text(title, PDF_MARGINS.left, PDF_MARGINS.top)
 
     // Subtitle if provided
-    let yPos = 35
+    let yPos = PDF_MARGINS.top + 10
     if (subtitle) {
       doc.setFontSize(12)
       doc.setTextColor(107, 114, 128) // #6B7280
-      doc.text(subtitle, 20, yPos)
+      doc.text(subtitle, PDF_MARGINS.left, yPos)
       yPos += 10
     }
 
@@ -63,7 +67,7 @@ export async function exportTimelineToPDF(
         month: 'long',
         year: 'numeric',
       })}`,
-      20,
+      PDF_MARGINS.left,
       yPos
     )
     yPos += 15
@@ -71,20 +75,20 @@ export async function exportTimelineToPDF(
     // Divider line
     doc.setDrawColor(229, 231, 235) // #E5E7EB
     doc.setLineWidth(0.5)
-    doc.line(20, yPos, pageWidth - 20, yPos)
+    doc.line(PDF_MARGINS.left, yPos, pageWidth - PDF_MARGINS.left, yPos)
     yPos += 15
 
     // Events
     if (filteredEvents.length === 0) {
       doc.setFontSize(12)
       doc.setTextColor(107, 114, 128)
-      doc.text('No events to display', 20, yPos)
+      doc.text('No events to display', PDF_MARGINS.left, yPos)
     } else {
       filteredEvents.forEach((event, index) => {
         // Check if we need a new page
-        if (yPos > 260) {
+        if (yPos > PDF_PAGE_BREAK_Y) {
           doc.addPage()
-          yPos = 25
+          yPos = PDF_MARGINS.top
         }
 
         // Event number and title
@@ -94,21 +98,21 @@ export async function exportTimelineToPDF(
 
         const checkbox = event.completed ? '☑' : '☐'
         const titleText = `${checkbox} ${index + 1}. ${event.title}`
-        doc.text(titleText, 20, yPos)
+        doc.text(titleText, PDF_MARGINS.left, yPos)
         yPos += 7
 
         // Date
         doc.setFontSize(11)
         doc.setTextColor(58, 169, 190) // #3AA9BE
         doc.setFont('helvetica', 'normal')
-        doc.text(event.date, 20, yPos)
+        doc.text(event.date, PDF_MARGINS.left, yPos)
         yPos += 6
 
         // Category badge (if present)
         if (event.category) {
           doc.setFontSize(9)
           doc.setTextColor(107, 114, 128)
-          doc.text(`Category: ${event.category}`, 20, yPos)
+          doc.text(`Category: ${event.category}`, PDF_MARGINS.left, yPos)
           yPos += 5
         }
 
@@ -118,7 +122,7 @@ export async function exportTimelineToPDF(
           doc.setTextColor(75, 85, 99) // #4B5563
           const maxWidth = pageWidth - 45
           const lines = doc.splitTextToSize(event.description, maxWidth)
-          doc.text(lines, 20, yPos)
+          doc.text(lines, PDF_MARGINS.left, yPos)
           yPos += lines.length * 5 + 2
         }
 
@@ -133,7 +137,9 @@ export async function exportTimelineToPDF(
 
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i)
-      doc.text(`totalaud.io • Page ${i} of ${pageCount}`, pageWidth / 2, 285, { align: 'center' })
+      doc.text(`totalaud.io • Page ${i} of ${pageCount}`, pageWidth / 2, PDF_FOOTER_Y, {
+        align: 'center',
+      })
     }
 
     // Generate filename
@@ -170,18 +176,18 @@ export async function exportPitchToPDF(
   try {
     const doc = new jsPDF()
     const pageWidth = doc.internal.pageSize.getWidth()
-    let yPos = 25
+    let yPos = PDF_MARGINS.top
 
     // Header
     doc.setFontSize(24)
     doc.setTextColor(15, 17, 19)
-    doc.text(`${artistName} - Press Kit`, 20, yPos)
+    doc.text(`${artistName} - Press Kit`, PDF_MARGINS.left, yPos)
     yPos += 15
 
     // Generation date
     doc.setFontSize(10)
     doc.setTextColor(156, 163, 175)
-    doc.text(`Generated ${new Date().toLocaleDateString('en-GB')}`, 20, yPos)
+    doc.text(`Generated ${new Date().toLocaleDateString('en-GB')}`, PDF_MARGINS.left, yPos)
     yPos += 15
 
     // Sections
@@ -193,16 +199,16 @@ export async function exportPitchToPDF(
     ].filter((s) => s.content)
 
     sections.forEach((section) => {
-      if (yPos > 250) {
+      if (yPos > PDF_SECTION_BREAK_Y) {
         doc.addPage()
-        yPos = 25
+        yPos = PDF_MARGINS.top
       }
 
       // Section title
       doc.setFontSize(14)
       doc.setTextColor(58, 169, 190)
       doc.setFont('helvetica', 'bold')
-      doc.text(section.title, 20, yPos)
+      doc.text(section.title, PDF_MARGINS.left, yPos)
       yPos += 8
 
       // Section content
@@ -211,14 +217,14 @@ export async function exportPitchToPDF(
       doc.setFont('helvetica', 'normal')
       const maxWidth = pageWidth - 40
       const lines = doc.splitTextToSize(section.content!, maxWidth)
-      doc.text(lines, 20, yPos)
+      doc.text(lines, PDF_MARGINS.left, yPos)
       yPos += lines.length * 5 + 15
     })
 
     // Footer
     doc.setFontSize(8)
     doc.setTextColor(156, 163, 175)
-    doc.text('totalaud.io', pageWidth / 2, 285, { align: 'center' })
+    doc.text('totalaud.io', pageWidth / 2, PDF_FOOTER_Y, { align: 'center' })
 
     // Save
     const safeName = artistName.toLowerCase().replace(/[^a-z0-9]+/g, '-')

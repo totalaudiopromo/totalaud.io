@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('EpkCommentsAPI')
 
@@ -26,20 +26,12 @@ export async function GET(
   try {
     const { epkId } = await params
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to retrieve session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     const { data: collaborators, error: collaboratorsError } = await supabase
       .from('campaign_collaborators')
@@ -57,9 +49,7 @@ export async function GET(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-    // Using type assertion to allow build to pass - will handle gracefully at runtime
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: commentRowsData, error: commentsError } = await (supabase as any)
+    const { data: commentRowsData, error: commentsError } = await supabase
       .from('epk_comments')
       .select('id, epk_id, user_id, body, parent_id, created_at, updated_at')
       .eq('epk_id', epkId)
@@ -125,20 +115,12 @@ export async function POST(
       return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
     }
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to retrieve session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
     const parentId = body.parentId ?? null
 
     const { data: roleRecord, error: roleError } = await supabase
@@ -165,8 +147,7 @@ export async function POST(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: inserted, error: insertError } = await (supabase as any)
+    const { data: inserted, error: insertError } = await supabase
       .from('epk_comments')
       .insert(insertPayload)
       .select('id, epk_id, user_id, body, parent_id, created_at, updated_at')

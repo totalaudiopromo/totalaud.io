@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import type { AssetAttachment } from '@/types/asset-attachment'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('PitchAgentAPI')
 
@@ -59,20 +59,12 @@ export async function POST(req: NextRequest) {
       campaignId,
     })
 
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json({ error: 'Failed to verify authentication' }, { status: 500 })
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      return auth
     }
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     const authenticatedUserId = session.user.id
 
@@ -109,18 +101,15 @@ export async function POST(req: NextRequest) {
     if (campaignId && contactName) {
       try {
         // Create outreach log entry
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: insertError } = await (supabase as any)
-          .from('campaign_outreach_logs')
-          .insert({
-            user_id: authenticatedUserId,
-            campaign_id: campaignId,
-            contact_name: contactName,
-            message_preview: pitch.substring(0, 200), // First 200 chars
-            asset_ids: publicAttachments.map((a) => a.id),
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-          })
+        const { error: insertError } = await supabase.from('campaign_outreach_logs').insert({
+          user_id: authenticatedUserId,
+          campaign_id: campaignId,
+          contact_name: contactName,
+          message_preview: pitch.substring(0, 200), // First 200 chars
+          asset_ids: publicAttachments.map((a) => a.id),
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+        })
 
         if (insertError) {
           log.warn('Failed to write outreach log', { error: insertError })
@@ -178,7 +167,7 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error: 'Pitch generation failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Pitch generation failed',
       },
       { status: 500 }
     )

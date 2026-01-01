@@ -9,7 +9,9 @@ export default [
     ignores: [
       'node_modules/**',
       '.next/**',
+      '**/.next/**',
       '.turbo/**',
+      '**/.turbo/**',
       'dist/**',
       'build/**',
       '*.config.js',
@@ -17,6 +19,10 @@ export default [
       'pnpm-lock.yaml',
       '**/*.d.ts',
       '**/next-env.d.ts',
+      '**/playwright-report/**',
+      '**/test-results/**',
+      '**/tests/output/**',
+      '**/_archive/**',
     ],
   },
   {

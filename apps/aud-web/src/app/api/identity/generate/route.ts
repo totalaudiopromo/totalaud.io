@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { logger } from '@/lib/logger'
-import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { requireAuth } from '@/lib/api/auth'
 
 const log = logger.scope('IdentityGenerateAPI')
 
@@ -102,25 +102,15 @@ Return ONLY the JSON object, no other text.`
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
-    const supabase = await createRouteSupabaseClient()
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError) {
-      log.error('Failed to verify session', sessionError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify authentication' },
-        { status: 500 }
-      )
+    const auth = await requireAuth()
+    if (auth instanceof NextResponse) {
+      if (auth.status === 401) {
+        log.warn('Unauthenticated request to identity generate')
+      }
+      return auth
     }
 
-    if (!session) {
-      log.warn('Unauthenticated request to identity generate')
-      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
-    }
+    const { supabase, session } = auth
 
     // Fetch user's pitch drafts
     const { data: drafts, error: draftsError } = await supabase
