@@ -80,27 +80,14 @@ const DEFAULT_SECTIONS: PitchSection[] = [
     title: 'The Hook',
     content: '',
     placeholder:
-      'Start with something memorable - a striking fact, an emotional moment, or a bold statement about your music.',
+      'Start with something memorable — a striking fact, an emotional moment, or a bold statement about your music.',
   },
   {
     id: 'story',
     title: 'Your Story',
     content: '',
-    placeholder: 'Share the journey behind this release. What inspired it? What makes it personal?',
-  },
-  {
-    id: 'sound',
-    title: 'The Sound',
-    content: '',
     placeholder:
-      'Describe your sound using reference points listeners will recognise. "If X met Y in a dimly lit studio..."',
-  },
-  {
-    id: 'traction',
-    title: 'Proof Points',
-    content: '',
-    placeholder:
-      'Include any relevant achievements: streams, radio plays, notable support, press coverage.',
+      'Share your journey, describe your sound, and include any proof points (streams, radio plays, press coverage).',
   },
   {
     id: 'ask',

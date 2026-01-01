@@ -13,6 +13,7 @@ import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { IdeaCard as IdeaCardType, IdeaTag } from '@/stores/useIdeasStore'
 import { transition, duration } from '@/lib/motion'
+import { suggestTag } from '@/lib/ideas/suggestTag'
 
 const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }> = {
   content: {
@@ -24,11 +25,6 @@ const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }>
     bg: 'rgba(168, 85, 247, 0.08)',
     border: 'rgba(168, 85, 247, 0.3)',
     text: '#A855F7',
-  },
-  music: {
-    bg: 'rgba(34, 197, 94, 0.08)',
-    border: 'rgba(34, 197, 94, 0.3)',
-    text: '#22C55E',
   },
   promo: {
     bg: 'rgba(249, 115, 22, 0.08)',
@@ -90,11 +86,22 @@ export function IdeaCard({
   }, [card.content])
 
   const handleBlur = useCallback(() => {
-    if (editContent.trim() !== card.content) {
-      onUpdate({ content: editContent.trim() })
+    const trimmedContent = editContent.trim()
+
+    if (trimmedContent !== card.content) {
+      // Content changed - suggest a tag based on new content
+      const suggestedTag = suggestTag(trimmedContent)
+
+      // Only update tag if it's different AND content is substantial (>10 chars)
+      // This prevents tag switching on very short edits
+      if (suggestedTag !== card.tag && trimmedContent.length > 10) {
+        onUpdate({ content: trimmedContent, tag: suggestedTag })
+      } else {
+        onUpdate({ content: trimmedContent })
+      }
     }
     setIsEditing(false)
-  }, [editContent, card.content, onUpdate])
+  }, [editContent, card.content, card.tag, onUpdate])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -112,7 +119,7 @@ export function IdeaCard({
   const handleTagClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const tags: IdeaTag[] = ['content', 'brand', 'music', 'promo']
+      const tags: IdeaTag[] = ['content', 'brand', 'promo']
       const currentIndex = tags.indexOf(card.tag)
       const nextTag = tags[(currentIndex + 1) % tags.length]
       onUpdate({ tag: nextTag })

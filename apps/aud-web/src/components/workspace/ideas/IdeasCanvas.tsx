@@ -21,6 +21,7 @@ import {
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useIdeasUndo, useIdeasUndoKeyboard } from '@/hooks/useIdeasUndo'
+import { useIdeasKeyboard } from '@/hooks/useIdeasKeyboard'
 import { IdeaCard } from './IdeaCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { getLaneColour, type LaneType } from '@/types/timeline'
@@ -63,6 +64,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
   // Undo/Redo hooks
   const { trackDelete, trackUpdate, getCardSnapshot, restoreLastDeleted } = useIdeasUndo()
   useIdeasUndoKeyboard() // Enable Cmd+Z / Cmd+Shift+Z
+  useIdeasKeyboard() // Enable Cmd+N (new idea), Escape (deselect)
 
   // Handler to delete with undo tracking
   const handleDelete = useCallback(
@@ -103,13 +105,12 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
     async (card: { id: string; content: string; tag: IdeaTag }) => {
       // Map idea tags to timeline lanes
       const tagToLane: Record<IdeaTag, LaneType> = {
-        content: 'content',
-        brand: 'promo',
-        music: 'release',
-        promo: 'promo',
+        content: 'post-release',
+        brand: 'post-release',
+        promo: 'post-release',
       }
 
-      const lane = tagToLane[card.tag] || 'content'
+      const lane = tagToLane[card.tag] || 'post-release'
 
       await addTimelineEvent({
         lane,

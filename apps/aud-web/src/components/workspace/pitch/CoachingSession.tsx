@@ -1,12 +1,19 @@
 /**
  * Coaching Session Component
  * Phase 1.5: Intelligence Navigator - Multi-turn Q&A coaching
+ * Phase 2: DESSA Speed Improvements
  *
  * Provides guided conversations with the AI coach:
  * - Quick Tips mode for fast feedback
  * - Guided mode for deep-dive coaching sessions
  * - Phase progression (Foundation → Refinement → Optimisation)
  * - Follow-up suggestions for continued dialogue
+ * - Quick action chips for faster interaction
+ *
+ * FUTURE ENHANCEMENT: Streaming responses for real-time feedback
+ * - Requires API route changes to use ReadableStream
+ * - Frontend to handle partial responses
+ * - Would significantly improve perceived speed
  */
 
 'use client'
@@ -17,6 +24,7 @@ import {
   usePitchStore,
   selectCoachingSession,
   type CoachingMode,
+  type CoachingPhase,
   type CoachingMessage,
 } from '@/stores/usePitchStore'
 import { TypingIndicator } from '@/components/ui/EmptyState'
@@ -48,6 +56,53 @@ const MODE_LABELS: Record<CoachingMode, { label: string; icon: string; descripti
     label: 'Deep Dive',
     icon: '🎯',
     description: 'Guided coaching conversation',
+  },
+}
+
+// Quick action suggestions based on mode and phase (DESSA Phase 2)
+const QUICK_ACTIONS: Record<
+  CoachingMode,
+  Record<CoachingPhase, { label: string; message: string }[]>
+> = {
+  quick: {
+    foundation: [
+      { label: 'Improve this section', message: 'Help me improve the section I am working on' },
+      { label: 'Check my hook', message: 'Is my hook strong enough?' },
+      { label: 'Make it shorter', message: 'Help me make this more concise' },
+      { label: 'Add personality', message: 'How can I add more personality to this?' },
+    ],
+    refinement: [
+      { label: 'Make it punchier', message: 'Make this more punchy and impactful' },
+      { label: 'Check clarity', message: 'Is my message clear?' },
+      { label: 'Improve the hook', message: 'How can I strengthen my hook?' },
+      { label: 'Cut the fluff', message: 'What should I remove?' },
+    ],
+    optimisation: [
+      { label: 'Is this ready?', message: 'Is this pitch ready to send?' },
+      { label: 'Final polish', message: 'Give me final polish suggestions' },
+      { label: 'Check the ask', message: 'Is my ask clear and specific?' },
+      { label: 'One last review', message: 'Do a final review of everything' },
+    ],
+  },
+  guided: {
+    foundation: [
+      { label: 'What makes me unique?', message: 'Help me identify what makes my sound unique' },
+      { label: 'My influences', message: 'How should I describe my influences?' },
+      { label: 'Target audience', message: 'Who is my ideal listener?' },
+      { label: 'My story', message: 'What story should I tell?' },
+    ],
+    refinement: [
+      { label: 'Strengthen the hook', message: 'How can I make my hook more compelling?' },
+      { label: 'More vivid language', message: 'Help me use more vivid language' },
+      { label: 'What is not working?', message: 'What parts should I cut or change?' },
+      { label: 'Does this sound like me?', message: 'Does this feel authentic to my voice?' },
+    ],
+    optimisation: [
+      { label: 'Ready to send?', message: 'Is this pitch ready to send?' },
+      { label: 'Check my ask', message: 'Is my ask clear and compelling?' },
+      { label: 'Every word counts', message: 'Help me make every word count' },
+      { label: 'Match the target', message: 'Does this match my target audience?' },
+    ],
   },
 }
 
@@ -109,6 +164,15 @@ export function CoachingSession() {
     setInputValue(suggestion)
     inputRef.current?.focus()
   }
+
+  // Handle quick action click - send immediately
+  const handleQuickActionClick = async (message: string) => {
+    if (isLoading) return
+    await sendSessionMessage(message, selectedSectionId || undefined)
+  }
+
+  // Get quick actions based on current mode and phase
+  const quickActions = mode && phase ? QUICK_ACTIONS[mode][phase] : QUICK_ACTIONS.quick.foundation
 
   // Mode selection view
   if (!isActive) {
@@ -213,19 +277,40 @@ export function CoachingSession() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {/* Welcome message */}
         {messages.length === 0 && (
-          <div className="p-4 rounded-xl bg-ta-cyan/5 border border-ta-cyan/10 text-xs text-ta-cyan/80 leading-relaxed">
-            {mode === 'quick' ? (
-              <>
-                Ready for quick tips! Ask me anything about your pitch and I'll give you fast,
-                actionable feedback.
-              </>
-            ) : (
-              <>
-                Let's dive deep into your pitch together. I'll ask questions to understand your
-                music and help you find your authentic voice. What would you like to work on?
-              </>
-            )}
-          </div>
+          <>
+            <div className="p-4 rounded-xl bg-ta-cyan/5 border border-ta-cyan/10 text-xs text-ta-cyan/80 leading-relaxed">
+              {mode === 'quick' ? (
+                <>
+                  Ready for quick tips! Ask me anything about your pitch and I'll give you fast,
+                  actionable feedback.
+                </>
+              ) : (
+                <>
+                  Let's dive deep into your pitch together. I'll ask questions to understand your
+                  music and help you find your authentic voice. What would you like to work on?
+                </>
+              )}
+            </div>
+
+            {/* Quick action chips (DESSA Phase 2 - Speed Improvement) */}
+            <div className="space-y-2">
+              <p className="text-[10px] text-ta-grey px-1">Quick start:</p>
+              <div className="flex flex-wrap gap-2">
+                {quickActions.map((action, i) => (
+                  <motion.button
+                    key={i}
+                    onClick={() => handleQuickActionClick(action.message)}
+                    disabled={isLoading}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-3 py-2 text-xs font-medium text-ta-white bg-ta-cyan/10 hover:bg-ta-cyan/15 border border-ta-cyan/20 hover:border-ta-cyan/30 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_-5px_rgba(58,169,190,0.3)]"
+                  >
+                    {action.label}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
         {/* Message history */}

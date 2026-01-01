@@ -11,7 +11,7 @@ import type { Opportunity } from '@/types/scout'
 // Domain Types
 // ============================================================================
 
-export type LaneType = 'pre-release' | 'release' | 'promo' | 'content' | 'analytics'
+export type LaneType = 'pre-release' | 'release' | 'post-release'
 export type EventSource = 'manual' | 'scout' | 'sample'
 export type TrackerSyncStatus = 'idle' | 'syncing' | 'synced' | 'error'
 

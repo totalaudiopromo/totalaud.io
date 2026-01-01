@@ -812,10 +812,10 @@ export function LandingPage() {
                   },
                   {
                     content: 'New synth patches for EP',
-                    tag: 'music',
+                    tag: 'content',
                     x: 520,
                     y: 25,
-                    colour: '#22C55E',
+                    colour: '#3AA9BE',
                   },
                   {
                     content: 'Submit to BBC Radio 1 Introducing',

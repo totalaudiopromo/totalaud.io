@@ -22,16 +22,19 @@ import {
   ChevronDownIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { useToast } from '@/contexts/ToastContext'
 
 export function PitchToolbar() {
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [showDraftsMenu, setShowDraftsMenu] = useState(false)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [draftName, setDraftName] = useState('')
-  const [copyFeedback, setCopyFeedback] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
   const draftsRef = useRef<HTMLDivElement>(null)
+
+  // Toast for celebrations
+  const { pitchCopied } = useToast()
 
   const {
     currentType,
@@ -65,8 +68,7 @@ export function PitchToolbar() {
     if (!currentType) return
     const text = buildPitchPlainText(sections, currentType)
     await navigator.clipboard.writeText(text)
-    setCopyFeedback(true)
-    setTimeout(() => setCopyFeedback(false), 2000)
+    pitchCopied()
     setShowExportMenu(false)
   }
 
@@ -221,7 +223,7 @@ export function PitchToolbar() {
                 }`}
               >
                 <DocumentArrowDownIcon className="h-4 w-4" />
-                {copyFeedback ? 'Copied!' : 'Export'}
+                Export
                 <ChevronDownIcon className="h-3 w-3" />
               </button>
 

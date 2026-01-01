@@ -24,6 +24,7 @@ import { SAMPLE_EVENTS, generateEventId, getLaneColour } from '@/types/timeline'
 import type { Opportunity } from '@/types/scout'
 import type { SyncedTimelineEvent } from '@/hooks/useSupabaseSync'
 import type { Database } from '@total-audio/schemas-database'
+import { generateReleaseSequence } from '@/lib/timeline/autoSequence'
 
 type TimelineEventRowUpdate = Database['public']['Tables']['user_timeline_events']['Update']
 
@@ -67,6 +68,9 @@ interface TimelineState {
   // Scout integration
   addFromOpportunity: (opportunity: Opportunity, lane?: LaneType) => Promise<string>
   isOpportunityInTimeline: (opportunityId: string) => boolean
+
+  // Auto-sequence generation
+  generateFromReleaseDate: (releaseDate: Date) => Promise<void>
 
   // TAP Tracker integration
   syncToTracker: (eventId: string) => Promise<void>
@@ -334,7 +338,7 @@ export const useTimelineStore = create<TimelineState>()(
 
       // ========== Scout Integration ==========
 
-      addFromOpportunity: async (opportunity, lane = 'promo') => {
+      addFromOpportunity: async (opportunity, lane = 'post-release') => {
         const { addEvent } = get()
 
         const newEvent: NewTimelineEvent = {
@@ -355,6 +359,23 @@ export const useTimelineStore = create<TimelineState>()(
       isOpportunityInTimeline: (opportunityId) => {
         const { events } = get()
         return events.some((event) => event.opportunityId === opportunityId)
+      },
+
+      // ========== Auto-sequence Generation ==========
+
+      generateFromReleaseDate: async (releaseDate) => {
+        const sequence = generateReleaseSequence(releaseDate)
+        const { addEvent } = get()
+
+        // Add all events sequentially
+        for (const event of sequence) {
+          await addEvent(event)
+        }
+
+        log.info('Generated release sequence', {
+          releaseDate: releaseDate.toISOString(),
+          eventCount: sequence.length,
+        })
       },
 
       // ========== TAP Tracker Integration ==========
@@ -597,9 +618,7 @@ export const selectEventCountByLane = (state: TimelineState): Record<LaneType, n
     {
       'pre-release': 0,
       release: 0,
-      promo: 0,
-      content: 0,
-      analytics: 0,
+      'post-release': 0,
     } as Record<LaneType, number>
   )
 }

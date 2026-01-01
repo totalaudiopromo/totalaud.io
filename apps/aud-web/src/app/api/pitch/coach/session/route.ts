@@ -1,9 +1,18 @@
 /**
  * Pitch Coach Session API Route
  * Phase 1.5: Intelligence Navigator - Multi-turn coaching conversations
+ * Phase 2: DESSA Speed Improvements
  *
  * Handles guided Q&A sessions with context preservation,
  * follow-up suggestions, and phase-based coaching progression.
+ *
+ * FUTURE ENHANCEMENT - Streaming Responses:
+ * To further improve perceived speed, this route could be enhanced with streaming:
+ * - Use ReadableStream to send partial responses as they're generated
+ * - Update frontend to handle streaming with fetch() + response.body.getReader()
+ * - Show partial text as it arrives (like ChatGPT typing effect)
+ * - Would reduce perceived latency from ~2-3s to near-instant feedback
+ * - Implementation reference: https://sdk.vercel.ai/docs/guides/streaming
  */
 
 import { NextRequest, NextResponse } from 'next/server'

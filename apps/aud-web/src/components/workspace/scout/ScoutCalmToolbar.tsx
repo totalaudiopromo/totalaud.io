@@ -7,14 +7,13 @@ import {
   selectOpportunityCountByType,
 } from '@/stores/useScoutStore'
 import type { OpportunityType } from '@/types/scout'
-import { TYPE_LABELS, TYPE_COLOURS } from '@/types/scout'
+import { TYPE_LABELS, TYPE_COLOURS, SMART_PRESETS } from '@/types/scout'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
-
-const TYPES: OpportunityType[] = ['playlist', 'radio', 'blog', 'press', 'curator']
 
 export function ScoutCalmToolbar() {
   const filters = useScoutStore((state) => state.filters)
   const setFilter = useScoutStore((state) => state.setFilter)
+  const applyPreset = useScoutStore((state) => state.applyPreset)
   const resetFilters = useScoutStore((state) => state.resetFilters)
   const totalOpportunities = useScoutStore((state) => state.opportunities.length)
   const filteredCount = useScoutStore(selectFilteredOpportunities).length
@@ -35,11 +34,11 @@ export function ScoutCalmToolbar() {
 
   const hasActiveFilters = filters.type || filters.genres.length > 0 || filters.searchQuery
 
-  const handleTypeFilter = useCallback(
-    (type: OpportunityType | null) => {
-      setFilter('type', type)
+  const handlePresetClick = useCallback(
+    (preset: (typeof SMART_PRESETS)[number]) => {
+      applyPreset(preset)
     },
-    [setFilter]
+    [applyPreset]
   )
 
   return (
@@ -76,68 +75,43 @@ export function ScoutCalmToolbar() {
           <div className="absolute inset-0 -z-10 bg-ta-cyan/5 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 rounded-xl" />
         </div>
 
-        {/* Filters & Tabs */}
+        {/* Smart Presets - Simplified Filters */}
         <div
           role="tablist"
-          aria-label="Filter opportunities by type"
+          aria-label="Filter opportunities by preset"
           className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-5 px-5 md:mx-0 md:px-0"
         >
-          <button
-            role="tab"
-            aria-selected={!filters.type}
-            aria-controls="scout-grid"
-            onClick={() => handleTypeFilter(null)}
-            className={`
-              flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200
-              ${
-                !filters.type
-                  ? 'bg-white text-ta-black border-white'
-                  : 'bg-transparent text-ta-grey border-white/10 hover:border-white/20 hover:text-white'
-              }
-            `}
-          >
-            All
-            <span
-              aria-label={`${totalOpportunities} total opportunities`}
-              className={`text-[10px] ${!filters.type ? 'text-ta-black/60' : 'text-ta-grey/60'}`}
-            >
-              {totalOpportunities}
-            </span>
-          </button>
-
-          <div className="w-px h-4 bg-white/10 mx-1" />
-
-          {TYPES.map((type) => {
-            const colour = TYPE_COLOURS[type]
-            const count = countByType[type] || 0
-            const isActive = filters.type === type
+          {SMART_PRESETS.map((preset) => {
+            const isActive =
+              (preset.label === 'All' && !filters.type) || filters.type === preset.filters.type
+            const count =
+              preset.label === 'All'
+                ? totalOpportunities
+                : preset.filters.type
+                  ? countByType[preset.filters.type] || 0
+                  : 0
 
             return (
               <button
-                key={type}
+                key={preset.label}
                 role="tab"
                 aria-selected={isActive}
                 aria-controls="scout-grid"
-                onClick={() => handleTypeFilter(type)}
+                onClick={() => handlePresetClick(preset)}
                 className={`
                   flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 whitespace-nowrap
                   ${
                     isActive
-                      ? `border-opacity-100 bg-opacity-10`
-                      : 'bg-transparent border-transparent text-ta-grey hover:bg-white/5 hover:text-white'
+                      ? 'bg-white text-ta-black border-white'
+                      : 'bg-transparent text-ta-grey border-white/10 hover:border-white/20 hover:text-white'
                   }
                 `}
-                style={{
-                  borderColor: isActive ? colour.border : 'transparent',
-                  backgroundColor: isActive ? `${colour.bg}10` : undefined,
-                  color: isActive ? colour.text : undefined,
-                }}
               >
-                {TYPE_LABELS[type]}
+                {preset.label}
                 {count > 0 && (
                   <span
-                    aria-label={`${count} ${TYPE_LABELS[type]} opportunities`}
-                    className="opacity-60 text-[10px]"
+                    aria-label={`${count} ${preset.label} opportunities`}
+                    className={`text-[10px] ${isActive ? 'text-ta-black/60' : 'text-ta-grey/60'}`}
                   >
                     {count}
                   </span>

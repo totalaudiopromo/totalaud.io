@@ -2,12 +2,10 @@
  * Timeline Canvas Component
  * 2025 Brand Pivot - Cinematic Editorial
  *
- * 5 swim lanes for release planning with drag-drop support:
+ * 3 swim lanes for release planning with drag-drop support:
  * - Pre-release (preparation)
  * - Release (launch day)
- * - Promo (promotion activities)
- * - Content (social/video content)
- * - Analytics (tracking & insights)
+ * - Post-release (promotion, content, analytics)
  *
  * Phase 2: Signal Threads integration
  * - Visual connectors between threaded events

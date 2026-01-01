@@ -3,12 +3,10 @@
  *
  * Phase 3: MVP Pivot - Timeline Store
  *
- * Types for timeline events across 5 swim lanes:
+ * Types for timeline events across 3 swim lanes:
  * - Pre-release (preparation)
  * - Release (launch day)
- * - Promo (promotion activities)
- * - Content (social/video content)
- * - Analytics (tracking & insights)
+ * - Post-release (promotion, content, analytics)
  *
  * Integrates with TAP Tracker for optional campaign logging.
  */
@@ -17,7 +15,7 @@
 // Lane Types
 // ============================================================================
 
-export type LaneType = 'pre-release' | 'release' | 'promo' | 'content' | 'analytics'
+export type LaneType = 'pre-release' | 'release' | 'post-release'
 
 export interface Lane {
   id: LaneType
@@ -29,11 +27,9 @@ export interface Lane {
  * Lane definitions with colours matching the existing design system.
  */
 export const LANES: Lane[] = [
-  { id: 'pre-release', label: 'Pre-release', colour: '#8B5CF6' },
+  { id: 'pre-release', label: 'Pre-release', colour: '#6366F1' },
   { id: 'release', label: 'Release', colour: '#3AA9BE' },
-  { id: 'promo', label: 'Promo', colour: '#F59E0B' },
-  { id: 'content', label: 'Content', colour: '#EC4899' },
-  { id: 'analytics', label: 'Analytics', colour: '#10B981' },
+  { id: 'post-release', label: 'Post-release', colour: '#10B981' },
 ]
 
 /**
@@ -120,7 +116,7 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     lane: 'pre-release',
     title: 'Finalise master',
     date: new Date(2025, 0, 15).toISOString(),
-    colour: '#8B5CF6',
+    colour: '#6366F1',
     description: 'Send to mastering engineer',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -131,7 +127,7 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
     lane: 'pre-release',
     title: 'Submit to distributors',
     date: new Date(2025, 0, 22).toISOString(),
-    colour: '#8B5CF6',
+    colour: '#6366F1',
     description: 'DistroKid / TuneCore submission',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -150,10 +146,10 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
   },
   {
     id: 'sample-4',
-    lane: 'promo',
+    lane: 'post-release',
     title: 'Radio pitching',
     date: new Date(2025, 0, 28).toISOString(),
-    colour: '#F59E0B',
+    colour: '#10B981',
     description: 'BBC Radio 1, 6 Music outreach',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -161,10 +157,10 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
   },
   {
     id: 'sample-5',
-    lane: 'promo',
+    lane: 'post-release',
     title: 'Playlist pitching',
     date: new Date(2025, 1, 1).toISOString(),
-    colour: '#F59E0B',
+    colour: '#10B981',
     description: 'Spotify editorial submissions',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -172,10 +168,10 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
   },
   {
     id: 'sample-6',
-    lane: 'content',
+    lane: 'post-release',
     title: 'Music video shoot',
     date: new Date(2025, 1, 7).toISOString(),
-    colour: '#EC4899',
+    colour: '#10B981',
     description: 'One-day shoot in London',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -183,10 +179,10 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
   },
   {
     id: 'sample-7',
-    lane: 'content',
+    lane: 'post-release',
     title: 'Social teasers',
     date: new Date(2025, 1, 10).toISOString(),
-    colour: '#EC4899',
+    colour: '#10B981',
     description: '15s clips for TikTok/Reels',
     source: 'sample',
     createdAt: new Date().toISOString(),
@@ -194,7 +190,7 @@ export const SAMPLE_EVENTS: TimelineEvent[] = [
   },
   {
     id: 'sample-8',
-    lane: 'analytics',
+    lane: 'post-release',
     title: 'Week 1 review',
     date: new Date(2025, 1, 21).toISOString(),
     colour: '#10B981',

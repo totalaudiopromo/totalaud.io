@@ -219,6 +219,76 @@ It gives independent artists one clear place to sort ideas, find opportunities, 
 
 ---
 
+## 🚀 DESSA + DICEE FRAMEWORKS
+
+**Status**: Phase 1 Complete (January 2025)
+
+totalaud.io uses two complementary frameworks for efficiency and experience:
+
+### DESSA (Workflow Efficiency)
+
+Elon Musk's efficiency algorithm applied to all workspace modes:
+
+| Step | Action |
+|------|--------|
+| **D**elete | Remove unnecessary steps from processes |
+| **E**dit | Streamline remaining components |
+| **S**implify | Reduce choices and cognitive load |
+| **S**peed | Pre-fetch, cache, optimistic updates |
+| **A**utomate | AI-assisted workflows where possible |
+
+### DICEE (Experience Polish)
+
+UX framework ensuring remaining interactions are delightful:
+
+| Principle | Implementation |
+|-----------|----------------|
+| **D**eep | Rich detail when drilling in |
+| **I**ndulgent | Satisfying micro-interactions |
+| **C**omplete | No empty states, everything filled |
+| **E**legant | Minimal chrome, focused UI |
+| **E**motive | Human, encouraging copy |
+
+### Current Mode Configurations
+
+**Ideas Mode** (3 tags):
+```typescript
+type IdeaTag = 'content' | 'brand' | 'promo'
+```
+
+**Scout Mode** (6 smart presets):
+```typescript
+const SMART_PRESETS = ['All', 'Radio', 'Playlists', 'Press', 'Blogs', 'Curators']
+```
+
+**Timeline Mode** (3 lanes):
+```typescript
+type LaneType = 'pre-release' | 'release' | 'post-release'
+```
+
+**Pitch Mode** (3 sections):
+```typescript
+const SECTIONS = ['The Hook', 'Your Story', 'The Ask']
+```
+
+### Step Reduction Achieved
+
+| Mode | Before | After | Reduction |
+|------|--------|-------|-----------|
+| Ideas | 7 steps | 3 steps | 57% |
+| Scout | 8 steps | 3 steps | 63% |
+| Timeline | 9 steps | 2 steps | 78% |
+| Pitch | 12 steps | 3 steps | 75% |
+| **Total** | **36** | **11** | **69%** |
+
+### Key Principle
+
+> **DESSA decides what exists. DICEE decides how it feels.**
+
+Delete ruthlessly, then make what remains exceptional.
+
+---
+
 ## 🏗️ PROJECT STRUCTURE
 
 ```

@@ -115,9 +115,7 @@ export function TemplateSelector({ isOpen, onClose }: TemplateSelectorProps) {
       {
         'pre-release': 0,
         release: 0,
-        promo: 0,
-        content: 0,
-        analytics: 0,
+        'post-release': 0,
       } as Record<LaneType, number>
     )
   }

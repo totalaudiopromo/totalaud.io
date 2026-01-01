@@ -69,7 +69,7 @@ export function ScoutGrid({ className }: ScoutGridProps) {
   const handleAddToTimeline = useCallback(
     (opportunity: (typeof opportunities)[0]) => {
       // Add to Timeline store
-      addFromOpportunity(opportunity, 'promo')
+      addFromOpportunity(opportunity, 'post-release')
 
       // Also mark in Scout store for UI state
       markAddedToTimeline(opportunity.id)
