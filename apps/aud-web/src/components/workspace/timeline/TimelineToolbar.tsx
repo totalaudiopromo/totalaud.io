@@ -17,25 +17,36 @@ import {
   DocumentArrowDownIcon,
   ChevronDownIcon,
   RectangleStackIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline'
 import { TemplateSelector } from './TemplateSelector'
+import { useToast } from '@/contexts/ToastContext'
 
 export function TimelineToolbar() {
   const events = useTimelineStore((state) => state.events)
   const addEvent = useTimelineStore((state) => state.addEvent)
+  const generateFromReleaseDate = useTimelineStore((state) => state.generateFromReleaseDate)
   const viewScale = useTimelineStore((state) => state.viewScale)
   const setViewScale = useTimelineStore((state) => state.setViewScale)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showGenerateModal, setShowGenerateModal] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
+
+  // Toast for celebrations
+  const { success, checkAndCelebrate } = useToast()
 
   // Add event form state
   const [newEventTitle, setNewEventTitle] = useState('')
   const [newEventDate, setNewEventDate] = useState(new Date().toISOString().slice(0, 10))
   const [newEventLane, setNewEventLane] = useState<LaneType>('post-release')
   const [newEventDescription, setNewEventDescription] = useState('')
+
+  // Generate plan form state
+  const [releaseDate, setReleaseDate] = useState(new Date().toISOString().slice(0, 10))
+  const [isGenerating, setIsGenerating] = useState(false)
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -60,13 +71,28 @@ export function TimelineToolbar() {
       source: 'manual',
     })
 
+    // Show success toast
+    success('Event added to timeline')
+
+    // Check for milestone celebrations
+    checkAndCelebrate('timeline', events.length + 1)
+
     // Reset form
     setNewEventTitle('')
     setNewEventDate(new Date().toISOString().slice(0, 10))
     setNewEventLane('post-release')
     setNewEventDescription('')
     setShowAddModal(false)
-  }, [newEventTitle, newEventDate, newEventLane, newEventDescription, addEvent])
+  }, [
+    newEventTitle,
+    newEventDate,
+    newEventLane,
+    newEventDescription,
+    addEvent,
+    success,
+    checkAndCelebrate,
+    events.length,
+  ])
 
   const handleExportJSON = useCallback(() => {
     const data = JSON.stringify(events, null, 2)
@@ -117,6 +143,22 @@ export function TimelineToolbar() {
     URL.revokeObjectURL(url)
     setShowExportMenu(false)
   }, [events])
+
+  const handleGeneratePlan = useCallback(async () => {
+    if (!releaseDate) return
+
+    setIsGenerating(true)
+    try {
+      await generateFromReleaseDate(new Date(releaseDate))
+      setShowGenerateModal(false)
+      setReleaseDate(new Date().toISOString().slice(0, 10))
+      success('Generated 9 events for your release')
+    } catch (error) {
+      console.error('Failed to generate plan:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [releaseDate, generateFromReleaseDate, success])
 
   return (
     <>
@@ -185,6 +227,15 @@ export function TimelineToolbar() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Generate Plan button */}
+            <button
+              onClick={() => setShowGenerateModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+            >
+              <SparklesIcon className="h-4 w-4" />
+              Generate Plan
+            </button>
 
             {/* Templates button */}
             <button
@@ -316,6 +367,101 @@ export function TimelineToolbar() {
         isOpen={showTemplateSelector}
         onClose={() => setShowTemplateSelector(false)}
       />
+
+      {/* Generate Plan Modal */}
+      <AnimatePresence>
+        {showGenerateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowGenerateModal(false)}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
+            >
+              <div className="mb-5">
+                <h3 className="text-base font-semibold text-ta-white mb-2">Generate Plan</h3>
+                <p className="text-[13px] text-ta-grey/70 leading-relaxed">
+                  Automatically create a complete release timeline with pre-release prep, launch
+                  day, and post-release promotion events.
+                </p>
+              </div>
+
+              {/* Release Date */}
+              <div className="mb-6">
+                <label className="block text-[11px] font-medium text-ta-grey/60 mb-1.5">
+                  Release Date *
+                </label>
+                <input
+                  type="date"
+                  value={releaseDate}
+                  onChange={(e) => setReleaseDate(e.target.value)}
+                  autoFocus
+                  className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
+                />
+              </div>
+
+              {/* Preview Info */}
+              <div className="mb-6 p-3 bg-ta-cyan/5 border border-ta-cyan/20 rounded-ta-sm">
+                <p className="text-[11px] text-ta-cyan/80 leading-relaxed">
+                  This will generate 9 events spanning 4 weeks before and 2 weeks after your release
+                  date.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setShowGenerateModal(false)}
+                  disabled={isGenerating}
+                  className="px-4 py-2 text-[13px] font-medium text-ta-grey/70 bg-transparent border border-white/10 rounded-ta-sm hover:border-white/20 transition-all duration-120 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGeneratePlan}
+                  disabled={!releaseDate || isGenerating}
+                  className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium rounded-ta-sm transition-all duration-120 ${
+                    releaseDate && !isGenerating
+                      ? 'bg-ta-cyan text-ta-black hover:opacity-90'
+                      : 'bg-white/5 text-ta-grey/30 cursor-not-allowed'
+                  }`}
+                >
+                  {isGenerating && (
+                    <svg
+                      className="animate-spin h-3.5 w-3.5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  )}
+                  {isGenerating ? 'Generating...' : 'Generate Plan'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

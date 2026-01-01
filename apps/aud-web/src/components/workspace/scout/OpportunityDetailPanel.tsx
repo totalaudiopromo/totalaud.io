@@ -35,6 +35,7 @@ import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useCredits } from '@/hooks/useCredits'
+import { useScoutToPitch } from '@/hooks/useScoutToPitch'
 import type { Opportunity, EnrichmentStatus, EnrichedContact } from '@/types/scout'
 import { TYPE_LABELS, TYPE_COLOURS, AUDIENCE_SIZE_LABELS } from '@/types/scout'
 
@@ -60,8 +61,13 @@ export function OpportunityDetailPanel() {
   const addFromOpportunity = useTimelineStore((state) => state.addFromOpportunity)
   const timelineEvents = useTimelineStore((state) => state.events)
 
+  // Scout→Pitch automation
+  const { handlePitchOpportunity } = useScoutToPitch()
+
   const opportunity = selectedId ? opportunities.find((o) => o.id === selectedId) : null
   const isAddedToTimeline = selectedId ? addedToTimelineSet.has(selectedId) : false
+  const pitchedIds = useScoutStore((state) => state.pitchedIds)
+  const isPitched = selectedId ? pitchedIds.has(selectedId) : false
 
   // Enrichment state for selected opportunity
   const enrichmentStatus: EnrichmentStatus = selectedId
@@ -92,10 +98,10 @@ export function OpportunityDetailPanel() {
   ])
 
   const handleCreatePitch = useCallback(() => {
-    // Navigate to pitch mode - could pre-fill with opportunity info later
-    router.push('/workspace?mode=pitch')
-    handleClose()
-  }, [router, handleClose])
+    if (!opportunity) return
+    // DESSA Phase 3: Pre-generate pitch from opportunity
+    handlePitchOpportunity(opportunity)
+  }, [opportunity, handlePitchOpportunity])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -474,10 +480,17 @@ export function OpportunityDetailPanel() {
               {/* Create Pitch */}
               <button
                 onClick={handleCreatePitch}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
+                className={`
+                  w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-all
+                  ${
+                    isPitched
+                      ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                      : 'bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:border-white/20'
+                  }
+                `}
               >
                 <MessageSquare size={16} />
-                Create Pitch
+                {isPitched ? 'Pitch Again' : 'Create Pitch'}
               </button>
             </div>
           </motion.aside>

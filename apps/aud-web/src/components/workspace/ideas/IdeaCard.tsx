@@ -13,6 +13,7 @@ import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { IdeaCard as IdeaCardType, IdeaTag } from '@/stores/useIdeasStore'
 import { transition, duration } from '@/lib/motion'
+import { suggestTag } from '@/lib/ideas/suggestTag'
 
 const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }> = {
   content: {
@@ -85,11 +86,22 @@ export function IdeaCard({
   }, [card.content])
 
   const handleBlur = useCallback(() => {
-    if (editContent.trim() !== card.content) {
-      onUpdate({ content: editContent.trim() })
+    const trimmedContent = editContent.trim()
+
+    if (trimmedContent !== card.content) {
+      // Content changed - suggest a tag based on new content
+      const suggestedTag = suggestTag(trimmedContent)
+
+      // Only update tag if it's different AND content is substantial (>10 chars)
+      // This prevents tag switching on very short edits
+      if (suggestedTag !== card.tag && trimmedContent.length > 10) {
+        onUpdate({ content: trimmedContent, tag: suggestedTag })
+      } else {
+        onUpdate({ content: trimmedContent })
+      }
     }
     setIsEditing(false)
-  }, [editContent, card.content, onUpdate])
+  }, [editContent, card.content, card.tag, onUpdate])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
