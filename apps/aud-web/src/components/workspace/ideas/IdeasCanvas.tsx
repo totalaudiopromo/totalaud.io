@@ -21,6 +21,7 @@ import {
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useIdeasUndo, useIdeasUndoKeyboard } from '@/hooks/useIdeasUndo'
+import { useIdeasKeyboard } from '@/hooks/useIdeasKeyboard'
 import { IdeaCard } from './IdeaCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { getLaneColour, type LaneType } from '@/types/timeline'
@@ -63,6 +64,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
   // Undo/Redo hooks
   const { trackDelete, trackUpdate, getCardSnapshot, restoreLastDeleted } = useIdeasUndo()
   useIdeasUndoKeyboard() // Enable Cmd+Z / Cmd+Shift+Z
+  useIdeasKeyboard() // Enable Cmd+N (new idea), Escape (deselect)
 
   // Handler to delete with undo tracking
   const handleDelete = useCallback(

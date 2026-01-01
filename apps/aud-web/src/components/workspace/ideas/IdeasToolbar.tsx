@@ -433,16 +433,22 @@ export function IdeasToolbar() {
             </div>
           )}
 
-          {/* Add button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleAddCard}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-ta-cyan border-none rounded-ta-sm text-xs font-medium text-ta-black cursor-pointer"
-          >
-            <PlusIcon className="h-3.5 w-3.5" />
-            Add
-          </motion.button>
+          {/* Add button with keyboard hint */}
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleAddCard}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-ta-cyan border-none rounded-ta-sm text-xs font-medium text-ta-black cursor-pointer"
+              title="Add new idea (⌘N)"
+            >
+              <PlusIcon className="h-3.5 w-3.5" />
+              Add
+            </motion.button>
+            <span className="hidden lg:inline-flex items-center text-[10px] text-ta-grey/40 font-mono">
+              ⌘N
+            </span>
+          </div>
         </div>
       </div>
 
