@@ -19,7 +19,6 @@ import {
 const TAG_COLOURS: Record<IdeaTag, string> = {
   content: '#3AA9BE',
   brand: '#A855F7',
-  music: '#22C55E',
   promo: '#F97316',
 }
 
@@ -67,7 +66,7 @@ export function IdeasList({ className }: IdeasListProps) {
 
   const handleTagCycle = useCallback(
     (card: IdeaCard) => {
-      const tags: IdeaTag[] = ['content', 'brand', 'music', 'promo']
+      const tags: IdeaTag[] = ['content', 'brand', 'promo']
       const currentIndex = tags.indexOf(card.tag)
       const nextTag = tags[(currentIndex + 1) % tags.length]
       updateCard(card.id, { tag: nextTag })

@@ -34,7 +34,7 @@ export function TimelineToolbar() {
   // Add event form state
   const [newEventTitle, setNewEventTitle] = useState('')
   const [newEventDate, setNewEventDate] = useState(new Date().toISOString().slice(0, 10))
-  const [newEventLane, setNewEventLane] = useState<LaneType>('promo')
+  const [newEventLane, setNewEventLane] = useState<LaneType>('post-release')
   const [newEventDescription, setNewEventDescription] = useState('')
 
   // Click outside to close dropdown
@@ -63,7 +63,7 @@ export function TimelineToolbar() {
     // Reset form
     setNewEventTitle('')
     setNewEventDate(new Date().toISOString().slice(0, 10))
-    setNewEventLane('promo')
+    setNewEventLane('post-release')
     setNewEventDescription('')
     setShowAddModal(false)
   }, [newEventTitle, newEventDate, newEventLane, newEventDescription, addEvent])

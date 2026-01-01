@@ -60,7 +60,7 @@ export function ContactDiscoveryPanel({ className }: ContactDiscoveryPanelProps)
     (contact: DiscoveredContact) => {
       addEvent({
         title: `Pitch ${contact.outlet || contact.email}`,
-        lane: 'promo',
+        lane: 'post-release',
         date: new Date().toISOString(),
         colour: '#3AA9BE',
         description: `Contact: ${contact.email}`,

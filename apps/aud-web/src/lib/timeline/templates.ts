@@ -43,11 +43,9 @@ export interface ReleaseTemplate {
 // Lane Colours (for reference)
 // ============================================================================
 
-// pre-release: #3AA9BE (cyan)
-// release: #22C55E (green)
-// promo: #F97316 (orange)
-// content: #A855F7 (purple)
-// analytics: #FBBF24 (amber)
+// pre-release: #6366F1 (indigo)
+// release: #3AA9BE (accent cyan)
+// post-release: #10B981 (green)
 
 // ============================================================================
 // Templates
@@ -88,42 +86,42 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Pitch to editorial playlists',
         weeksBeforeRelease: 5,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Submit via Spotify for Artists',
         tags: ['playlist'],
       },
       {
         title: 'Send to independent playlisters',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Outreach to curators found in Scout',
         tags: ['playlist', 'outreach'],
       },
       {
         title: 'Contact blogs & press',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Send press release to music blogs',
         tags: ['press', 'outreach'],
       },
       {
         title: 'Submit to radio',
         weeksBeforeRelease: 3,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'BBC Introducing and indie stations',
         tags: ['radio', 'outreach'],
       },
       {
         title: 'Announce release date',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Post announcement across socials',
         tags: ['social'],
       },
       {
         title: 'Share preview/snippet',
         weeksBeforeRelease: 1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Tease track on stories/reels',
         tags: ['social'],
       },
@@ -139,14 +137,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Thank supporters',
         weeksBeforeRelease: -1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Engagement posts thanking listeners',
         tags: ['social'],
       },
       {
         title: 'Review first week stats',
         weeksBeforeRelease: -1,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Check streams, saves, playlist adds',
         tags: ['analytics'],
       },
@@ -201,49 +199,49 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Pitch EP to editorial playlists',
         weeksBeforeRelease: 5,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Submit via Spotify for Artists',
         tags: ['playlist'],
       },
       {
         title: 'Contact blogs & press',
         weeksBeforeRelease: 5,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Send EPK to music publications',
         tags: ['press', 'outreach'],
       },
       {
         title: 'Pitch to independent playlisters',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Outreach to curators found in Scout',
         tags: ['playlist', 'outreach'],
       },
       {
         title: 'Submit to radio',
         weeksBeforeRelease: 3,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Radio promo campaign',
         tags: ['radio', 'outreach'],
       },
       {
         title: 'Content rollout begins',
         weeksBeforeRelease: 3,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Behind the scenes, teasers',
         tags: ['social'],
       },
       {
         title: 'Pre-save campaign',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Push pre-saves with incentive',
         tags: ['social', 'marketing'],
       },
       {
         title: 'Final countdown posts',
         weeksBeforeRelease: 1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Daily teasers building hype',
         tags: ['social'],
       },
@@ -259,14 +257,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Listening party',
         weeksBeforeRelease: -1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Live stream or Discord listening session',
         tags: ['social', 'engagement'],
       },
       {
         title: 'Review analytics',
         weeksBeforeRelease: -2,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Analyse performance across platforms',
         tags: ['analytics'],
       },
@@ -313,7 +311,7 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Begin press campaign',
         weeksBeforeRelease: 8,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Interviews, features, reviews',
         tags: ['press'],
       },
@@ -327,14 +325,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Pitch to editorial playlists',
         weeksBeforeRelease: 5,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Submit focus tracks to DSPs',
         tags: ['playlist'],
       },
       {
         title: 'Radio campaign',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Push singles to radio',
         tags: ['radio', 'outreach'],
       },
@@ -348,14 +346,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Launch pre-order',
         weeksBeforeRelease: 3,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Physical/digital pre-order goes live',
         tags: ['marketing'],
       },
       {
         title: 'Content blitz',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Daily content leading to release',
         tags: ['social'],
       },
@@ -369,14 +367,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Release week promotion',
         weeksBeforeRelease: -1,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Push for chart positions, streams',
         tags: ['marketing'],
       },
       {
         title: 'First month review',
         weeksBeforeRelease: -4,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Comprehensive performance analysis',
         tags: ['analytics'],
       },
@@ -416,14 +414,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Submit to tier 1 festivals',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Top priority festival applications',
         tags: ['outreach', 'deadline'],
       },
       {
         title: 'Submit to tier 2 festivals',
         weeksBeforeRelease: 2,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Secondary festival applications',
         tags: ['outreach', 'deadline'],
       },
@@ -437,14 +435,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Follow up with bookers',
         weeksBeforeRelease: -2,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Check application status',
         tags: ['outreach'],
       },
       {
         title: 'Track responses',
         weeksBeforeRelease: -4,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Log acceptances and rejections',
         tags: ['analytics'],
       },
@@ -491,14 +489,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Align promo strategy',
         weeksBeforeRelease: 3,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Coordinate messaging with collaborator',
         tags: ['strategy'],
       },
       {
         title: 'Cross-promote on socials',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Both artists tease the collab',
         tags: ['social'],
       },
@@ -512,7 +510,7 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Joint livestream/takeover',
         weeksBeforeRelease: -1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Collaborative content post-release',
         tags: ['social', 'engagement'],
       },
@@ -552,21 +550,21 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Pitch to music video blogs',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Submit to video premiere sites',
         tags: ['press', 'outreach'],
       },
       {
         title: 'Tease video snippets',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Behind the scenes, stills, clips',
         tags: ['social', 'video'],
       },
       {
         title: 'Premiere countdown',
         weeksBeforeRelease: 1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Build hype for premiere',
         tags: ['social'],
       },
@@ -580,14 +578,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Clip for TikTok/Reels',
         weeksBeforeRelease: -1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Repurpose video for short-form',
         tags: ['social', 'video'],
       },
       {
         title: 'Review video performance',
         weeksBeforeRelease: -2,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Views, engagement, retention',
         tags: ['analytics'],
       },
@@ -627,7 +625,7 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Press release to local media',
         weeksBeforeRelease: 4,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Announce to local press in each city',
         tags: ['press', 'outreach'],
       },
@@ -648,14 +646,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Ticket push content',
         weeksBeforeRelease: 2,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Regular reminders and updates',
         tags: ['social', 'marketing'],
       },
       {
         title: 'Contact local promoters',
         weeksBeforeRelease: 2,
-        lane: 'promo',
+        lane: 'post-release',
         description: 'Support acts, local press, radio',
         tags: ['outreach'],
       },
@@ -669,14 +667,14 @@ export const RELEASE_TEMPLATES: ReleaseTemplate[] = [
       {
         title: 'Share live content',
         weeksBeforeRelease: -1,
-        lane: 'content',
+        lane: 'post-release',
         description: 'Photos, videos, stories from shows',
         tags: ['social', 'video'],
       },
       {
         title: 'Post-tour analysis',
         weeksBeforeRelease: -4,
-        lane: 'analytics',
+        lane: 'post-release',
         description: 'Ticket sales, revenue, fan engagement',
         tags: ['analytics'],
       },
@@ -719,11 +717,9 @@ export function calculateTaskDate(releaseDate: Date, weeksBeforeRelease: number)
  */
 export function getTemplateLaneColour(lane: LaneType): string {
   const colours: Record<LaneType, string> = {
-    'pre-release': '#3AA9BE',
-    release: '#22C55E',
-    promo: '#F97316',
-    content: '#A855F7',
-    analytics: '#FBBF24',
+    'pre-release': '#6366F1',
+    release: '#3AA9BE',
+    'post-release': '#10B981',
   }
   return colours[lane]
 }

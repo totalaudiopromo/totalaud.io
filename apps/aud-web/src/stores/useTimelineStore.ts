@@ -334,7 +334,7 @@ export const useTimelineStore = create<TimelineState>()(
 
       // ========== Scout Integration ==========
 
-      addFromOpportunity: async (opportunity, lane = 'promo') => {
+      addFromOpportunity: async (opportunity, lane = 'post-release') => {
         const { addEvent } = get()
 
         const newEvent: NewTimelineEvent = {
@@ -597,9 +597,7 @@ export const selectEventCountByLane = (state: TimelineState): Record<LaneType, n
     {
       'pre-release': 0,
       release: 0,
-      promo: 0,
-      content: 0,
-      analytics: 0,
+      'post-release': 0,
     } as Record<LaneType, number>
   )
 }

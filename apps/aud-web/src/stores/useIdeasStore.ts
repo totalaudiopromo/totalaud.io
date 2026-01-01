@@ -18,7 +18,7 @@ import { logger } from '@/lib/logger'
 
 const log = logger.scope('Ideas Store')
 
-export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
+export type IdeaTag = 'content' | 'brand' | 'promo'
 export type SortMode = 'newest' | 'oldest' | 'alpha'
 export type ViewMode = 'canvas' | 'list'
 
@@ -606,7 +606,7 @@ export const selectCardCountByTag = (state: IdeasState): Record<IdeaTag, number>
       acc[card.tag] = (acc[card.tag] || 0) + 1
       return acc
     },
-    { content: 0, brand: 0, music: 0, promo: 0 } as Record<IdeaTag, number>
+    { content: 0, brand: 0, promo: 0 } as Record<IdeaTag, number>
   )
 }
 

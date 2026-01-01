@@ -77,7 +77,7 @@ export function OpportunityDetailPanel() {
   const handleAddToTimeline = useCallback(() => {
     if (!opportunity || isAddedToTimeline) return
 
-    addFromOpportunity(opportunity, 'promo')
+    addFromOpportunity(opportunity, 'post-release')
     markAddedToTimeline(opportunity.id)
     showAddedToast()
     checkAndCelebrate('timeline', timelineEvents.length + 1)

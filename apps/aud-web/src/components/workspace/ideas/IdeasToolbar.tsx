@@ -36,7 +36,6 @@ import {
 const TAGS: { key: IdeaTag; label: string; colour: string }[] = [
   { key: 'content', label: 'Content', colour: '#3AA9BE' },
   { key: 'brand', label: 'Brand', colour: '#A855F7' },
-  { key: 'music', label: 'Music', colour: '#22C55E' },
   { key: 'promo', label: 'Promo', colour: '#F97316' },
 ]
 

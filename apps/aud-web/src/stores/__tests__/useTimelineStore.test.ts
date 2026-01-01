@@ -70,12 +70,12 @@ describe('useTimelineStore', () => {
       })
 
       await act(async () => {
-        await result.current.addFromOpportunity(mockOpportunity, 'promo')
+        await result.current.addFromOpportunity(mockOpportunity, 'post-release')
       })
 
       expect(result.current.events).toHaveLength(1)
       expect(result.current.events[0].title).toContain('BBC Radio 6 Music')
-      expect(result.current.events[0].lane).toBe('promo')
+      expect(result.current.events[0].lane).toBe('post-release')
       expect(result.current.events[0].opportunityId).toBe('opp-1')
     })
 
@@ -195,7 +195,7 @@ describe('useTimelineStore', () => {
 
       await act(async () => {
         await result.current.clearSampleEvents()
-        await result.current.addFromOpportunity(mockOpportunity, 'promo')
+        await result.current.addFromOpportunity(mockOpportunity, 'post-release')
       })
 
       const event = result.current.events[0]
@@ -209,7 +209,7 @@ describe('useTimelineStore', () => {
 
       await act(async () => {
         await result.current.clearSampleEvents()
-        await result.current.addFromOpportunity(mockOpportunity, 'promo')
+        await result.current.addFromOpportunity(mockOpportunity, 'post-release')
       })
 
       expect(result.current.isOpportunityInTimeline('opp-1')).toBe(true)
@@ -221,8 +221,8 @@ describe('useTimelineStore', () => {
 
       await act(async () => {
         await result.current.clearSampleEvents()
-        await result.current.addFromOpportunity(mockOpportunity, 'promo')
-        await result.current.addFromOpportunity(mockOpportunity, 'promo')
+        await result.current.addFromOpportunity(mockOpportunity, 'post-release')
+        await result.current.addFromOpportunity(mockOpportunity, 'post-release')
       })
 
       expect(result.current.events).toHaveLength(2)
@@ -260,10 +260,10 @@ describe('useTimelineStore', () => {
       await act(async () => {
         await result.current.clearSampleEvents()
         eventId = await result.current.addEvent({
-          lane: 'promo',
+          lane: 'post-release',
           title: 'Test Event',
           date: '2024-06-01',
-          colour: '#F59E0B',
+          colour: '#10B981',
           source: 'manual',
         })
       })
@@ -278,10 +278,10 @@ describe('useTimelineStore', () => {
       await act(async () => {
         await result.current.clearSampleEvents()
         eventId = await result.current.addEvent({
-          lane: 'promo',
+          lane: 'post-release',
           title: 'Test Event',
           date: '2024-06-01',
-          colour: '#F59E0B',
+          colour: '#10B981',
           source: 'manual',
         })
       })

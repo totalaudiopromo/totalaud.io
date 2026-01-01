@@ -9,7 +9,7 @@
 // Domain Types
 // ============================================================================
 
-export type IdeaTag = 'content' | 'brand' | 'music' | 'promo'
+export type IdeaTag = 'content' | 'brand' | 'promo'
 export type SortMode = 'newest' | 'oldest' | 'alpha'
 export type ViewMode = 'canvas' | 'list'
 

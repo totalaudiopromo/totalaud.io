@@ -103,13 +103,12 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
     async (card: { id: string; content: string; tag: IdeaTag }) => {
       // Map idea tags to timeline lanes
       const tagToLane: Record<IdeaTag, LaneType> = {
-        content: 'content',
-        brand: 'promo',
-        music: 'release',
-        promo: 'promo',
+        content: 'post-release',
+        brand: 'post-release',
+        promo: 'post-release',
       }
 
-      const lane = tagToLane[card.tag] || 'content'
+      const lane = tagToLane[card.tag] || 'post-release'
 
       await addTimelineEvent({
         lane,

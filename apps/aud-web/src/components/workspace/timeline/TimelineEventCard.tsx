@@ -80,7 +80,11 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
     const tagsLower = event.tags?.map((t) => t.toLowerCase()) || []
     const titleLower = event.title.toLowerCase()
 
-    if (tagsLower.includes('radio') || titleLower.includes('radio') || event.lane === 'promo') {
+    if (
+      tagsLower.includes('radio') ||
+      titleLower.includes('radio') ||
+      event.lane === 'post-release'
+    ) {
       pitchType = 'radio'
     } else if (
       tagsLower.includes('press') ||

@@ -25,11 +25,6 @@ const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }>
     border: 'rgba(168, 85, 247, 0.3)',
     text: '#A855F7',
   },
-  music: {
-    bg: 'rgba(34, 197, 94, 0.08)',
-    border: 'rgba(34, 197, 94, 0.3)',
-    text: '#22C55E',
-  },
   promo: {
     bg: 'rgba(249, 115, 22, 0.08)',
     border: 'rgba(249, 115, 22, 0.3)',
@@ -112,7 +107,7 @@ export function IdeaCard({
   const handleTagClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const tags: IdeaTag[] = ['content', 'brand', 'music', 'promo']
+      const tags: IdeaTag[] = ['content', 'brand', 'promo']
       const currentIndex = tags.indexOf(card.tag)
       const nextTag = tags[(currentIndex + 1) % tags.length]
       onUpdate({ tag: nextTag })

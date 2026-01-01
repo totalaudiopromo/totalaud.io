@@ -51,7 +51,7 @@ describe('useIdeasStore', () => {
 
     it('sets position when provided', async () => {
       await act(async () => {
-        await useIdeasStore.getState().addCard('Test', 'music', { x: 100, y: 200 })
+        await useIdeasStore.getState().addCard('Test', 'promo', { x: 100, y: 200 })
       })
 
       const state = useIdeasStore.getState()
@@ -265,7 +265,7 @@ describe('useIdeasStore', () => {
       await act(async () => {
         await useIdeasStore.getState().addCard('Card 1', 'content')
         await useIdeasStore.getState().addCard('Card 2', 'brand')
-        await useIdeasStore.getState().addCard('Card 3', 'music')
+        await useIdeasStore.getState().addCard('Card 3', 'promo')
       })
 
       expect(useIdeasStore.getState().cards).toHaveLength(3)
@@ -294,7 +294,7 @@ describe('useIdeasStore', () => {
         await act(async () => {
           await useIdeasStore.getState().addCard('Card 1', 'content')
           await useIdeasStore.getState().addCard('Card 2', 'brand')
-          await useIdeasStore.getState().addCard('Card 3', 'music')
+          await useIdeasStore.getState().addCard('Card 3', 'promo')
         })
 
         const state = useIdeasStore.getState()
@@ -360,7 +360,7 @@ describe('useIdeasStore', () => {
           await useIdeasStore.getState().addCard('Card 1', 'content')
           await useIdeasStore.getState().addCard('Card 2', 'content')
           await useIdeasStore.getState().addCard('Card 3', 'brand')
-          await useIdeasStore.getState().addCard('Card 4', 'music')
+          await useIdeasStore.getState().addCard('Card 4', 'promo')
         })
 
         const state = useIdeasStore.getState()
@@ -368,8 +368,7 @@ describe('useIdeasStore', () => {
 
         expect(counts.content).toBe(2)
         expect(counts.brand).toBe(1)
-        expect(counts.music).toBe(1)
-        expect(counts.promo).toBe(0)
+        expect(counts.promo).toBe(1)
       })
     })
   })

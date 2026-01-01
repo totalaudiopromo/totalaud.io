@@ -61,7 +61,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
 
   const handleAddToTimeline = useCallback(
     (opportunity: (typeof opportunities)[0]) => {
-      addFromOpportunity(opportunity, 'promo')
+      addFromOpportunity(opportunity, 'post-release')
       markAddedToTimeline(opportunity.id)
       showAddedToast()
       // Check for timeline milestone

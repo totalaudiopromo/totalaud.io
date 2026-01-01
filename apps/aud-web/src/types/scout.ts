@@ -226,3 +226,22 @@ export type NewOpportunity = Omit<Opportunity, 'id' | 'createdAt' | 'updatedAt'>
  * For updating opportunities (all fields optional except id).
  */
 export type OpportunityUpdate = Partial<Omit<Opportunity, 'id' | 'createdAt'>>
+
+// ============================================================================
+// Smart Presets (DESSA Simplification)
+// ============================================================================
+
+/**
+ * Smart presets for common opportunity searches.
+ * Provides quick filtering without overwhelming the UI.
+ */
+export const SMART_PRESETS = [
+  { label: 'All', filters: {} as Partial<ScoutFilters> },
+  { label: 'Radio', filters: { type: 'radio' as OpportunityType } },
+  { label: 'Playlists', filters: { type: 'playlist' as OpportunityType } },
+  { label: 'Press', filters: { type: 'press' as OpportunityType } },
+  { label: 'Blogs', filters: { type: 'blog' as OpportunityType } },
+  { label: 'Curators', filters: { type: 'curator' as OpportunityType } },
+] as const
+
+export type SmartPreset = (typeof SMART_PRESETS)[number]

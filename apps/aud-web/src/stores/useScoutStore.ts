@@ -16,6 +16,7 @@ import type {
   ScoutFilters,
   EnrichedContact,
   EnrichmentStatus,
+  SmartPreset,
 } from '@/types/scout'
 import { DEFAULT_FILTERS } from '@/types/scout'
 import { logger } from '@/lib/logger'
@@ -70,6 +71,7 @@ interface ScoutState {
   setError: (error: string | null) => void
   setFilter: <K extends keyof ScoutFilters>(key: K, value: ScoutFilters[K]) => void
   resetFilters: () => void
+  applyPreset: (preset: SmartPreset) => void
   selectOpportunity: (id: string | null) => void
   markAddedToTimeline: (id: string) => void
   markAsPitched: (id: string) => void
@@ -187,6 +189,19 @@ export const useScoutStore = create<ScoutState>()(
 
       resetFilters: () => {
         set({ filters: DEFAULT_FILTERS })
+        get().fetchOpportunities()
+      },
+
+      applyPreset: (preset) => {
+        // Merge preset filters with default filters (keeping search query)
+        const currentSearch = get().filters.searchQuery
+        set({
+          filters: {
+            ...DEFAULT_FILTERS,
+            searchQuery: currentSearch,
+            ...preset.filters,
+          },
+        })
         get().fetchOpportunities()
       },
 
