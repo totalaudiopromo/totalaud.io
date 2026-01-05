@@ -1,75 +1,76 @@
 /**
  * Landing Page - totalaud.io
  *
+ * Vision-aligned copy (January 2026)
+ * A calm, opinionated system for independent artists
+ *
  * Aesthetic: Cinematic Editorial
  * Think A24 film credits meets Bloomberg design meets Ableton's restraint
- *
- * The "holy shit" moment: Scroll-triggered typography transformation
- * with a living network visualization
  */
 
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  AnimatePresence,
-  useMotionTemplate,
-} from 'framer-motion'
+import { motion, useScroll, useTransform, useSpring, useMotionTemplate } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
 import { SocialProof } from './SocialProof'
 
-// Feature data (4 core modes + Finish coming soon)
-const FEATURES = [
+// How it works steps - Vision aligned
+const HOW_IT_WORKS = [
   {
-    id: 'ideas',
-    title: 'Ideas',
-    description:
-      'Capture fleeting inspiration. An infinite canvas where release concepts take shape.',
+    title: 'Upload',
+    detail: "Upload a track you're preparing to release.",
   },
   {
-    id: 'scout',
-    title: 'Scout',
-    description:
-      'Find the right ears. Radio pluggers, playlist curators, music supervisors — all in one searchable database.',
+    title: 'Choose a perspective',
+    detail: 'Get finishing notes from a producer, listener, mix engineer, or industry lens.',
   },
   {
-    id: 'timeline',
-    title: 'Timeline',
-    description:
-      'See your release unfold. Drag clips across five lanes: Planning, Creative, Release, Promo, Analysis.',
+    title: 'Understand what matters',
+    detail:
+      'Clear feedback on arrangement, energy, clarity, and release readiness — no scores, no judgement.',
   },
   {
-    id: 'pitch',
-    title: 'Pitch',
-    description: 'Tell your story. AI-assisted pitch crafting that sounds like you, not a robot.',
-  },
-  {
-    id: 'finish',
-    title: 'Finish',
-    description:
-      'Polish your track. Upload, separate stems, detect structure, arrange — all in your browser.',
-    comingSoon: true,
+    title: 'Release with confidence',
+    detail: 'Plan your release, tell your story once, and move forward without second-guessing.',
   },
 ]
 
-const HOW_IT_WORKS = [
+// What totalaud.io helps with - Vision aligned pillars
+const PILLARS = [
   {
-    title: 'Scout contacts',
-    detail: 'Find radio pluggers, playlist curators, and press contacts who fit your sound.',
+    id: 'finish',
+    title: 'A second opinion for music you care about',
+    description:
+      "totalaud.io doesn't tell you what your music is. It helps you understand what's working, what could improve, and what's already good enough.",
+    features: [
+      'Arrangement & energy',
+      'Mix translation & clarity',
+      'Release readiness (not quality scoring)',
+    ],
   },
   {
-    title: 'Plan your timeline',
-    detail: 'Map out your release campaign with actions across promo, content, and outreach.',
+    id: 'release',
+    title: 'Release as a narrative — not a checkbox',
+    description:
+      'Plan releases over time, not as isolated drops. Understand timing, momentum, and how your music lands in the real world.',
+    features: [],
   },
   {
-    title: 'Craft your pitch',
-    detail: 'Write compelling pitches with AI coaching that understands the music industry.',
+    id: 'leverage',
+    title: 'Relationships, not lists',
+    description:
+      'Keep track of the people who matter — playlists, press, collaborators — with memory and context, not spreadsheets and guesswork.',
+    features: [],
+  },
+  {
+    id: 'pitch',
+    title: 'Tell your story once — use it everywhere',
+    description:
+      'Keep your narrative consistent across pitches, bios, playlists, and socials — without rewriting everything from scratch.',
+    features: [],
   },
 ]
 
@@ -140,10 +141,44 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
   )
 }
 
-// Feature card with hover reveal
-function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index: number }) {
+// Secondary button
+function SecondaryButton({ children, href }: { children: React.ReactNode; href: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '14px 28px',
+        background: 'transparent',
+        color: '#F7F8F9',
+        borderRadius: '60px',
+        fontSize: '15px',
+        fontWeight: 500,
+        letterSpacing: '0.02em',
+        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+        textDecoration: 'none',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        transition: 'all 0.3s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.5)'
+        e.currentTarget.style.background = 'rgba(58, 169, 190, 0.1)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+        e.currentTarget.style.background = 'transparent'
+      }}
+    >
+      {children}
+    </Link>
+  )
+}
+
+// Pillar card component
+function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
-  const isComingSoon = 'comingSoon' in feature && feature.comingSoon
 
   return (
     <motion.div
@@ -165,7 +200,6 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
         cursor: 'default',
         transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
         overflow: 'hidden',
-        opacity: isComingSoon ? 0.7 : 1,
       }}
     >
       {/* Hover glow effect */}
@@ -185,49 +219,62 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index:
         }}
       />
 
-      {/* Number indicator or Coming Soon badge */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '24px',
-          fontSize: '12px',
-          fontWeight: 500,
-          color: isComingSoon
-            ? '#3AA9BE'
-            : isHovered
-              ? 'rgba(58, 169, 190, 0.8)'
-              : 'rgba(255, 255, 255, 0.2)',
-          fontFamily: 'var(--font-geist-mono), monospace',
-          transition: 'color 0.4s ease',
-        }}
-      >
-        {isComingSoon ? 'Coming soon' : `0${index + 1}`}
-      </div>
-
       <h3
         style={{
-          fontSize: '24px',
+          fontSize: '22px',
           fontWeight: 600,
           color: '#F7F8F9',
           marginBottom: '16px',
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           letterSpacing: '-0.02em',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
-        {feature.title}
+        {pillar.title}
       </h3>
       <p
         style={{
           fontSize: '15px',
           lineHeight: 1.7,
-          color: 'rgba(255, 255, 255, 0.85)',
+          color: 'rgba(255, 255, 255, 0.8)',
           margin: 0,
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
-        {feature.description}
+        {pillar.description}
       </p>
+      {pillar.features.length > 0 && (
+        <ul
+          style={{
+            marginTop: '20px',
+            paddingLeft: '0',
+            listStyle: 'none',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {pillar.features.map((feature) => (
+            <li
+              key={feature}
+              style={{
+                fontSize: '14px',
+                color: 'rgba(255, 255, 255, 0.7)',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              <span style={{ color: '#3AA9BE' }}>•</span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+      )}
     </motion.div>
   )
 }
@@ -246,18 +293,6 @@ export function LandingPage() {
   const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0])
   const heroY = useTransform(smoothProgress, [0, 0.2], [0, -100])
   const heroScale = useTransform(smoothProgress, [0, 0.15], [1, 0.95])
-
-  // Workspace mockup responds to scroll - tilt and glow intensify
-  const mockupRotateX = useTransform(smoothProgress, [0, 0.12], [2, -4])
-  const mockupGlow = useTransform(smoothProgress, [0, 0.1], [0.1, 0.3])
-  const mockupY = useTransform(smoothProgress, [0, 0.15], [0, -30])
-
-  // Features section parallax - subtle float effect
-  const featuresY = useTransform(smoothProgress, [0.3, 0.6], [60, 0])
-  const featuresOpacity = useTransform(smoothProgress, [0.25, 0.4], [0, 1])
-
-  // Mockup box shadow with dynamic glow
-  const mockupBoxShadow = useMotionTemplate`0 40px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(58, 169, 190, ${mockupGlow})`
 
   return (
     <div
@@ -368,7 +403,7 @@ export function LandingPage() {
         }}
       />
 
-      {/* Main content area for accessibility */}
+      {/* Main content area */}
       <main>
         {/* Hero Section */}
         <motion.section
@@ -430,9 +465,9 @@ export function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
-              fontSize: 'clamp(40px, 8vw, 90px)',
+              fontSize: 'clamp(40px, 8vw, 80px)',
               fontWeight: 600,
-              lineHeight: 1.05,
+              lineHeight: 1.1,
               letterSpacing: '-0.04em',
               textAlign: 'center',
               marginBottom: '32px',
@@ -440,8 +475,7 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            Your music
-            <br />
+            Finish better.{' '}
             <span
               style={{
                 background: 'linear-gradient(135deg, #3AA9BE 0%, #56BFD4 50%, #3AA9BE 100%)',
@@ -452,7 +486,7 @@ export function LandingPage() {
                 animation: 'gradient-shift 4s ease infinite',
               }}
             >
-              deserves to be heard
+              Release smarter.
             </span>
           </motion.h1>
 
@@ -467,22 +501,28 @@ export function LandingPage() {
               color: 'rgba(255, 255, 255, 0.85)',
               textAlign: 'center',
               marginBottom: '56px',
-              maxWidth: '520px',
+              maxWidth: '560px',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            Scout contacts. Capture ideas. Plan releases. Craft pitches.
-            <br />
-            One workspace for everything that matters.
+            totalaud.io helps independent artists get clear feedback on their music, plan releases
+            that make sense, and stop guessing what matters.
           </motion.p>
 
-          {/* Primary CTA */}
+          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '16px',
+              justifyContent: 'center',
+            }}
           >
-            <MagneticButton href="/signup">Start Your Workspace</MagneticButton>
+            <MagneticButton href="/signup">Upload a track</MagneticButton>
+            <SecondaryButton href="#how-it-works">See how it works</SecondaryButton>
           </motion.div>
 
           {/* Secondary options */}
@@ -518,408 +558,105 @@ export function LandingPage() {
               </Link>
             </span>
           </motion.div>
-
-          {/* Product Preview - Floating Workspace Mockup (scroll-responsive) */}
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{
-              marginTop: '64px',
-              width: '100%',
-              maxWidth: '900px',
-              perspective: '1200px',
-              y: mockupY,
-            }}
-          >
-            <motion.div
-              style={{
-                position: 'relative',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                background: '#0F1113',
-                border: '1px solid rgba(58, 169, 190, 0.2)',
-                rotateX: mockupRotateX,
-                boxShadow: mockupBoxShadow,
-              }}
-            >
-              {/* Browser window chrome */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  background: 'rgba(0, 0, 0, 0.4)',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-                }}
-              >
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      background: 'rgba(255, 95, 87, 0.8)',
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      background: 'rgba(255, 189, 46, 0.8)',
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      background: 'rgba(40, 201, 64, 0.8)',
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    fontSize: '11px',
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    fontFamily: 'var(--font-geist-mono), monospace',
-                  }}
-                >
-                  totalaud.io/workspace
-                </div>
-              </div>
-
-              {/* App header with mode tabs */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0 16px',
-                  height: 48,
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-                  background: 'rgba(15, 17, 19, 0.95)',
-                }}
-              >
-                {/* Logo placeholder */}
-                <div
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#3AA9BE',
-                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  totalaud
-                </div>
-
-                {/* Mode tabs */}
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  {['Ideas', 'Scout', 'Timeline', 'Pitch'].map((mode, i) => (
-                    <div
-                      key={mode}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '6px',
-                        fontSize: '12px',
-                        fontWeight: i === 0 ? 500 : 400,
-                        color: i === 0 ? '#3AA9BE' : 'rgba(255, 255, 255, 0.85)',
-                        background: i === 0 ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
-                        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                        position: 'relative',
-                      }}
-                    >
-                      {mode}
-                      {i === 0 && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: 20,
-                            height: 2,
-                            background: '#3AA9BE',
-                            borderRadius: 1,
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* User avatar placeholder */}
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: 'rgba(58, 169, 190, 0.2)',
-                    border: '1px solid rgba(58, 169, 190, 0.3)',
-                  }}
-                />
-              </div>
-
-              {/* Ideas Mode toolbar */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                }}
-              >
-                {/* Search */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '6px 10px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.06)',
-                    borderRadius: '6px',
-                    fontSize: '11px',
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                  }}
-                >
-                  <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="5" cy="5" r="4" />
-                    <path d="M8 8l3 3" />
-                  </svg>
-                  Search ideas...
-                </div>
-
-                {/* Filter tabs */}
-                <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-                  {[
-                    { label: 'All', count: 12, active: true },
-                    { label: 'Content', colour: '#3AA9BE', count: 4 },
-                    { label: 'Brand', colour: '#A855F7', count: 3 },
-                    { label: 'Music', colour: '#22C55E', count: 3 },
-                    { label: 'Promo', colour: '#F97316', count: 2 },
-                  ].map((tab) => (
-                    <div
-                      key={tab.label}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '10px',
-                        fontWeight: 500,
-                        color: tab.active ? '#F7F8F9' : tab.colour || 'rgba(255, 255, 255, 0.85)',
-                        background: tab.active ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                        fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                      }}
-                    >
-                      {tab.colour && (
-                        <div
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: '50%',
-                            background: tab.colour,
-                          }}
-                        />
-                      )}
-                      {tab.label}
-                      <span style={{ opacity: 0.5 }}>{tab.count}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* View toggle */}
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '2px',
-                    padding: '2px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    borderRadius: '4px',
-                  }}
-                >
-                  <div
-                    style={{
-                      padding: '4px 6px',
-                      borderRadius: '3px',
-                      background: 'rgba(58, 169, 190, 0.15)',
-                    }}
-                  >
-                    <svg width="10" height="10" fill="#3AA9BE">
-                      <rect x="0" y="0" width="4" height="4" />
-                      <rect x="6" y="0" width="4" height="4" />
-                      <rect x="0" y="6" width="4" height="4" />
-                      <rect x="6" y="6" width="4" height="4" />
-                    </svg>
-                  </div>
-                  <div style={{ padding: '4px 6px' }}>
-                    <svg width="10" height="10" fill="rgba(255,255,255,0.8)">
-                      <rect x="0" y="0" width="10" height="2" />
-                      <rect x="0" y="4" width="10" height="2" />
-                      <rect x="0" y="8" width="10" height="2" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Ideas canvas area */}
-              <div
-                style={{
-                  position: 'relative',
-                  minHeight: '260px',
-                  background:
-                    'linear-gradient(135deg, rgba(15, 17, 19, 1) 0%, rgba(18, 20, 23, 1) 100%)',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Subtle grid pattern */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage: `
-                    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
-                  `,
-                    backgroundSize: '40px 40px',
-                  }}
-                />
-
-                {/* Idea cards scattered on canvas */}
-                {[
-                  {
-                    content: 'Behind-the-scenes studio session for TikTok',
-                    tag: 'content',
-                    x: 40,
-                    y: 30,
-                    colour: '#3AA9BE',
-                  },
-                  {
-                    content: 'Collaborate with visual artist for album artwork',
-                    tag: 'brand',
-                    x: 280,
-                    y: 60,
-                    colour: '#A855F7',
-                  },
-                  {
-                    content: 'New synth patches for EP',
-                    tag: 'content',
-                    x: 520,
-                    y: 25,
-                    colour: '#3AA9BE',
-                  },
-                  {
-                    content: 'Submit to BBC Radio 1 Introducing',
-                    tag: 'promo',
-                    x: 100,
-                    y: 150,
-                    colour: '#F97316',
-                  },
-                  {
-                    content: 'Spotify playlist pitching strategy',
-                    tag: 'promo',
-                    x: 380,
-                    y: 170,
-                    colour: '#F97316',
-                  },
-                  {
-                    content: 'Record acoustic version for YouTube',
-                    tag: 'content',
-                    x: 600,
-                    y: 140,
-                    colour: '#3AA9BE',
-                  },
-                ].map((card, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.4 + i * 0.1, duration: 0.3 }}
-                    style={{
-                      position: 'absolute',
-                      left: card.x,
-                      top: card.y,
-                      width: 160,
-                      padding: '12px',
-                      background: `linear-gradient(135deg, ${card.colour}08 0%, ${card.colour}04 100%)`,
-                      border: `1px solid ${card.colour}40`,
-                      borderRadius: '8px',
-                      fontSize: '11px',
-                      lineHeight: 1.4,
-                      color: 'rgba(255, 255, 255, 0.85)',
-                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                      boxShadow: `0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px ${card.colour}15`,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        marginBottom: '6px',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: '50%',
-                          background: card.colour,
-                        }}
-                      />
-                      <span
-                        style={{
-                          fontSize: '9px',
-                          fontWeight: 500,
-                          color: card.colour,
-                          textTransform: 'capitalize',
-                        }}
-                      >
-                        {card.tag}
-                      </span>
-                    </div>
-                    {card.content}
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
         </motion.section>
 
-        {/* How it works strip - staggered scroll reveal */}
+        {/* Problem statement section */}
+        <section
+          style={{
+            padding: '120px 24px',
+            textAlign: 'center',
+            maxWidth: '700px',
+            margin: '0 auto',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <h2
+              style={{
+                fontSize: 'clamp(28px, 5vw, 40px)',
+                fontWeight: 600,
+                lineHeight: 1.2,
+                letterSpacing: '-0.03em',
+                marginBottom: '32px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              Most artists don't need more tools
+            </h2>
+            <p
+              style={{
+                fontSize: '20px',
+                fontWeight: 500,
+                color: '#3AA9BE',
+                marginBottom: '24px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              They need clarity.
+            </p>
+            <p
+              style={{
+                fontSize: '17px',
+                lineHeight: 1.8,
+                color: 'rgba(255, 255, 255, 0.8)',
+                marginBottom: '24px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              Most music doesn't fail because it's bad — it fails because there's no trusted second
+              opinion before release.
+            </p>
+            <p
+              style={{
+                fontSize: '17px',
+                lineHeight: 1.8,
+                color: 'rgba(255, 255, 255, 0.85)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              totalaud.io helps you decide what to fix, what to leave alone, and when your music is
+              ready.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* How it works section */}
         <motion.section
+          id="how-it-works"
           aria-labelledby="how-it-works-heading"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
-            padding: '64px 24px 40px',
-            maxWidth: '1100px',
+            padding: '80px 24px',
+            maxWidth: '900px',
             margin: '0 auto',
           }}
         >
-          <h2 id="how-it-works-heading" className="sr-only">
+          <h2
+            id="how-it-works-heading"
+            style={{
+              fontSize: 'clamp(28px, 5vw, 36px)',
+              fontWeight: 600,
+              lineHeight: 1.2,
+              letterSpacing: '-0.03em',
+              marginBottom: '48px',
+              textAlign: 'center',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            }}
+          >
             How it works
           </h2>
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
-              gap: '20px',
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '16px',
-              padding: '16px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+              gap: '24px',
             }}
           >
             {HOW_IT_WORKS.map((item, i) => (
@@ -930,14 +667,14 @@ export function LandingPage() {
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{
                   duration: 0.5,
-                  delay: i * 0.15,
+                  delay: i * 0.1,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr',
-                  gap: '12px',
-                  alignItems: 'start',
+                  padding: '24px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '16px',
                 }}
               >
                 <motion.div
@@ -946,7 +683,7 @@ export function LandingPage() {
                   viewport={{ once: true }}
                   transition={{
                     duration: 0.4,
-                    delay: i * 0.15 + 0.1,
+                    delay: i * 0.1 + 0.1,
                     ease: [0.25, 0.1, 0.25, 1],
                   }}
                   style={{
@@ -961,101 +698,111 @@ export function LandingPage() {
                     fontWeight: 600,
                     fontSize: 14,
                     fontFamily: 'var(--font-geist-mono), monospace',
+                    marginBottom: '16px',
                   }}
                 >
                   0{i + 1}
                 </motion.div>
-                <div>
-                  <div
-                    style={{
-                      fontSize: 16,
-                      color: '#EAECEE',
-                      fontWeight: 600,
-                      marginBottom: 6,
-                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      lineHeight: 1.6,
-                      color: 'rgba(255,255,255,0.9)',
-                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                    }}
-                  >
-                    {item.detail}
-                  </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    color: '#EAECEE',
+                    fontWeight: 600,
+                    marginBottom: 8,
+                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {item.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    color: 'rgba(255,255,255,0.8)',
+                    fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  }}
+                >
+                  {item.detail}
                 </div>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
-        {/* Features Section - with subtle parallax float */}
-        <motion.section
-          aria-labelledby="features-heading"
+        {/* Pillars Section */}
+        <section
+          aria-labelledby="pillars-heading"
           style={{
-            padding: '120px 24px 160px',
+            padding: '80px 24px 120px',
             maxWidth: '1100px',
             margin: '0 auto',
-            y: featuresY,
-            opacity: featuresOpacity,
           }}
         >
-          {/* Section header */}
+          <div style={{ display: 'grid', gap: '24px' }}>
+            {PILLARS.map((pillar, index) => (
+              <PillarCard key={pillar.id} pillar={pillar} index={index} />
+            ))}
+          </div>
+        </section>
+
+        {/* Built from experience section */}
+        <section
+          style={{
+            padding: '80px 24px',
+            textAlign: 'center',
+            maxWidth: '700px',
+            margin: '0 auto',
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
-              marginBottom: '80px',
-              maxWidth: '600px',
+              padding: '40px',
+              background: 'rgba(58, 169, 190, 0.05)',
+              border: '1px solid rgba(58, 169, 190, 0.15)',
+              borderRadius: '20px',
             }}
           >
             <h2
-              id="features-heading"
               style={{
-                fontSize: 'clamp(32px, 5vw, 48px)',
+                fontSize: '20px',
                 fontWeight: 600,
-                lineHeight: 1.1,
-                letterSpacing: '-0.03em',
-                marginBottom: '24px',
+                color: '#3AA9BE',
+                marginBottom: '20px',
+                letterSpacing: '-0.02em',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Everything you need.
-              <br />
-              <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Nothing you don't.</span>
+              Built by someone who's been on every side of this
             </h2>
             <p
               style={{
-                fontSize: '17px',
-                lineHeight: 1.7,
+                fontSize: '16px',
+                lineHeight: 1.8,
                 color: 'rgba(255, 255, 255, 0.85)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Five focused tools that work together. No bloat, no learning curve, no per-pitch fees.
+              From early-morning listening sessions, to bands, DJing, producing, radio, and music PR
+              — totalaud.io is built from lived experience.
+            </p>
+            <p
+              style={{
+                fontSize: '16px',
+                lineHeight: 1.8,
+                color: 'rgba(255, 255, 255, 0.7)',
+                marginTop: '16px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              It exists to explain the things no one explained before.
             </p>
           </motion.div>
-
-          {/* Feature grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-              gap: '20px',
-            }}
-          >
-            {FEATURES.map((feature, index) => (
-              <FeatureCard key={feature.id} feature={feature} index={index} />
-            ))}
-          </div>
-        </motion.section>
+        </section>
 
         {/* Social Proof Section */}
         <SocialProof />
@@ -1103,32 +850,22 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Ready to be heard?
+              Stop guessing.
             </h2>
             <p
               style={{
-                fontSize: '17px',
+                fontSize: '20px',
                 lineHeight: 1.6,
                 color: 'rgba(255, 255, 255, 0.85)',
                 marginBottom: '48px',
-                maxWidth: '420px',
+                maxWidth: '480px',
                 margin: '0 auto 48px',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Join hundreds of indie artists who've stopped hoping and started doing.
+              Make music you're proud to release.
             </p>
-            <MagneticButton href="/signup">Start Your Workspace</MagneticButton>
-            <p
-              style={{
-                marginTop: '16px',
-                fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              From £5/month • Cancel anytime
-            </p>
+            <MagneticButton href="/signup">Get started</MagneticButton>
           </motion.div>
         </section>
       </main>
@@ -1169,25 +906,11 @@ export function LandingPage() {
             <span
               style={{
                 fontSize: '13px',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Built by{' '}
-              <a
-                href="https://totalaudiopromo.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s ease',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)')}
-              >
-                Total Audio Promo
-              </a>
+              Independent by design. Built with care.
             </span>
           </div>
           <nav

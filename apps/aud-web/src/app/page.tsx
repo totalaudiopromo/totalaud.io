@@ -1,9 +1,8 @@
 /**
  * Landing Page
- * totalaud.io - 2025 Pivot
+ * totalaud.io - Vision Aligned (January 2026)
  *
- * Aesthetic: Cinematic Editorial
- * A24 film credits meets Bloomberg design meets Ableton's restraint
+ * A calm, opinionated system for independent artists
  *
  * NOTE: Coming Soon mode controlled by preview cookie.
  * - Public users see ComingSoonLanding
@@ -15,12 +14,12 @@ import { LandingPage } from '@/components/landing/LandingPage'
 import { ComingSoonLanding } from '@/components/landing/ComingSoonLanding'
 
 export const metadata = {
-  title: 'totalaud.io - Your music deserves to be heard',
+  title: 'totalaud.io - Finish better. Release smarter.',
   description:
-    'Scout contacts. Capture ideas. Plan releases. Craft pitches. One workspace for independent artists who are ready to be heard.',
+    'A calm, opinionated system that helps independent artists finish their music, understand what matters, and release with confidence.',
   openGraph: {
-    title: 'totalaud.io - Your music deserves to be heard',
-    description: 'One workspace for independent artists who are ready to be heard.',
+    title: 'totalaud.io - Finish better. Release smarter.',
+    description: 'Get clear feedback on your music. Plan releases that make sense. Stop guessing.',
     type: 'website',
   },
 }
