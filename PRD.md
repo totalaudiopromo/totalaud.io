@@ -1,26 +1,32 @@
 # Product Requirements Document (PRD) — totalaud.io
 
-**Version**: 2025.02 — "Calm Creative Workspace" Pivot
+**Version**: 2026.01 — Vision Alignment  
+**Canonical Source**: [`docs/VISION.md`](docs/VISION.md)  
+**Pillars Reference**: [`docs/PRODUCT_PILLARS.md`](docs/PRODUCT_PILLARS.md)  
 **Audience**: Claude, engineers, designers, and future contributors
 
 ---
 
 ## 1. Product Summary
 
-totalaud.io is a calm, minimal creative-intelligence workspace for independent artists.
-Its purpose is to remove overwhelm and give artists clarity, direction, and a simple plan for releasing and promoting music.
+totalaud.io is a calm, opinionated system that helps independent artists finish their music, understand what matters, and release with confidence.
 
-The workspace is structured into four core modes that match the four mental states artists experience:
+**The core problem we solve:**
 
-1. **Ideas Mode** — capture & organise creative/marketing ideas
-2. **Scout Mode** — discover real opportunities (playlists, blogs, curators, radio, press)
-3. **Timeline Mode** — plan release and creative actions visually
-4. **Pitch Mode** — craft narratives, descriptions, and bios
+Indie artists don't lack tools. They lack clear, trusted feedback and prioritisation before release. Most music doesn't fail because it's bad — it fails because no one explains what matters, feedback comes too late, and artists are overwhelmed by fragmented tools and advice.
 
-(+ Optional: light analytics later)
+**totalaud.io reduces cognitive, emotional, and creative friction.**
+
+The product is structured around four pillars:
+
+1. **Finish** — Finishing notes from multiple perspectives (producer, mix, listener, industry)
+2. **Release** — Multi-week narrative planning, not just scheduling
+3. **Leverage** — Relationships as creative capital, memory not scraping
+4. **Pitch** — Single source of narrative truth, consistency across all copy
 
 **The value:**
-Instead of using 6–10 scattered tools, artists have one clear place to sort ideas, find opportunities, craft their narrative, and build a plan.
+
+Instead of guessing whether they're ready, artists get a trusted second opinion. Instead of scattering notes and contacts, they have context and memory. Instead of inconsistent pitches, they have a coherent story.
 
 ---
 
@@ -28,24 +34,22 @@ Instead of using 6–10 scattered tools, artists have one clear place to sort id
 
 totalaud.io is:
 
-- Calm, not chaotic
-- Minimal, not overwhelming
-- Guided, not empty
-- Artist-first, not "marketing-first"
-- Beautifully crafted, not cluttered
-- Mobile-ready, not desktop-only
+- A **second opinion** before release
+- A **finishing mirror** for music and strategy
+- A **decision-support system**, not an automation machine
+- A **calm, respectful space** for artists to think clearly
 
 It allows artists to finally feel like:
 
-> "I know what I'm doing next, I understand my story, and I'm not lost anymore."
+> "This understands how much I care about my music."
 
 It is NOT:
 
-- A CRM
-- A PR automation tool
-- A multi-agent OS
-- A content grinder
-- A complex productivity suite
+- ❌ An "AI music critic"
+- ❌ An auto-producer or mastering replacement
+- ❌ A generic all-in-one SaaS dashboard
+- ❌ A CRM or PR automation tool
+- ❌ Hype-driven or growth-hack oriented
 
 ---
 
@@ -76,104 +80,103 @@ totalaud.io solves these pains through clarity, structure, and strategic guidanc
 
 ## 4. Core Product Pillars
 
-### 4.1. Ideas Mode (Local-first creative notebook)
+> **Detailed specifications**: See [`docs/PRODUCT_PILLARS.md`](docs/PRODUCT_PILLARS.md) for full pillar definitions, boundaries, and language rules.
 
-**Purpose:**
-A calm place to capture, organise, and refine creative ideas.
+### 4.1. Finish (Finishing Notes & Perspectives)
+
+**Purpose:**  
+Help artists finish songs and releases with confidence.
 
 **Key Requirements:**
 
-- Canvas mode (draggable idea cards)
-- List mode
-- Search
-- Sort (A–Z, newest, oldest)
-- Export (markdown, plain text)
-- Clear all (with confirmation)
-- Local-first persistence (localStorage, optional Supabase sync later)
-- Tags / colours
+- Accept track upload or reference
+- Return human-framed finishing notes from multiple perspectives:
+  - Producer perspective (arrangement, energy, structure)
+  - Mix / translation perspective (clarity, balance, mono, dynamics)
+  - Listener first-impression (emotional arc, hooks)
+  - Industry / release context (readiness, timing)
+- Surface release readiness indicators (not scores)
+- No quality judgements or ratings
+- No auto-fixing, auto-mastering, or auto-production
 
-**Success metric:**
-Users feel organised and return daily.
+**Success metric:**  
+Artists feel confident about what to address before release.
 
 ---
 
-### 4.2. Scout Mode (Opportunity discovery)
+### 4.2. Release Planning (Multi-Week Narrative)
 
-**Purpose:**
-Help artists find real, relevant opportunities matched to their genre, vibe, and goals.
-
-**Key Requirements:**
-
-- Curated dataset of playlists, blogs, curators, radio (start small)
-- Filters:
-  - genre
-  - vibe/mood
-  - opportunity type
-  - audience size
-- Real items (links, contact info if available)
-- "Add to Timeline" action
-- Simple card layout
-- Minimal, non-dashboard UI
-- Data stored in Supabase
-- Lightweight edge function for filtering
-
-**Success metric:**
-Artists find at least 1 meaningful opportunity in the first session.
-
----
-
-### 4.3. Timeline Mode (Simple visual release plan)
-
-**Purpose:**
-Help artists build a calm plan for their release and marketing actions.
+**Purpose:**  
+Help artists model a release as a multi-week narrative, not a single drop.
 
 **Key Requirements:**
 
-- Canvas with draggable timeline blocks
-- Add items from Scout or manually
+- Visual timeline for release planning
+- Phases: pre-release, release, post-release
+- Surface timing considerations (playlist lead times, press deadlines)
+- Connect creative decisions to release outcomes
 - Simple toolbar (search, sort, export)
-- "Next Steps" mini-view
-- Very little complexity; no Gantt charts
-- Local-first state
-- Optional Supabase sync
+- No Gantt chart complexity
+- Local-first state with optional Supabase sync
 
-**Success metric:**
+**Success metric:**  
 Artists create a plan in under 3 minutes and understand what to do next.
 
 ---
 
-### 4.4. Pitch Mode (Narrative-building assistant)
+### 4.3. Leverage & Relationships (Intel)
 
-**Purpose:**
-Help artists express their identity and story clearly.
+**Purpose:**  
+Help artists understand relationships as creative capital, not data entries.
 
 **Key Requirements:**
 
-- Input text area
-- AI coaching sidebar
-- "Improve my bio", "Help me describe my sound", "Write for this outlet"
-- Stable, shallow prompts with Claude
-- Export to clipboard
-- Minimal design (no chatbots, no character agents)
+- Store and enrich contact data over time
+- Surface relationship context (last pitch, response, engagement)
+- Use structured data reasoning to:
+  - Clean and enrich messy contact data
+  - Spot patterns in engagement across releases
+  - Summarise relationship signals in plain English
+- Prioritise depth over volume
+- No scraping, no mass-email, no automation
+- Data stored in Supabase with proper GDPR handling
 
-**Success metric:**
-Artists produce a pitch/bio they actually use.
+**Success metric:**  
+Artists understand who actually matters and why.
 
 ---
 
-### 4.5. (Optional later) Light Analytics
+### 4.4. Storytelling & Pitch
 
-**Purpose:**
+**Purpose:**  
+Help artists maintain a single source of narrative truth.
+
+**Key Requirements:**
+
+- Store core narrative elements (story, sound, positioning)
+- Generate pitch drafts tailored to context (playlist, press, social)
+- Ensure consistency across all outputs
+- Act as editor and tone guardian, not ghostwriter
+- Export to clipboard
+- Minimal design (no chatbots, no character personas)
+
+**Success metric:**  
+Artists produce pitches and bios they actually use.
+
+---
+
+### 4.5. (Future Consideration) Confidence Signals
+
+**Purpose:**  
 Give artists confidence, not complexity.
 
-**Requirements:**
+**Requirements (if implemented):**
 
-- Spotify basic stats
-- Social follower growth (manual input acceptable)
-- No dashboards
-- Just "at a glance" confidence signal
+- Simple at-a-glance indicators
+- No dashboards or analytics overwhelm
+- Focus on progress and learning, not vanity metrics
 
-(Not required for MVP.)
+(Not required for initial release.)
 
 ---
 
@@ -233,29 +236,35 @@ Keep the product calm, small, premium.
 
 ## 8. UX Principles
 
-- **Uncluttered**: everything unnecessary is removed
-- **Soft motion**: only subtle transitions
-- **Direct**: no assistant bubbles or chat UI
-- **Portable**: export always available
-- **Progressive**: empty states guide, not overwhelm
-- **Calm visual language**: slate neutrals, thin borders, minimal accent
+- **Calm**: Everything reduces cognitive load
+- **Soft motion**: Only subtle Framer Motion transitions
+- **Direct**: No assistant bubbles, no chat UI, no character personas
+- **Portable**: Export always available
+- **Human language**: At every interface boundary
+- **Calm visual language**: Slate neutrals, thin borders, minimal accent
 
 ---
 
 ## 9. Success Metrics
 
-**MVP Success Indicators:**
+**Confidence & Clarity Indicators:**
 
-- Users save ≥ 5 ideas
-- Users add ≥ 2 opportunities to Timeline
-- Users complete ≥ 1 pitch using Pitch Mode
-- Users return at least 3 times per week
-- Users describe the app as "calming / clear / helpful"
+- Artists report feeling more confident about release decisions
+- Artists describe the experience as "calm", "clear", or "helpful"
+- Artists complete a release plan and understand what to do next
+- Artists produce pitches and bios they actually use
+- Artists return because they trust the product, not because of reminders
+
+**Learning Indicators:**
+
+- Artists understand what matters about their track after using Finish
+- Artists know who to reach out to and why after using Leverage
+- Artists have a coherent story after using Pitch
 
 **Business success:**
 
 - 5–20 paying artists in first 2 months
-- Artists using Scout weekly
+- Artists recommend totalaud.io to other artists (word of mouth)
 
 ---
 
@@ -470,4 +479,5 @@ Display local currency prices for trust:
 
 ---
 
-*Last Updated: December 2025*
+*Last Updated: January 2026*  
+*Aligned with: [`docs/VISION.md`](docs/VISION.md) | [`docs/PRODUCT_PILLARS.md`](docs/PRODUCT_PILLARS.md)*

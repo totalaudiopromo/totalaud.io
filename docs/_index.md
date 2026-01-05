@@ -1,103 +1,113 @@
-# TotalAud.io Documentation Index
+# totalaud.io Documentation Index
 
-Complete documentation for the experimental creative OS and AI-powered music marketing platform.
+**Status**: Vision Aligned — January 2026
+
+---
+
+## 🎯 Start Here (Canonical Documents)
+
+These documents define totalaud.io's direction. Read them in order.
+
+| Document | Purpose |
+|----------|---------|
+| [**VISION.md**](./VISION.md) | The north star — supersedes all other docs |
+| [**PRODUCT_PILLARS.md**](./PRODUCT_PILLARS.md) | Finish, Release, Leverage, Pitch — detailed definitions |
+| [**BRAND_VOICE.md**](./BRAND_VOICE.md) | Tone, language rules, and copy guidance |
+| [**TOTALAUD_IO_CONTEXT.md**](./TOTALAUD_IO_CONTEXT.md) | Clean external explanation for collaborators |
+
+---
+
+## 🛠️ Operational Documents
+
+| Document | Purpose |
+|----------|---------|
+| [CLAUDE.md](../CLAUDE.md) | Operational guide for Claude Code |
+| [PRD.md](../PRD.md) | Product requirements document |
+| [DEV_GUIDE.md](../DEV_GUIDE.md) | Quick command reference |
+| [README.md](../README.md) | Project overview and quickstart |
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | Contribution guide |
 
 ---
 
 ## 📖 Getting Started
 
 ### For New Developers
-- [README](../README.md) — Project overview and quickstart
-- [DEV_GUIDE](../DEV_GUIDE.md) — **⚡ Quick command reference** (start here!)
-- [CONTRIBUTING](../CONTRIBUTING.md) — Full contribution guide
-- [Complete Context](./TOTALAUD_IO_CONTEXT.md) — Comprehensive project documentation
+- [DEV_GUIDE.md](../DEV_GUIDE.md) — Quick command reference (start here!)
+- [README.md](../README.md) — Project overview
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — Contribution guidelines
 
 ### For Cursor Users
-- [Quick Start Guide](../CURSOR_QUICK_START.md) — Cursor IDE setup
-- [Commit Conventions](../COMMIT_CONVENTIONS.md) — Git commit standards
+- [CURSOR_QUICK_START.md](../CURSOR_QUICK_START.md) — Cursor IDE setup
+- [COMMIT_CONVENTIONS.md](../COMMIT_CONVENTIONS.md) — Git commit standards
 
-## 🏗️ Architecture
+---
 
-- [Agent System Overview](./AGENT_SYSTEM_OVERVIEW.md) — Multi-agent architecture and execution
-- [Broker Overview](./BROKER_OVERVIEW.md) — Agent broker and command system
-- [Flow Canvas Overview](./FLOW_CANVAS_OVERVIEW.md) — Visual flow orchestration
-- [Theme Engine Overview](./THEME_ENGINE_OVERVIEW.md) — Five-theme OS system
+## 🎨 Design & Brand
 
-## 🎨 Design System
+| Document | Purpose |
+|----------|---------|
+| [BRAND_VOICE.md](./BRAND_VOICE.md) | Tone, language, and copy rules |
+| [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) | Visual design system |
+| [BRAND_REFINEMENT_SUMMARY.md](./BRAND_REFINEMENT_SUMMARY.md) | Brand evolution notes |
 
-- [Visual Identity Layer](./VISUAL_IDENTITY_LAYER.md) — Brand guidelines and visual language
-- [Brand Refinement Summary](./BRAND_REFINEMENT_SUMMARY.md) — Brand voice and positioning
-- [Microcopy & Tone](./TOTALAUDIO_MICROCOPY_TONE_SHEET.md) — Writing style guide
-- [Multi-OS Dashboard Spec](./MULTI_OS_DASHBOARD_SPEC.md) — Dashboard design specifications
+---
 
-## 🤖 Agents & Collaboration
+## 🔧 Technical Documentation
 
-- [Multi-Agent Collaboration](./MULTI_AGENT_COLLAB.md) — Agent collaboration patterns
-- [Realtime Agent Collaboration](./REALTIME_AGENT_COLLABORATION.md) — Live agent interactions
-- [Realtime Agent UI](./REALTIME_AGENT_UI.md) — Agent UI components
-- [Broker Memory & Flow](./BROKER_MEMORY_AND_FLOW.md) — Agent memory system
-- [Broker Command Bridge & Sound](./BROKER_COMMAND_BRIDGE_AND_SOUND.md) — Command palette integration
+| Document | Purpose |
+|----------|---------|
+| [BROWSER_AUTOMATION.md](./BROWSER_AUTOMATION.md) | MCP browser automation setup |
+| [FLOW_CANVAS_OVERVIEW.md](./FLOW_CANVAS_OVERVIEW.md) | Visual flow orchestration |
+| [ICP_PERSONAS.md](./ICP_PERSONAS.md) | Target user personas |
 
-## 🎭 Personality & UX
-
-- [Broker Personality Overview](./BROKER_PERSONALITY_OVERVIEW.md) — Agent personality system
-- [Broker Personality Implementation](./BROKER_PERSONALITY_IMPLEMENTATION_SUMMARY.md) — Implementation details
-- [OS Selector Overview](./OS_SELECTOR_OVERVIEW.md) — Theme selection interface
-- [OS Transition Overview](./OS_TRANSITION_OVERVIEW.md) — Theme transition animations
-- [Flow State Design Spec](./FLOW_STATE_DESIGN_SPEC.md) — Flow state principles
-- [Flow State Moodboard](./FLOW_STATE_MOODBOARD_BRIEF.md) — Visual inspiration
-- [UX Flow Studio Guide](./UX_FLOW_STUDIO_GUIDE.md) — User experience guide
-
-## 🔧 Implementation Status
-
-### Theme Engine
-- [Theme Engine Status](./THEME_ENGINE_STATUS.md) — Current implementation status
-- [Theme Engine Implementation Complete](./THEME_ENGINE_IMPLEMENTATION_COMPLETE.md) — Completion report
-
-### Phase Completion Reports
-- [Phase 14.5 Complete](./PHASE_14_5_COMPLETE.md)
-- [Phase 14.6 Complete](./PHASE_14_6_COMPLETE.md)
-- [Phase 14.7 Complete](./PHASE_14_7_COMPLETE.md)
-- [Phase 14.8 Complete](./PHASE_14_8_COMPLETE.md)
-- [Phase 14.8 Audit](./PHASE_14_8_AUDIT.md)
-- [Phase 14 Mini Audit](./PHASE_14_MINI_AUDIT.md)
-- [Phase 14 UI Audit](./PHASE_14_UI_AUDIT.md)
+---
 
 ## 🔌 Integrations & Privacy
 
-- [Integrations Implementation](./INTEGRATIONS_IMPLEMENTATION_SUMMARY.md) — Third-party integrations
-- [Integrations Privacy](./INTEGRATIONS_PRIVACY.md) — Privacy considerations
-- [Coach Followup Privacy](./COACH_FOLLOWUP_PRIVACY.md) — Coach agent privacy
-
-## 🛠️ Tools & Automation
-
-- [Browser Automation](./BROWSER_AUTOMATION.md) — MCP browser automation setup
-- [Telemetry Contracts](./telemetry-contracts.md) — Analytics and telemetry
-- [Tracker Real Data Clients](./TRACKER_REAL_DATA_CLIENTS.md) — Real-time data tracking
-
-## 🐛 Bug Fixes & Critical Issues
-
-- [Critical Fixes: Start Button](./CRITICAL_FIXES_START_BUTTON.md)
-
-## 🚀 Future Development
-
-- [UI Next Phase](./UI_NEXT_PHASE.md) — Upcoming UI improvements
+| Document | Purpose |
+|----------|---------|
+| [INTEGRATIONS_IMPLEMENTATION_SUMMARY.md](./INTEGRATIONS_IMPLEMENTATION_SUMMARY.md) | Third-party integrations |
+| [INTEGRATIONS_PRIVACY.md](./INTEGRATIONS_PRIVACY.md) | Privacy considerations |
+| [COACH_FOLLOWUP_PRIVACY.md](./COACH_FOLLOWUP_PRIVACY.md) | Privacy for coaching features |
 
 ---
 
-## 📂 Other Documentation
+## 📊 Implementation History
 
-Additional documentation files are located in the repository root:
+These documents track implementation phases. They may contain outdated framing but are preserved for context.
 
-- `ARCHITECTURE_MERGE_PLAN.md` — Monorepo merge strategy
-- `LANDING_PAGE_*.md` — Landing page development docs
-- `PHASE_*.md` — Phase completion reports
-- `STAGE_*.md` — Stage completion reports
-- `WORKFLOW_GUIDE.md` — Development workflow guide
-- `COMMIT_CONVENTIONS.md` — Git commit standards
-- `CONTRIBUTING.md` — Contribution guidelines
+- [PHASE_14_5_COMPLETE.md](./PHASE_14_5_COMPLETE.md)
+- [PHASE_14_6_COMPLETE.md](./PHASE_14_6_COMPLETE.md)
+- [PHASE_14_7_COMPLETE.md](./PHASE_14_7_COMPLETE.md)
+- [PHASE_14_8_COMPLETE.md](./PHASE_14_8_COMPLETE.md)
+- [PHASE_19_ARCHITECTURE.md](./PHASE_19_ARCHITECTURE.md)
+- [PHASE_29_FULL_IMPLEMENTATION.md](./PHASE_29_FULL_IMPLEMENTATION.md)
 
 ---
 
-**Last Updated**: Phase 18 (November 2025)
+## 📦 Archived Documents
 
+The following concepts have been archived and no longer reflect product direction:
+
+- **Agent systems** — Multi-agent orchestration (see `_archive/`)
+- **OS themes** — ASCII, XP, Aqua, DAW, Analogue visual systems (see `_archive/`)
+- **Broker architecture** — Command bridges, personality systems (see `_archive/`)
+
+See [`_archive/README.md`](./_archive/README.md) for the complete list.
+
+---
+
+## 📂 Root-Level Documentation
+
+Additional documentation in the repository root:
+
+| Category | Files |
+|----------|-------|
+| Landing Page | `LANDING_PAGE_*.md` |
+| Phase Reports | `PHASE_*.md` |
+| Stage Reports | `STAGE_*.md` |
+| Workflow | `WORKFLOW_GUIDE.md` |
+
+---
+
+**Last Updated**: January 2026 — Vision Alignment Complete

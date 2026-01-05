@@ -1,6 +1,10 @@
-# totalaud.io Brand Guidelines (2025 Pivot Edition)
+# totalaud.io Brand Guidelines
 
-This document defines the unified, modern design system for totalaud.io - replacing the old OS-inspired visual universe (ASCII, Aqua, DAW, Analogue) with a clean, premium aesthetic.
+**Canonical Source**: Aligns with [`docs/VISION.md`](VISION.md)  
+**Voice Reference**: See [`docs/BRAND_VOICE.md`](BRAND_VOICE.md) for tone and copy rules  
+**Last Updated**: January 2026
+
+This document defines the visual design system for totalaud.io — a calm, premium aesthetic that supports the product's purpose: helping independent artists finish their music, understand what matters, and release with confidence.
 
 ---
 
