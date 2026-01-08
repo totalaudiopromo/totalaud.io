@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { getTrackMemory } from '@/lib/track-memory'
 import { logger } from '@/lib/logger'
@@ -19,11 +20,15 @@ const log = logger.scope('TrackMemory/Context')
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const trackId = searchParams.get('track')
+    const trackIdRaw = searchParams.get('track')
 
-    if (!trackId) {
-      return NextResponse.json({ success: false, error: 'Missing track parameter' })
+    const validation = z.object({ track: z.string().uuid() }).safeParse({ track: trackIdRaw })
+
+    if (!validation.success) {
+      return NextResponse.json({ success: false, error: 'Invalid track id' })
     }
+
+    const trackId = validation.data.track
 
     // Get authenticated user
     const supabase = await createRouteSupabaseClient()

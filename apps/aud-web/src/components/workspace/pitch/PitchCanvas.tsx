@@ -219,7 +219,7 @@ export function PitchCanvas() {
         <IdentityPanel />
 
         {/* Track Context Anchor (Silent Read-Side Integration) */}
-        {intent && (
+        {intent?.content && intent.content.trim().length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

@@ -1,7 +1,7 @@
 # TotalAud.io Microcopy & Tone Sheet
 
 **Location**: Brighton, UK
-**Last Updated**: 19 October 2025
+**Last Updated**: 19 October 2026
 **Voice**: Confident, minimal, creative-professional (British)
 
 ---
@@ -124,7 +124,7 @@ mission dashboard
 campaign overview
 
 radio airplay campaign
-started: 19 oct 2025, 23:10
+started: 19 oct 2026, 23:10
 status: in progress
 
 agent activity
@@ -369,7 +369,7 @@ session_active ● 23:10           (monospace, lowercase)
 
 ---
 
-## Brand & Tone Commit - 2025-10-19
+## Brand & Tone Commit - 2026-10-19
 
 All UI text uses UK English spelling and lowercase headings.
 Emojis removed.
@@ -385,7 +385,7 @@ As the product matures, consider:
 - Adding subtle British music industry references
 - Location markers: "Built in Brighton, UK" in footer
 - Studio metaphors: "mix", "master", "track", "session"
-- Radio terminology: "on air", "off air", "live", "playback"
+- Radio terminology: "on-air", "off-air", "live", "playback"
 
 ---
 

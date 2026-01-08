@@ -131,7 +131,7 @@ await deleteTrackMemory(userId, assetId)
 | Migration files added | ✅ `20260108000001_track_memory_v0.sql` |
 | RLS policies implemented | ✅ SELECT/INSERT/UPDATE/DELETE for owner |
 | Library functions created | ✅ `src/lib/track-memory/index.ts` |
-| Exact deposit points added | ⏸️ Pending (no natural track_id context yet) |
+| Exact deposit points added | ✅ Story fragments (Pitch), Intent (Coaching Injection) |
 | Nothing is user-visible | ✅ No UI routes, no components |
 | Typecheck passes | ✅ Verified |
 | Tests pass | ✅ 101 tests passed |
@@ -187,12 +187,13 @@ await deleteTrackMemory(userId, assetId)
 - Track context propagation via URL query param
 - mode switching preserves track context
 - First silent deposit (story_fragment from Pitch)
+- Read-only consumption via `useTrackContext` hook
+- AI Coach continuity (memory injected into coaching sessions)
+- Context anchors (Intent/Story) in Pitch and Timeline views
 
 **v0 defers:**
-- Finish flow deposits (no finish flow exists yet)
 - Intent deposits from Ideas (needs track_id linking)
-- Read usage in UI (no existing context anchors)
-- Timeline deposits (needs hook integration)
+- Timeline event deposits (manual for now)
 
 The system is ready to remember. It just needs something to remember about.
 

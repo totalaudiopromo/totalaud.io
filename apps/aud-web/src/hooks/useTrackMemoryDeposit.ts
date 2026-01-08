@@ -57,10 +57,8 @@ export function useTrackMemoryDeposit() {
 
       // Skip if no track context
       if (!trackId) {
-        if (requireTrack) {
-          log.debug('Deposit skipped: no track context')
-          return false
-        }
+        log.debug('Deposit skipped: no track context')
+        return false
       }
 
       try {
