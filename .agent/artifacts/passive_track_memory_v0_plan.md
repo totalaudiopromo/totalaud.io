@@ -184,11 +184,15 @@ await deleteTrackMemory(userId, assetId)
 - Type-safe append-only persistence
 - RLS-protected per-user isolation
 - Deletion semantics defined
+- Track context propagation via URL query param
+- mode switching preserves track context
+- First silent deposit (story_fragment from Pitch)
 
 **v0 defers:**
-- Actual deposits (need track_id context)
-- UI integration (explicitly excluded)
-- Cross-mode linking (need schema additions)
+- Finish flow deposits (no finish flow exists yet)
+- Intent deposits from Ideas (needs track_id linking)
+- Read usage in UI (no existing context anchors)
+- Timeline deposits (needs hook integration)
 
 The system is ready to remember. It just needs something to remember about.
 
