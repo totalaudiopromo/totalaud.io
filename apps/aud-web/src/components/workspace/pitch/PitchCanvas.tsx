@@ -12,10 +12,12 @@
 
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
+import { useTrackContext } from '@/hooks/useTrackContext'
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { IdentityPanel } from './IdentityPanel'
 import { CoachingSession } from './CoachingSession'
@@ -79,7 +81,18 @@ export function PitchCanvas() {
     resetPitch,
     // TAP Pitch actions
     openTAPModal,
+    setTrackId,
   } = usePitchStore()
+
+  const trackId = useCurrentTrackId()
+
+  // Sync trackId to store for API consumption
+  useEffect(() => {
+    setTrackId(trackId)
+  }, [trackId, setTrackId])
+
+  // Get track memory context
+  const { intent, isLoading: isMemoryLoading } = useTrackContext()
 
   // Gated TAP modal opener
   const handleOpenTAPModal = () => {
@@ -204,6 +217,23 @@ export function PitchCanvas() {
 
         {/* Identity Panel - collapsible */}
         <IdentityPanel />
+
+        {/* Track Context Anchor (Silent Read-Side Integration) */}
+        {intent && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 rounded-xl bg-ta-cyan/[0.03] border border-ta-cyan/10"
+          >
+            <h3 className="text-[10px] uppercase tracking-wider text-ta-cyan/60 mb-1.5 font-semibold">
+              Original Release Intent
+            </h3>
+            <p className="text-sm text-ta-white/80 leading-relaxed italic">
+              "This release began with{' '}
+              {intent.content.charAt(0).toLowerCase() + intent.content.slice(1)}"
+            </p>
+          </motion.div>
+        )}
 
         {/* Pitch type header with TAP generate button */}
         <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">

@@ -29,6 +29,7 @@ import {
 } from '@dnd-kit/core'
 import { useTimelineStore, type ViewScale } from '@/stores/useTimelineStore'
 import { useSignalThreadStore } from '@/stores/useSignalThreadStore'
+import { useTrackContext } from '@/hooks/useTrackContext'
 import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { DraggableEvent } from './DraggableEvent'
 import { DroppableLane } from './DroppableLane'
@@ -110,6 +111,9 @@ const VIEW_SCALE_CONFIG: Record<
 export function TimelineCanvas() {
   const events = useTimelineStore((state) => state.events)
   const updateEvent = useTimelineStore((state) => state.updateEvent)
+
+  // Track memory context (Read-only integration)
+  const { intent } = useTrackContext()
   const viewScale = useTimelineStore((state) => state.viewScale)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
@@ -346,6 +350,41 @@ export function TimelineCanvas() {
             />
           </div>
         )}
+
+        {/* Track Context Anchor (Read-only integration) */}
+        {intent && (
+          <div
+            style={{
+              padding: '16px 20px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              backgroundColor: 'rgba(58, 169, 190, 0.02)',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: 10,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'rgba(58, 169, 190, 0.5)',
+                fontWeight: 600,
+                marginBottom: 4,
+              }}
+            >
+              Release Focus
+            </h3>
+            <p
+              style={{
+                fontSize: 13,
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontStyle: 'italic',
+                margin: 0,
+              }}
+            >
+              "{intent.content}"
+            </p>
+          </div>
+        )}
+
         {/* Timeline header with time columns */}
         <div
           style={{

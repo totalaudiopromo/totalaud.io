@@ -109,6 +109,7 @@ interface PitchState {
   // Drafts (saved pitches)
   drafts: PitchDraft[]
   currentDraftId: string | null
+  trackId: string | null
 
   // AI Coach state (legacy one-shot)
   isCoachOpen: boolean
@@ -138,6 +139,7 @@ interface PitchState {
   // Actions - Type Selection
   selectType: (type: PitchType) => void
   resetPitch: () => void
+  setTrackId: (trackId: string | null) => void
 
   // Actions - Section Editing
   updateSection: (id: string, content: string) => void
@@ -235,6 +237,7 @@ export const usePitchStore = create<PitchState>()(
       isDirty: false,
       drafts: [],
       currentDraftId: null,
+      trackId: null,
       isCoachOpen: false,
       isCoachLoading: false,
       coachResponse: null,
@@ -291,6 +294,12 @@ export const usePitchStore = create<PitchState>()(
           tapError: null,
           isTAPModalOpen: false,
         })
+      },
+
+      // ========== Track Context ==========
+
+      setTrackId: (trackId: string | null) => {
+        set({ trackId })
       },
 
       // ========== Section Editing ==========
@@ -388,6 +397,7 @@ export const usePitchStore = create<PitchState>()(
             body: JSON.stringify({
               message: content,
               sectionId,
+              trackId: state.trackId,
               pitchType: state.currentType,
               mode: state.coachingMode,
               phase: state.coachingPhase,
