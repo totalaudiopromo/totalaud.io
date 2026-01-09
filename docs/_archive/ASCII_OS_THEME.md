@@ -301,7 +301,7 @@ All animations respect `prefers-reduced-motion` settings.
 - `useReducedMotion` - Accessibility support
 
 ### File Structure
-```
+```txt
 /apps/aud-web/src/
   app/os/ascii/
     page.tsx              # Route definition
@@ -387,8 +387,8 @@ All animations respect `prefers-reduced-motion` settings.
 
 ---
 
-**Created:** 2025-01-15  
-**Last Updated:** 2025-01-15  
+**Created:** 2026-01-15  
+**Last Updated:** 2026-01-15  
 **Author:** Claude (Lead Creative OS Architect)  
 **Phase:** 19 - Creative OS Surfaces
 

@@ -27,7 +27,7 @@
 | **ModeTour modal on every mode's first visit** — 4 modal interruptions total | Medium | ⚠️ Consider — but tours are short (3-4 steps) and dismissible |
 
 ### Summary: PASS 1
-**Verdict: ✅ Working well — leave it**
+### Verdict: ✅ Working well — leave it
 
 The first-time experience is calm. No setup wizard, no questions before starting. User sees a creative canvas immediately with gentle starter prompts.
 
@@ -61,7 +61,7 @@ The first-time experience is calm. No setup wizard, no questions before starting
 | **Each mode starts "fresh" visually** — no breadcrumb trail | Low | ✅ Leave — modes are parallel, not sequential hierarchy |
 
 ### Summary: PASS 2
-**Verdict: ✅ Working well — minor language polish possible**
+### Verdict: ✅ Working well — minor language polish possible
 
 Context flows between modes naturally. Track Memory integration ensures intent is visible. CrossModePrompt guides without forcing.
 
@@ -94,7 +94,7 @@ Context flows between modes naturally. Track Memory integration ensures intent i
 | **Sidebar panel (e.g., Threads, OpportunityDetail)** closes on mode switch | Low | ✅ Leave — correct behaviour |
 
 ### Summary: PASS 3
-**Verdict: ✅ Working well — leave it**
+### Verdict: ✅ Working well — leave it
 
 Navigation is simple and predictable. No hierarchy confusion. Stores persist state across mode switches.
 
@@ -117,7 +117,7 @@ Navigation is simple and predictable. No hierarchy confusion. Stores persist sta
 
 | Moment | Current UX | Status |
 |--------|------------|--------|
-| **Ideas is blank** | Starter prompts pre-loaded to reduce blank canvas anxiety | ✅ Working well |
+| **Ideas is blank** | Starter prompts preloaded to reduce blank canvas anxiety | ✅ Working well |
 | **Scout shows auth-gated preview** | Blurred preview with sign-in CTA | ✅ Working well |
 | **Timeline has no events** | EmptyState with CrossModePrompt to Scout | ✅ Working well |
 | **Pitch has no template** | Template selector with brief descriptions | ✅ Working well |
@@ -130,7 +130,7 @@ Navigation is simple and predictable. No hierarchy confusion. Stores persist sta
 | **Scout empty state includes "Opportunities are loaded from your account"** — unnecessary | Low | ⚠️ Small fix — remove |
 
 ### Summary: PASS 4
-**Verdict: ⚠️ Minor friction — 2 small copy fixes**
+### Verdict: ⚠️ Minor friction — 2 small copy fixes
 
 Empty states are generally calm and invitational. Two micro-copy lines could be softened.
 
@@ -140,11 +140,11 @@ Empty states are generally calm and invitational. Two micro-copy lines could be 
 
 ### Return Experience
 
-| Scenario | Status |
-|----------|--------|
+| Scenario | Details | Status |
+|----------|---------|--------|
 | **Return to Ideas** | Cards persist (localStorage for guests, Supabase for auth) | ✅ Working well |
 | **Return to Timeline** | Events persist | ✅ Working well |
-| **Return to Pitch** | Drafts persist in store | ⚠️ Check — may need persistence verification |
+| **Return to Pitch** | Drafts persist in store | ⚠️ Check |
 | **Track context on return** | Requires track param in URL | ✅ Correct |
 
 ### Guilt / Pressure Signals
@@ -166,7 +166,7 @@ Empty states are generally calm and invitational. Two micro-copy lines could be 
 | **"overdue" label in NextSteps** (red text for past events) | Medium | ⚠️ Fix — consider softer language like "past" |
 
 ### Summary: PASS 5
-**Verdict: ⚠️ Minor friction — 2 small fixes**
+### Verdict: ⚠️ Minor friction — 2 small fixes
 
 No guilt mechanics. No progress pressure. Small language refinement in NextSteps.
 

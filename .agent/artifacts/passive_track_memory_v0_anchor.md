@@ -43,8 +43,15 @@ A "track" in the Track Memory sense is a single musical work — not a file, but
 ### 2. `user_ideas` table
 
 **Fields:**
-- `id`, `user_id`, `content`, `tag`, `position_x`, `position_y`, `is_starter`
-- `created_at`, `updated_at`
+- `id`
+- `user_id`
+- `content`
+- `tag`
+- `position_x`
+- `position_y`
+- `is_starter`
+- `created_at`
+- `updated_at`
 
 **Analysis:**
 - Ideas are upstream of tracks (intent before audio exists)
@@ -56,8 +63,13 @@ A "track" in the Track Memory sense is a single musical work — not a file, but
 ### 3. `user_pitch_drafts` table
 
 **Fields:**
-- `id`, `user_id`, `name`, `pitch_type`, `sections`
-- `created_at`, `updated_at`
+- `id`
+- `user_id`
+- `name`
+- `pitch_type`
+- `sections`
+- `created_at`
+- `updated_at`
 
 **Analysis:**
 - Pitches should be linked to tracks (what track is this pitch for?)

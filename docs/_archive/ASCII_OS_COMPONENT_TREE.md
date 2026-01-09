@@ -2,7 +2,7 @@
 
 Visual hierarchy and structure of the ASCII OS theme components.
 
-```
+```text
 /os/ascii (Route)
 │
 └─── <AsciiOSContainer>                          [Full-screen container]

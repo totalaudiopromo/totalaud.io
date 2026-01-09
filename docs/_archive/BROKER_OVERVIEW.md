@@ -30,7 +30,7 @@
 **URL**: `/onboarding/broker?mode=[theme]`
 
 **Flow:**
-```
+```text
 OS Transition (6.5s)
     ↓
 Broker Intro (1.5s fade-in)
@@ -213,7 +213,7 @@ Each OS mode gets unique Broker styling:
 - **Effects**: Soft shadows
 - **Personality**: Friendly, helpful
 
-### Mac OS Aqua
+### macOS Aqua
 - **Prefix**: `•`
 - **Style**: Friendly, relaxed
 - **Colors**: Silver + aqua blue
@@ -466,7 +466,7 @@ Speech-to-text for hands-free onboarding:
 
 ### Broker Doesn't Appear
 
-**Problem**: Transition ends but Broker doesn't load  
+**Problem**: Transition ends, but Broker doesn't load  
 **Solution**:
 1. Check URL: should be `/onboarding/broker?mode=ascii`
 2. Verify `mode` parameter is valid
@@ -509,7 +509,7 @@ Speech-to-text for hands-free onboarding:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: January 18, 2025  
+**Last Updated**: January 18, 2026  
 **Status**: ✅ Complete
 
 **Credits:**

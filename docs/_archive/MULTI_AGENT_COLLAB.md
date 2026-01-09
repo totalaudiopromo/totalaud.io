@@ -10,7 +10,7 @@ The TotalAud.io platform supports collaborative workflows where multiple AI agen
 
 At the core of the multi-agent system is a messaging bus that enables asynchronous communication between agents:
 
-```
+```text
 ┌─────────┐    message    ┌──────────────┐    message    ┌─────────┐
 │  Scout  │ ────────────> │  Message Bus │ ────────────> │  Coach  │
 └─────────┘               └──────────────┘               └─────────┘
@@ -166,7 +166,7 @@ await sendAgentMessage({
 
 Multiple agents work simultaneously and report back:
 
-```
+```text
         ┌─────────> Scout (UK)    ────┐
         │                              │
 User ───┼─────────> Scout (US)    ────┼──> Aggregator
