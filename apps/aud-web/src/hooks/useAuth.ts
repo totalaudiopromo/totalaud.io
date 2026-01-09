@@ -13,8 +13,27 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
 const log = logger.scope('useAuth')
+
+// Helper to construct a proper User object for development mocking
+const createDevUser = (id: string, email: string, name: string): User => {
+  return {
+    id,
+    email,
+    user_metadata: { full_name: name },
+    app_metadata: {},
+    aud: 'authenticated',
+    created_at: new Date().toISOString(),
+    confirmed_at: new Date().toISOString(),
+    last_sign_in_at: new Date().toISOString(),
+    role: 'authenticated',
+    factors: [],
+    identities: [],
+    phone: '',
+  }
+}
 
 interface AuthState {
   /** Current authenticated user, or null if guest */
@@ -46,6 +65,21 @@ export function useAuth(): AuthState {
       const {
         data: { user },
       } = await supabase.auth.getUser()
+
+      // Gated dev-only mock auth bypass
+      if (
+        !user &&
+        env.NODE_ENV === 'development' &&
+        env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === true
+      ) {
+        log.warn('Mock auth enabled: bypassing Supabase and using dev user')
+        const devUserId = '62a086b1-411e-4d2b-894e-71dfd8cb5d4e' // The verify@totalaud.io ID
+        const devUser = createDevUser(devUserId, 'verify@totalaud.io', 'Verify Artist')
+        setUser(devUser)
+        setLoading(false)
+        return
+      }
+
       setUser(user)
     } catch (error) {
       log.error('Error fetching user', error)

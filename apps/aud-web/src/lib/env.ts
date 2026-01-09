@@ -80,6 +80,11 @@ const envSchema = z.object({
   // ConvertKit (totalaud.io waitlist - separate from TAP)
   NEXT_PUBLIC_CONVERTKIT_FORM_ID: z.string().optional(),
   NEXT_PUBLIC_CONVERTKIT_API_KEY: z.string().optional(),
+
+  // Dev Flags
+  NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: z
+    .preprocess((val) => val === 'true', z.boolean())
+    .default(false),
 })
 
 // ============================================
@@ -103,6 +108,7 @@ function validateEnv(): Env {
       NEXT_PUBLIC_CONVERTKIT_FORM_ID: process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID,
       NEXT_PUBLIC_CONVERTKIT_API_KEY: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
       NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+      NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: process.env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === 'true',
     } as Env
   }
 
@@ -126,7 +132,7 @@ function validateEnv(): Env {
     throw new Error('Invalid environment variables')
   }
 
-  return parsed.data
+  return parsed.data as Env
 }
 
 // ============================================
