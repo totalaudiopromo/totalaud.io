@@ -392,6 +392,57 @@ export function ComingSoonLanding() {
           </p>
         </motion.div>
 
+        {/* Newsletter mention - secondary to waitlist */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            marginTop: '24px',
+            marginBottom: '48px',
+            padding: '20px 24px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.04)',
+            borderRadius: '12px',
+            maxWidth: '440px',
+            textAlign: 'left',
+          }}
+        >
+          <p
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'rgba(255, 255, 255, 0.9)',
+              marginBottom: '8px',
+            }}
+          >
+            Notes from building this
+          </p>
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.6)',
+              lineHeight: 1.6,
+              marginBottom: '12px',
+            }}
+          >
+            I write occasional notes about what I'm learning — decisions, trade-offs, and things I
+            notice about music and releasing. It's the same newsletter I send from Total Audio
+            Promo. One list, same notes.
+          </p>
+          <Link
+            href="/notes"
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#3AA9BE',
+              textDecoration: 'none',
+            }}
+          >
+            Read the notes →
+          </Link>
+        </motion.div>
+
         {/* Why totalaud.io exists */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
@@ -601,6 +652,19 @@ export function ComingSoonLanding() {
             justifyContent: 'center',
           }}
         >
+          <Link
+            href="/notes"
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#3AA9BE')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)')}
+          >
+            Notes
+          </Link>
           <Link
             href="/privacy"
             style={{
