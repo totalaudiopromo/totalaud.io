@@ -560,7 +560,9 @@ Solution:
 
 **Version**: 1.0.0  
 **Last Updated**: January 18, 2026  
-**Status**: ✅ Complete
+**Status**: ⚠️ Archived / Deprecated — Do not implement
+
+> **Note**: The OS theme patterns (ASCII, XP, Aqua, DAW, Analogue) described in this document are archived. See [`docs/VISION.md`](../VISION.md) for current product direction.
 
 **Related Documentation:**
 - [VISUAL_IDENTITY_LAYER.md](./VISUAL_IDENTITY_LAYER.md)

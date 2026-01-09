@@ -62,7 +62,7 @@ packages/core/theme-engine/
 
 ---
 
-### 3️⃣ Mac OS Retro (Aqua)
+### 3️⃣ macOS Retro (Aqua)
 **Mood**: Reflective silver + soft light
 
 **Palette**:
@@ -443,5 +443,5 @@ All assets are original or properly licensed. No copyrighted material included.
 
 **Last Updated**: 2026-01-19  
 **Version**: 0.1.0  
-**Maintainer**: chris@totalaud.io
+**Maintainer**: TotalAud.io Team
 

@@ -18,7 +18,7 @@
 - [x] 5 complete theme manifests defined
   - ASCII Terminal (hacker/retro)
   - Windows XP Studio (2000s nostalgia)
-  - Mac OS Retro (Aqua brushed metal)
+  - macOS Retro (Aqua brushed metal)
   - Ableton Mode (dark grid precision)
   - Punk Zine (DIY xerox chaos)
 - [x] Color palettes (8 colors per theme)
@@ -269,6 +269,6 @@ None currently! 🎉
 ---
 
 **Package**: `@total-audio/core-theme-engine`  
-**License**: Private  
-**Maintainer**: [chris@totalaud.io](mailto:chris@totalaud.io)
+**Licence**: Private  
+**Maintainer**: TotalAud.io Team
 

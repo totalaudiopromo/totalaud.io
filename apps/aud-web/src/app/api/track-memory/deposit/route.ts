@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { appendTrackMemoryEntry, MemoryEntryType, SourceMode } from '@/lib/track-memory'
 import { logger } from '@/lib/logger'
@@ -38,12 +39,25 @@ const ALLOWED_SOURCES: SourceMode[] = [
   'manual',
 ]
 
-interface DepositRequest {
-  trackId: string
-  entryType: MemoryEntryType
-  payload: Record<string, unknown>
-  sourceMode?: SourceMode
-}
+// Zod schema for runtime validation
+const DepositRequestSchema = z.object({
+  trackId: z.string().uuid(),
+  entryType: z.enum([
+    'intent',
+    'perspective',
+    'story_fragment',
+    'sequence_decision',
+    'scout_consideration',
+    'version_note',
+    'note',
+  ] as const),
+  payload: z.record(z.unknown()),
+  sourceMode: z
+    .enum(['ideas', 'finish', 'story', 'scout', 'timeline', 'content', 'manual'] as const)
+    .optional(),
+})
+
+type DepositRequest = z.infer<typeof DepositRequestSchema>
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,26 +74,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, deposited: false })
     }
 
-    // Parse request body
-    const body = (await request.json()) as DepositRequest
+    // Parse and validate request body with Zod
+    const parseResult = DepositRequestSchema.safeParse(await request.json())
 
-    // Validate required fields
-    if (!body.trackId || !body.entryType || !body.payload) {
-      log.warn('Deposit skipped: missing required fields')
+    if (!parseResult.success) {
+      log.warn('Deposit skipped: validation failed', {
+        errors: parseResult.error.flatten().fieldErrors,
+      })
       return NextResponse.json({ success: true, deposited: false })
     }
 
-    // Validate entry type
-    if (!ALLOWED_TYPES.includes(body.entryType)) {
-      log.warn('Deposit skipped: invalid entry type', { entryType: body.entryType })
-      return NextResponse.json({ success: true, deposited: false })
-    }
-
-    // Validate source mode if provided
-    if (body.sourceMode && !ALLOWED_SOURCES.includes(body.sourceMode)) {
-      log.warn('Deposit skipped: invalid source mode', { sourceMode: body.sourceMode })
-      return NextResponse.json({ success: true, deposited: false })
-    }
+    const body = parseResult.data
 
     // Attempt deposit (failure-safe)
     const entry = await appendTrackMemoryEntry(

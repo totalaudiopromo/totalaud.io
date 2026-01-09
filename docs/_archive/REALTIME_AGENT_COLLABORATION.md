@@ -609,8 +609,8 @@ type AgentStatus = 'queued' | 'running' | 'complete' | 'error' | 'cancelled'
 ---
 
 **Status**: ✅ Core Implementation Complete
-**Last Updated**: October 19, 2026
-**Maintainer**: [chris@totalaud.io](mailto:chris@totalaud.io)
+**Last Updated**: October 19, 2025
+**Maintainer**: TotalAud.io Team
 
 **Next Steps**:
 1. Implement agent command bridge in BrokerChat

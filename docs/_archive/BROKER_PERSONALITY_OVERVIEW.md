@@ -23,7 +23,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 - Occasional tech puns
 
 **Example Dialogue**:
-```
+```text
 > agent broker online_ let's boot your promo system.
 > establishing connection...
 > ready to proc your campaign data
@@ -49,7 +49,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 - Uses British colloquialisms
 
 **Example Dialogue**:
-```
+```text
 ► Morning! Broker here. Let's spin up your studio.
 ► Brilliant :)
 ► Cheers for that.
@@ -75,7 +75,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 - Poetic phrasing
 
 **Example Dialogue**:
-```
+```text
 • Hey — take a breath. Ready to make something beautiful?
 • Noted. Smooth.
 • Let's move gently to the next part...
@@ -101,7 +101,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 - Time-conscious
 
 **Example Dialogue**:
-```
+```text
 ● Sync checked. Let's drop your first promo loop.
 ● Tracked.
 ● Next track...
@@ -127,7 +127,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 - Anti-establishment edge
 
 **Example Dialogue**:
-```
+```text
 ✦ OI. Broker here. Let's rip this thing open and make noise.
 ✦ Got it. PROPER.
 ✦ One more thing then we RIOT...
@@ -438,4 +438,4 @@ For each theme (ASCII, XP, Aqua, Ableton, Punk):
 **Package**: `@total-audio/core-agent-executor`
 **Module**: `src/personas/brokerPersonalityRegistry.ts`
 **Status**: ✅ Production Ready
-**Maintainer**: chris@totalaud.io
+**Maintainer**: TotalAud.io Team

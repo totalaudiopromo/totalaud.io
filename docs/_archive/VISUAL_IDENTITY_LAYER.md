@@ -174,8 +174,8 @@ Keyboard-accessible theme switcher:
 ```
 
 **Keyboard Shortcut:**
-- Mac: `⌘ + ` `
-- Windows/Linux: `Ctrl + ` `
+- Mac: `⌘ + backtick`
+- Windows/Linux: `Ctrl + backtick`
 
 **Features:**
 - Instant theme switching
@@ -187,7 +187,7 @@ Keyboard-accessible theme switcher:
 
 ### Dashboard Layout
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │  Header (Title + Quick Stats)           │
 ├─────────────────────────────────────────┤
@@ -202,7 +202,7 @@ Keyboard-accessible theme switcher:
 
 ### Flow Canvas Layout
 
-```
+```text
 ┌────────┐                        ┌──────────┐
 │ Skills │  Main Canvas Area      │ Execution│
 │ Palette│                        │  Status  │
@@ -215,7 +215,7 @@ Keyboard-accessible theme switcher:
 
 ### Multi-Agent Chat Layout
 
-```
+```text
 ┌─ agent_messages ──────────────────┐
 │  🧭 Scout → Coach: Found 12 ...   │
 │  🎙️ Coach → Tracker: Generated ..│
@@ -233,7 +233,7 @@ Keyboard-accessible theme switcher:
 
 ### Box Drawing Characters
 
-```
+```text
 ┌ ┐ └ ┘  Corners
 ─ │      Lines
 ├ ┤ ┬ ┴  T-junctions
@@ -242,7 +242,7 @@ Keyboard-accessible theme switcher:
 
 ### Block Elements
 
-```
+```text
 █ ▓ ▒ ░  Filled blocks
 ▀ ▄ ▌ ▐  Half blocks
 ● ○      Circles
@@ -282,7 +282,7 @@ All interactive elements are keyboard accessible:
 - `Tab` / `Shift+Tab`: Navigate between elements
 - `Enter` / `Space`: Activate buttons
 - `Escape`: Close modals/panels
-- `⌘/Ctrl + ` `: Toggle theme
+- `⌘/Ctrl + backtick`: Toggle theme
 - `⌘/Ctrl + K`: Open command palette (future)
 
 ### Screen Readers
@@ -334,7 +334,7 @@ All interactive elements are keyboard accessible:
 
 ## File Structure
 
-```
+```txt
 apps/aud-web/
 ├── src/
 │   ├── app/

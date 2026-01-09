@@ -4,7 +4,7 @@
 **Concept**: "Every OS personality has its own visual rhythm, tone, and sense of focus"
 **Goal**: Transform totalaud.io from SaaS to an instrument of identity
 **Location**: Brighton, UK
-**Last Updated**: 19 October 2026
+**Last Updated**: 19 October 2025
 
 ---
 
@@ -257,7 +257,7 @@ all channels active. mixdown ready.
 ## 🎨 Punk Theme
 
 ### Visual Language
-- **Colours**: Black `#000000`, white `#ffffff`, hot pink `#ff00ff`, blood red `#ff0000`
+- **Colours**: Black `#000000`, white `#ffffff`, hot pink `#ff00ff`, blood-red `#ff0000`
 - **Typography**: JetBrains Mono, bold weights, glitchy effects
 - **Collage**: Overlapping elements, intentional visual chaos
 - **Noise**: Film grain overlay
@@ -443,7 +443,7 @@ export function ThemedFlowCanvas(props: FlowCanvasBaseProps) {
 
 ---
 
-**Last Updated**: 19 October 2026
+**Last Updated**: 19 October 2025
 **Status**: Specification Complete, Implementation Pending
 **Location**: Brighton, UK
 **Contributors**: Claude Code, Total Audio Team

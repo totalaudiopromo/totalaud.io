@@ -2,7 +2,7 @@
 
 **totalaud.io flow studio**
 **Location**: Brighton, UK
-**Last Updated**: 19 October 2026
+**Last Updated**: 19 October 2025
 **Version**: 1.0.0
 
 ---
@@ -103,10 +103,10 @@ To make totalaud.io flow studio feel like an instrument, not a dashboard — ena
 | **Typography** | Inter (400–600) + JetBrains Mono (500) | All lowercase |
 | **Texture** | DRS grit overlay < 4% opacity | Optional aesthetic cohesion |
 
-### Agent Colours
+### Perspective Colours
 
-| Agent | Colour | Hex | Desaturated |
-|-------|--------|-----|-------------|
+| Perspective | Colour | Hex | Desaturated |
+|-------------|--------|-----|-------------|
 | **scout** | Green | `#10b981` | `#0ea271` |
 | **coach** | Indigo | `#6366f1` | `#5a5de1` |
 | **tracker** | Amber | `#f59e0b` | `#e58f0a` |
@@ -137,7 +137,7 @@ Built on existing `useUISound` + Theme Engine.
 | Layer | Type | Level | Notes |
 |-------|------|-------|-------|
 | **Ambient pad** | C minor sine wave | -24 dB | Constant background hum |
-| **Agent sounds** | Per-agent tone | -18 dB | Triggered on status change |
+| **Perspective tones** | Per-perspective tone | -18 dB | Triggered on status change |
 | **UI feedback** | Click/hover tones | -20 dB | Brief, crisp |
 | **Completion** | Major third chord | -16 dB | Reward tone |
 
@@ -363,7 +363,7 @@ interface UISound {
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0.0 | 2026-10-19 | Initial specification |
+| 1.0.0 | 2025-10-19 | Initial specification |
 
 ---
 
@@ -395,7 +395,7 @@ interface UISound {
 
 ---
 
-**Last Updated**: 19 October 2026
+**Last Updated**: 19 October 2025
 **Status**: Specification Complete, Implementation In Progress
 **Location**: Brighton, UK
 **Contributors**: Claude Code, Total Audio Team

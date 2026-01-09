@@ -494,7 +494,7 @@ const session = await getAgentSession(sessionId)
 1. **Cache Aggressively**: Store and reuse results
 2. **Lazy Execution**: Only run necessary skills
 3. **Budget Limits**: Set per-user/per-session caps
-4. **Model Selection**: Use smallest capable model
+4. **Model Selection**: Use the smallest capable model
 
 ## Conclusion
 
