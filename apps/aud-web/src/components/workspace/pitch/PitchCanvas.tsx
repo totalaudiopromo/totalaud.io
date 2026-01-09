@@ -49,7 +49,7 @@ const PITCH_TYPES: { key: PitchType; label: string; description: string }[] = [
   {
     key: 'custom',
     label: 'Custom Pitch',
-    description: 'Start from scratch with AI assistance',
+    description: 'Start from scratch with helpful prompts',
   },
 ]
 
@@ -162,7 +162,7 @@ export function PitchCanvas() {
             Choose your pitch type
           </h2>
           <p className="text-sm text-ta-grey max-w-md mx-auto">
-            Select a template to get started. Our AI coach will help you craft the perfect pitch.
+            Select a template to get started. You'll have help shaping your pitch along the way.
           </p>
         </motion.div>
 
@@ -296,7 +296,7 @@ export function PitchCanvas() {
                 <div
                   className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   role="group"
-                  aria-label="AI coach actions"
+                  aria-label="Pitch refinement actions"
                 >
                   {section.content && (
                     <CopyButton
@@ -310,7 +310,7 @@ export function PitchCanvas() {
                       key={action}
                       onClick={() => requestCoach(section.id, action)}
                       disabled={isCoachLoading}
-                      aria-label={`${action} ${section.title} with AI coach`}
+                      aria-label={`${action} ${section.title}`}
                       className="px-2.5 py-1 text-[10px] font-medium text-ta-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
                     >
                       {action}
@@ -369,11 +369,11 @@ export function PitchCanvas() {
                         className="w-2 h-2 rounded-full bg-ta-cyan animate-pulse"
                         aria-hidden="true"
                       />
-                      AI Coach
+                      Second Opinion
                     </h3>
                     <button
                       onClick={() => closeCoach()}
-                      aria-label="Close AI coach panel"
+                      aria-label="Close second opinion panel"
                       className="text-xs text-ta-grey hover:text-white transition-colors"
                     >
                       Close
@@ -384,7 +384,7 @@ export function PitchCanvas() {
                   {isCoachLoading && (
                     <div className="p-4 rounded-xl bg-ta-cyan/5 border border-ta-cyan/10 flex items-center gap-3">
                       <TypingIndicator />
-                      <span className="text-xs text-ta-cyan/80">Thinking...</span>
+                      <span className="text-xs text-ta-cyan/80">Working...</span>
                     </div>
                   )}
 
@@ -410,7 +410,7 @@ export function PitchCanvas() {
                               applyCoachSuggestion(selectedSectionId, coachResponse)
                             }
                           }}
-                          aria-label="Apply AI coach suggestion to selected section"
+                          aria-label="Apply suggestion to selected section"
                           className="w-full py-2.5 text-xs font-semibold text-ta-black bg-ta-cyan hover:bg-ta-cyan/90 rounded-lg transition-colors shadow-[0_0_15px_-5px_rgba(58,169,190,0.5)]"
                         >
                           Apply to section
@@ -436,10 +436,10 @@ export function PitchCanvas() {
           animate={{ scale: 1, opacity: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label="Open AI coach panel"
+          aria-label="Open second opinion panel"
           className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ta-black bg-ta-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
         >
-          <span aria-hidden="true">✨</span> Ask AI Coach
+          <span aria-hidden="true">✨</span> Get a Second Opinion
         </motion.button>
       )}
 

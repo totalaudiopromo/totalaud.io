@@ -9,7 +9,7 @@ export const successMessages = {
   ideaCreated: ['Idea saved', 'Captured', 'Added to ideas'],
   addedToTimeline: ['Added to timeline', 'Scheduled', 'Added to your plan'],
   pitchCopied: ['Copied to clipboard', 'Ready to paste', 'Copied'],
-  coachResponse: ['Here are my thoughts...', 'Suggestion ready'],
+  secondOpinion: ['Here are some thoughts...', 'Notes ready'],
 }
 
 // Get random message from category

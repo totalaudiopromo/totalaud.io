@@ -774,7 +774,7 @@ function ThreadDetail({ thread, isGenerating, onGenerateNarrative, onDelete }: T
               marginBottom: 12,
             }}
           >
-            Insights
+            Notes
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {thread.insights.map((insight, i) => (

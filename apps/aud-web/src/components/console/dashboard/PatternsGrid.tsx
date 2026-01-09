@@ -18,12 +18,12 @@ export function PatternsGrid({ patterns }: PatternsGridProps) {
     <Card className="bg-transparent border-0 p-0 shadow-none">
       <div className="flex items-center gap-3 mb-6 px-1">
         <ArrowTrendingUpIcon className="w-5 h-5 text-ta-cyan" />
-        <h3 className="text-lg font-medium text-ta-white tracking-tight">Detected Patterns</h3>
+        <h3 className="text-lg font-medium text-ta-white tracking-tight">Patterns</h3>
       </div>
 
       {patterns.length === 0 ? (
         <div className="p-8 border border-white/5 rounded-2xl bg-white/[0.02] text-center">
-          <p className="text-sm text-ta-grey">No campaign patterns detected yet.</p>
+          <p className="text-sm text-ta-grey">No campaign patterns yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -50,7 +50,7 @@ export function PatternsGrid({ patterns }: PatternsGridProps) {
 
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-[10px] font-mono text-ta-grey/60 uppercase tracking-wider">
-                      Confidence
+                      Relevance
                     </span>
                     <span className="text-sm font-mono text-ta-cyan">
                       {(item.confidence * 100).toFixed(0)}%

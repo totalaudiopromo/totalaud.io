@@ -41,8 +41,8 @@ export function TrajectoryForecast({
       {/* Forecast Chart */}
       <Card>
         <div className="flex items-start justify-between mb-4">
-          <h3 className="text-lg font-semibold text-ta-white lowercase">90-day forecast</h3>
-          <Badge variant="info">{(confidence * 100).toFixed(0)}% confidence</Badge>
+          <h3 className="text-lg font-semibold text-ta-white lowercase">90-day outlook</h3>
+          <Badge variant="info">{(confidence * 100).toFixed(0)}% relevance</Badge>
         </div>
         <ResponsiveContainer width="100%" height={350}>
           <AreaChart data={forecastData}>

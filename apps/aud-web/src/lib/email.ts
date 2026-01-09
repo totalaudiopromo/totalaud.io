@@ -132,7 +132,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<EmailRes
                       <strong style="color: #F7F8F9;">Ideas</strong> – Capture and organise your creative thoughts<br>
                       <strong style="color: #F7F8F9;">Scout</strong> – Discover playlists, blogs, and radio opportunities<br>
                       <strong style="color: #F7F8F9;">Timeline</strong> – Plan your release with a visual calendar<br>
-                      <strong style="color: #F7F8F9;">Pitch</strong> – Craft compelling pitches with AI coaching
+                      <strong style="color: #F7F8F9;">Pitch</strong> – Craft compelling pitches with guided drafting
                     </p>
                   </td>
                 </tr>
@@ -193,7 +193,7 @@ Your workspace has four modes:
 • Ideas – Capture and organise your creative thoughts
 • Scout – Discover playlists, blogs, and radio opportunities
 • Timeline – Plan your release with a visual calendar
-• Pitch – Craft compelling pitches with AI coaching
+• Pitch – Craft compelling pitches with guided drafting
 
 Ready to get started? ${goalInfo.action}:
 ${appUrl}/workspace?mode=${goalInfo.mode}

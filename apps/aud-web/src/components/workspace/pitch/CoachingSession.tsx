@@ -40,8 +40,8 @@ const PHASE_INFO: Record<string, { label: string; description: string }> = {
     description: 'Shaping your message',
   },
   optimisation: {
-    label: 'Optimisation',
-    description: 'Final polish',
+    label: 'Polish',
+    description: 'Final refinement',
   },
 }
 
@@ -181,11 +181,11 @@ export function CoachingSession() {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-sm font-semibold text-ta-white flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-ta-cyan" aria-hidden="true" />
-            AI Coach
+            Second Opinion
           </h3>
           <button
             onClick={() => closeCoach()}
-            aria-label="Close AI coach panel"
+            aria-label="Close second opinion panel"
             className="text-xs text-ta-grey hover:text-white transition-colors"
           >
             Close
@@ -332,7 +332,7 @@ export function CoachingSession() {
             className="flex items-center gap-3 p-3"
           >
             <TypingIndicator />
-            <span className="text-xs text-ta-cyan/70">Coach is thinking...</span>
+            <span className="text-xs text-ta-cyan/70">Working...</span>
           </motion.div>
         )}
 

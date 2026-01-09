@@ -29,9 +29,7 @@ export function CorrelationList({
 
       {/* Correlations */}
       <Card>
-        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">
-          correlations detected
-        </h3>
+        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">connections</h3>
         <div className="space-y-3">
           {Object.entries(correlations).map(([key, value]) => (
             <div key={key} className="p-4 bg-ta-black/30 rounded-lg border border-ta-panel/30">
@@ -51,7 +49,7 @@ export function CorrelationList({
 
       {/* Recommendations */}
       <Card>
-        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">recommendations</h3>
+        <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">possible next steps</h3>
         <ul className="space-y-2">
           {recommendations.map((rec, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-ta-white">

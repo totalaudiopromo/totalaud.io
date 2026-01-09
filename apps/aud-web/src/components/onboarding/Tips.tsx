@@ -42,7 +42,7 @@ const TIPS: Record<string, TipConfig> = {
     id: 'pitch',
     title: 'Craft your story',
     description:
-      'Choose a template and write your pitch. Use the AI Coach to improve each section.',
+      'Choose a template and write your pitch. Use the Second Opinion feature to refine each section.',
   },
 }
 

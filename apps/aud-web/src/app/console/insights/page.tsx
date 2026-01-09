@@ -16,11 +16,11 @@ export default function InsightsPage() {
 
   const tabs: Tab[] = [
     {
-      id: 'correlations',
-      label: 'correlations',
+      id: 'connections',
+      label: 'connections',
       content: correlationsLoading ? (
         <Card>
-          <p className="text-ta-grey lowercase">loading correlations...</p>
+          <p className="text-ta-grey lowercase">loading data...</p>
         </Card>
       ) : correlations ? (
         <CorrelationList
@@ -30,7 +30,7 @@ export default function InsightsPage() {
         />
       ) : (
         <Card>
-          <p className="text-ta-grey lowercase">no correlation data available</p>
+          <p className="text-ta-grey lowercase">no data available</p>
         </Card>
       ),
     },
@@ -66,11 +66,11 @@ export default function InsightsPage() {
       ),
     },
     {
-      id: 'recommendations',
-      label: 'recommendations',
+      id: 'next-steps',
+      label: 'next steps',
       content: (
         <Card>
-          <p className="text-sm text-ta-grey lowercase">ai-powered recommendations coming soon</p>
+          <p className="text-sm text-ta-grey lowercase">coming soon</p>
         </Card>
       ),
     },
@@ -78,12 +78,9 @@ export default function InsightsPage() {
 
   return (
     <PageContainer>
-      <SectionHeader
-        title="intelligence insights"
-        description="deep analysis of your campaigns and creative work"
-      />
+      <SectionHeader title="overview" description="a look at your campaigns and creative work" />
 
-      <Tabbed tabs={tabs} defaultTab="correlations" />
+      <Tabbed tabs={tabs} defaultTab="connections" />
     </PageContainer>
   )
 }
