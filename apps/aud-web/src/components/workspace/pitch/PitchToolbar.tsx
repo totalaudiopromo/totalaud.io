@@ -23,6 +23,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { useToast } from '@/contexts/ToastContext'
+import { useTrackMemoryDeposit } from '@/hooks/useTrackMemoryDeposit'
 
 export function PitchToolbar() {
   const [showExportMenu, setShowExportMenu] = useState(false)
@@ -48,6 +49,9 @@ export function PitchToolbar() {
   } = usePitchStore()
 
   const hasContent = usePitchStore(selectHasContent)
+
+  // Track Memory deposit (silent, only when track context exists)
+  const { depositStoryFragment, hasTrack } = useTrackMemoryDeposit()
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -99,13 +103,19 @@ export function PitchToolbar() {
   }
 
   // Save handler
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!currentType) return
 
     if (currentDraftId) {
       const existingDraft = drafts.find((d) => d.id === currentDraftId)
       if (existingDraft) {
-        saveDraft(existingDraft.name)
+        const draftId = await saveDraft(existingDraft.name)
+        // Silent deposit of story fragment (only if track context exists)
+        if (hasTrack && draftId) {
+          const content = buildPitchPlainText(sections, currentType)
+          // Fire and forget - don't await
+          depositStoryFragment(content, currentType, draftId)
+        }
       }
     } else {
       setDraftName('')
@@ -113,11 +123,18 @@ export function PitchToolbar() {
     }
   }
 
-  const handleSaveNewDraft = () => {
+  const handleSaveNewDraft = async () => {
     if (!draftName.trim()) return
-    saveDraft(draftName.trim())
+    const draftId = await saveDraft(draftName.trim())
     setShowSaveModal(false)
     setDraftName('')
+
+    // Silent deposit of story fragment (only if track context exists)
+    if (hasTrack && draftId && currentType) {
+      const content = buildPitchPlainText(sections, currentType)
+      // Fire and forget - don't await
+      depositStoryFragment(content, currentType, draftId)
+    }
   }
 
   return (

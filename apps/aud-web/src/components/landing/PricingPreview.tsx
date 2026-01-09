@@ -16,14 +16,14 @@ const STARTER_FEATURES = [
   { text: 'Ideas Mode', description: 'Full access to creative canvas' },
   { text: 'Scout Mode', description: '10 opportunities per day' },
   { text: 'Timeline Mode', description: '1 active project' },
-  { text: 'Pitch Mode', description: '3 AI coach sessions/month' },
+  { text: 'Pitch Mode', description: '3 second opinion sessions/month' },
 ]
 
 const PRO_FEATURES = [
   { text: 'Everything in Starter', description: 'Plus unlimited access' },
   { text: 'Unlimited Scout', description: 'Browse all opportunities' },
   { text: 'Unlimited Projects', description: 'Manage multiple releases' },
-  { text: 'Unlimited AI Coaching', description: 'Refine every pitch' },
+  { text: 'Unlimited Drafting Help', description: 'Refine every pitch' },
   { text: 'Export Everywhere', description: 'Markdown, PDF, clipboard' },
   { text: 'Priority Features', description: 'Early access to new tools' },
 ]

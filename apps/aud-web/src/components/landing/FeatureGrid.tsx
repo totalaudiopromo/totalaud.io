@@ -25,7 +25,7 @@ const FEATURES = [
   },
   {
     title: 'Pitch',
-    description: 'Craft your story with AI assistance. Export polished pitches in seconds.',
+    description: 'Craft your story with helpful prompts. Export polished pitches in seconds.',
   },
 ]
 

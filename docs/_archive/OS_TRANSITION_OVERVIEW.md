@@ -105,7 +105,7 @@ Ready.
 
 ---
 
-### 🍎 Mac OS Retro (2001 Aqua)
+### 🍎 macOS Retro (2001 Aqua)
 
 **Visual Elements:**
 - Brushed metal texture
@@ -627,7 +627,7 @@ Special transitions for holidays/events:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: January 18, 2025  
+**Last Updated**: January 18, 2026  
 **Status**: ✅ Complete
 
 **Credits:**

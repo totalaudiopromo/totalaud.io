@@ -20,6 +20,7 @@ import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { getTrackMemory } from '@/lib/track-memory'
 
 const log = logger.scope('PitchCoachSessionAPI')
 
@@ -54,11 +55,18 @@ interface ArtistIdentity {
   last_generated_at: string | null
 }
 
+// Type for track memory context
+interface TrackMemoryContext {
+  canonicalIntent: string | null
+  storyFragments: string[]
+}
+
 // ============ Validation ============
 
 const requestSchema = z.object({
   message: z.string().min(1, 'Message is required'),
   sectionId: z.string().optional(),
+  trackId: z.string().optional(), // Track context for memory lookup
   pitchType: z.enum(['radio', 'press', 'playlist', 'custom']).nullable(),
   mode: z.enum(['quick', 'guided']).nullable(),
   phase: z.enum(['foundation', 'refinement', 'optimisation']).nullable(),
@@ -144,7 +152,8 @@ function buildSystemPrompt(
   mode: CoachingMode | null,
   phase: CoachingPhase | null,
   pitchType: PitchType | null,
-  identity: ArtistIdentity | null
+  identity: ArtistIdentity | null,
+  trackMemory: TrackMemoryContext | null
 ): string {
   const parts = [BASE_SYSTEM_PROMPT]
 
@@ -183,6 +192,29 @@ function buildSystemPrompt(
     if (identityParts.length > 0) {
       parts.push(
         `\n## Artist Identity Profile\nUse this to ensure suggestions align with their established voice:\n${identityParts.join('\n')}`
+      )
+    }
+  }
+
+  // Add track memory context if available (provides continuity for this specific track)
+  if (trackMemory) {
+    const memoryParts: string[] = []
+
+    if (trackMemory.canonicalIntent) {
+      memoryParts.push(`**Original Intent**: "${trackMemory.canonicalIntent}"`)
+    }
+
+    if (trackMemory.storyFragments.length > 0) {
+      // Only include the most recent 2 fragments to avoid context bloat
+      const recentFragments = trackMemory.storyFragments.slice(0, 2)
+      memoryParts.push(
+        `**Previous Story Work**:\n${recentFragments.map((f, i) => `${i + 1}. ${f.slice(0, 200)}${f.length > 200 ? '...' : ''}`).join('\n')}`
+      )
+    }
+
+    if (memoryParts.length > 0) {
+      parts.push(
+        `\n## Track Context\nThe artist has worked on this specific track before. Use this context to maintain continuity:\n${memoryParts.join('\n')}`
       )
     }
   }
@@ -311,7 +343,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = requestSchema.parse(body)
 
-    const { message, sectionId, pitchType, mode, phase, history = [], allSections = [] } = validated
+    const {
+      message,
+      sectionId,
+      trackId,
+      pitchType,
+      mode,
+      phase,
+      history = [],
+      allSections = [],
+    } = validated
 
     // Fetch artist identity for context (optional enhancement)
     let artistIdentity: ArtistIdentity | null = null
@@ -332,8 +373,37 @@ export async function POST(request: NextRequest) {
       // Identity not found - continue without it
     }
 
+    // Fetch track memory for context (silent failure)
+    let trackMemoryContext: TrackMemoryContext | null = null
+    if (trackId) {
+      try {
+        const memory = await getTrackMemory(session.user.id, trackId, {
+          includeEntries: true,
+          entryTypes: ['story_fragment'],
+        })
+
+        if (memory) {
+          trackMemoryContext = {
+            canonicalIntent: memory.canonicalIntent,
+            storyFragments:
+              memory.entries
+                ?.filter((e) => e.payload && e.payload.content != null)
+                .map((e) => String(e.payload?.content ?? '')) || [],
+          }
+        }
+      } catch {
+        // Track memory not found - continue without it
+      }
+    }
+
     // Build prompts
-    const systemPrompt = buildSystemPrompt(mode, phase, pitchType, artistIdentity)
+    const systemPrompt = buildSystemPrompt(
+      mode,
+      phase,
+      pitchType,
+      artistIdentity,
+      trackMemoryContext
+    )
     const userMessage = buildUserMessage(message, sectionId, allSections)
     const conversationHistory = buildConversationHistory(history)
 
@@ -344,6 +414,7 @@ export async function POST(request: NextRequest) {
       pitchType,
       historyLength: history.length,
       hasIdentity: !!artistIdentity,
+      hasTrackMemory: !!trackMemoryContext,
     })
 
     // Build message array with history

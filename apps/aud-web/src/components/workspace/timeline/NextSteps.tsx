@@ -22,7 +22,7 @@ function getRelativeDate(date: Date): string {
   const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
   const diffDays = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 0) return 'overdue'
+  if (diffDays < 0) return 'past'
   if (diffDays === 0) return 'today'
   if (diffDays === 1) return 'tomorrow'
   if (diffDays <= 7) return `in ${diffDays} days`
@@ -107,7 +107,7 @@ export function NextSteps({ maxItems = 3, className }: NextStepsProps) {
               letterSpacing: '0.05em',
             }}
           >
-            Next Steps
+            Coming Up
           </span>
         </div>
         <p
@@ -117,7 +117,7 @@ export function NextSteps({ maxItems = 3, className }: NextStepsProps) {
             color: 'rgba(255, 255, 255, 0.4)',
           }}
         >
-          No upcoming events. Add events from Scout or create them manually.
+          Events will appear here.
         </p>
       </div>
     )
@@ -152,7 +152,7 @@ export function NextSteps({ maxItems = 3, className }: NextStepsProps) {
               letterSpacing: '0.05em',
             }}
           >
-            Next Steps
+            Coming Up
           </span>
         </div>
         <span

@@ -26,6 +26,7 @@ import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 import { TipBanner, ModeTour } from '@/components/onboarding'
+import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 
 // Dynamic imports for code splitting - each mode loads only when needed
 const IdeasCanvas = dynamic(
@@ -134,15 +135,23 @@ function WorkspaceContent() {
     }
   }, [checkoutStatus, router])
 
+  // Get track ID from URL (for Track Memory context)
+  const trackId = useCurrentTrackId()
+
   const handleModeChange = useCallback(
     (newMode: WorkspaceMode) => {
       const modeConfig = MODES.find((m) => m.key === newMode)
       if (!modeConfig?.available) return
 
       setMode(newMode)
-      router.push(`/workspace?mode=${newMode}`, { scroll: false })
+      // Preserve track param when switching modes
+      const params = new URLSearchParams({ mode: newMode })
+      if (trackId) {
+        params.set('track', trackId)
+      }
+      router.push(`/workspace?${params.toString()}`, { scroll: false })
     },
-    [router]
+    [router, trackId]
   )
 
   // Get view mode from Ideas store

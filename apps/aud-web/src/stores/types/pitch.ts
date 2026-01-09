@@ -78,6 +78,8 @@ export interface PitchStateData {
   currentDraftId: string | null
   /** Currently selected section ID */
   selectedSectionId: string | null
+  /** Track ID for Track Memory context (from URL) */
+  trackId: string | null
 }
 
 // ============================================================================
@@ -149,6 +151,9 @@ export interface PitchActions {
   selectType: (type: PitchType) => void
   resetPitch: () => void
 
+  // Track Context (for Track Memory)
+  setTrackId: (trackId: string | null) => void
+
   // Section Editing
   updateSection: (id: string, content: string) => void
   selectSection: (id: string | null) => void
@@ -214,6 +219,7 @@ export const createInitialPitchState = (): PitchStateData &
   drafts: [],
   currentDraftId: null,
   selectedSectionId: null,
+  trackId: null,
   isCoachOpen: false,
   isCoachLoading: false,
   coachResponse: null,

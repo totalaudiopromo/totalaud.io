@@ -1,8 +1,8 @@
 /**
  * Coming Soon Landing Page - totalaud.io
  *
- * Premium teaser with the same cinematic quality as the main landing page.
- * Features: ambient gradients, grain texture, animated headline, hover effects.
+ * Vision-aligned copy (January 2026)
+ * A calm, opinionated system for independent artists
  */
 
 'use client'
@@ -13,51 +13,34 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { WaitlistForm } from './WaitlistForm'
 
-// The 4 core modes to tease
-const MODES = [
+// What you'll be able to do - features teaser
+const FEATURES = [
   {
-    id: 'ideas',
-    name: 'Ideas',
-    description: 'Capture fleeting inspiration',
+    id: 'finish',
+    title: 'Finishing notes',
+    description: 'Get finishing notes on tracks before release',
     icon: (
       <svg
-        width="28"
-        height="28"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
       >
-        <path d="M9 21h6M12 3a6 6 0 0 0-6 6c0 2.22 1.21 4.16 3 5.19V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.81c1.79-1.03 3-2.97 3-5.19a6 6 0 0 0-6-6z" />
+        <path d="M9 12l2 2 4-4" />
+        <circle cx="12" cy="12" r="10" />
       </svg>
     ),
   },
   {
-    id: 'scout',
-    name: 'Scout',
-    description: 'Find the right ears',
+    id: 'release',
+    title: 'Release timing',
+    description: 'Understand when and how your music should land',
     icon: (
       <svg
-        width="28"
-        height="28"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
-    ),
-  },
-  {
-    id: 'timeline',
-    name: 'Timeline',
-    description: 'Plan your release',
-    icon: (
-      <svg
-        width="28"
-        height="28"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -69,13 +52,32 @@ const MODES = [
     ),
   },
   {
-    id: 'pitch',
-    name: 'Pitch',
-    description: 'Craft your story',
+    id: 'relationships',
+    title: 'Relationships',
+    description: 'Build real relationships without starting from zero',
     icon: (
       <svg
-        width="28"
-        height="28"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
+  {
+    id: 'story',
+    title: 'Consistent story',
+    description: 'Keep your story consistent everywhere',
+    icon: (
+      <svg
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -87,8 +89,8 @@ const MODES = [
   },
 ]
 
-// Mode card with hover effects
-function ModeCard({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
+// Feature card with hover effects
+function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
@@ -97,7 +99,7 @@ function ModeCard({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
         duration: 0.6,
-        delay: 0.5 + index * 0.1,
+        delay: 0.8 + index * 0.1,
         ease: [0.25, 0.1, 0.25, 1],
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -106,9 +108,8 @@ function ModeCard({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         gap: '12px',
-        padding: '24px 16px',
+        padding: '24px',
         borderRadius: '16px',
         border: '1px solid',
         borderColor: isHovered ? 'rgba(58, 169, 190, 0.3)' : 'rgba(255, 255, 255, 0.06)',
@@ -140,13 +141,13 @@ function ModeCard({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
       <motion.span
         animate={{
           color: isHovered ? '#56BFD4' : '#3AA9BE',
-          scale: isHovered ? 1.1 : 1,
+          scale: isHovered ? 1.05 : 1,
         }}
         transition={{ duration: 0.3 }}
         aria-hidden="true"
         style={{ position: 'relative', zIndex: 1 }}
       >
-        {mode.icon}
+        {feature.icon}
       </motion.span>
       <span
         style={{
@@ -158,20 +159,19 @@ function ModeCard({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
         }}
       >
-        {mode.name}
+        {feature.title}
       </span>
       <span
         style={{
-          fontSize: '13px',
-          color: 'rgba(255, 255, 255, 0.6)',
-          textAlign: 'center',
+          fontSize: '14px',
+          color: 'rgba(255, 255, 255, 0.7)',
           position: 'relative',
           zIndex: 1,
           fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-          lineHeight: 1.4,
+          lineHeight: 1.5,
         }}
       >
-        {mode.description}
+        {feature.description}
       </span>
     </motion.div>
   )
@@ -191,7 +191,7 @@ export function ComingSoonLanding() {
         overflowX: 'hidden',
       }}
     >
-      {/* Ambient spotlight gradients - matching main landing */}
+      {/* Ambient spotlight gradients */}
       <div
         aria-hidden
         style={{
@@ -205,7 +205,7 @@ export function ComingSoonLanding() {
         }}
       />
 
-      {/* Grain overlay - matching main landing */}
+      {/* Grain overlay */}
       <div
         aria-hidden
         style={{
@@ -256,8 +256,8 @@ export function ComingSoonLanding() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '60px 24px',
+          justifyContent: 'flex-start',
+          padding: '120px 24px 60px',
           maxWidth: '800px',
           margin: '0 auto',
           textAlign: 'center',
@@ -265,7 +265,7 @@ export function ComingSoonLanding() {
           zIndex: 1,
         }}
       >
-        {/* Badge - matching main landing */}
+        {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -310,19 +310,20 @@ export function ComingSoonLanding() {
           </span>
         </motion.div>
 
-        {/* Headline with animated gradient */}
+        {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
-            fontSize: 'clamp(40px, 8vw, 72px)',
+            fontSize: 'clamp(32px, 7vw, 56px)',
             fontWeight: 600,
-            lineHeight: 1.1,
+            lineHeight: 1.15,
             marginBottom: '24px',
-            letterSpacing: '-0.04em',
+            letterSpacing: '-0.03em',
           }}
         >
+          Make better releases —{' '}
           <span
             style={{
               background: 'linear-gradient(135deg, #3AA9BE 0%, #56BFD4 50%, #3AA9BE 100%)',
@@ -333,59 +334,36 @@ export function ComingSoonLanding() {
               animation: 'gradient-shift 4s ease infinite',
             }}
           >
-            Coming Soon
+            without guessing.
           </span>
         </motion.h1>
 
-        {/* Value prop - enhanced */}
+        {/* Subhead */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
-            fontSize: 'clamp(16px, 2.5vw, 20px)',
+            fontSize: 'clamp(16px, 2.5vw, 18px)',
             color: 'rgba(255, 255, 255, 0.85)',
             lineHeight: 1.7,
-            marginBottom: '56px',
-            maxWidth: '520px',
+            marginBottom: '48px',
+            maxWidth: '560px',
           }}
         >
-          A calm workspace for independent artists.
-          <br />
-          <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-            Scout opportunities. Capture ideas. Plan releases. Craft pitches.
-          </span>
+          totalaud.io is a calm, opinionated system that helps independent artists finish their
+          music, understand what matters, and release with confidence.
         </motion.p>
 
-        {/* 4 Mode Cards with hover effects */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '16px',
-            marginBottom: '56px',
-            width: '100%',
-            maxWidth: '520px',
-          }}
-          className="sm:grid-cols-4"
-        >
-          {MODES.map((mode, index) => (
-            <ModeCard key={mode.id} mode={mode} index={index} />
-          ))}
-        </motion.div>
-
-        {/* Waitlist Form - enhanced container */}
+        {/* Waitlist Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
           style={{
             width: '100%',
             maxWidth: '440px',
-            marginBottom: '40px',
+            marginBottom: '16px',
             padding: '32px',
             background: 'rgba(255, 255, 255, 0.02)',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -400,16 +378,167 @@ export function ComingSoonLanding() {
               marginBottom: '20px',
             }}
           >
-            Get early access
+            Join the early list
           </p>
           <WaitlistForm />
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              marginTop: '16px',
+            }}
+          >
+            No spam. Just an email when it's ready.
+          </p>
         </motion.div>
 
-        {/* Pricing link with arrow animation */}
+        {/* Why totalaud.io exists */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            marginTop: '64px',
+            marginBottom: '48px',
+            maxWidth: '560px',
+            textAlign: 'left',
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '20px',
+              fontWeight: 600,
+              color: '#F7F8F9',
+              marginBottom: '20px',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Why totalaud.io exists
+          </h2>
+          <p
+            style={{
+              fontSize: '15px',
+              color: 'rgba(255, 255, 255, 0.85)',
+              lineHeight: 1.8,
+              marginBottom: '16px',
+            }}
+          >
+            Most music doesn't fail because it's bad.
+            <br />
+            It fails because no one explains what matters before release.
+          </p>
+          <p
+            style={{
+              fontSize: '15px',
+              color: 'rgba(255, 255, 255, 0.7)',
+              lineHeight: 1.8,
+              marginBottom: '16px',
+            }}
+          >
+            Artists are left guessing — tweaking endlessly, jumping between tools, or releasing
+            without clarity.
+          </p>
+          <p
+            style={{
+              fontSize: '15px',
+              color: 'rgba(255, 255, 255, 0.85)',
+              lineHeight: 1.8,
+            }}
+          >
+            totalaud.io exists to give artists clear, human feedback on their music, their story,
+            and their release — before it goes out into the world.
+          </p>
+        </motion.section>
+
+        {/* Built from experience */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            marginBottom: '48px',
+            maxWidth: '560px',
+            textAlign: 'left',
+            padding: '24px',
+            background: 'rgba(58, 169, 190, 0.05)',
+            border: '1px solid rgba(58, 169, 190, 0.15)',
+            borderRadius: '16px',
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '16px',
+              fontWeight: 600,
+              color: '#3AA9BE',
+              marginBottom: '12px',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Built from experience, not theory
+          </h2>
+          <p
+            style={{
+              fontSize: '14px',
+              color: 'rgba(255, 255, 255, 0.8)',
+              lineHeight: 1.7,
+              marginBottom: '12px',
+            }}
+          >
+            totalaud.io is built by someone who's been an obsessed listener, a band member, a DJ, a
+            producer — and worked inside radio and music PR.
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              color: 'rgba(255, 255, 255, 0.7)',
+              lineHeight: 1.7,
+            }}
+          >
+            It's shaped by watching great records get ignored for reasons no one explained.
+          </p>
+        </motion.section>
+
+        {/* What you'll be able to do */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            marginBottom: '48px',
+            width: '100%',
+            maxWidth: '680px',
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '18px',
+              fontWeight: 600,
+              color: '#F7F8F9',
+              marginBottom: '24px',
+              letterSpacing: '-0.02em',
+              textAlign: 'center',
+            }}
+          >
+            What you'll be able to do
+          </h2>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gap: '16px',
+            }}
+          >
+            {FEATURES.map((feature, index) => (
+              <FeatureCard key={feature.id} feature={feature} index={index} />
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Pricing link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
         >
           <Link
             href="/pricing"
@@ -444,7 +573,7 @@ export function ComingSoonLanding() {
         </motion.div>
       </main>
 
-      {/* Footer - enhanced */}
+      {/* Footer */}
       <footer
         style={{
           padding: '32px 24px',
@@ -456,13 +585,13 @@ export function ComingSoonLanding() {
       >
         <p
           style={{
-            fontSize: '13px',
-            color: 'rgba(255, 255, 255, 0.5)',
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255, 0.6)',
             margin: 0,
             marginBottom: '16px',
           }}
         >
-          Built by radio promotion veterans in the UK
+          Independent by design. Built with care.
         </p>
         <nav
           aria-label="Legal"
@@ -510,12 +639,6 @@ export function ComingSoonLanding() {
           }
           50% {
             background-position: 100% 50%;
-          }
-        }
-
-        @media (min-width: 640px) {
-          .sm\\:grid-cols-4 {
-            grid-template-columns: repeat(4, 1fr) !important;
           }
         }
       `}</style>

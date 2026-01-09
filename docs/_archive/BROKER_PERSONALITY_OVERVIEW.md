@@ -62,7 +62,7 @@ The Broker Personality System creates adaptive agent behavior that changes based
 
 ---
 
-### Mac OS Retro (Aqua) Mode
+### macOS Retro (Aqua) Mode
 
 **Character**: Calm, reflective creative coach
 **Visual Style**: Long fade with glow effect, brushed silver
@@ -426,7 +426,7 @@ For each theme (ASCII, XP, Aqua, Ableton, Punk):
 
 ## 📝 Changelog
 
-**2025-10-19**: Initial implementation
+**2026-10-19**: Initial implementation
 - Created personality registry with 5 theme variations
 - Integrated into BrokerChat and BrokerIntro components
 - Added CSS animations for visual effects

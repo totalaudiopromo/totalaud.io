@@ -17,6 +17,7 @@ import { useIdeasStore } from '@/stores/useIdeasStore'
 import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore } from '@/stores/usePitchStore'
+import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 
 type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
 
@@ -34,16 +35,22 @@ interface PromptConfig {
 
 export function CrossModePrompt({ currentMode, onNavigate }: CrossModePromptProps) {
   const router = useRouter()
+  const trackId = useCurrentTrackId()
 
   const navigate = useCallback(
     (mode: WorkspaceMode) => {
       if (onNavigate) {
         onNavigate(mode)
       } else {
-        router.push(`/workspace?mode=${mode}`, { scroll: false })
+        // Preserve track param when navigating between modes
+        const params = new URLSearchParams({ mode })
+        if (trackId) {
+          params.set('track', trackId)
+        }
+        router.push(`/workspace?${params.toString()}`, { scroll: false })
       }
     },
-    [router, onNavigate]
+    [router, onNavigate, trackId]
   )
 
   // Check each store for data
@@ -213,16 +220,22 @@ export function CrossModePrompt({ currentMode, onNavigate }: CrossModePromptProp
  */
 export function CrossModeHint({ currentMode, onNavigate }: CrossModePromptProps) {
   const router = useRouter()
+  const trackId = useCurrentTrackId()
 
   const navigate = useCallback(
     (mode: WorkspaceMode) => {
       if (onNavigate) {
         onNavigate(mode)
       } else {
-        router.push(`/workspace?mode=${mode}`, { scroll: false })
+        // Preserve track param when navigating between modes
+        const params = new URLSearchParams({ mode })
+        if (trackId) {
+          params.set('track', trackId)
+        }
+        router.push(`/workspace?${params.toString()}`, { scroll: false })
       }
     },
-    [router, onNavigate]
+    [router, onNavigate, trackId]
   )
 
   // Check each store for data

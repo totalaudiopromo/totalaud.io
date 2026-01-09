@@ -217,9 +217,6 @@ export function ScoutGrid({ className }: ScoutGridProps) {
               plan your campaign.
             </p>
           </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255, 255, 255, 0.3)' }}>
-            Opportunities are loaded from your account
-          </div>
         </div>
       )
     }

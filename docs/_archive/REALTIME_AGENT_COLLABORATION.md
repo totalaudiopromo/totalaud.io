@@ -293,7 +293,7 @@ npm run dev
 http://localhost:3004/
 ```
 
-**Test Scenario 1: Generate Flow from Broker**
+### Test Scenario 1: Generate Flow from Broker
 ```
 1. Visit /onboarding/os-selector?force=true
 2. Choose a theme (e.g., ASCII)
@@ -306,7 +306,7 @@ http://localhost:3004/
 6. Check: All nodes have "pending" status (gray borders)
 ```
 
-**Test Scenario 2: Execute Individual Node**
+### Test Scenario 2: Execute Individual Node
 ```typescript
 // Open browser console on Flow Canvas page
 const { executeNode } = useAgentExecution({
@@ -328,7 +328,7 @@ await executeNode('scout', 'research-radio-contacts', {
 // 4. Activity Monitor shows "Agent scout executing research-radio-contacts"
 ```
 
-**Test Scenario 3: Real-time Collaboration**
+### Test Scenario 3: Real-time Collaboration
 ```
 1. Open Flow Canvas in two browser tabs
 2. In Tab 1: Execute a node
@@ -609,8 +609,8 @@ type AgentStatus = 'queued' | 'running' | 'complete' | 'error' | 'cancelled'
 ---
 
 **Status**: ✅ Core Implementation Complete
-**Last Updated**: October 19, 2025
-**Maintainer**: chris@totalaud.io
+**Last Updated**: October 19, 2026
+**Maintainer**: [chris@totalaud.io](mailto:chris@totalaud.io)
 
 **Next Steps**:
 1. Implement agent command bridge in BrokerChat

@@ -71,7 +71,7 @@ The **OS Selector** is the first interactive experience users encounter when ent
 
 ---
 
-### 3. Mac OS Retro (2001 Aqua)
+### 3. macOS Retro (2001 Aqua)
 **When design was an art form**
 
 **Visual Style:**
@@ -559,7 +559,7 @@ Solution:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: January 18, 2025  
+**Last Updated**: January 18, 2026  
 **Status**: ✅ Complete
 
 **Related Documentation:**

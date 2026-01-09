@@ -56,7 +56,7 @@ export function NavigatorPanel() {
 
         <div className="flex-1 space-y-4">
           <div>
-            <h3 className="text-lg font-medium text-ta-white tracking-tight mb-1">AI Navigator</h3>
+            <h3 className="text-lg font-medium text-ta-white tracking-tight mb-1">Navigator</h3>
             <p className="text-sm text-ta-grey/80">
               Ask questions about your campaign data and strategy.
             </p>
@@ -114,7 +114,7 @@ export function NavigatorPanel() {
                   <span />
                 </div>
                 <span className="text-xs font-medium text-ta-cyan tracking-wider uppercase animate-pulse">
-                  Thinking
+                  Working
                 </span>
               </motion.div>
             )}
@@ -134,7 +134,7 @@ export function NavigatorPanel() {
                 {answer.recommendedActions && answer.recommendedActions.length > 0 && (
                   <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
                     <p className="text-xs text-ta-grey font-medium uppercase tracking-wider mb-2 ml-1">
-                      Recommended Actions
+                      Next Steps
                     </p>
                     <ul className="space-y-2">
                       {answer.recommendedActions.map((action: string, i: number) => (

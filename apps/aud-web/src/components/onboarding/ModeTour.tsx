@@ -95,7 +95,7 @@ const TOUR_CONTENT: Record<WorkspaceMode, TourStep[]> = {
   pitch: [
     {
       title: 'Welcome to Pitch',
-      description: 'Craft compelling pitches for radio, press, and playlists with AI coaching.',
+      description: 'Craft compelling pitches for radio, press, and playlists with guided drafting.',
     },
     {
       title: 'Choose a Template',
@@ -107,9 +107,9 @@ const TOUR_CONTENT: Record<WorkspaceMode, TourStep[]> = {
         "Complete each section - Hook, Story, Sound, Proof Points, and The Ask. They're designed to flow naturally.",
     },
     {
-      title: 'AI Coach',
+      title: 'Second Opinion',
       description:
-        "Click 'Get coaching' on any section for AI-powered suggestions to improve your pitch. Good luck!",
+        "Click 'Get Second Opinion' on any section for helpful suggestions to improve your pitch. Good luck!",
     },
   ],
 }

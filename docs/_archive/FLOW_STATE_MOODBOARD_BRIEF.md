@@ -4,7 +4,7 @@
 **Theme**: Creative Intelligence meets Studio Minimalism
 **Goal**: To make users feel like producers orchestrating living agents — not managing data.
 **Location**: Brighton, UK
-**Last Updated**: 19 October 2025
+**Last Updated**: 19 October 2026
 
 ---
 
@@ -145,7 +145,7 @@ Each OS "theme" (ascii, xp, aqua, ableton, punk) should express its tone through
 
 Search or generate using these:
 
-```
+```plaintext
 "dark studio interface, glowing panels, matte finish, soft light grid"
 "late-night DAW aesthetic, neon control room, dark UI with green highlights"
 "superhuman email client meets ableton live interface"
@@ -177,7 +177,7 @@ Generate:
 
 ## ⚙️ Midjourney / Runway / v0.dev Prompt
 
-```
+```plaintext
 dark ui studio aesthetic, creative dashboard, minimal grid, matte navy background,
 glowing green accents, monochrome typography, cinematic lighting, focus-state environment,
 subtle ambient glow, ableton live meets superhuman aesthetic, 8px grid, smooth parallax,
@@ -238,7 +238,7 @@ synth control panel style, ultra-clean ux, lowercase headings, british design mi
 
 ---
 
-**Last Updated**: 19 October 2025
+**Last Updated**: 19 October 2026
 **Status**: Active Design System
 **Location**: Brighton, UK
 **Contributors**: Claude Code, Total Audio Team
