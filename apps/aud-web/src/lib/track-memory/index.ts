@@ -22,11 +22,7 @@ import { logger } from '@/lib/logger'
 
 const log = logger.scope('TrackMemory')
 
-// Helper to get supabase client with any typing for tables not yet in generated types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnySupabaseClient = Awaited<ReturnType<typeof createServerSupabaseClient>> & {
-  from: (table: string) => any
-}
+// No longer need AnySupabaseClient as types are regenerated
 
 // ============================================================================
 // Types
@@ -129,7 +125,7 @@ interface TrackMemoryEntryRow {
 // Conversion Functions
 // ============================================================================
 
-function fromRow(row: TrackMemoryRow): TrackMemory {
+function fromRow(row: any): TrackMemory {
   return {
     id: row.id,
     userId: row.user_id,
@@ -141,12 +137,12 @@ function fromRow(row: TrackMemoryRow): TrackMemory {
   }
 }
 
-function entryFromRow(row: TrackMemoryEntryRow): MemoryEntry {
+function entryFromRow(row: any): MemoryEntry {
   return {
     id: row.id,
     trackMemoryId: row.track_memory_id,
     entryType: row.entry_type as MemoryEntryType,
-    payload: row.payload,
+    payload: row.payload as Record<string, unknown>,
     sourceMode: row.source_mode as SourceMode | null,
     createdAt: row.created_at,
   }
@@ -165,9 +161,7 @@ export async function ensureTrackMemory(
   trackId: string
 ): Promise<TrackMemory | null> {
   try {
-    // Cast to any to allow access to tables not yet in generated types
-    // TODO: Remove cast after migration is applied and types regenerated
-    const supabase = (await createServerSupabaseClient()) as AnySupabaseClient
+    const supabase = await createServerSupabaseClient()
 
     // Try to get existing
     const { data: existing, error: selectError } = await supabase
@@ -178,7 +172,7 @@ export async function ensureTrackMemory(
       .single()
 
     if (existing && !selectError) {
-      return fromRow(existing as TrackMemoryRow)
+      return fromRow(existing)
     }
 
     // Create new if not exists
@@ -200,14 +194,14 @@ export async function ensureTrackMemory(
           .eq('user_id', userId)
           .eq('track_id', trackId)
           .single()
-        return retry ? fromRow(retry as TrackMemoryRow) : null
+        return retry ? fromRow(retry) : null
       }
       log.error('Failed to create track memory', insertError)
       return null
     }
 
     log.info('Created track memory', { userId, trackId })
-    return fromRow(created as TrackMemoryRow)
+    return fromRow(created)
   } catch (error) {
     log.error('Error ensuring track memory', error)
     return null
@@ -223,8 +217,7 @@ export async function getTrackMemory(
   options?: { includeEntries?: boolean; entryTypes?: MemoryEntryType[] }
 ): Promise<TrackMemory | null> {
   try {
-    // Cast to any for tables not yet in generated types
-    const supabase = (await createServerSupabaseClient()) as AnySupabaseClient
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
       .from('track_memory')
@@ -237,7 +230,7 @@ export async function getTrackMemory(
       return null
     }
 
-    const memory = fromRow(data as TrackMemoryRow)
+    const memory = fromRow(data)
 
     if (options?.includeEntries) {
       let query = supabase
@@ -252,7 +245,7 @@ export async function getTrackMemory(
 
       const { data: entries } = await query
 
-      memory.entries = entries ? (entries as TrackMemoryEntryRow[]).map(entryFromRow) : []
+      memory.entries = entries ? entries.map(entryFromRow) : []
     }
 
     return memory
@@ -281,8 +274,7 @@ export async function appendTrackMemoryEntry(
       return null
     }
 
-    // Cast to any for tables not yet in generated types
-    const supabase = (await createServerSupabaseClient()) as AnySupabaseClient
+    const supabase = await createServerSupabaseClient()
 
     // Insert entry
     const { data, error } = await supabase
@@ -291,7 +283,7 @@ export async function appendTrackMemoryEntry(
         track_memory_id: memory.id,
         user_id: userId,
         entry_type: entryType,
-        payload,
+        payload: payload as any,
         source_mode: sourceMode ?? null,
       })
       .select('*')
@@ -319,7 +311,7 @@ export async function appendTrackMemoryEntry(
         .eq('id', memory.id)
     }
 
-    return entryFromRow(data as TrackMemoryEntryRow)
+    return entryFromRow(data)
   } catch (error) {
     log.error('Error appending track memory entry', error)
     return null
@@ -332,8 +324,7 @@ export async function appendTrackMemoryEntry(
  */
 export async function deleteTrackMemory(userId: string, trackId: string): Promise<boolean> {
   try {
-    // Cast to any for tables not yet in generated types
-    const supabase = (await createServerSupabaseClient()) as AnySupabaseClient
+    const supabase = await createServerSupabaseClient()
 
     // Entries are cascade-deleted via FK constraint
     const { error } = await supabase
@@ -401,8 +392,7 @@ export async function getRecentEntries(
     const memory = await getTrackMemory(userId, trackId)
     if (!memory) return []
 
-    // Cast to any for tables not yet in generated types
-    const supabase = (await createServerSupabaseClient()) as AnySupabaseClient
+    const supabase = await createServerSupabaseClient()
 
     const { data } = await supabase
       .from('track_memory_entries')
@@ -411,7 +401,7 @@ export async function getRecentEntries(
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    return data ? (data as TrackMemoryEntryRow[]).map(entryFromRow) : []
+    return data ? data.map(entryFromRow) : []
   } catch (error) {
     log.error('Error getting recent entries', error)
     return []

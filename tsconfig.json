@@ -38,7 +38,6 @@
     "_archive",
     "**/_archive",
     "apps/loopos",
-    "apps/totalaud.io",
     "apps/orchestrator",
     "apps/totalaudiopromo",
     "apps/aud-experimental"

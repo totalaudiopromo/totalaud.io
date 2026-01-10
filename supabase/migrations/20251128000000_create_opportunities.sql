@@ -8,12 +8,12 @@ CREATE TABLE IF NOT EXISTS opportunities (
 
   -- Core fields
   name TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('radio', 'playlist', 'blog', 'curator', 'press')),
+  type TEXT NOT NULL,
 
   -- Targeting
   genres TEXT[] DEFAULT '{}',
   vibes TEXT[] DEFAULT '{}',
-  audience_size TEXT CHECK (audience_size IN ('small', 'medium', 'large')),
+  audience_size TEXT,
 
   -- Contact info (GDPR: corporate emails only)
   url TEXT,

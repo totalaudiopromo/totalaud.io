@@ -10,12 +10,15 @@ import { useState, useEffect } from 'react'
 import { listLayouts, type OperatorLayoutSummary } from '@total-audio/operator-os'
 import { getAllPersonaPresets, type PersonaPreset } from '@total-audio/operator-services'
 
+import { useAuth } from '@/hooks/useAuth'
+
 interface LayoutPreferencesSectionProps {
   userId: string
   workspaceId: string
 }
 
 export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferencesSectionProps) {
+  const { supabase } = useAuth()
   const [layouts, setLayouts] = useState<OperatorLayoutSummary[]>([])
   const [defaultLayout, setDefaultLayout] = useState<string>('default')
   const [personaDefaults, setPersonaDefaults] = useState<Record<string, string>>({})
@@ -33,13 +36,30 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
       const layoutList = await listLayouts(userId, workspaceId)
       setLayouts(layoutList)
 
-      // TODO: Load saved preferences from app_profiles or other mechanism
-      // For now, use recommended layouts from presets
-      const defaults: Record<string, string> = {}
-      personas.forEach((preset) => {
-        defaults[preset.persona] = preset.recommendedLayoutName
-      })
-      setPersonaDefaults(defaults)
+      // Load saved preferences from user_profiles
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('operator_settings')
+        .eq('id', userId)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Error loading preferences:', error)
+      } else if (data?.operator_settings) {
+        const settings = data.operator_settings as {
+          defaultLayout?: string
+          personaDefaults?: Record<string, string>
+        }
+        if (settings.defaultLayout) setDefaultLayout(settings.defaultLayout)
+        if (settings.personaDefaults) setPersonaDefaults(settings.personaDefaults)
+      } else {
+        // Fallback to recommended layouts from presets if no saved ones
+        const defaults: Record<string, string> = {}
+        personas.forEach((preset: any) => {
+          defaults[preset.persona] = preset.recommendedLayoutName
+        })
+        setPersonaDefaults(defaults)
+      }
     } catch (error) {
       console.error('Error loading layouts:', error)
     } finally {
@@ -47,10 +67,33 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
     }
   }
 
+  const savePreferences = async (newDefault: string, newPersonas: Record<string, string>) => {
+    try {
+      const { error } = await supabase.from('user_profiles').upsert({
+        id: userId,
+        operator_settings: {
+          defaultLayout: newDefault,
+          personaDefaults: newPersonas,
+        },
+      })
+
+      if (error) console.warn('Failed to save preferences:', error)
+    } catch (saveError) {
+      console.warn('Failed to save preferences:', saveError)
+    }
+  }
+
+  // Simple debounce for saving
+  useEffect(() => {
+    if (loading) return
+    const timer = setTimeout(() => {
+      savePreferences(defaultLayout, personaDefaults)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [defaultLayout, personaDefaults])
+
   const handleDefaultLayoutChange = (layoutName: string) => {
     setDefaultLayout(layoutName)
-    // TODO: Save to backend if there's a mechanism for global preferences
-    console.log('Default layout changed to:', layoutName)
   }
 
   const handlePersonaDefaultChange = (persona: string, layoutName: string) => {
@@ -58,8 +101,6 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
       ...prev,
       [persona]: layoutName,
     }))
-    // TODO: Save to backend if there's a mechanism for persona preferences
-    console.log(`Persona ${persona} default layout changed to:`, layoutName)
   }
 
   if (loading) {
@@ -105,7 +146,7 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
         </p>
 
         <div className="grid gap-4">
-          {personas.map((preset) => (
+          {personas.map((preset: any) => (
             <div
               key={preset.persona}
               className="flex items-center gap-4 p-4 bg-[#10141A] border border-white/6 rounded-xl"
