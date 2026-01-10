@@ -1,0 +1,140 @@
+# Claude Code Auto-Fix for CodeRabbit Comments
+# Automatically applies fixes when CodeRabbit identifies issues
+# Documentation: https://github.com/anthropics/claude-code-action
+
+name: Claude Code Review Fix
+
+on:
+  # Trigger on PR review comments (where CodeRabbit posts)
+  pull_request_review_comment:
+    types: [created]
+
+  # Trigger on issue/PR comments (for @claude mentions)
+  issue_comment:
+    types: [created]
+
+  # Also run on PR reviews themselves
+  pull_request_review:
+    types: [submitted]
+
+# Ensure only one Claude run per PR at a time
+concurrency:
+  group: claude-fix-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  claude-fix:
+    # Only run on:
+    # 1. Comments from CodeRabbit bot
+    # 2. Comments mentioning @claude
+    # 3. Reviews from CodeRabbit
+    if: |
+      (github.event.comment.user.login == 'coderabbitai' ||
+       github.event.review.user.login == 'coderabbitai' ||
+       contains(github.event.comment.body, '@claude') ||
+       contains(github.event.comment.body, 'claude fix') ||
+       contains(github.event.comment.body, 'Claude fix'))
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Claude Code to fix issues
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # Use the comment body as the prompt
+          prompt: |
+            A code review comment has been made on this PR. Please analyse and fix the issue if appropriate.
+
+            Context:
+            - This is the totalaud.io project (Next.js 15, TypeScript, Tailwind, Framer Motion)
+            - Use British English spelling in all code and comments
+            - Use Framer Motion for animations (NOT CSS transitions)
+            - Use @/lib/logger instead of console.log
+            - Use @/lib/api-validation for API input validation
+            - Follow the project's design tokens and motion system
+
+            Review Comment:
+            ${{ github.event.comment.body || github.event.review.body }}
+
+            File Context (if applicable):
+            ${{ github.event.comment.path }}:${{ github.event.comment.line }}
+
+            Instructions:
+            1. Analyse the review comment to understand what needs fixing
+            2. If it's a valid suggestion, implement the fix
+            3. If it's a false positive or not applicable, explain why in a comment
+            4. Run lint and typecheck after making changes
+            5. Commit the fix with a clear message referencing the review
+
+          # Allowed tools for Claude
+          allowed_tools: |
+            Edit
+            Write
+            Read
+            Bash(pnpm lint:fix)
+            Bash(pnpm format)
+            Bash(pnpm turbo typecheck --filter=aud-web)
+            Bash(git add)
+            Bash(git commit)
+            Bash(git push)
+
+          # Model to use
+          model: claude-sonnet-4-20250514
+
+          # Max tokens for response
+          max_turns: 10
+
+          # Timeout in minutes
+          timeout_minutes: 10
+
+      - name: Comment on PR with fix status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const prNumber = context.payload.pull_request?.number || context.payload.issue?.number;
+
+            if (!prNumber) return;
+
+            const emoji = status === 'success' ? '✅' : '⚠️';
+            const message = status === 'success'
+              ? `${emoji} Claude has reviewed and addressed the feedback.`
+              : `${emoji} Claude attempted to fix the issue but encountered problems. Please review manually.`;
+
+            // Only comment if this was a CodeRabbit comment
+            const commenter = context.payload.comment?.user?.login || context.payload.review?.user?.login;
+            if (commenter === 'coderabbitai') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: message
+              });
+            }
