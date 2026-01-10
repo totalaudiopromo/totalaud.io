@@ -29,8 +29,8 @@ jobs:
     # 2. Comments mentioning @claude
     # 3. Reviews from CodeRabbit
     if: |
-      (github.event.comment.user.login == 'coderabbitai' ||
-       github.event.review.user.login == 'coderabbitai' ||
+      (github.event.comment.user.login == 'coderabbitai[bot]' ||
+       github.event.review.user.login == 'coderabbitai[bot]' ||
        contains(github.event.comment.body, '@claude') ||
        contains(github.event.comment.body, 'claude fix') ||
        contains(github.event.comment.body, 'Claude fix'))
@@ -130,7 +130,7 @@ jobs:
 
             // Only comment if this was a CodeRabbit comment
             const commenter = context.payload.comment?.user?.login || context.payload.review?.user?.login;
-            if (commenter === 'coderabbitai') {
+            if (commenter === 'coderabbitai[bot]') {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
