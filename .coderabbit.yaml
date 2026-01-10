@@ -1,0 +1,149 @@
+# CodeRabbit Configuration for totalaud.io
+# Optimised for: Next.js 15, TypeScript, Tailwind, Framer Motion, Supabase
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: en-GB
+
+early_access: true
+
+reviews:
+  # High-value automatic reviews
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - develop
+
+  # Review profile optimised for indie dev team
+  profile: chill  # Less nitpicky, focuses on important issues
+
+  # What to review
+  request_changes_workflow: false  # Don't block PRs, just suggest
+  high_level_summary: true
+  high_level_summary_placeholder: '@coderabbitai summary'
+  poem: false  # Keep it professional
+  review_status: true
+  collapse_walkthrough: false
+  sequence_diagrams: true  # Helpful for API route changes
+  changed_files_summary: true
+  labeling_instructions: []
+
+  # Path-based review instructions
+  path_instructions:
+    - path: 'apps/aud-web/src/app/api/**/*.ts'
+      instructions: |
+        Focus on:
+        - Zod validation using @/lib/api-validation
+        - Structured logging with @/lib/logger (not console.log)
+        - Proper error handling with NextResponse
+        - Auth checks where required
+        - NEVER suggest American spellings
+
+    - path: 'apps/aud-web/src/components/**/*.tsx'
+      instructions: |
+        Focus on:
+        - Use Framer Motion for animations (NOT CSS transitions)
+        - Motion tokens: 120ms (micro), 240ms (transition), 400ms (ambient)
+        - Mobile-first responsive design with Tailwind utilities
+        - Accessible components (WCAG AA minimum)
+        - British English in all strings and comments
+
+    - path: 'apps/aud-web/src/stores/**/*.ts'
+      instructions: |
+        Focus on:
+        - Zustand store patterns and selectors
+        - Immutable state updates
+        - TypeScript strict typing
+        - Avoid unnecessary re-renders
+
+    - path: 'supabase/migrations/**/*.sql'
+      instructions: |
+        Focus on:
+        - RLS policies for security
+        - No TAP-prefixed tables (anr_, rcf_, smart_segments)
+        - Proper indexes for query performance
+        - Migration safety (reversible changes)
+
+    - path: '**/*.md'
+      instructions: |
+        - British English spelling only
+        - Check for outdated information
+        - Ensure links are valid
+
+  # Tool configurations
+  tools:
+    shellcheck:
+      enabled: true
+    ruff:
+      enabled: false  # Python not used
+    markdownlint:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 300000
+    languagetool:
+      enabled: true
+      enabled_rules: []
+      disabled_rules:
+        - EN_QUOTES  # Allow straight quotes
+        - DASH_RULE  # Flexible dash usage
+      enabled_categories: []
+      disabled_categories:
+        - TYPOGRAPHY  # Don't be pedantic about quotes/dashes
+      enabled_only: false
+      level: picky  # British English enforcement
+    biome:
+      enabled: true
+    hadolint:
+      enabled: false  # No Docker files
+    swiftlint:
+      enabled: false  # No Swift
+    phpstan:
+      enabled: false  # No PHP
+    golangci-lint:
+      enabled: false  # No Go
+    yamllint:
+      enabled: true
+    gitleaks:
+      enabled: true  # Security: detect secrets
+    checkov:
+      enabled: false  # No Terraform
+    detekt:
+      enabled: false  # No Kotlin
+    eslint:
+      enabled: true
+    rubocop:
+      enabled: false  # No Ruby
+    buf:
+      enabled: false  # No protobuf
+    regal:
+      enabled: false  # No Rego
+    actionlint:
+      enabled: true  # GitHub Actions
+    pmd:
+      enabled: false  # No Java
+    cppcheck:
+      enabled: false  # No C++
+    semgrep:
+      enabled: true  # Security scanning
+    circleci:
+      enabled: false  # Using GitHub Actions
+    ast-grep:
+      enabled: true
+
+chat:
+  auto_reply: true  # Respond to @coderabbitai mentions
+
+# Knowledge base for context-aware reviews
+knowledge_base:
+  learnings:
+    scope: auto  # Learn from accepted suggestions
+  issues:
+    scope: auto  # Reference open issues
+  jira:
+    project_keys: []
+  linear:
+    team_keys: []
+  pull_requests:
+    scope: auto  # Reference related PRs
