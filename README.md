@@ -174,10 +174,10 @@ Railway was chosen over Vercel due to better support for Next.js 15 + pnpm works
 ## 🗺️ Roadmap
 
 - [x] Week 1: Foundation (monorepo, migrations)
-- [ ] Week 2: Skills system
-- [ ] Week 3: Agent orchestrator
-- [ ] Week 4: UI foundation
-- [ ] Week 5: Integration & testing
+- [x] Week 2: Skills system
+- [x] Week 3: Agent orchestrator
+- [x] Week 4: UI foundation
+- [x] Week 5: Integration & testing
 - [ ] Week 6: Beta launch
 
 ## 📦 Packages
@@ -211,5 +211,5 @@ pnpm --filter @total-audio/core-skills-engine test
 
 ## 📝 License
 
-Proprietary — © 2025 Total Audio
+Proprietary — © 2026 Total Audio
 

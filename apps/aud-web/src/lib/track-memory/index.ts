@@ -17,10 +17,12 @@
  * We use type assertions to work around this.
  */
 
+import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('TrackMemory')
+import type { Json } from '@total-audio/schemas-database'
 
 // No longer need AnySupabaseClient as types are regenerated
 
@@ -39,11 +41,18 @@ export type MemoryEntryType =
 
 export type SourceMode = 'ideas' | 'finish' | 'story' | 'scout' | 'timeline' | 'content' | 'manual'
 
-export interface MemoryEntry {
+export type MemoryEntry =
+  | (BaseMemoryEntry & { entryType: 'intent'; payload: IntentPayload })
+  | (BaseMemoryEntry & { entryType: 'perspective'; payload: PerspectivePayload })
+  | (BaseMemoryEntry & { entryType: 'story_fragment'; payload: StoryFragmentPayload })
+  | (BaseMemoryEntry & { entryType: 'sequence_decision'; payload: SequenceDecisionPayload })
+  | (BaseMemoryEntry & { entryType: 'scout_consideration'; payload: ScoutConsiderationPayload })
+  | (BaseMemoryEntry & { entryType: 'version_note'; payload: VersionNotePayload })
+  | (BaseMemoryEntry & { entryType: 'note'; payload: Record<string, unknown> })
+
+interface BaseMemoryEntry {
   id: string
   trackMemoryId: string
-  entryType: MemoryEntryType
-  payload: Record<string, unknown>
   sourceMode: SourceMode | null
   createdAt: string
 }
@@ -97,6 +106,72 @@ export interface VersionNotePayload {
   versionNumber?: number
 }
 
+// Zod schemas for payload validation
+export const IntentPayloadSchema = z.object({
+  content: z.string(),
+  ideaId: z.string().optional(),
+  emotionalCore: z.string().optional(),
+})
+
+export const PerspectivePayloadSchema = z.object({
+  content: z.string(),
+  category: z.string().optional(),
+  confidence: z.number().optional(),
+})
+
+export const StoryFragmentPayloadSchema = z.object({
+  content: z.string(),
+  pitchDraftId: z.string().optional(),
+  section: z.string().optional(),
+})
+
+export const SequenceDecisionPayloadSchema = z.object({
+  eventId: z.string(),
+  eventTitle: z.string(),
+  lane: z.string(),
+  eventDate: z.string(),
+})
+
+export const ScoutConsiderationPayloadSchema = z.object({
+  opportunityId: z.string(),
+  opportunityName: z.string(),
+  opportunityType: z.string(),
+})
+
+export const VersionNotePayloadSchema = z.object({
+  content: z.string(),
+  assetId: z.string(),
+  versionNumber: z.number().optional(),
+})
+
+export const NotePayloadSchema = z.record(z.unknown())
+
+/**
+ * Type guard for payload validation
+ */
+export function isValidPayload(entryType: MemoryEntryType, payload: unknown): boolean {
+  if (typeof payload !== 'object' || payload === null) return false
+
+  switch (entryType) {
+    case 'intent':
+      return IntentPayloadSchema.safeParse(payload).success
+    case 'perspective':
+      return PerspectivePayloadSchema.safeParse(payload).success
+    case 'story_fragment':
+      return StoryFragmentPayloadSchema.safeParse(payload).success
+    case 'sequence_decision':
+      return SequenceDecisionPayloadSchema.safeParse(payload).success
+    case 'scout_consideration':
+      return ScoutConsiderationPayloadSchema.safeParse(payload).success
+    case 'version_note':
+      return VersionNotePayloadSchema.safeParse(payload).success
+    case 'note':
+      return NotePayloadSchema.safeParse(payload).success
+    default:
+      return false
+  }
+}
+
 // ============================================================================
 // Database Row Types
 // ============================================================================
@@ -116,7 +191,7 @@ interface TrackMemoryEntryRow {
   track_memory_id: string
   user_id: string
   entry_type: string
-  payload: Record<string, unknown>
+  payload: Json | null // Match Supabase Json type
   source_mode: string | null
   created_at: string
 }
@@ -125,7 +200,7 @@ interface TrackMemoryEntryRow {
 // Conversion Functions
 // ============================================================================
 
-function fromRow(row: any): TrackMemory {
+function fromRow(row: TrackMemoryRow): TrackMemory {
   return {
     id: row.id,
     userId: row.user_id,
@@ -137,14 +212,54 @@ function fromRow(row: any): TrackMemory {
   }
 }
 
-function entryFromRow(row: any): MemoryEntry {
-  return {
+function entryFromRow(row: TrackMemoryEntryRow): MemoryEntry {
+  const entryType = row.entry_type as MemoryEntryType
+  const base = {
     id: row.id,
     trackMemoryId: row.track_memory_id,
-    entryType: row.entry_type as MemoryEntryType,
-    payload: row.payload as Record<string, unknown>,
     sourceMode: row.source_mode as SourceMode | null,
     createdAt: row.created_at,
+  }
+
+  // Ensure payload is treated as object for conversion
+  const payload = row.payload && typeof row.payload === 'object' ? row.payload : {}
+
+  switch (entryType) {
+    case 'intent':
+      return { ...base, entryType: 'intent', payload: payload as unknown as IntentPayload }
+    case 'perspective':
+      return {
+        ...base,
+        entryType: 'perspective',
+        payload: payload as unknown as PerspectivePayload,
+      }
+    case 'story_fragment':
+      return {
+        ...base,
+        entryType: 'story_fragment',
+        payload: payload as unknown as StoryFragmentPayload,
+      }
+    case 'sequence_decision':
+      return {
+        ...base,
+        entryType: 'sequence_decision',
+        payload: payload as unknown as SequenceDecisionPayload,
+      }
+    case 'scout_consideration':
+      return {
+        ...base,
+        entryType: 'scout_consideration',
+        payload: payload as unknown as ScoutConsiderationPayload,
+      }
+    case 'version_note':
+      return {
+        ...base,
+        entryType: 'version_note',
+        payload: payload as unknown as VersionNotePayload,
+      }
+    case 'note':
+    default:
+      return { ...base, entryType: 'note', payload: payload as Record<string, unknown> }
   }
 }
 
@@ -194,7 +309,7 @@ export async function ensureTrackMemory(
           .eq('user_id', userId)
           .eq('track_id', trackId)
           .single()
-        return retry ? fromRow(retry) : null
+        return retry ? fromRow(retry as TrackMemoryRow) : null
       }
       log.error('Failed to create track memory', insertError)
       return null
@@ -244,8 +359,7 @@ export async function getTrackMemory(
       }
 
       const { data: entries } = await query
-
-      memory.entries = entries ? entries.map(entryFromRow) : []
+      memory.entries = entries ? (entries as TrackMemoryEntryRow[]).map(entryFromRow) : []
     }
 
     return memory
@@ -263,10 +377,16 @@ export async function appendTrackMemoryEntry(
   userId: string,
   trackId: string,
   entryType: MemoryEntryType,
-  payload: Record<string, unknown>,
+  payload: unknown,
   sourceMode?: SourceMode
 ): Promise<MemoryEntry | null> {
   try {
+    // Validate payload
+    if (!isValidPayload(entryType, payload)) {
+      log.error('Invalid payload for entry type', { entryType, payload })
+      return null
+    }
+
     // Ensure memory record exists
     const memory = await ensureTrackMemory(userId, trackId)
     if (!memory) {
@@ -283,7 +403,7 @@ export async function appendTrackMemoryEntry(
         track_memory_id: memory.id,
         user_id: userId,
         entry_type: entryType,
-        payload: payload as any,
+        payload: payload as Json,
         source_mode: sourceMode ?? null,
       })
       .select('*')
@@ -301,14 +421,17 @@ export async function appendTrackMemoryEntry(
     })
 
     // If this is an intent, update canonical intent
-    if (entryType === 'intent' && typeof payload.content === 'string') {
-      await supabase
-        .from('track_memory')
-        .update({
-          canonical_intent: payload.content,
-          canonical_intent_updated_at: new Date().toISOString(),
-        })
-        .eq('id', memory.id)
+    if (entryType === 'intent') {
+      const intentPayload = payload as IntentPayload
+      if (typeof intentPayload.content === 'string') {
+        await supabase
+          .from('track_memory')
+          .update({
+            canonical_intent: intentPayload.content,
+            canonical_intent_updated_at: new Date().toISOString(),
+          })
+          .eq('id', memory.id)
+      }
     }
 
     return entryFromRow(data)
@@ -401,7 +524,7 @@ export async function getRecentEntries(
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    return data ? data.map(entryFromRow) : []
+    return data ? (data as TrackMemoryEntryRow[]).map(entryFromRow) : []
   } catch (error) {
     log.error('Error getting recent entries', error)
     return []

@@ -387,8 +387,8 @@ export async function POST(request: NextRequest) {
             canonicalIntent: memory.canonicalIntent,
             storyFragments:
               memory.entries
-                ?.filter((e) => e.payload && e.payload.content != null)
-                .map((e) => String(e.payload?.content ?? '')) || [],
+                ?.filter((e) => e.payload && 'content' in e.payload && e.payload.content != null)
+                .map((e) => String((e.payload as { content?: unknown })?.content ?? '')) || [],
           }
         }
       } catch {

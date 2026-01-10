@@ -1,14 +1,7 @@
 'use client'
 
-import { create, type StoreApi, type UseBoundStore } from 'zustand'
+import { create, useStore, type StateCreator, type StoreApi } from 'zustand'
 import { devtools } from 'zustand/middleware'
-
-type SetState<T> = (
-  partial: T | Partial<T> | ((state: T) => T | Partial<T>),
-  replace?: boolean
-) => void
-type GetState<T> = () => T
-type StoreInitialiser<T> = (set: SetState<T>, get: GetState<T>) => T
 
 /**
  * Stable Store Factory for Zustand
@@ -16,27 +9,19 @@ type StoreInitialiser<T> = (set: SetState<T>, get: GetState<T>) => T
  * Prevents store creation during Next.js SSR/prerender.
  * Ensures React Flow only receives a browser-created instance.
  * Eliminates "useStore is not a function" errors.
- *
- * IMPORTANT:
- * - Do NOT create the store during import.
- * - Do NOT create the store during prerender.
- * - Only create once, on the client.
  */
-export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
-  let store: UseBoundStore<StoreApi<T>> | null = null
+export function createZustandStore<T>(initializer: StateCreator<T, [['zustand/devtools', never]]>) {
+  let store: StoreApi<T> | null = null
   let storeCreated = false
 
-  function useBoundStore<U>(
-    selector?: (state: T) => U,
-    equalityFn?: (a: U, b: U) => boolean
-  ): U | T {
+  function useBoundStore<U>(selector?: (state: T) => U): U {
     // Only create store on client-side (browser environment)
     if (typeof window === 'undefined') {
       // SSR: Return a dummy selector function that returns empty state
       if (selector) {
         return selector({} as T)
       }
-      return {} as T
+      return {} as unknown as U
     }
 
     // Client-side: Create store once
@@ -45,15 +30,8 @@ export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
       storeCreated = true
     }
 
-    // Use the store hook normally
-    if (selector && store) {
-      // Only pass equalityFn if it's defined
-      if (equalityFn) {
-        return store(selector, equalityFn)
-      }
-      return store(selector)
-    }
-    return store as unknown as T
+    // Use the useStore hook which is the recommended way in v5 for external stores
+    return useStore(store!, selector as any)
   }
 
   // Also provide getState for imperative access
@@ -80,7 +58,7 @@ export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
       store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
       storeCreated = true
     }
-    store!.setState(partial, replace)
+    store!.setState(partial as any, replace as any)
   }
 
   return useBoundStore

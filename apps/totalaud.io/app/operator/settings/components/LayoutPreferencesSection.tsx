@@ -9,8 +9,19 @@
 import { useState, useEffect } from 'react'
 import { listLayouts, type OperatorLayoutSummary } from '@total-audio/operator-os'
 import { getAllPersonaPresets, type PersonaPreset } from '@total-audio/operator-services'
-
+import { z } from 'zod'
+import { logger } from '@total-audio/core-logger'
+import type { Database } from '@total-audio/schemas-database'
 import { useAuth } from '@/hooks/useAuth'
+
+const log = logger.scope('LayoutPreferencesSection')
+
+const operatorSettingsSchema = z.object({
+  defaultLayout: z.string().optional(),
+  personaDefaults: z.record(z.string()).optional(),
+})
+
+type OperatorSettings = Database['public']['Tables']['user_profiles']['Row']['operator_settings']
 
 interface LayoutPreferencesSectionProps {
   userId: string
@@ -44,24 +55,26 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.warn('Error loading preferences:', error)
+        log.warn('Error loading preferences', { error })
       } else if (data?.operator_settings) {
-        const settings = data.operator_settings as {
-          defaultLayout?: string
-          personaDefaults?: Record<string, string>
+        const result = operatorSettingsSchema.safeParse(data.operator_settings)
+        if (result.success) {
+          const settings = result.data
+          if (settings.defaultLayout) setDefaultLayout(settings.defaultLayout)
+          if (settings.personaDefaults) setPersonaDefaults(settings.personaDefaults)
+        } else {
+          log.error('Failed to validate operator settings', result.error)
         }
-        if (settings.defaultLayout) setDefaultLayout(settings.defaultLayout)
-        if (settings.personaDefaults) setPersonaDefaults(settings.personaDefaults)
       } else {
         // Fallback to recommended layouts from presets if no saved ones
         const defaults: Record<string, string> = {}
-        personas.forEach((preset: any) => {
+        personas.forEach((preset: PersonaPreset) => {
           defaults[preset.persona] = preset.recommendedLayoutName
         })
         setPersonaDefaults(defaults)
       }
     } catch (error) {
-      console.error('Error loading layouts:', error)
+      log.error('Error loading layouts', error)
     } finally {
       setLoading(false)
     }
@@ -77,9 +90,9 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
         },
       })
 
-      if (error) console.warn('Failed to save preferences:', error)
+      if (error) log.warn('Failed to save preferences', { error })
     } catch (saveError) {
-      console.warn('Failed to save preferences:', saveError)
+      log.warn('Failed to save preferences', { error: saveError })
     }
   }
 
@@ -146,7 +159,7 @@ export function LayoutPreferencesSection({ userId, workspaceId }: LayoutPreferen
         </p>
 
         <div className="grid gap-4">
-          {personas.map((preset: any) => (
+          {personas.map((preset: PersonaPreset) => (
             <div
               key={preset.persona}
               className="flex items-center gap-4 p-4 bg-[#10141A] border border-white/6 rounded-xl"

@@ -22,7 +22,11 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@total-audio/core-logger": ["../../packages/core/logger/src/index.ts"],
+      "@total-audio/schemas-database": ["../../packages/schemas/database/index.ts"],
+      "@total-audio/operator-os": ["../../_archive/packages/operator-os/src/index.ts"],
+      "@total-audio/operator-services": ["../../_archive/packages/operator-services/src/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

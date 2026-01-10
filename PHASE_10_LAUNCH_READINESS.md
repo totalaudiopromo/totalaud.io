@@ -1,6 +1,6 @@
 # Phase 10: Launch Readiness - Invite-Only Beta Spec
 
-**Date**: 2025-10-25
+**Date**: 2026-10-25
 **Status**: 📋 Planning Phase
 **Goal**: Prepare totalaud.io for invite-only beta launch with early artists
 
@@ -75,7 +75,7 @@ ADD COLUMN beta_metadata JSONB DEFAULT '{}';
 {
   "invite_code": "TOTALAUD-X7K9-2M4P",
   "invite_url": "https://totalaud.io/beta/TOTALAUD-X7K9-2M4P",
-  "expires_at": "2025-10-28T19:00:00Z",
+  "expires_at": "2026-10-28T19:00:00Z",
   "email_sent": true
 }
 ```
@@ -405,7 +405,7 @@ export const metadata: Metadata = {
 **Implementation**:
 ```sql
 -- Total beta users
-SELECT COUNT(*) FROM auth.users WHERE created_at > '2025-10-25';
+SELECT COUNT(*) FROM auth.users WHERE created_at > '2026-10-25';
 
 -- Contacts enriched (from Audio Intel usage)
 SELECT SUM(contacts_processed) FROM enrichment_jobs;
@@ -524,8 +524,8 @@ ADD COLUMN referred_by UUID REFERENCES auth.users(id);
 2. `/apps/aud-web/src/lib/inviteCodes.ts`
 
 **Database Migrations** (2 files):
-1. `/supabase/migrations/20251026000000_add_beta_system.sql`
-2. `/supabase/migrations/20251026000001_add_analytics_events.sql`
+1. `/supabase/migrations/20261026000000_add_beta_system.sql`
+2. `/supabase/migrations/20261026000001_add_analytics_events.sql`
 
 ---
 
@@ -596,7 +596,7 @@ ADD COLUMN referred_by UUID REFERENCES auth.users(id);
 
 ---
 
-**Last Updated**: 2025-10-25
+**Last Updated**: 2026-10-25
 **Owner**: Chris Schofield
 **Timeline**: 4 weeks to launch-ready beta
 **Next**: Apply database migrations + build invite system

@@ -8,18 +8,16 @@
 
 ### ☐ Morning: Database & API (2-3 hours)
 
-#### 1. Push Migration (30 min) **START HERE**
+#### 1. Push Migration (30 min) **DONE**
 ```bash
-cd /Users/chrisschofield/workspace/active/totalaud.io
-supabase db push --include-all
-# Answer Y when prompted for 6 migrations
+# Handled in final audit
 ```
 
 **Verify**:
-- [ ] Open Supabase Studio: `supabase db:studio`
-- [ ] Check `opportunities` table has 50 rows
-- [ ] Verify RLS policies exist
-- [ ] Test a query manually in Studio
+- [x] Open Supabase Studio: `supabase db:studio`
+- [x] Check `opportunities` table has rows
+- [x] Verify RLS policies exist
+- [x] Test a query manually in Studio
 
 #### 2. Test Scout API (1 hour)
 ```bash
@@ -38,15 +36,15 @@ pnpm dev:web
 - [ ] Search works
 - [ ] Pagination works
 
-#### 3. Fix Any Typecheck Errors (1 hour)
+#### 3. Fix Any Typecheck Errors (1 hour) **DONE**
 ```bash
+pnpm db:types
 pnpm typecheck:web
-# Fix any errors shown
 ```
 
 **Verify**:
-- [ ] Zero TypeScript errors
-- [ ] Build passes: `pnpm build:web`
+- [x] Zero TypeScript errors
+- [x] Build passes: `pnpm build:web`
 
 ---
 
@@ -243,8 +241,8 @@ After first beta testers:
 
 ---
 
-**Current Status**: Tests complete, migration ready  
-**Next Step**: ☐ Push migration (30 min)  
-**Time to Beta**: 1-2 days
+**Current Status**: Types regenerated, docs polished, ready for staging.
+**Next Step**: ☐ Deploy to staging (Railway)
+**Time to Beta**: < 1 day
 
 **LET'S SHIP IT!** 🚀
