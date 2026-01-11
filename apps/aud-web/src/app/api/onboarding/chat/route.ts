@@ -14,7 +14,14 @@ import { logger } from '@/lib/logger'
 
 const log = logger.scope('Onboarding Chat API')
 
-const anthropic = new Anthropic()
+// Validate API key at startup
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+
+if (!ANTHROPIC_API_KEY) {
+  log.error('ANTHROPIC_API_KEY not configured - onboarding chat will be unavailable')
+}
+
+const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null
 
 interface ChatMessage {
   role: 'assistant' | 'user'
@@ -75,6 +82,15 @@ Always respond with valid JSON containing:
 }`
 
 export async function POST(request: NextRequest) {
+  // Check if Anthropic client is available
+  if (!anthropic) {
+    log.error('Anthropic API key not configured')
+    return NextResponse.json(
+      { error: 'Chat service temporarily unavailable. Please try again later.' },
+      { status: 503 }
+    )
+  }
+
   try {
     const { messages, collectedData } = (await request.json()) as {
       messages: ChatMessage[]
