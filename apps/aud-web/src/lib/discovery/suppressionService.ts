@@ -7,9 +7,33 @@
  * - Global + user-scoped suppression
  *
  * Uses shared Supabase instance with Total Audio Platform.
+ *
+ * Note: contact_suppressions is a shared table with TAP that isn't
+ * in totalaud.io's local Supabase types. We use type assertions here.
  */
 
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+// Type for the shared contact_suppressions table (not in local schema)
+interface ContactSuppressionRow {
+  email_hash: string
+  domain_hash: string | null
+  email_encrypted: string | null
+  domain_encrypted: string | null
+  scope: string
+  reason: string
+  source: string
+  added_by: string | null
+  notes: string | null
+  created_at: string
+}
+
+// Helper to bypass type checking for shared table
+function getSuppressionTable(supabase: SupabaseClient) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (supabase as any).from('contact_suppressions')
+}
 import {
   hashEmail,
   hashDomain,
@@ -78,12 +102,11 @@ export async function checkSuppression(email: string, userId?: string): Promise<
     const domainHash = hashDomain(domain)
 
     // Query suppression list (shared with TAP)
-    const { data, error } = await supabase
-      .from('contact_suppressions')
+    const { data, error } = (await getSuppressionTable(supabase)
       .select('reason, scope, created_at')
       .or(`email_hash.eq.${emailHash},domain_hash.eq.${domainHash}`)
       .eq('scope', 'global') // For now, only check global suppressions
-      .limit(1)
+      .limit(1)) as { data: ContactSuppressionRow[] | null; error: Error | null }
 
     if (error) {
       log.error('Query error', error)
@@ -157,13 +180,12 @@ export async function checkSuppressionBatch(
     const allDomainHashes = hashes.map((h) => h.domainHash)
 
     // Query all at once
-    const { data, error } = await supabase
-      .from('contact_suppressions')
+    const { data, error } = (await getSuppressionTable(supabase)
       .select('email_hash, domain_hash, reason, scope, created_at')
       .or(
         `email_hash.in.(${allEmailHashes.join(',')}),domain_hash.in.(${allDomainHashes.join(',')})`
       )
-      .eq('scope', 'global')
+      .eq('scope', 'global')) as { data: ContactSuppressionRow[] | null; error: Error | null }
 
     if (error) {
       log.error('Batch query error', error)
@@ -230,7 +252,7 @@ export async function addSuppression(entry: SuppressionEntry, userId?: string): 
       domainEncrypted = encryptAES256GCM(domain, encryptionKey)
     }
 
-    const { error } = await supabase.from('contact_suppressions').insert({
+    const { error } = (await getSuppressionTable(supabase).insert({
       email_hash: emailHash,
       domain_hash: domainHash,
       email_encrypted: emailEncrypted,
@@ -240,11 +262,12 @@ export async function addSuppression(entry: SuppressionEntry, userId?: string): 
       source: 'user_report',
       added_by: userId || null,
       notes: entry.notes || null,
-    })
+    })) as { error: Error | null }
 
     if (error) {
       // Handle duplicate (already suppressed)
-      if (error.code === '23505') {
+      const pgError = error as { code?: string }
+      if (pgError.code === '23505') {
         log.info('Email already suppressed')
         return true
       }

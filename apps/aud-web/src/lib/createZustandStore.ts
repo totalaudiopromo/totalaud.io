@@ -1,7 +1,7 @@
 'use client'
 
-import { create, type StoreApi, type UseBoundStore } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { create, type StoreApi, type UseBoundStore, type StateCreator } from 'zustand'
+import { devtools, type DevtoolsOptions } from 'zustand/middleware'
 
 type SetState<T> = (
   partial: T | Partial<T> | ((state: T) => T | Partial<T>),
@@ -9,6 +9,8 @@ type SetState<T> = (
 ) => void
 type GetState<T> = () => T
 type StoreInitialiser<T> = (set: SetState<T>, get: GetState<T>) => T
+
+const DEVTOOLS_OPTIONS: DevtoolsOptions = { name: 'FlowCanvasStore' }
 
 /**
  * Stable Store Factory for Zustand
@@ -41,17 +43,25 @@ export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
 
     // Client-side: Create store once
     if (!storeCreated) {
-      store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      // Cast initializer to satisfy devtools middleware typing
+      const stateCreator = initializer as unknown as StateCreator<
+        T,
+        [['zustand/devtools', never]],
+        []
+      >
+      store = create<T>()(devtools(stateCreator, DEVTOOLS_OPTIONS))
       storeCreated = true
     }
 
     // Use the store hook normally
     if (selector && store) {
-      // Only pass equalityFn if it's defined
+      // Cast store to accept equalityFn - Zustand's types changed but runtime still supports it
+      type StoreHook = (selector: (state: T) => U, equalityFn?: (a: U, b: U) => boolean) => U
+      const storeHook = store as unknown as StoreHook
       if (equalityFn) {
-        return store(selector, equalityFn)
+        return storeHook(selector, equalityFn)
       }
-      return store(selector)
+      return storeHook(selector)
     }
     return store as unknown as T
   }
@@ -62,7 +72,12 @@ export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
       return {} as T
     }
     if (!storeCreated) {
-      store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      const stateCreator = initializer as unknown as StateCreator<
+        T,
+        [['zustand/devtools', never]],
+        []
+      >
+      store = create<T>()(devtools(stateCreator, DEVTOOLS_OPTIONS))
       storeCreated = true
     }
     return store!.getState()
@@ -77,10 +92,21 @@ export function createZustandStore<T>(initializer: StoreInitialiser<T>) {
       return
     }
     if (!storeCreated) {
-      store = create<T>()(devtools(initializer, { name: 'FlowCanvasStore' }))
+      const stateCreator = initializer as unknown as StateCreator<
+        T,
+        [['zustand/devtools', never]],
+        []
+      >
+      store = create<T>()(devtools(stateCreator, DEVTOOLS_OPTIONS))
       storeCreated = true
     }
-    store!.setState(partial, replace)
+    // Use type assertion for the setState call - Zustand's types are strict about replace parameter
+    ;(
+      store!.setState as (
+        partial: T | Partial<T> | ((state: T) => T | Partial<T>),
+        replace?: boolean
+      ) => void
+    )(partial, replace)
   }
 
   return useBoundStore

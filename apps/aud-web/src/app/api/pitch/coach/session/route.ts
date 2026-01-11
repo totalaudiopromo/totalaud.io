@@ -67,9 +67,10 @@ const requestSchema = z.object({
   message: z.string().min(1, 'Message is required'),
   sectionId: z.string().optional(),
   trackId: z.string().optional(), // Track context for memory lookup
-  pitchType: z.enum(['radio', 'press', 'playlist', 'custom']).nullable(),
-  mode: z.enum(['quick', 'guided']).nullable(),
-  phase: z.enum(['foundation', 'refinement', 'optimisation']).nullable(),
+  // Use .nullish() to accept null, undefined, or omitted values
+  pitchType: z.enum(['radio', 'press', 'playlist', 'custom']).nullish(),
+  mode: z.enum(['quick', 'guided']).nullish(),
+  phase: z.enum(['foundation', 'refinement', 'optimisation']).nullish(),
   history: z
     .array(
       z.object({
@@ -387,8 +388,14 @@ export async function POST(request: NextRequest) {
             canonicalIntent: memory.canonicalIntent,
             storyFragments:
               memory.entries
-                ?.filter((e) => e.payload && e.payload.content != null)
-                .map((e) => String(e.payload?.content ?? '')) || [],
+                ?.filter((e) => {
+                  const payload = e.payload as Record<string, unknown> | null
+                  return payload && typeof payload === 'object' && 'content' in payload
+                })
+                .map((e) => {
+                  const payload = e.payload as Record<string, unknown>
+                  return String(payload?.content ?? '')
+                }) || [],
           }
         }
       } catch {
@@ -396,11 +403,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Build prompts
+    // Build prompts (convert undefined to null for type safety)
     const systemPrompt = buildSystemPrompt(
-      mode,
-      phase,
-      pitchType,
+      mode ?? null,
+      phase ?? null,
+      pitchType ?? null,
       artistIdentity,
       trackMemoryContext
     )
@@ -430,11 +437,11 @@ export async function POST(request: NextRequest) {
       temperature: 0.7,
     })
 
-    // Generate follow-up suggestions
-    const suggestions = generateFollowUpSuggestions(result.content, phase, mode)
+    // Generate follow-up suggestions (convert undefined to null for type safety)
+    const suggestions = generateFollowUpSuggestions(result.content, phase ?? null, mode ?? null)
 
     // Check if we should suggest advancing phase
-    const nextPhase = shouldAdvancePhase(phase, history.length + 2)
+    const nextPhase = shouldAdvancePhase(phase ?? null, history.length + 2)
 
     return NextResponse.json({
       success: true,

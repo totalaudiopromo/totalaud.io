@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { appendTrackMemoryEntry, MemoryEntryType, SourceMode } from '@/lib/track-memory'
+import type { Json } from '@total-audio/schemas-database'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('TrackMemory/Deposit')
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       user.id,
       body.trackId,
       body.entryType,
-      body.payload,
+      body.payload as Json,
       body.sourceMode
     )
 

@@ -164,8 +164,9 @@ export const useUserProfileStore = create<UserProfileState>()(
             .from('user_profiles')
             .select(
               `
-              full_name,
+              artist_name,
               onboarding_completed,
+              onboarding_completed_at,
               created_at,
               updated_at
             `
@@ -185,7 +186,7 @@ export const useUserProfileStore = create<UserProfileState>()(
             set({
               profile: {
                 // Use database value for artist name, fall back to localStorage value
-                artistName: data.full_name || existingProfile?.artistName || '',
+                artistName: data.artist_name || existingProfile?.artistName || '',
                 // These fields are stored in localStorage only (not in database)
                 genre: existingProfile?.genre || '',
                 vibe: existingProfile?.vibe || '',
@@ -195,7 +196,8 @@ export const useUserProfileStore = create<UserProfileState>()(
                 primaryGoal: existingProfile?.primaryGoal || 'explore',
                 goals: existingProfile?.goals || [],
                 onboardingCompleted: data.onboarding_completed || false,
-                onboardingCompletedAt: existingProfile?.onboardingCompletedAt || null,
+                onboardingCompletedAt:
+                  data.onboarding_completed_at || existingProfile?.onboardingCompletedAt || null,
                 createdAt: data.created_at || now,
                 updatedAt: data.updated_at || now,
               },
@@ -242,9 +244,9 @@ export const useUserProfileStore = create<UserProfileState>()(
           const { error } = await supabase.from('user_profiles').upsert(
             {
               id: user.id,
-              email: user.email || '',
-              full_name: profile.artistName,
+              artist_name: profile.artistName,
               onboarding_completed: profile.onboardingCompleted,
+              onboarding_completed_at: profile.onboardingCompletedAt,
               updated_at: new Date().toISOString(),
             },
             { onConflict: 'id' }
