@@ -11,11 +11,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
 const log = logger.scope('Onboarding Chat API')
 
-// Validate API key at startup
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+// Use validated env for API key
+const ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY
 
 if (!ANTHROPIC_API_KEY) {
   log.error('ANTHROPIC_API_KEY not configured - onboarding chat will be unavailable')
