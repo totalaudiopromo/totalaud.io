@@ -80,12 +80,15 @@ interface DatabaseThread {
 // Constants
 // ============================================================================
 
-export const THREAD_TYPE_LABELS: Record<ThreadType, { label: string; icon: string }> = {
-  narrative: { label: 'Narrative Arc', icon: '📖' },
-  campaign: { label: 'Campaign', icon: '🎯' },
-  creative: { label: 'Creative', icon: '✨' },
-  scene: { label: 'Scene/Live', icon: '🎤' },
-  performance: { label: 'Performance', icon: '📊' },
+export const THREAD_TYPE_LABELS: Record<
+  ThreadType,
+  { label: string; iconType: 'book' | 'target' | 'sparkle' | 'mic' | 'chart' }
+> = {
+  narrative: { label: 'Narrative Arc', iconType: 'book' },
+  campaign: { label: 'Campaign', iconType: 'target' },
+  creative: { label: 'Creative', iconType: 'sparkle' },
+  scene: { label: 'Scene/Live', iconType: 'mic' },
+  performance: { label: 'Performance', iconType: 'chart' },
 }
 
 export const THREAD_COLOURS = [

@@ -629,15 +629,31 @@ export function TAPGenerateModal() {
                     role="alert"
                     aria-live="polite"
                     style={{
-                      padding: 12,
-                      backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                      border: '1px solid rgba(220, 38, 38, 0.3)',
+                      padding: 16,
+                      backgroundColor: tapError.includes('not configured')
+                        ? 'rgba(251, 191, 36, 0.1)'
+                        : 'rgba(220, 38, 38, 0.1)',
+                      border: tapError.includes('not configured')
+                        ? '1px solid rgba(251, 191, 36, 0.3)'
+                        : '1px solid rgba(220, 38, 38, 0.3)',
                       borderRadius: 8,
                       fontSize: 13,
                       color: 'rgba(255, 255, 255, 0.8)',
                     }}
                   >
-                    {tapError}
+                    {tapError.includes('not configured') ? (
+                      <>
+                        <strong style={{ display: 'block', marginBottom: 4, color: '#FBBF24' }}>
+                          TAP Generation Coming Soon
+                        </strong>
+                        <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                          This feature requires additional setup. Use the AI Coach (Second Opinion)
+                          on the right to help refine your pitch sections instead.
+                        </span>
+                      </>
+                    ) : (
+                      tapError
+                    )}
                   </div>
                 )}
               </div>

@@ -211,5 +211,5 @@ pnpm --filter @total-audio/core-skills-engine test
 
 ## 📝 License
 
-Proprietary — © 2025 Total Audio
+Proprietary — © 2026 Total Audio
 

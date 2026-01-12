@@ -75,7 +75,6 @@ export async function GET(
 
     // Fetch or create credits record
     // Note: user_credits table added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
       .from('user_credits')
       .select('balance_pence, total_purchased_pence, total_spent_pence')
@@ -165,7 +164,6 @@ export async function POST(
 
     // Call the add_credits function
     // Note: add_credits function added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.rpc as any)('add_credits', {
       p_user_id: session.user.id,
       p_amount_pence: amountPence,

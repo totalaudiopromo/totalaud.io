@@ -31,7 +31,6 @@ export async function PUT(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
@@ -66,7 +65,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateError } = await (supabase as any)
       .from('epk_comments')
       .update({ body: body.body })
@@ -107,7 +105,6 @@ export async function DELETE(
     }
 
     // Note: epk_comments table is planned but not yet created in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: commentRecord, error: commentError } = await (supabase as any)
       .from('epk_comments')
       .select('user_id')
@@ -142,7 +139,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: deleteError } = await (supabase as any)
       .from('epk_comments')
       .delete()

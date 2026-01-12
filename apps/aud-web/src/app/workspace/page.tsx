@@ -453,7 +453,20 @@ function WorkspaceContent() {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
             }}
           >
-            <span style={{ fontSize: 24 }}>🎉</span>
+            <span
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#22c55e',
+              }}
+            >
+              ✓
+            </span>
             <div>
               <p
                 style={{
@@ -522,7 +535,22 @@ function WorkspaceContent() {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
             }}
           >
-            <span style={{ fontSize: 24 }}>⚠️</span>
+            <span
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FBBF24',
+                fontSize: 18,
+                fontWeight: 'bold',
+              }}
+            >
+              !
+            </span>
             <div>
               <p
                 style={{

@@ -76,7 +76,10 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
         boxShadow: isHovered && !isDragging ? `0 4px 12px ${event.colour}25` : 'none',
         borderColor: isHovered && !isDragging ? `${event.colour}60` : `${event.colour}40`,
         zIndex: isHovered || isDragging ? 10 : 1,
+        width: 140,
+        minWidth: 100,
         maxWidth: 140,
+        boxSizing: 'border-box',
         touchAction: 'none', // Required for touch drag
         ...style,
       }}
@@ -90,6 +93,9 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
+          display: 'block',
+          width: '100%',
+          maxWidth: '116px', // 140 - 24px padding
         }}
       >
         {event.title}

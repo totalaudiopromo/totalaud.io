@@ -74,7 +74,6 @@ export async function GET() {
 
     // Fetch all threads for user
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const threadsResult = await (supabase as any)
       .from('signal_threads')
       .select('*')
@@ -143,7 +142,6 @@ export async function POST(request: NextRequest) {
 
     // Insert thread
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const insertResult = await (supabase as any)
       .from('signal_threads')
       .insert({
@@ -253,7 +251,6 @@ export async function PATCH(request: NextRequest) {
 
     // Update thread
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateResult = await (supabase as any)
       .from('signal_threads')
       .update(updateData)
@@ -280,7 +277,6 @@ export async function PATCH(request: NextRequest) {
     // If eventIds changed, update event references atomically
     // Uses RPC function to prevent race conditions between clear and set operations
     if (eventIds !== undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const rpcResult = await (supabase.rpc as any)('update_thread_events', {
         p_thread_id: id,
         p_user_id: session.user.id,
@@ -344,7 +340,6 @@ export async function DELETE(request: NextRequest) {
 
     // Delete thread (RLS ensures user can only delete their own)
     // Type assertion needed until Supabase types are regenerated to include signal_threads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: deleteError } = await (supabase as any)
       .from('signal_threads')
       .delete()

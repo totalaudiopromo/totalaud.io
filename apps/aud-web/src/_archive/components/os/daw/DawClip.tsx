@@ -69,7 +69,6 @@ export function DawClip({
           <div className="flex h-5 items-center gap-[2px]">
             {Array.from({ length: 7 }).map((_v, index) => (
               <div
-                // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 className="h-3 w-[3px] rounded-sm bg-slate-200/75 group-hover:bg-white/90"
               />
