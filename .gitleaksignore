@@ -1,0 +1,6 @@
+# Gitleaks Ignore File
+# https://github.com/gitleaks/gitleaks#gitleaksignore
+
+# Development mock user ID - this is a placeholder UUID for local development only
+# Not a real API key or secret. Used in useAuth.ts for dev bypass authentication.
+apps/aud-web/src/hooks/useAuth.ts:generic-api-key:62a086b1-411e-4d2b-894e-71dfd8cb5d4e

@@ -76,6 +76,8 @@ export function useAuth(): AuthState {
         env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === true
       ) {
         log.warn('Mock auth enabled: bypassing Supabase and using dev user')
+        // Development-only mock user ID (not a secret - just a placeholder UUID for local testing)
+        // gitleaks:allow
         const devUserId = env.NEXT_PUBLIC_DEV_AUTH_USER_ID || '62a086b1-411e-4d2b-894e-71dfd8cb5d4e'
         const devEmail = env.NEXT_PUBLIC_DEV_AUTH_EMAIL || 'verify@totalaud.io'
         const devUser = createDevUser(devUserId, devEmail, 'Verify Artist')
