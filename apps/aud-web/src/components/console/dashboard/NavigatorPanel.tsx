@@ -143,12 +143,10 @@ export function NavigatorPanel() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.2 + i * 0.1 }}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group"
+                          className="flex items-center gap-3 p-2 rounded-lg transition-colors"
                         >
-                          <div className="w-1.5 h-1.5 rounded-full bg-ta-cyan group-hover:shadow-[0_0_8px_rgba(58,169,190,0.8)] transition-all" />
-                          <span className="text-sm text-ta-white/90 group-hover:text-white transition-colors">
-                            {action}
-                          </span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-ta-cyan" />
+                          <span className="text-sm text-ta-white/80">{action}</span>
                         </motion.li>
                       ))}
                     </ul>
