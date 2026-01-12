@@ -19,15 +19,18 @@ const log = logger.scope('useAuth')
 
 // Helper to construct a proper User object for development mocking
 const createDevUser = (id: string, email: string, name: string): User => {
+  const now = new Date().toISOString()
   return {
     id,
     email,
     user_metadata: { full_name: name },
-    app_metadata: {},
+    app_metadata: { provider: 'email', providers: ['email'] },
     aud: 'authenticated',
-    created_at: new Date().toISOString(),
-    confirmed_at: new Date().toISOString(),
-    last_sign_in_at: new Date().toISOString(),
+    created_at: now,
+    updated_at: now,
+    confirmed_at: now,
+    email_confirmed_at: now,
+    last_sign_in_at: now,
     role: 'authenticated',
     factors: [],
     identities: [],
@@ -73,8 +76,9 @@ export function useAuth(): AuthState {
         env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === true
       ) {
         log.warn('Mock auth enabled: bypassing Supabase and using dev user')
-        const devUserId = '62a086b1-411e-4d2b-894e-71dfd8cb5d4e' // The verify@totalaud.io ID
-        const devUser = createDevUser(devUserId, 'verify@totalaud.io', 'Verify Artist')
+        const devUserId = env.NEXT_PUBLIC_DEV_AUTH_USER_ID || '62a086b1-411e-4d2b-894e-71dfd8cb5d4e'
+        const devEmail = env.NEXT_PUBLIC_DEV_AUTH_EMAIL || 'verify@totalaud.io'
+        const devUser = createDevUser(devUserId, devEmail, 'Verify Artist')
         setUser(devUser)
         setLoading(false)
         return
@@ -113,6 +117,14 @@ export function useAuth(): AuthState {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Prevent clobbering dev mock in development
+      if (env.NODE_ENV === 'development' && env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === true) {
+        if (!session?.user) {
+          // If we have a mock user already, don't clear it
+          return
+        }
+      }
+
       setUser(session?.user ?? null)
       setLoading(false)
     })

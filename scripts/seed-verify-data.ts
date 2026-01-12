@@ -1,16 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from './config'
 
-const supabaseUrl = 'https://ucncbighzqudaszewjrv.supabase.co'
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const VERIFY_USER_ID = '62a086b1-411e-4d2b-894e-71dfd8cb5d4e'
 const TRACK_ID = '00000000-0000-0000-0000-000000000001'
 
-if (!supabaseServiceKey) {
-  console.error('Missing SUPABASE_SERVICE_ROLE_KEY')
-  process.exit(1)
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabase = createAdminClient()
 
 async function seedData() {
   console.log('Seeding data for user:', VERIFY_USER_ID)
