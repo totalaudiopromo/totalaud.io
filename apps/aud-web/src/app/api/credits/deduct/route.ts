@@ -67,7 +67,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<DeductCre
 
     // Call the deduct_credits function
     // Note: deduct_credits function added in migration 20251228100000
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.rpc as any)('deduct_credits', {
       p_user_id: session.user.id,
       p_amount_pence: ENRICHMENT_COST_PENCE,
