@@ -23,6 +23,35 @@ import { logger } from '@/lib/logger'
 
 const log = logger.scope('Onboarding Chat')
 
+/**
+ * Hook to redirect users who have already completed onboarding
+ * P0 Fix: Prevents the onboarding loop for returning users
+ */
+function useOnboardingRedirect() {
+  const router = useRouter()
+  const profile = useUserProfileStore((state) => state.profile)
+  const loadFromSupabase = useUserProfileStore((state) => state.loadFromSupabase)
+  const [isChecking, setIsChecking] = useState(true)
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      // Load profile from Supabase to ensure we have the latest status
+      await loadFromSupabase()
+      setIsChecking(false)
+    }
+    checkOnboardingStatus()
+  }, [loadFromSupabase])
+
+  useEffect(() => {
+    if (!isChecking && profile?.onboardingCompleted) {
+      log.info('User already completed onboarding, redirecting to workspace')
+      router.replace('/workspace')
+    }
+  }, [isChecking, profile?.onboardingCompleted, router])
+
+  return { isChecking, shouldRedirect: profile?.onboardingCompleted }
+}
+
 interface ChatMessage {
   id: string
   role: 'assistant' | 'user'
@@ -59,6 +88,9 @@ export function OnboardingChat() {
   const router = useRouter()
   const { setProfile, completeOnboarding } = useUserProfileStore()
 
+  // P0 Fix: Check if user already completed onboarding
+  const { isChecking, shouldRedirect } = useOnboardingRedirect()
+
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -66,6 +98,23 @@ export function OnboardingChat() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Show loading state while checking onboarding status
+  if (isChecking || shouldRedirect) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#0F1113',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: 14 }}>Loading...</div>
+      </div>
+    )
+  }
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {

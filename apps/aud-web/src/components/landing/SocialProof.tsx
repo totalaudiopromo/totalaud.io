@@ -12,7 +12,7 @@ import { motion } from 'framer-motion'
 const STATS = [
   {
     value: '500+',
-    label: 'Artists using totalaud',
+    label: 'Artists using totalaud.io',
     icon: '◉',
   },
   {
@@ -21,7 +21,7 @@ const STATS = [
     icon: '◎',
   },
   {
-    value: '5 years',
+    value: '30+ years',
     label: 'Radio promotion expertise',
     icon: '◈',
   },

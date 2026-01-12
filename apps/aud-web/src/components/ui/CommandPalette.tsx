@@ -61,7 +61,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       label: 'Go to Ideas',
       shortcut: `${modKey}1`,
       icon: <Lightbulb className="w-4 h-4" />,
-      action: () => router.push('/workspace/ideas'),
+      action: () => router.push('/workspace?mode=ideas'),
       category: 'navigation',
     },
     {
@@ -69,7 +69,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       label: 'Go to Scout',
       shortcut: `${modKey}2`,
       icon: <Compass className="w-4 h-4" />,
-      action: () => router.push('/workspace/scout'),
+      action: () => router.push('/workspace?mode=scout'),
       category: 'navigation',
     },
     {
@@ -77,7 +77,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       label: 'Go to Timeline',
       shortcut: `${modKey}3`,
       icon: <CalendarDays className="w-4 h-4" />,
-      action: () => router.push('/workspace/timeline'),
+      action: () => router.push('/workspace?mode=timeline'),
       category: 'navigation',
     },
     {
@@ -85,7 +85,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       label: 'Go to Pitch',
       shortcut: `${modKey}4`,
       icon: <MessageSquare className="w-4 h-4" />,
-      action: () => router.push('/workspace/pitch'),
+      action: () => router.push('/workspace?mode=pitch'),
       category: 'navigation',
     },
     // Actions
@@ -94,7 +94,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       label: 'New Idea',
       icon: <Plus className="w-4 h-4" />,
       action: () => {
-        router.push('/workspace/ideas')
+        router.push('/workspace?mode=ideas')
         // Dispatch custom event for Ideas mode to handle
         window.dispatchEvent(new CustomEvent('command:new-idea'))
       },
