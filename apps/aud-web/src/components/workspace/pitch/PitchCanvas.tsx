@@ -439,7 +439,10 @@ export function PitchCanvas() {
           aria-label="Open second opinion panel"
           className="absolute right-6 bottom-6 flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ta-black bg-ta-cyan rounded-full shadow-[0_4px_20px_rgba(58,169,190,0.4)] z-10"
         >
-          <span aria-hidden="true">✨</span> Get a Second Opinion
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+          Get a Second Opinion
         </motion.button>
       )}
 

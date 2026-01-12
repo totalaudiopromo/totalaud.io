@@ -21,39 +21,105 @@ import {
 } from '@/stores/useSignalThreadStore'
 import { TypingIndicator } from '@/components/ui/EmptyState'
 
-// Thread type options with labels and descriptions
-const THREAD_TYPES: { key: ThreadType; label: string; icon: string; description: string }[] = [
+// Thread type options with labels and descriptions - using icon names instead of emojis
+const THREAD_TYPES: {
+  key: ThreadType
+  label: string
+  iconType: 'book' | 'target' | 'sparkle' | 'mic' | 'chart'
+  description: string
+}[] = [
   {
     key: 'narrative',
     label: 'Story Arc',
-    icon: '📖',
+    iconType: 'book',
     description: 'The story of your release journey',
   },
   {
     key: 'campaign',
     label: 'Campaign',
-    icon: '🎯',
+    iconType: 'target',
     description: 'Linked promotional activities',
   },
   {
     key: 'creative',
     label: 'Creative',
-    icon: '✨',
+    iconType: 'sparkle',
     description: 'Related creative outputs',
   },
   {
     key: 'scene',
     label: 'Scene',
-    icon: '🎤',
+    iconType: 'mic',
     description: 'Live performance connections',
   },
   {
     key: 'performance',
     label: 'Performance',
-    icon: '📊',
+    iconType: 'chart',
     description: 'Analytics and results',
   },
 ]
+
+// Helper to render thread type icons as SVG
+function ThreadIcon({
+  type,
+  size = 16,
+}: {
+  type: 'book' | 'target' | 'sparkle' | 'mic' | 'chart'
+  size?: number
+}) {
+  const props = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 2,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  }
+
+  switch (type) {
+    case 'book':
+      return (
+        <svg {...props}>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+      )
+    case 'target':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      )
+    case 'sparkle':
+      return (
+        <svg {...props}>
+          <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
+        </svg>
+      )
+    case 'mic':
+      return (
+        <svg {...props}>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <line x1="12" y1="19" x2="12" y2="23" />
+          <line x1="8" y1="23" x2="16" y2="23" />
+        </svg>
+      )
+    case 'chart':
+      return (
+        <svg {...props}>
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+        </svg>
+      )
+  }
+}
 
 // Default thread colours
 const THREAD_COLOURS = [
@@ -277,7 +343,33 @@ export function ThreadsPanel({ isOpen, onClose }: ThreadsPanelProps) {
                       color: 'rgba(255, 255, 255, 0.4)',
                     }}
                   >
-                    <div style={{ fontSize: 32, marginBottom: 12 }}>🧵</div>
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(244, 114, 182, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 12px',
+                      }}
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#F472B6"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 17H7A5 5 0 0 1 7 7h2" />
+                        <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                      </svg>
+                    </div>
                     <div style={{ fontSize: 13, marginBottom: 4 }}>No threads yet</div>
                     <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.3)' }}>
                       Connect timeline events into story arcs
@@ -374,7 +466,9 @@ export function ThreadsPanel({ isOpen, onClose }: ThreadsPanelProps) {
                           transition: 'all 0.12s ease',
                         }}
                       >
-                        <span style={{ fontSize: 16 }}>{type.icon}</span>
+                        <span style={{ width: 16, height: 16, color: '#3AA9BE' }}>
+                          <ThreadIcon type={type.iconType} />
+                        </span>
                         <div>
                           <div
                             style={{
@@ -547,7 +641,9 @@ function ThreadListItem({ thread, isActive, onClick }: ThreadListItemProps) {
             gap: 6,
           }}
         >
-          <span>{typeInfo?.icon}</span>
+          <span style={{ display: 'inline-flex', width: 12, height: 12 }}>
+            {typeInfo && <ThreadIcon type={typeInfo.iconType} size={12} />}
+          </span>
           <span>{typeInfo?.label}</span>
           <span>•</span>
           <span>{thread.eventIds.length} events</span>
@@ -600,7 +696,9 @@ function ThreadDetail({ thread, isGenerating, onGenerateNarrative, onDelete }: T
               boxShadow: `0 0 12px ${thread.colour}50`,
             }}
           />
-          <span style={{ fontSize: 16 }}>{typeInfo?.icon}</span>
+          <span style={{ display: 'inline-flex', width: 16, height: 16, color: '#3AA9BE' }}>
+            {typeInfo && <ThreadIcon type={typeInfo.iconType} size={16} />}
+          </span>
           <span
             style={{
               fontSize: 12,
@@ -712,7 +810,15 @@ function ThreadDetail({ thread, isGenerating, onGenerateNarrative, onDelete }: T
               </>
             ) : (
               <>
-                <span>✨</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                </svg>
                 Generate Story
               </>
             )}
