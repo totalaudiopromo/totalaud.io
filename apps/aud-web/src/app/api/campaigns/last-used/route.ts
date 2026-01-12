@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id
 
     // Load last-used campaign (RLS-safe query)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: campaigns, error: fetchError } = await (supabase as any)
       .from('campaign_context')
       .select('id, artist_name, created_at, last_accessed_at')
@@ -50,7 +49,6 @@ export async function POST(req: NextRequest) {
       log.info('Last-used campaign found', { campaignId: campaign.id, userId })
 
       // Update last_accessed_at timestamp
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase as any)
         .from('campaign_context')
         .update({ last_accessed_at: new Date().toISOString() })
@@ -75,7 +73,6 @@ export async function POST(req: NextRequest) {
       last_accessed_at: new Date().toISOString(),
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: createdCampaign, error: createError } = await (supabase as any)
       .from('campaign_context')
       .insert([newCampaign])

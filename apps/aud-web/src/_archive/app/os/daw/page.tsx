@@ -223,7 +223,6 @@ export default function DawPage() {
   }
 
   const handleOpenLoopOSStub = () => {
-    // eslint-disable-next-line no-console
     console.log('[DAW] Open LoopOS (stub) clicked')
   }
 

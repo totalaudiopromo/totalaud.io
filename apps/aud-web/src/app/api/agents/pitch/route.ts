@@ -109,7 +109,6 @@ export async function POST(req: NextRequest) {
     if (campaignId && contactName) {
       try {
         // Create outreach log entry
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error: insertError } = await (supabase as any)
           .from('campaign_outreach_logs')
           .insert({

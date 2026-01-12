@@ -31,7 +31,6 @@ interface ContactSuppressionRow {
 
 // Helper to bypass type checking for shared table
 function getSuppressionTable(supabase: SupabaseClient) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (supabase as any).from('contact_suppressions')
 }
 import {
