@@ -27,7 +27,7 @@ Closes #68 (Onboarding persistence)
 
 ---
 
-## �� Automated Review
+## 🤖 Automated Review
 
 This PR will be automatically reviewed by:
 

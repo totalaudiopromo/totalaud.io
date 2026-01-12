@@ -114,19 +114,13 @@ jobs:
                                  isInlineSuggestion;
 
             core.setOutput('review_body', reviewBody);
-            core.setOutput('file_path', filePath);
-            core.setOutput('line_number', lineNumber);
+            core.setOutput('file_path', filePath || '(not provided)');
+            core.setOutput('line_number', lineNumber || '(not provided)');
             core.setOutput('is_inline_suggestion', isInlineSuggestion);
             core.setOutput('suggestion_code', suggestionCode);
             core.setOutput('is_actionable', isActionable);
 
             return { reviewBody, filePath, lineNumber, isInlineSuggestion, suggestionCode, isActionable };
-
-      - name: Skip non-actionable comments
-        if: steps.context.outputs.is_actionable != 'true'
-        run: |
-          echo "Skipping non-actionable CodeRabbit comment (likely a summary or approval)"
-          exit 0
 
       - name: Run Claude Code to apply fixes
         if: steps.context.outputs.is_actionable == 'true'
@@ -250,6 +244,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -275,8 +270,8 @@ jobs:
 
             ${{ github.event.comment.body }}
 
-            File: ${{ github.event.comment.path }}
-            Line: ${{ github.event.comment.line }}
+            File: ${{ github.event.comment.path || '(not provided)' }}
+            Line: ${{ github.event.comment.line || '(not provided)' }}
 
             Project: totalaud.io (Next.js 15, TypeScript, Tailwind, Framer Motion)
             Use British English spelling.

@@ -5,10 +5,14 @@ import path from 'path'
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
-export const SUPABASE_URL =
-  process.env.SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  'https://ucncbighzqudaszewjrv.supabase.co'
+export const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+
+if (!SUPABASE_URL) {
+  console.error(
+    '❌ Error: SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL is missing from environment variables.'
+  )
+  process.exit(1)
+}
 export const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!SUPABASE_SERVICE_KEY) {

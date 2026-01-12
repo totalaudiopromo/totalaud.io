@@ -5,7 +5,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
-const GALLERY_ITEMS = [
+export interface GalleryItem {
+  image: string
+  alt: string
+  label: string
+  year: string
+  description: string
+  link?: string
+}
+
+const GALLERY_ITEMS: GalleryItem[] = [
   {
     image: '/images/journey/chris1992.png',
     alt: 'Chris Schofield as a child in 1988, asleep with headphones on',
@@ -170,7 +179,7 @@ export function JourneyGallery() {
   )
 }
 
-function GalleryCard({ item, index }: { item: any; index: number }) {
+function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)

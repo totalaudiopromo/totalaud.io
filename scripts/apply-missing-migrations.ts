@@ -21,31 +21,58 @@ const MIGRATION_DIRS = [
  */
 function splitSqlStatements(sql: string): string[] {
   const statements: string[] = []
-  let currentPosition = 0
+  let currentStatement = ''
   let inString = false
   let dollarQuoteTag: string | null = null
+  let i = 0
 
-  for (let i = 0; i < sql.length; i++) {
+  while (i < sql.length) {
     const char = sql[i]
+    const nextChar = sql[i + 1]
 
     // Handle Dollar Quoting ($$ or $tag$)
     if (dollarQuoteTag) {
+      currentStatement += char
       if (char === '$' && sql.startsWith(dollarQuoteTag, i)) {
+        currentStatement += dollarQuoteTag.substring(1)
         i += dollarQuoteTag.length - 1
         dollarQuoteTag = null
       }
+      i++
       continue
     }
 
     // Handle Single Quotes ('...')
     if (inString) {
+      currentStatement += char
       if (char === "'") {
-        // Check for escaped single quote ('')
-        if (sql[i + 1] === "'") {
-          i++ // skip next quote
+        if (nextChar === "'") {
+          currentStatement += nextChar
+          i += 2
         } else {
           inString = false
+          i++
         }
+      } else {
+        i++
+      }
+      continue
+    }
+
+    // Handle Block Comments /* ... */
+    if (char === '/' && nextChar === '*') {
+      i += 2
+      while (i < sql.length - 1 && !(sql[i] === '*' && sql[i + 1] === '/')) {
+        i++
+      }
+      i += 2
+      continue
+    }
+
+    // Handle Inline Comments --
+    if (char === '-' && nextChar === '-') {
+      while (i < sql.length && sql[i] !== '\n') {
+        i++
       }
       continue
     }
@@ -53,6 +80,8 @@ function splitSqlStatements(sql: string): string[] {
     // Start of String or Dollar Quote
     if (char === "'") {
       inString = true
+      currentStatement += char
+      i++
       continue
     }
 
@@ -60,25 +89,31 @@ function splitSqlStatements(sql: string): string[] {
       const match = sql.slice(i).match(/^(\$[a-zA-Z0-9_]*\$)/)
       if (match) {
         dollarQuoteTag = match[0]
-        i += dollarQuoteTag.length - 1
+        currentStatement += dollarQuoteTag
+        i += dollarQuoteTag.length
         continue
       }
     }
 
     // Statement Separator
     if (char === ';') {
-      const statement = sql.substring(currentPosition, i).trim()
-      if (statement && !statement.startsWith('--')) {
-        statements.push(statement)
+      const trimmed = currentStatement.trim()
+      if (trimmed) {
+        statements.push(trimmed)
       }
-      currentPosition = i + 1
+      currentStatement = ''
+      i++
+      continue
     }
+
+    currentStatement += char
+    i++
   }
 
   // Final statement
-  const lastStatement = sql.substring(currentPosition).trim()
-  if (lastStatement && !lastStatement.startsWith('--')) {
-    statements.push(lastStatement)
+  const lastTrimmed = currentStatement.trim()
+  if (lastTrimmed) {
+    statements.push(lastTrimmed)
   }
 
   return statements

@@ -29,7 +29,11 @@ CREATE TABLE IF NOT EXISTS track_memory (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
   -- Unique constraint: one memory record per user per track
-  CONSTRAINT track_memory_unique_track UNIQUE (user_id, track_id)
+  CONSTRAINT track_memory_unique_track UNIQUE (user_id, track_id),
+  
+  -- Foreign Key Constraints
+  CONSTRAINT fk_track_memory_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_track_memory_track FOREIGN KEY (track_id) REFERENCES artist_assets(id) ON DELETE CASCADE
 );
 
 -- Index for fast lookups

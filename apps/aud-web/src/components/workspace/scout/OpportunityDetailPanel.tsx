@@ -313,9 +313,7 @@ export function OpportunityDetailPanel() {
                               <p className="text-xs text-white/40 text-center">
                                 No credits available.{' '}
                                 <button
-                                  onClick={() => {
-                                    /* TODO: Navigate to credits purchase */
-                                  }}
+                                  onClick={() => router.push('/pricing')}
                                   className="text-ta-cyan hover:underline"
                                 >
                                   Add credits

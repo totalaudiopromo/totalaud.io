@@ -117,7 +117,7 @@ export default async function Image() {
               margin: '20px 0 0',
             }}
           >
-            One calm workspace for everything that matter to independent artists.
+            One calm workspace for everything that matters to independent artists.
           </p>
 
           <div
