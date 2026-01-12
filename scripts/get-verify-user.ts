@@ -1,19 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_URL, SUPABASE_SERVICE_KEY, createAdminClient } from './config'
+import crypto from 'crypto'
 
-const supabaseUrl = 'https://ucncbighzqudaszewjrv.supabase.co'
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseServiceKey) {
-  console.error('Missing SUPABASE_SERVICE_ROLE_KEY')
-  process.exit(1)
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-})
+const supabase = createAdminClient()
 
 async function getOrCreateUser() {
   const email = 'verify@totalaud.io'
@@ -29,9 +17,10 @@ async function getOrCreateUser() {
   let user = users.users.find((u) => u.email === email)
 
   if (!user) {
-    // Use password from env or generate a random one (not committed)
-    const password = process.env.VERIFY_USER_PASSWORD || Math.random().toString(36).slice(-12)
-    console.log('User not found, creating verify@totalaud.io...')
+    // Use password from env or generate a cryptographically-secure random password
+    const password =
+      process.env.SUPABASE_NEW_USER_PASSWORD || crypto.randomBytes(16).toString('hex')
+    console.log(`User not found, creating ${email}...`)
     const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
       email,
       password,

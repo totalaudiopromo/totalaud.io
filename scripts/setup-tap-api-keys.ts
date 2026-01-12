@@ -11,32 +11,9 @@
  *   npx tsx scripts/setup-tap-api-keys.ts
  */
 
-import { createClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { createAdminClient } from './config'
 
-// ESM equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-// Load environment from TAP platform
-dotenv.config({ path: resolve(__dirname, '../../total-audio-platform/.env.local') })
-
-// Fallback to totalaud.io env if TAP env not found
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  dotenv.config({ path: resolve(__dirname, '../apps/aud-web/.env.local') })
-}
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error('❌ Missing environment variables')
-  process.exit(1)
-}
-
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+const supabase = createAdminClient()
 
 // Dev user ID from .env.local
 const DEV_USER_ID = 'c5c261a8-8b35-4e77-ae6d-e293e65d746d'

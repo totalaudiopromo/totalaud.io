@@ -6,7 +6,7 @@
  * we'll use the Supabase Management API or just output instructions
  */
 
-const SUPABASE_URL = 'https://ucncbighzqudaszewjrv.supabase.co'
+import { SUPABASE_URL } from './config'
 
 console.log('═══════════════════════════════════════════════════════════')
 console.log('     CREATE OPPORTUNITIES TABLE - MANUAL STEP REQUIRED')
