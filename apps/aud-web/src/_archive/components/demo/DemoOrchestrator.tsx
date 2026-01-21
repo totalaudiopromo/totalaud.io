@@ -66,6 +66,8 @@ export function DemoOrchestrator({ children }: { children: React.ReactNode }) {
     return () => {
       if (typeof window === 'undefined') return
       // Clean up the flag on unmount so normal routes are unaffected
+
+
       delete (window as any).__TA_DEMO__
     }
   }, [])

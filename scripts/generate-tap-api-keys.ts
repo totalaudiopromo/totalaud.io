@@ -18,38 +18,10 @@
  */
 
 import crypto from 'crypto'
-import { createClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
-
-// ESM equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { createAdminClient, SUPABASE_URL } from './config'
 
 // Check for --skip-db flag
 const skipDb = process.argv.includes('--skip-db')
-
-// Load environment from TAP platform
-dotenv.config({ path: resolve(__dirname, '../../total-audio-platform/.env.local') })
-
-// Fallback to totalaud.io env if TAP env not found
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  dotenv.config({ path: resolve(__dirname, '../apps/aud-web/.env.local') })
-}
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!skipDb && (!SUPABASE_URL || !SERVICE_ROLE_KEY)) {
-  console.error('❌ Missing environment variables:')
-  console.error('   NEXT_PUBLIC_SUPABASE_URL:', SUPABASE_URL ? '✓' : '✗')
-  console.error('   SUPABASE_SERVICE_ROLE_KEY:', SERVICE_ROLE_KEY ? '✓' : '✗')
-  console.error('')
-  console.error('Make sure you have a .env.local file with Supabase credentials.')
-  console.error('Or use --skip-db to generate keys without database storage.')
-  process.exit(1)
-}
 
 /**
  * Generate a TAP API key
@@ -101,7 +73,7 @@ async function main() {
     console.log('   you should run the api_keys migration and store keys properly.\n')
   }
 
-  const supabase = skipDb ? null : createClient(SUPABASE_URL!, SERVICE_ROLE_KEY!)
+  const supabase = skipDb ? null : createAdminClient()
 
   // Check if api_keys table exists (only if not skipping DB)
   if (supabase) {

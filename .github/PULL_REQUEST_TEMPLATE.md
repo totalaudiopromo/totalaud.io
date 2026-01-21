@@ -25,27 +25,22 @@
 
 ---
 
-## 🤖 Automated Review
+## 🤖 Automated Review & Fix
 
-This PR will be automatically reviewed by:
+**How it works:**
 
-- **CodeRabbit** — AI code review focusing on quality, security, and best practices
-- **Claude** — Auto-fixes CodeRabbit suggestions when possible
+1. You push a PR
+2. CodeRabbit reviews and posts comments
+3. If CodeRabbit requests changes → Claude auto-fixes and commits
+4. If CodeRabbit posts inline suggestions → Claude applies them automatically
+5. You just review Claude's fixes and merge
 
-### Commands
+No manual tagging required for CodeRabbit issues.
+
+### Manual Commands (for non-CodeRabbit comments)
 
 | Command | Description |
 |---------|-------------|
+| `@claude fix this` | Ask Claude to fix a specific issue |
 | `@coderabbitai review` | Request a fresh CodeRabbit review |
 | `@coderabbitai summary` | Generate a PR summary |
-| `@claude fix this` | Ask Claude to fix a specific comment |
-
-### Auto-Fix Behaviour
-
-When CodeRabbit identifies an issue, Claude will automatically:
-1. Analyse the suggestion
-2. Apply the fix if appropriate
-3. Run lint and typecheck
-4. Commit with a clear message
-
-To disable auto-fix for a specific comment, include `[skip claude]` in your response.

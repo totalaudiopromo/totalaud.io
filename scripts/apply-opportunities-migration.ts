@@ -4,11 +4,7 @@
  * This bypasses the supabase CLI migration tracking issues
  */
 
-import { createClient } from '@supabase/supabase-js'
-
-const SUPABASE_URL = 'https://ucncbighzqudaszewjrv.supabase.co'
-const SUPABASE_SERVICE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbmNiaWdoenF1ZGFzemV3anJ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODkxNTYyMSwiZXhwIjoyMDc0NDkxNjIxfQ.jNbVTjvh7uOGINRPXJ6TFQJuNEbOLuOccVm8nqnlgPE'
+import { createAdminClient } from './config'
 
 const MIGRATION_SQL = `
 -- Migration: Create opportunities table for Scout Mode
@@ -104,15 +100,65 @@ GRANT SELECT ON opportunities TO authenticated;
 GRANT ALL ON opportunities TO service_role;
 `
 
+/**
+ * Robust SQL splitter that understands basic PostgreSQL syntax
+ */
+function splitSqlStatements(sql: string): string[] {
+  const statements: string[] = []
+  let currentPosition = 0
+  let inString = false
+  let dollarQuoteTag: string | null = null
+
+  for (let i = 0; i < sql.length; i++) {
+    const char = sql[i]
+    if (dollarQuoteTag) {
+      if (char === '$' && sql.startsWith(dollarQuoteTag, i)) {
+        i += dollarQuoteTag.length - 1
+        dollarQuoteTag = null
+      }
+      continue
+    }
+    if (inString) {
+      if (char === "'") {
+        if (sql[i + 1] === "'") i++
+        else inString = false
+      }
+      continue
+    }
+    if (char === "'") {
+      inString = true
+      continue
+    }
+    if (char === '$') {
+      const match = sql.slice(i).match(/^(\$[a-zA-Z0-9_]*\$)/)
+      if (match) {
+        dollarQuoteTag = match[0]
+        i += dollarQuoteTag.length - 1
+        continue
+      }
+    }
+    if (char === ';') {
+      const statement = sql.substring(currentPosition, i).trim()
+      if (statement && !statement.startsWith('--')) {
+        statements.push(statement)
+      }
+      currentPosition = i + 1
+    }
+  }
+  const lastStatement = sql.substring(currentPosition).trim()
+  if (lastStatement && !lastStatement.startsWith('--')) {
+    statements.push(lastStatement)
+  }
+  return statements
+}
+
 async function main() {
   console.log('🔧 Applying opportunities table migration...\n')
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  const supabase = createAdminClient()
 
   // Split into separate statements and execute
-  const statements = MIGRATION_SQL.split(';')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith('--'))
+  const statements = splitSqlStatements(MIGRATION_SQL)
 
   let successCount = 0
   let errorCount = 0

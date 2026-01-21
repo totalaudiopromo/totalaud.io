@@ -17,24 +17,17 @@
  *   pnpm tsx scripts/seed-opportunities.ts --dry-run
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient, SUPABASE_URL, SUPABASE_SERVICE_KEY } from './config'
 
 // ============================================
 // Configuration
 // ============================================
-
-// Load from environment variables - never commit secrets to git
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ucncbighzqudaszewjrv.supabase.co'
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appx7uTQWRH8cIC20'
 const AIRTABLE_TABLE_ID = process.env.AIRTABLE_TABLE_ID || 'tblcZnUsB4Swyjcip' // Radio Contacts
 
 // Validate required env vars
-if (!SUPABASE_SERVICE_KEY) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is required')
-}
 if (!AIRTABLE_API_KEY) {
   throw new Error('AIRTABLE_API_KEY environment variable is required')
 }
@@ -574,7 +567,7 @@ async function seedToSupabase(opportunities: Opportunity[], dryRun: boolean): Pr
 
   console.log('📤 Seeding opportunities to Supabase...\n')
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  const supabase = createAdminClient()
 
   // First, clear existing opportunities (for clean reseed)
   console.log('🗑️  Clearing existing opportunities...')
