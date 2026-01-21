@@ -85,6 +85,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: z
     .preprocess((val) => val === 'true', z.boolean())
     .default(false),
+  NEXT_PUBLIC_DEV_AUTH_USER_ID: z.string().uuid().optional(),
+  NEXT_PUBLIC_DEV_AUTH_EMAIL: z.string().email().optional(),
 })
 
 // ============================================
@@ -109,6 +111,8 @@ function validateEnv(): Env {
       NEXT_PUBLIC_CONVERTKIT_API_KEY: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
       NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
       NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: process.env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === 'true',
+      NEXT_PUBLIC_DEV_AUTH_USER_ID: process.env.NEXT_PUBLIC_DEV_AUTH_USER_ID,
+      NEXT_PUBLIC_DEV_AUTH_EMAIL: process.env.NEXT_PUBLIC_DEV_AUTH_EMAIL,
     } as Env
   }
 

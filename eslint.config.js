@@ -7,14 +7,14 @@ import reactHooks from 'eslint-plugin-react-hooks'
 export default [
   {
     ignores: [
-      'node_modules/**',
-      '.next/**',
-      '.turbo/**',
-      'dist/**',
-      'build/**',
-      '*.config.js',
-      '*.config.ts',
-      'pnpm-lock.yaml',
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/.turbo/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/*.config.js',
+      '**/*.config.ts',
+      '**/pnpm-lock.yaml',
       '**/*.d.ts',
       '**/next-env.d.ts',
     ],

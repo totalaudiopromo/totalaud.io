@@ -24,7 +24,7 @@ export function XPStartMenu({ isOpen, onClose }: XPStartMenuProps) {
 
   const handleShutDown = () => {
     // Placeholder behaviour for now
-    // eslint-disable-next-line no-console
+
     console.log('[XP] Shut Down triggered')
     play('click')
     onClose()

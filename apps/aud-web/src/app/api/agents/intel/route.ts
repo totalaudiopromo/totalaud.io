@@ -73,7 +73,6 @@ export async function POST(req: NextRequest) {
         // Type assertion needed due to @supabase/auth-helpers-nextjs 0.10.0
         // not fully supporting the new Database type format with __InternalSupabase.
         // TODO: Migrate to @supabase/ssr to resolve this properly.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: assets, error } = await (supabase as any)
           .from('artist_assets')
           .select('*')
@@ -126,7 +125,6 @@ export async function POST(req: NextRequest) {
     // Save results to database if authenticated
     if (session && sessionId) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase as any).from('agent_results').insert({
           user_id: resolvedUserId,
           session_id: sessionId,

@@ -105,7 +105,6 @@ export async function POST(request: NextRequest) {
     const { threadId } = validation.data
 
     // Fetch the thread
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const threadResult = await (supabase as any)
       .from('signal_threads')
       .select('*')
@@ -220,7 +219,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Update thread with narrative
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateError } = await (supabase as any)
       .from('signal_threads')
       .update({
