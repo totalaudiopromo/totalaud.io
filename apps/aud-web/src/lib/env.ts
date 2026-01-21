@@ -214,21 +214,24 @@ export function isSentryConfigured(): boolean {
 
 /**
  * Check if TAP (Total Audio Platform) Pitch service is configured
+ * Requires both API key AND URL to be functional
  */
 export function isTAPPitchConfigured(): boolean {
-  return !!(env.TAP_API_KEY_PITCH || env.TAP_API_KEY)
+  return !!(env.TAP_API_KEY_PITCH || env.TAP_API_KEY) && !!env.TAP_PITCH_URL
 }
 
 /**
  * Check if TAP Intel service is configured
+ * Requires both API key AND URL to be functional
  */
 export function isTAPIntelConfigured(): boolean {
-  return !!(env.TAP_API_KEY_INTEL || env.TAP_API_KEY)
+  return !!(env.TAP_API_KEY_INTEL || env.TAP_API_KEY) && !!env.TAP_INTEL_URL
 }
 
 /**
  * Check if TAP Tracker service is configured
+ * Requires both API key AND URL to be functional
  */
 export function isTAPTrackerConfigured(): boolean {
-  return !!(env.TAP_API_KEY_TRACKER || env.TAP_API_KEY)
+  return !!(env.TAP_API_KEY_TRACKER || env.TAP_API_KEY) && !!env.TAP_TRACKER_URL
 }

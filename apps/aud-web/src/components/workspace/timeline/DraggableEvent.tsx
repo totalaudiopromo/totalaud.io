@@ -77,7 +77,6 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
         borderColor: isHovered && !isDragging ? `${event.colour}60` : `${event.colour}40`,
         zIndex: isHovered || isDragging ? 10 : 1,
         width: 140,
-        minWidth: 100,
         maxWidth: 140,
         boxSizing: 'border-box',
         touchAction: 'none', // Required for touch drag

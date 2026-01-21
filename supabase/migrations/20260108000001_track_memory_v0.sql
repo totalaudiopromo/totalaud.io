@@ -36,9 +36,7 @@ CREATE TABLE IF NOT EXISTS track_memory (
   CONSTRAINT fk_track_memory_track FOREIGN KEY (track_id) REFERENCES artist_assets(id) ON DELETE CASCADE
 );
 
--- Index for fast lookups
-CREATE INDEX IF NOT EXISTS idx_track_memory_user_track
-  ON track_memory(user_id, track_id);
+-- Note: idx_track_memory_user_track not needed - covered by track_memory_unique_track constraint
 
 -- ============================================================================
 -- track_memory_entries

@@ -46,10 +46,26 @@ jobs:
       issues: write
 
     steps:
+      - name: Get PR details for issue_comment events
+        id: pr_details
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            core.setOutput('head_ref', pr.head.ref);
+            core.setOutput('head_sha', pr.head.sha);
+            return pr.head.ref;
+
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          ref: ${{ github.event.pull_request.head.ref || steps.pr_details.outputs.head_ref || github.ref }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -116,8 +132,9 @@ jobs:
                                  isInlineSuggestion;
 
             core.setOutput('review_body', reviewBody);
-            core.setOutput('file_path', filePath || '(not provided)');
-            core.setOutput('line_number', lineNumber || '(not provided)');
+            core.setOutput('file_path', filePath);
+            core.setOutput('line_number', lineNumber);
+            core.setOutput('has_file_context', filePath ? 'true' : 'false');
             core.setOutput('is_inline_suggestion', isInlineSuggestion);
             core.setOutput('suggestion_code', suggestionCode);
             core.setOutput('is_actionable', isActionable);
@@ -142,14 +159,18 @@ jobs:
 
             ## CodeRabbit Feedback
             ${{ steps.context.outputs.review_body }}
+            ${{ steps.context.outputs.has_file_context == 'true' && format('
 
             ## File Location
-            Path: ${{ steps.context.outputs.file_path }}
-            Line: ${{ steps.context.outputs.line_number }}
+            Path: {0}
+            Line: {1}', steps.context.outputs.file_path, steps.context.outputs.line_number) || '' }}
+            ${{ steps.context.outputs.is_inline_suggestion == 'true' && format('
 
             ## Inline Suggestion
-            Is inline suggestion: ${{ steps.context.outputs.is_inline_suggestion }}
-            Suggested code: ${{ steps.context.outputs.suggestion_code }}
+            Apply this exact code:
+            ```
+            {0}
+            ```', steps.context.outputs.suggestion_code) || '' }}
 
             ## Instructions
             1. If this is an inline suggestion with code, apply it exactly as suggested
