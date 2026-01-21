@@ -16,16 +16,16 @@ reviews:
       - develop
 
   # Review profile optimised for indie dev team
-  profile: chill  # Less nitpicky, focuses on important issues
+  profile: chill # Less nitpicky, focuses on important issues
 
   # What to review
-  request_changes_workflow: true  # Block PRs so Claude can auto-fix
+  request_changes_workflow: false # Don't block PRs - Claude will auto-fix and you merge when ready
   high_level_summary: true
   high_level_summary_placeholder: '@coderabbitai summary'
-  poem: false  # Keep it professional
+  poem: false # Keep it professional
   review_status: true
   collapse_walkthrough: false
-  sequence_diagrams: true  # Helpful for API route changes
+  sequence_diagrams: true # Helpful for API route changes
   changed_files_summary: true
   labeling_instructions: []
 
@@ -76,7 +76,7 @@ reviews:
     shellcheck:
       enabled: true
     ruff:
-      enabled: false  # Python not used
+      enabled: false # Python not used
     markdownlint:
       enabled: true
     github-checks:
@@ -86,64 +86,64 @@ reviews:
       enabled: true
       enabled_rules: []
       disabled_rules:
-        - EN_QUOTES  # Allow straight quotes
-        - DASH_RULE  # Flexible dash usage
+        - EN_QUOTES # Allow straight quotes
+        - DASH_RULE # Flexible dash usage
       enabled_categories: []
       disabled_categories:
-        - TYPOGRAPHY  # Don't be pedantic about quotes/dashes
+        - TYPOGRAPHY # Don't be pedantic about quotes/dashes
       enabled_only: false
-      level: picky  # British English enforcement
+      level: picky # British English enforcement
     biome:
       enabled: true
     hadolint:
-      enabled: false  # No Docker files
+      enabled: false # No Docker files
     swiftlint:
-      enabled: false  # No Swift
+      enabled: false # No Swift
     phpstan:
-      enabled: false  # No PHP
+      enabled: false # No PHP
     golangci-lint:
-      enabled: false  # No Go
+      enabled: false # No Go
     yamllint:
       enabled: true
     gitleaks:
-      enabled: true  # Security: detect secrets
+      enabled: true # Security: detect secrets
     checkov:
-      enabled: false  # No Terraform
+      enabled: false # No Terraform
     detekt:
-      enabled: false  # No Kotlin
+      enabled: false # No Kotlin
     eslint:
       enabled: true
     rubocop:
-      enabled: false  # No Ruby
+      enabled: false # No Ruby
     buf:
-      enabled: false  # No protobuf
+      enabled: false # No protobuf
     regal:
-      enabled: false  # No Rego
+      enabled: false # No Rego
     actionlint:
-      enabled: true  # GitHub Actions
+      enabled: true # GitHub Actions
     pmd:
-      enabled: false  # No Java
+      enabled: false # No Java
     cppcheck:
-      enabled: false  # No C++
+      enabled: false # No C++
     semgrep:
-      enabled: true  # Security scanning
+      enabled: true # Security scanning
     circleci:
-      enabled: false  # Using GitHub Actions
+      enabled: false # Using GitHub Actions
     ast-grep:
       enabled: true
 
 chat:
-  auto_reply: true  # Respond to @coderabbitai mentions
+  auto_reply: true # Respond to @coderabbitai mentions
 
 # Knowledge base for context-aware reviews
 knowledge_base:
   learnings:
-    scope: auto  # Learn from accepted suggestions
+    scope: auto # Learn from accepted suggestions
   issues:
-    scope: auto  # Reference open issues
+    scope: auto # Reference open issues
   jira:
     project_keys: []
   linear:
     team_keys: []
   pull_requests:
-    scope: auto  # Reference related PRs
+    scope: auto # Reference related PRs
