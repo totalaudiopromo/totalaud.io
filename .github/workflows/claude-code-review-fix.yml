@@ -114,21 +114,28 @@ jobs:
 
             // Skip if it's just a summary or approval
             const lowerReviewBody = (reviewBody || '').toLowerCase();
-            const isActionable = lowerReviewBody.includes('suggestion') ||
-                                 lowerReviewBody.includes('consider') ||
-                                 lowerReviewBody.includes('should') ||
-                                 lowerReviewBody.includes('could') ||
-                                 lowerReviewBody.includes('fix') ||
-                                 lowerReviewBody.includes('change') ||
-                                 lowerReviewBody.includes('update') ||
-                                 lowerReviewBody.includes('replace') ||
-                                 lowerReviewBody.includes('remove') ||
-                                 lowerReviewBody.includes('add') ||
-                                 lowerReviewBody.includes('missing') ||
-                                 lowerReviewBody.includes('error') ||
-                                 lowerReviewBody.includes('warning') ||
-                                 lowerReviewBody.includes('issue') ||
-                                 isInlineSuggestion;
+
+            // Strong action keywords
+            const hasStrongKeyword = lowerReviewBody.includes('suggest') ||
+                                   lowerReviewBody.includes('should') ||
+                                   lowerReviewBody.includes('fix') ||
+                                   lowerReviewBody.includes('replace') ||
+                                   lowerReviewBody.includes('remove') ||
+                                   lowerReviewBody.includes('change') ||
+                                   lowerReviewBody.includes('update') ||
+                                   lowerReviewBody.includes('missing') ||
+                                   lowerReviewBody.includes('add');
+
+            // Negative patterns (summaries, approvals)
+            const isSummaryOrApproval = lowerReviewBody.includes('summary') ||
+                                       lowerReviewBody.includes('approved') ||
+                                       lowerReviewBody.includes('looks good') ||
+                                       lowerReviewBody.includes('lgtm') ||
+                                       lowerReviewBody.includes('thank you');
+
+            // isActionable is true if we have a strong keyword and NO negative pattern,
+            // or if it's an explicit inline suggestion
+            const isActionable = (hasStrongKeyword && !isSummaryOrApproval) || isInlineSuggestion;
 
             core.setOutput('review_body', reviewBody);
             core.setOutput('file_path', filePath);

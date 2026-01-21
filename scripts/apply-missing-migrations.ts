@@ -2,7 +2,7 @@ import { createAdminClient } from './config'
 import fs from 'fs'
 import path from 'path'
 
-const supabase = createAdminClient()
+
 
 /**
  * Migration directories to search for .sql files
@@ -127,6 +127,7 @@ function splitSqlStatements(sql: string): string[] {
 }
 
 async function main() {
+  const supabase = createAdminClient()
   const migrations: string[] = []
 
   for (const dir of MIGRATION_DIRS) {
