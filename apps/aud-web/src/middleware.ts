@@ -36,7 +36,8 @@ if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY
 }
 
 // Routes that should redirect to coming soon (unless preview access)
-const GATED_ROUTES = ['/workspace', '/login', '/signup', '/onboarding']
+// NOTE: Empty for launch (was gating /workspace, /login, etc.)
+const GATED_ROUTES: string[] = [] // ['/workspace', '/login', '/signup', '/onboarding']
 
 /**
  * Check if preview access should be granted or route should be gated

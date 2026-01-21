@@ -26,6 +26,8 @@ export function WaitlistForm() {
 
   const formId = env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
   const apiKey = env.NEXT_PUBLIC_CONVERTKIT_API_KEY
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -40,29 +42,49 @@ export function WaitlistForm() {
     setErrorMessage('')
 
     try {
-      // ConvertKit form submission
-      // If no form ID, simulate success for development
-      if (!formId) {
-        console.log('[WaitlistForm] No CONVERTKIT_FORM_ID set, simulating success')
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setFormState('success')
-        return
+      const supabaseAvailable = Boolean(supabaseUrl && supabaseAnonKey)
+      let supabaseSucceeded = false
+
+      if (supabaseAvailable) {
+        const response = await fetch(`${supabaseUrl}/functions/v1/waitlist-signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${supabaseAnonKey}`,
+            apikey: supabaseAnonKey || '',
+          },
+          body: JSON.stringify({
+            email,
+            source: 'landing_page',
+          }),
+        })
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}))
+          throw new Error(payload.error || 'Failed to join waitlist')
+        }
+
+        supabaseSucceeded = true
       }
 
-      // Kit API v4 endpoint - uses X-Kit-Api-Key header
-      const response = await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Kit-Api-Key': apiKey || '',
-        },
-        body: JSON.stringify({
-          email_address: email,
-        }),
-      })
+      if (formId) {
+        const kitResponse = await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Kit-Api-Key': apiKey || '',
+          },
+          body: JSON.stringify({
+            email_address: email,
+          }),
+        })
 
-      if (!response.ok) {
-        throw new Error('Failed to subscribe')
+        if (!kitResponse.ok && !supabaseSucceeded) {
+          throw new Error('Failed to subscribe')
+        }
+      } else if (!supabaseSucceeded) {
+        console.log('[WaitlistForm] No CONVERTKIT_FORM_ID set, simulating success')
+        await new Promise((resolve) => setTimeout(resolve, 1000))
       }
 
       setFormState('success')

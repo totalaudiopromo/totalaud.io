@@ -585,8 +585,8 @@ export function ComingSoonLanding() {
           </div>
         </motion.section>
 
-        {/* Pricing link */}
-        <motion.div
+        {/* Pricing link - Hidden for soft launch */}
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.2 }}
@@ -621,7 +621,7 @@ export function ComingSoonLanding() {
               →
             </motion.span>
           </Link>
-        </motion.div>
+        </motion.div> */}
       </main>
 
       {/* Footer */}
