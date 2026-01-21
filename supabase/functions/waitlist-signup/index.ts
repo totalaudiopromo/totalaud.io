@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -56,7 +56,10 @@ Deno.serve(async (req) => {
   });
 
   if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    // Log the real error server-side for debugging
+    console.error("Waitlist signup error:", error);
+    // Return a generic message to avoid exposing internal details
+    return new Response(JSON.stringify({ error: "An error occurred while processing your request" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

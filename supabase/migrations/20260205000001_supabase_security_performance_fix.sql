@@ -869,17 +869,12 @@ BEGIN
       EXECUTE format('DROP POLICY IF EXISTS %I ON public.report_shares', r.policyname);
     END LOOP;
 
-    CREATE POLICY "Users can view accessible report shares" ON public.report_shares
+    -- Only allow owner to SELECT - no token-based enumeration via RLS
+    CREATE POLICY "Users can view own report shares" ON public.report_shares
       FOR SELECT
-      USING (
-        user_id = (select auth.uid())
-        OR (
-          token IS NOT NULL
-          AND (expires_at IS NULL OR expires_at > now())
-        )
-      );
-    COMMENT ON POLICY "Users can view accessible report shares" ON public.report_shares IS
-      'Allow owners to view their shares and anyone to access valid tokens.';
+      USING (user_id = (select auth.uid()));
+    COMMENT ON POLICY "Users can view own report shares" ON public.report_shares IS
+      'Allow owners to view their shares. Token-based access must use get_report_share_by_token function.';
 
     CREATE POLICY "Users can create own report shares" ON public.report_shares
       FOR INSERT
@@ -901,6 +896,37 @@ BEGIN
       'Allow users to delete their report shares.';
   END IF;
 END $$;
+
+-- =====================================================
+-- SECURITY DEFINER function for token-based access
+-- This bypasses RLS to look up shares by token with proper validation
+-- =====================================================
+CREATE OR REPLACE FUNCTION public.get_report_share_by_token(p_token text)
+RETURNS SETOF public.report_shares
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  -- Validate token is provided
+  IF p_token IS NULL OR p_token = '' THEN
+    RETURN;
+  END IF;
+
+  -- Return the matching share only if token is valid and not expired
+  RETURN QUERY
+  SELECT *
+  FROM public.report_shares
+  WHERE token = p_token
+    AND (expires_at IS NULL OR expires_at > now());
+END;
+$$;
+
+COMMENT ON FUNCTION public.get_report_share_by_token(text) IS
+  'Securely retrieve a report share by token. Bypasses RLS with explicit validation and expiration checks.';
+
+-- Grant execute to authenticated and anonymous users for public share access
+GRANT EXECUTE ON FUNCTION public.get_report_share_by_token(text) TO authenticated, anon;
 
 -- =====================================================
 -- Consolidate RLS: user_cohorts
