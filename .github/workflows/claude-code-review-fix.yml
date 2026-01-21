@@ -117,12 +117,17 @@ jobs:
 
             // Strong action keywords
             const hasStrongKeyword = lowerReviewBody.includes('suggest') ||
+                                   lowerReviewBody.includes('consider') ||
                                    lowerReviewBody.includes('should') ||
+                                   lowerReviewBody.includes('could') ||
                                    lowerReviewBody.includes('fix') ||
                                    lowerReviewBody.includes('replace') ||
                                    lowerReviewBody.includes('remove') ||
                                    lowerReviewBody.includes('change') ||
                                    lowerReviewBody.includes('update') ||
+                                   lowerReviewBody.includes('error') ||
+                                   lowerReviewBody.includes('warning') ||
+                                   lowerReviewBody.includes('issue') ||
                                    lowerReviewBody.includes('missing') ||
                                    lowerReviewBody.includes('add');
 
