@@ -45,16 +45,19 @@ const PHASE_INFO: Record<string, { label: string; description: string }> = {
   },
 }
 
-// Mode labels
-const MODE_LABELS: Record<CoachingMode, { label: string; icon: string; description: string }> = {
+// Mode labels - using SVG icons instead of emojis
+const MODE_LABELS: Record<
+  CoachingMode,
+  { label: string; iconType: 'bolt' | 'target'; description: string }
+> = {
   quick: {
     label: 'Quick Tips',
-    icon: '⚡',
+    iconType: 'bolt',
     description: 'Fast, actionable feedback',
   },
   guided: {
     label: 'Deep Dive',
-    icon: '🎯',
+    iconType: 'target',
     description: 'Guided coaching conversation',
   },
 }
@@ -208,8 +211,18 @@ export function CoachingSession() {
                   className="w-full p-4 rounded-xl bg-[#161A1D] border border-white/5 hover:border-ta-cyan/30 hover:shadow-[0_0_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 text-left group"
                 >
                   <div className="flex items-center gap-3 mb-1">
-                    <span className="text-lg" aria-hidden="true">
-                      {info.icon}
+                    <span className="w-5 h-5 text-ta-cyan" aria-hidden="true">
+                      {info.iconType === 'bolt' ? (
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <circle cx="12" cy="12" r="6" />
+                          <circle cx="12" cy="12" r="2" />
+                        </svg>
+                      )}
                     </span>
                     <span className="text-sm font-medium text-ta-white group-hover:text-white">
                       {info.label}

@@ -16,6 +16,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
 import { SocialProof } from './SocialProof'
+import { JourneyGallery } from './JourneyGallery'
 
 // How it works steps - Vision aligned
 const HOW_IT_WORKS = [
@@ -746,63 +747,8 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Built from experience section */}
-        <section
-          style={{
-            padding: '80px 24px',
-            textAlign: 'center',
-            maxWidth: '700px',
-            margin: '0 auto',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{
-              padding: '40px',
-              background: 'rgba(58, 169, 190, 0.05)',
-              border: '1px solid rgba(58, 169, 190, 0.15)',
-              borderRadius: '20px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '20px',
-                fontWeight: 600,
-                color: '#3AA9BE',
-                marginBottom: '20px',
-                letterSpacing: '-0.02em',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              Built by someone who's been on every side of this
-            </h2>
-            <p
-              style={{
-                fontSize: '16px',
-                lineHeight: 1.8,
-                color: 'rgba(255, 255, 255, 0.85)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              From early-morning listening sessions, to bands, DJing, producing, radio, and music PR
-              — totalaud.io is built from lived experience.
-            </p>
-            <p
-              style={{
-                fontSize: '16px',
-                lineHeight: 1.8,
-                color: 'rgba(255, 255, 255, 0.7)',
-                marginTop: '16px',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              It exists to explain the things no one explained before.
-            </p>
-          </motion.div>
-        </section>
+        {/* Journey Gallery Section */}
+        <JourneyGallery />
 
         {/* Social Proof Section */}
         <SocialProof />

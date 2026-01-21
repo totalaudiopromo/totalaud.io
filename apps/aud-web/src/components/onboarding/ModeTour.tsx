@@ -32,6 +32,11 @@ interface ModeTourProps {
 const TOUR_CONTENT: Record<WorkspaceMode, TourStep[]> = {
   ideas: [
     {
+      title: 'Your Navigation',
+      description:
+        'Look for the glowing button in the bottom-left corner. This opens your navigation menu where you can switch between Ideas, Scout, Timeline, and Pitch modes.',
+    },
+    {
       title: 'Welcome to Ideas',
       description:
         'This is your creative space. Capture lyrics, melodies, marketing ideas, or anything that sparks inspiration.',

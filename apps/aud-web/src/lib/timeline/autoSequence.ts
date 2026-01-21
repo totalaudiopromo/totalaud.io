@@ -54,7 +54,7 @@ const RELEASE_SEQUENCE: SequenceTemplate[] = [
   {
     offsetDays: 0,
     lane: 'release',
-    title: 'Release Day! 🎉',
+    title: 'Release Day!',
     description: 'Single drops on all platforms',
   },
   {

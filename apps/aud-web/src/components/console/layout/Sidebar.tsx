@@ -20,6 +20,8 @@ interface NavItem {
   name: string
   href: string
   icon: React.ComponentType<{ className?: string }>
+  /** Mark item as "Coming Soon" - disabled with badge */
+  comingSoon?: boolean
 }
 
 interface NavSection {
@@ -45,11 +47,11 @@ const navigation: NavSection[] = [
     ],
   },
   {
-    title: 'intelligence',
+    title: 'profile',
     items: [
       { name: 'identity', href: '/console/identity', icon: UserCircleIcon },
-      { name: 'threads', href: '/console/threads', icon: ClockIcon },
-      { name: 'automations', href: '/console/automations', icon: BoltIcon },
+      { name: 'threads', href: '/console/threads', icon: ClockIcon, comingSoon: true },
+      { name: 'automations', href: '/console/automations', icon: BoltIcon, comingSoon: true },
     ],
   },
 ]
@@ -100,6 +102,23 @@ export function Sidebar() {
             <div className="space-y-1">
               {section.items.map((item) => {
                 const active = isActive(item.href)
+
+                // Handle "coming soon" items
+                if (item.comingSoon) {
+                  return (
+                    <div
+                      key={item.href}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium lowercase text-ta-grey/50 cursor-not-allowed"
+                    >
+                      <item.icon className="w-5 h-5" />
+                      {item.name}
+                      <span className="ml-auto text-[10px] uppercase tracking-wider text-ta-grey/40 bg-ta-grey/10 px-2 py-0.5 rounded">
+                        Soon
+                      </span>
+                    </div>
+                  )
+                }
+
                 return (
                   <Link
                     key={item.href}
