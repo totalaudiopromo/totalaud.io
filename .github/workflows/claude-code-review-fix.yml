@@ -113,20 +113,21 @@ jobs:
             }
 
             // Skip if it's just a summary or approval
-            const isActionable = reviewBody.includes('suggestion') ||
-                                 reviewBody.includes('consider') ||
-                                 reviewBody.includes('should') ||
-                                 reviewBody.includes('could') ||
-                                 reviewBody.includes('fix') ||
-                                 reviewBody.includes('change') ||
-                                 reviewBody.includes('update') ||
-                                 reviewBody.includes('replace') ||
-                                 reviewBody.includes('remove') ||
-                                 reviewBody.includes('add') ||
-                                 reviewBody.includes('missing') ||
-                                 reviewBody.includes('error') ||
-                                 reviewBody.includes('warning') ||
-                                 reviewBody.includes('issue') ||
+            const lowerReviewBody = (reviewBody || '').toLowerCase();
+            const isActionable = lowerReviewBody.includes('suggestion') ||
+                                 lowerReviewBody.includes('consider') ||
+                                 lowerReviewBody.includes('should') ||
+                                 lowerReviewBody.includes('could') ||
+                                 lowerReviewBody.includes('fix') ||
+                                 lowerReviewBody.includes('change') ||
+                                 lowerReviewBody.includes('update') ||
+                                 lowerReviewBody.includes('replace') ||
+                                 lowerReviewBody.includes('remove') ||
+                                 lowerReviewBody.includes('add') ||
+                                 lowerReviewBody.includes('missing') ||
+                                 lowerReviewBody.includes('error') ||
+                                 lowerReviewBody.includes('warning') ||
+                                 lowerReviewBody.includes('issue') ||
                                  isInlineSuggestion;
 
             core.setOutput('review_body', reviewBody);
@@ -138,12 +139,6 @@ jobs:
             core.setOutput('is_actionable', isActionable);
 
             return { reviewBody, filePath, lineNumber, isInlineSuggestion, suggestionCode, isActionable };
-
-      - name: Skip non-actionable comments
-        if: steps.context.outputs.is_actionable != 'true'
-        run: |
-          echo "Skipping non-actionable CodeRabbit comment (likely a summary or approval)"
-          exit 0
 
       - name: Run Claude Code to apply fixes
         if: steps.context.outputs.is_actionable == 'true'
@@ -253,11 +248,12 @@ jobs:
     name: Manual Claude fix request
 
     if: |
+      github.event.comment != null &&
+      github.event.comment.user != null &&
       github.event.comment.user.login != 'coderabbitai' &&
-      github.event.review.user.login != 'coderabbitai' &&
       github.event.comment.user.login != 'coderabbitai[bot]' &&
-      github.event.review.user.login != 'coderabbitai[bot]' &&
-      (contains(github.event.comment.body, '@claude') || contains(github.event.comment.body, 'claude fix'))
+      (github.event.review == null || (github.event.review.user != null && github.event.review.user.login != 'coderabbitai' && github.event.review.user.login != 'coderabbitai[bot]')) &&
+      (github.event.comment != null && (contains(github.event.comment.body, '@claude') || contains(github.event.comment.body, 'claude fix')))
 
     runs-on: ubuntu-latest
     permissions:
@@ -266,11 +262,27 @@ jobs:
       issues: write
 
     steps:
+      - name: Get PR details for issue_comment events
+        id: pr_details
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            core.setOutput('head_ref', pr.head.ref);
+            return pr.head.ref;
+
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
+          ref: ${{ steps.pr_details.outputs.head_ref || github.event.pull_request.head.ref || github.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -296,8 +308,8 @@ jobs:
 
             ${{ github.event.comment.body }}
 
-            File: ${{ github.event.comment.path }}
-            Line: ${{ github.event.comment.line }}
+            File: ${{ github.event.comment.path || 'N/A' }}
+            Line: ${{ github.event.comment.line || 'N/A' }}
 
             Project: totalaud.io (Next.js 15, TypeScript, Tailwind, Framer Motion)
             Use British English spelling.

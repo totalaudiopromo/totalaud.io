@@ -2,6 +2,10 @@ import { createAdminClient } from './config'
 
 const supabase = createAdminClient()
 
+interface TableMetadata {
+  table_name: string
+}
+
 async function listTables() {
   console.log('🔍 Fetching tables via get_tables RPC...')
   const { data, error } = await supabase.rpc('get_tables')
@@ -23,7 +27,11 @@ async function listTables() {
       )
       process.exit(1)
     }
-    console.log('✅ Tables found via fallback:', tables.map((t: any) => t.table_name).join(', '))
+    const typedTables = tables as TableMetadata[]
+    console.log(
+      '✅ Tables found via fallback:',
+      typedTables.map((t: TableMetadata) => t.table_name).join(', ')
+    )
   } else {
     console.log('✅ Tables:', data)
   }

@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useThemeAudio } from '@/hooks/useThemeAudio'
 import { useXPWindowStore } from './state/xpWindowStore'
 
+import { logger } from '@/lib/logger'
+
 interface XPStartMenuProps {
   isOpen: boolean
   onClose: () => void
@@ -25,8 +27,7 @@ export function XPStartMenu({ isOpen, onClose }: XPStartMenuProps) {
   const handleShutDown = () => {
     // Placeholder behaviour for now
 
-
-    console.log('[XP] Shut Down triggered')
+    logger.scope('XPStartMenu').info('Shut Down triggered')
     play('click')
     onClose()
   }

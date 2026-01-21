@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_SERVICE_KEY, createAdminClient } from './config'
+import { createAdminClient } from './config'
 import crypto from 'crypto'
 
 const supabase = createAdminClient()

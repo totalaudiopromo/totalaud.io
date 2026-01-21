@@ -21,6 +21,9 @@ import {
   CalendarIcon,
   DocumentTextIcon,
   XMarkIcon,
+  SparklesIcon,
+  ClockIcon,
+  BoltIcon,
 } from '@heroicons/react/24/outline'
 import { useSidebarStore } from '@/stores/useSidebarStore'
 
@@ -39,7 +42,10 @@ interface NavSection {
 const navigation: NavSection[] = [
   {
     title: 'overview',
-    items: [{ name: 'dashboard', href: '/console', icon: HomeIcon }],
+    items: [
+      { name: 'dashboard', href: '/console', icon: HomeIcon },
+      { name: 'insights', href: '/console/insights', icon: SparklesIcon },
+    ],
   },
   {
     title: 'workspace',
@@ -52,7 +58,11 @@ const navigation: NavSection[] = [
   },
   {
     title: 'profile',
-    items: [{ name: 'identity', href: '/console/identity', icon: UserCircleIcon }],
+    items: [
+      { name: 'identity', href: '/console/identity', icon: UserCircleIcon },
+      { name: 'threads', href: '/console/threads', icon: ClockIcon, comingSoon: true },
+      { name: 'automations', href: '/console/automations', icon: BoltIcon, comingSoon: true },
+    ],
   },
 ]
 
