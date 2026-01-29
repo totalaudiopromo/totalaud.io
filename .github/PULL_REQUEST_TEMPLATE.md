@@ -25,22 +25,10 @@
 
 ---
 
-## 🤖 Automated Review & Fix
+## 🤖 Automated Fix
 
-**How it works:**
-
-1. You push a PR
-2. CodeRabbit reviews and posts comments
-3. If CodeRabbit requests changes → Claude auto-fixes and commits
-4. If CodeRabbit posts inline suggestions → Claude applies them automatically
-5. You just review Claude's fixes and merge
-
-No manual tagging required for CodeRabbit issues.
-
-### Manual Commands (for non-CodeRabbit comments)
+To request Claude to fix something, tag `@claude` or write `claude fix` in any PR comment.
 
 | Command | Description |
 |---------|-------------|
 | `@claude fix this` | Ask Claude to fix a specific issue |
-| `@coderabbitai review` | Request a fresh CodeRabbit review |
-| `@coderabbitai summary` | Generate a PR summary |
