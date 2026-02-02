@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
 
         const { data: assets, error } = await supabase
           .from('artist_assets')
-          .select('*')
+          .select('id, kind, title, url, is_public, byte_size, mime_type, created_at')
           .eq('user_id', resolvedUserId)
           .eq('kind', 'document')
           .order('created_at', { ascending: false })

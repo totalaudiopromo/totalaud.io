@@ -127,7 +127,9 @@ async function fetchOutreachLogs(
     // Query outreach logs for this campaign
     const { data: logs, error } = await supabase
       .from('campaign_outreach_logs')
-      .select('*')
+      .select(
+        'id, contact_id, contact_name, message_preview, asset_ids, sent_at, status, created_at'
+      )
       .eq('user_id', userId)
       .eq('campaign_id', campaignId)
       .order('sent_at', { ascending: false })
