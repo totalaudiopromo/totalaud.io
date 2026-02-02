@@ -23,15 +23,14 @@ import { NextRequest, NextResponse } from 'next/server'
 // Coming Soon / Preview Access Configuration
 // ============================================================================
 
-// Default preview key used if env var not set (should be changed in production)
-const DEFAULT_PREVIEW_KEY = 'totalaud-preview-2025'
-const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY || DEFAULT_PREVIEW_KEY
+// Preview access key — MUST be set via environment variable
+// No default fallback to prevent accidental bypass in production
+const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY
 const PREVIEW_COOKIE = 'totalaud_preview_access'
 
-// Log warning if using default preview key in production
-if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY) {
-  console.warn(
-    '[Middleware] Warning: Using default PREVIEW_ACCESS_KEY. Set PREVIEW_ACCESS_KEY env var for production.'
+if (!PREVIEW_KEY && process.env.NODE_ENV === 'production') {
+  console.error(
+    '[Middleware] CRITICAL: PREVIEW_ACCESS_KEY is not set. Preview access is disabled in production.'
   )
 }
 
@@ -48,9 +47,9 @@ function checkPreviewAccess(request: NextRequest): {
 } {
   const { pathname, searchParams } = request.nextUrl
 
-  // Check for preview key in URL
+  // Check for preview key in URL (only if PREVIEW_KEY is configured)
   const previewParam = searchParams.get('preview')
-  if (previewParam === PREVIEW_KEY) {
+  if (PREVIEW_KEY && previewParam === PREVIEW_KEY) {
     return { shouldGate: false, setPreviewCookie: true }
   }
 

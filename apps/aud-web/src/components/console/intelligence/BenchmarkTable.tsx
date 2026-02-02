@@ -21,8 +21,8 @@ export function BenchmarkTable({ artistComparisons, insights }: BenchmarkTablePr
       <Card>
         <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">workspace insights</h3>
         <ul className="space-y-2">
-          {insights.map((insight, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-ta-white">
+          {insights.map((insight) => (
+            <li key={insight} className="flex items-start gap-2 text-sm text-ta-white">
               <span className="text-ta-cyan">→</span>
               <span className="lowercase">{insight}</span>
             </li>

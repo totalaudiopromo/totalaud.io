@@ -5,9 +5,9 @@
 /* Base styles for the app */
 :root {
   color-scheme: dark;
-  --accent-primary: #3AA9BE;
+  --accent-primary: #3aa9be;
   --accent-glow: rgba(58, 169, 190, 0.4);
-  --celebration-purple: #8B5CF6;
+  --celebration-purple: #8b5cf6;
 
   /* Standard easings */
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -51,7 +51,6 @@ svg {
 
 /* Gentle glow pulse */
 @keyframes gentle-glow {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 var(--accent-glow);
@@ -77,7 +76,6 @@ svg {
 
 /* Soft pulse for loading states */
 @keyframes pulse-soft {
-
   0%,
   100% {
     opacity: 1;
@@ -90,7 +88,6 @@ svg {
 
 /* Typing dots animation */
 @keyframes typing-dot {
-
   0%,
   20% {
     opacity: 0.2;
@@ -122,7 +119,6 @@ svg {
 
 /* Subtle float animation */
 @keyframes subtle-float {
-
   0%,
   100% {
     transform: translateY(0);
@@ -176,10 +172,12 @@ svg {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.03) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -224,7 +222,9 @@ svg {
 
 /* Card hover lift effect */
 .card-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .card-lift:hover {
@@ -311,7 +311,7 @@ svg {
 .empty-state-title {
   font-size: 18px;
   font-weight: 600;
-  color: #F7F8F9;
+  color: #f7f8f9;
   margin: 0;
 }
 
@@ -320,6 +320,42 @@ svg {
   color: rgba(247, 248, 249, 0.6);
   max-width: 280px;
   line-height: 1.5;
+}
+
+/* ============================================
+   Reduced Motion (Accessibility — WCAG 2.3.3)
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-celebrate,
+  .animate-glow,
+  .animate-slide-up,
+  .animate-pulse-soft,
+  .animate-shimmer,
+  .animate-float,
+  .empty-state-icon {
+    animation: none !important;
+  }
+
+  .btn-glow:hover,
+  .card-lift:hover,
+  .hover-scale:hover {
+    transform: none !important;
+  }
+
+  .typing-indicator span {
+    animation: none !important;
+    opacity: 0.6;
+  }
 }
 
 /* ============================================
