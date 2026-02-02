@@ -424,9 +424,9 @@ export function TimelineCanvas() {
               display: 'flex',
             }}
           >
-            {timeColumns.map((column, i) => (
+            {timeColumns.map((column) => (
               <div
-                key={i}
+                key={column.getTime()}
                 style={{
                   width: columnWidth,
                   flexShrink: 0,

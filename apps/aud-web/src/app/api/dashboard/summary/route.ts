@@ -51,7 +51,9 @@ export async function GET(req: NextRequest) {
     // Fetch metrics for the period
     const { data: metrics, error: metricsError } = await supabase
       .from('campaign_dashboard_metrics')
-      .select('*')
+      .select(
+        'id, views, downloads, shares, engagement_score, period_start, period_end, created_at'
+      )
       .eq('campaign_id', campaignId)
       .eq('user_id', session.user.id)
       .gte('period_start', periodStart.toISOString())

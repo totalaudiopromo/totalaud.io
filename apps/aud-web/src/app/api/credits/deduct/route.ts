@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
@@ -18,10 +19,10 @@ const log = logger.scope('CreditsDeductAPI')
 // Types
 // ============================================================================
 
-interface DeductCreditsBody {
-  opportunityId: string
-  opportunityName?: string
-}
+const deductCreditsSchema = z.object({
+  opportunityId: z.string().min(1, 'Opportunity ID is required'),
+  opportunityName: z.string().optional(),
+})
 
 interface DeductCreditsResponse {
   success: boolean
@@ -54,16 +55,19 @@ export async function POST(request: NextRequest): Promise<NextResponse<DeductCre
       )
     }
 
-    // Parse body
-    const body: DeductCreditsBody = await request.json()
-    const { opportunityId, opportunityName } = body
-
-    if (!opportunityId) {
+    // Parse and validate body
+    const parseResult = deductCreditsSchema.safeParse(await request.json())
+    if (!parseResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Opportunity ID required', code: 'MISSING_ID' },
+        {
+          success: false,
+          error: parseResult.error.issues[0]?.message || 'Invalid request',
+          code: 'VALIDATION_ERROR',
+        },
         { status: 400 }
       )
     }
+    const { opportunityId, opportunityName } = parseResult.data
 
     // Call the deduct_credits function
     // Note: deduct_credits function added in migration 20251228100000

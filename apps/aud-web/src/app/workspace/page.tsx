@@ -27,6 +27,7 @@ import { SidebarToggle } from '@/components/workspace/SidebarToggle'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 import { TipBanner, ModeTour } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
+import { CheckoutToast } from '@/components/workspace/CheckoutToast'
 
 // Dynamic imports for code splitting - each mode loads only when needed
 const IdeasCanvas = dynamic(
@@ -428,178 +429,31 @@ function WorkspaceContent() {
         }
       `}</style>
 
-      {/* Checkout Success Celebration Toast */}
-      <AnimatePresence>
-        {showCheckoutSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{
-              position: 'fixed',
-              bottom: 80,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              padding: '16px 24px',
-              backgroundColor: 'rgba(34, 197, 94, 0.15)',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-              borderRadius: 12,
-              backdropFilter: 'blur(12px)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              zIndex: 100,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            <span
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#22c55e',
-              }}
-            >
-              ✓
-            </span>
-            <div>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#22c55e',
-                  margin: 0,
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                Welcome to Pro!
-              </p>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  margin: '4px 0 0 0',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                Your subscription is now active. Enjoy unlimited access!
-              </p>
-            </div>
-            <button
-              onClick={() => setShowCheckoutSuccess(false)}
-              style={{
-                marginLeft: 8,
-                padding: 4,
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderRadius: 4,
-                cursor: 'pointer',
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontSize: 16,
-                lineHeight: 1,
-              }}
-            >
-              ✕
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Checkout Toasts */}
+      <CheckoutToast
+        show={showCheckoutSuccess}
+        onClose={() => setShowCheckoutSuccess(false)}
+        variant="success"
+        title="Welcome to Pro!"
+      >
+        Your subscription is now active. Enjoy unlimited access!
+      </CheckoutToast>
 
-      {/* Checkout Error/Cancelled Toast */}
-      <AnimatePresence>
-        {showCheckoutError && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{
-              position: 'fixed',
-              bottom: 80,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              padding: '16px 24px',
-              backgroundColor: 'rgba(251, 191, 36, 0.15)',
-              border: '1px solid rgba(251, 191, 36, 0.3)',
-              borderRadius: 12,
-              backdropFilter: 'blur(12px)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              zIndex: 100,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            <span
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FBBF24',
-                fontSize: 18,
-                fontWeight: 'bold',
-              }}
-            >
-              !
-            </span>
-            <div>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#FBBF24',
-                  margin: 0,
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                Checkout not completed
-              </p>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  margin: '4px 0 0 0',
-                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                }}
-              >
-                You can upgrade anytime from{' '}
-                <Link href="/settings" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
-                  Settings
-                </Link>{' '}
-                or{' '}
-                <Link href="/pricing" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
-                  Pricing
-                </Link>
-              </p>
-            </div>
-            <button
-              onClick={() => setShowCheckoutError(false)}
-              style={{
-                marginLeft: 8,
-                padding: 4,
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderRadius: 4,
-                cursor: 'pointer',
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontSize: 16,
-                lineHeight: 1,
-              }}
-            >
-              ✕
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CheckoutToast
+        show={showCheckoutError}
+        onClose={() => setShowCheckoutError(false)}
+        variant="error"
+        title="Checkout not completed"
+      >
+        You can upgrade anytime from{' '}
+        <Link href="/settings" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
+          Settings
+        </Link>{' '}
+        or{' '}
+        <Link href="/pricing" style={{ color: '#3AA9BE', textDecoration: 'underline' }}>
+          Pricing
+        </Link>
+      </CheckoutToast>
     </div>
   )
 }

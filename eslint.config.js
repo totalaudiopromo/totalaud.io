@@ -80,19 +80,26 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'off',
+      // Type safety — warn to surface issues without breaking builds during migration
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-wrapper-object-types': 'warn',
+      '@typescript-eslint/no-unsafe-function-type': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      // Keep these off — they add noise without safety value
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/ban-types': 'off',
-      '@typescript-eslint/no-wrapper-object-types': 'off',
-      '@typescript-eslint/no-unsafe-function-type': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
+      // React
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'no-console': 'off',
-      'no-case-declarations': 'off',
-      'no-undef': 'off',
+      // Code quality
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-case-declarations': 'warn',
+      'no-undef': 'off', // TypeScript handles this
     },
     settings: {
       react: {

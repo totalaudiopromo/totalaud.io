@@ -16,6 +16,9 @@
 import { useState, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { env } from '@/lib/env'
+import { logger } from '@/lib/logger'
+
+const log = logger.scope('WaitlistForm')
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -43,7 +46,7 @@ export function WaitlistForm() {
       // ConvertKit form submission
       // If no form ID, simulate success for development
       if (!formId) {
-        console.log('[WaitlistForm] No CONVERTKIT_FORM_ID set, simulating success')
+        log.debug('No CONVERTKIT_FORM_ID set, simulating success')
         await new Promise((resolve) => setTimeout(resolve, 1000))
         setFormState('success')
         return

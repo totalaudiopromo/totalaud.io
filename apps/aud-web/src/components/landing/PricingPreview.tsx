@@ -179,9 +179,9 @@ function PricingTier({
           marginBottom: '28px',
         }}
       >
-        {features.map((feature, index) => (
+        {features.map((feature) => (
           <li
-            key={index}
+            key={feature.text}
             style={{
               display: 'flex',
               alignItems: 'flex-start',

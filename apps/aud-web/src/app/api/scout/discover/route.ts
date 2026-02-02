@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import {
   extractEmailsFromHtml,
   verifyEmailsBatchFromSource,
@@ -20,6 +21,7 @@ import {
   extractDomainFromUrl,
   determineOutletType,
 } from '@/lib/discovery'
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('Scout Discovery')
@@ -53,21 +55,34 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    const { url } = await request.json()
+    // Require authentication
+    const supabase = await createRouteSupabaseClient()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-    if (!url || typeof url !== 'string') {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 })
+    if (sessionError || !session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Validate URL
-    let parsedUrl: URL
-    try {
-      parsedUrl = new URL(url)
-      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-        throw new Error('Invalid protocol')
-      }
-    } catch {
-      return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
+    const discoverSchema = z.object({
+      url: z.string().url('Invalid URL format'),
+    })
+
+    const parseResult = discoverSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'URL is required' },
+        { status: 400 }
+      )
+    }
+    const { url } = parseResult.data
+
+    // Validate protocol
+    const parsedUrl = new URL(url)
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return NextResponse.json({ error: 'Only HTTP and HTTPS URLs are supported' }, { status: 400 })
     }
 
     const sourceDomain = extractDomainFromUrl(url)

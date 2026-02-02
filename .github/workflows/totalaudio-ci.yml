@@ -36,7 +36,6 @@ jobs:
 
       - name: Test
         run: pnpm test -- --runInBand
-        continue-on-error: true
 
       - name: Build (monorepo aware)
         env:
