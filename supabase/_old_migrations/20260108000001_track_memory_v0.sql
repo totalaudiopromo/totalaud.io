@@ -17,8 +17,8 @@
 
 CREATE TABLE IF NOT EXISTS track_memory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  track_id UUID NOT NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  track_id UUID NOT NULL REFERENCES artist_assets(id) ON DELETE CASCADE,
   
   -- Canonical intent (the most recent explicit intent statement)
   canonical_intent TEXT,
@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS track_memory (
   -- Unique constraint: one memory record per user per track
   CONSTRAINT track_memory_unique_track UNIQUE (user_id, track_id)
 );
+
+-- Constraint names for easier reference if needed later
+-- track_memory_user_fk -> user_id
+-- track_memory_track_fk -> track_id
 
 -- Note: idx_track_memory_user_track not needed - covered by track_memory_unique_track constraint
 
@@ -150,6 +154,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS track_memory_updated_at_trigger ON track_memory;
 CREATE TRIGGER track_memory_updated_at_trigger
   BEFORE UPDATE ON track_memory
   FOR EACH ROW

@@ -29,7 +29,7 @@ export default async function Image() {
           position: 'relative',
         }}
       >
-        {/* Glow Effects */}
+        {/* Glow Effects - Satori friendly radial gradients */}
         <div
           style={{
             position: 'absolute',
@@ -37,8 +37,7 @@ export default async function Image() {
             right: '-100px',
             width: '600px',
             height: '600px',
-            background: 'rgba(58, 169, 190, 0.15)',
-            filter: 'blur(120px)',
+            background: 'radial-gradient(circle, rgba(58, 169, 190, 0.15) 0%, transparent 70%)',
             borderRadius: '50%',
           }}
         />
@@ -49,8 +48,7 @@ export default async function Image() {
             left: '-100px',
             width: '600px',
             height: '600px',
-            background: 'rgba(58, 169, 190, 0.1)',
-            filter: 'blur(120px)',
+            background: 'radial-gradient(circle, rgba(58, 169, 190, 0.1) 0%, transparent 70%)',
             borderRadius: '50%',
           }}
         />
@@ -90,20 +88,26 @@ export default async function Image() {
               />
             </div>
 
-            <h1
-              style={{
-                fontSize: '80px',
-                fontWeight: 600,
-                letterSpacing: '-0.03em',
-                margin: 0,
-                padding: 0,
-                background: 'linear-gradient(to right, #fff, #9CA3AF)',
-                backgroundClip: 'text',
-                color: 'transparent',
-              }}
-            >
-              totalaud.io
-            </h1>
+            {/* Satori friendly gradient text via SVG */}
+            <svg width="420" height="90" viewBox="0 0 420 90" style={{ margin: 0, padding: 0 }}>
+              <defs>
+                <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#fff" />
+                  <stop offset="100%" stopColor="#9CA3AF" />
+                </linearGradient>
+              </defs>
+              <text
+                x="0"
+                y="75"
+                fontSize="80"
+                fontWeight="600"
+                letterSpacing="-0.03em"
+                fill="url(#textGradient)"
+                style={{ fontFamily: 'monospace' }}
+              >
+                totalaud.io
+              </text>
+            </svg>
           </div>
 
           <p
@@ -117,7 +121,7 @@ export default async function Image() {
               margin: '20px 0 0',
             }}
           >
-            One calm workspace for everything that matter to independent artists.
+            One calm workspace for everything that matters to independent artists.
           </p>
 
           <div

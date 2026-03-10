@@ -345,7 +345,7 @@ export default async function LocationPage({ params }: PageProps) {
                   fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 }}
               >
-                📻 {station}
+                <span aria-hidden="true">📻</span> {station}
               </li>
             ))}
           </ul>
@@ -415,6 +415,7 @@ export default async function LocationPage({ params }: PageProps) {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                   style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }}
                 >
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />

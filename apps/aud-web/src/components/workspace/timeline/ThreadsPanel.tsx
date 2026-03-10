@@ -60,6 +60,11 @@ const THREAD_TYPES: {
   },
 ]
 
+// Helper for exhaustiveness checking
+function assertUnreachable(x: never): never {
+  throw new Error(`Exhaustiveness check failed: ${x}`)
+}
+
 // Helper to render thread type icons as SVG
 function ThreadIcon({
   type,
@@ -118,6 +123,8 @@ function ThreadIcon({
           <line x1="6" y1="20" x2="6" y2="14" />
         </svg>
       )
+    default:
+      return assertUnreachable(type)
   }
 }
 
