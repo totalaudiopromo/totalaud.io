@@ -29,7 +29,11 @@ const PREVIEW_KEY = process.env.PREVIEW_ACCESS_KEY || DEFAULT_PREVIEW_KEY
 const PREVIEW_COOKIE = 'totalaud_preview_access'
 
 // Log warning if using default preview key in production
-if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY) {
+if (process.env.NODE_ENV === 'production' && !process.env.PREVIEW_ACCESS_KEY) {
+  console.warn(
+    '[Middleware] Warning: PREVIEW_ACCESS_KEY is missing in production. Using default preview key.'
+  )
+} else if (process.env.NODE_ENV === 'production' && PREVIEW_KEY === DEFAULT_PREVIEW_KEY) {
   console.warn(
     '[Middleware] Warning: Using default PREVIEW_ACCESS_KEY. Set PREVIEW_ACCESS_KEY env var for production.'
   )
@@ -175,7 +179,15 @@ export function middleware(request: NextRequest) {
   // ========================================
   // Coming Soon / Preview Access Check
   // ========================================
-  // App is launched! Gate removed.
+  
+  const { shouldGate, setPreviewCookie } = checkPreviewAccess(request)
+  
+  if (shouldGate) {
+    // Redirect gated routes to the landing page if no preview access
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
 
   // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)
   const ip =
@@ -227,7 +239,17 @@ export function middleware(request: NextRequest) {
   }
 
   // For non-API routes, just add security headers
-  const response = NextResponse.next()
+  let response = NextResponse.next()
+  
+  if (setPreviewCookie) {
+    response.cookies.set(PREVIEW_COOKIE, 'true', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
+  }
+
   for (const [key, value] of Object.entries(securityHeaders)) {
     response.headers.set(key, value)
   }

@@ -80,7 +80,7 @@ interface IdeasState {
   setSearchQuery: (query: string) => void
   setSortMode: (mode: SortMode) => void
   setViewMode: (mode: ViewMode) => void
-  initStarterIdeas: () => void
+  initStarterIdeas: (context?: { goal?: string | null; genre?: string | null }) => void
   dismissStarterIdeas: () => Promise<void>
 
   // Sync actions
@@ -367,11 +367,29 @@ export const useIdeasStore = create<IdeasState>()(
 
       // ========== Starter Ideas ==========
 
-      initStarterIdeas: () => {
+      initStarterIdeas: (context) => {
         const state = get()
         if (!state.hasSeenStarters && state.cards.length === 0) {
           const now = new Date().toISOString()
-          const starterCards: IdeaCard[] = STARTER_IDEAS.map((idea, index) => ({
+          let starterContents: Omit<IdeaCard, 'id' | 'createdAt' | 'updatedAt'>[] = []
+          
+          if (context?.goal === 'playlisting') {
+            starterContents = [
+              { content: 'Research Spotify editorial playlists for ' + (context.genre || 'my genre'), tag: 'promo', position: { x: 120, y: 150 }, isStarter: true },
+              { content: 'Prepare playlist pitching list', tag: 'promo', position: { x: 420, y: 120 }, isStarter: true },
+              { content: 'Create pre-save campaign', tag: 'content', position: { x: 260, y: 350 }, isStarter: true },
+            ]
+          } else if (context?.goal === 'audience growth') {
+            starterContents = [
+              { content: 'Plan weekly content series', tag: 'content', position: { x: 120, y: 150 }, isStarter: true },
+              { content: 'Identify community platforms for ' + (context.genre || 'fans'), tag: 'brand', position: { x: 420, y: 120 }, isStarter: true },
+              { content: 'Launch behind-the-scenes posts', tag: 'content', position: { x: 260, y: 350 }, isStarter: true },
+            ]
+          } else {
+            starterContents = STARTER_IDEAS
+          }
+
+          const starterCards: IdeaCard[] = starterContents.map((idea, index) => ({
             ...idea,
             id: `starter-${index}`,
             createdAt: now,
