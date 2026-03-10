@@ -14,22 +14,34 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
 const log = logger.scope('TelemetryBatchAPI')
 
-interface TelemetryEvent {
-  event_type: 'save' | 'share' | 'agentRun' | 'tabChange' | 'idle' | 'sessionStart' | 'sessionEnd'
-  duration_ms?: number
-  metadata?: Record<string, unknown>
-  created_at?: string // ISO timestamp
-}
+const telemetryEventSchema = z.object({
+  event_type: z.enum([
+    'save',
+    'share',
+    'agentRun',
+    'tabChange',
+    'idle',
+    'sessionStart',
+    'sessionEnd',
+  ]),
+  duration_ms: z.number().optional(),
+  metadata: z.record(z.unknown()).optional(),
+  created_at: z.string().datetime().optional(),
+})
 
-interface BatchRequest {
-  campaignId?: string
-  events: TelemetryEvent[]
-}
+const batchRequestSchema = z.object({
+  campaignId: z.string().optional(),
+  events: z
+    .array(telemetryEventSchema)
+    .min(1, 'Events array cannot be empty')
+    .max(50, 'Maximum 50 events per batch'),
+})
 
 interface BatchResponse {
   success: boolean
@@ -42,44 +54,14 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    const body = (await request.json()) as BatchRequest
-    const { campaignId, events } = body
-
-    // Validation
-    if (!events || !Array.isArray(events)) {
-      return NextResponse.json({ error: 'Events array is required' }, { status: 400 })
+    const parseResult = batchRequestSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid request' },
+        { status: 400 }
+      )
     }
-
-    if (events.length === 0) {
-      return NextResponse.json({ error: 'Events array cannot be empty' }, { status: 400 })
-    }
-
-    if (events.length > 50) {
-      return NextResponse.json({ error: 'Maximum 50 events per batch' }, { status: 400 })
-    }
-
-    // Validate event structure
-    for (const event of events) {
-      if (!event.event_type) {
-        return NextResponse.json({ error: 'All events must have event_type' }, { status: 400 })
-      }
-
-      const validEventTypes = [
-        'save',
-        'share',
-        'agentRun',
-        'tabChange',
-        'idle',
-        'sessionStart',
-        'sessionEnd',
-      ]
-      if (!validEventTypes.includes(event.event_type)) {
-        return NextResponse.json(
-          { error: `Invalid event_type: ${event.event_type}` },
-          { status: 400 }
-        )
-      }
-    }
+    const { campaignId, events } = parseResult.data
 
     const supabase = await createRouteSupabaseClient()
     const {

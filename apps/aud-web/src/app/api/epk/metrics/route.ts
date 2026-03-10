@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     // Fetch analytics data
     const { data: analytics, error: analyticsError } = await supabase
       .from('epk_analytics')
-      .select('*')
+      .select('id, event_type, region, device, timestamp')
       .eq('epk_id', epkId)
       .eq('user_id', session.user.id)
       .order('timestamp', { ascending: false })

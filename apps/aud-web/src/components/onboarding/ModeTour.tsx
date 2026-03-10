@@ -238,9 +238,9 @@ export function ModeTour({ mode, onComplete }: ModeTourProps) {
             >
               {/* Step indicators */}
               <div style={{ display: 'flex', gap: 6 }}>
-                {steps.map((_, index) => (
+                {steps.map((step, index) => (
                   <div
-                    key={index}
+                    key={step.title}
                     style={{
                       width: 8,
                       height: 8,

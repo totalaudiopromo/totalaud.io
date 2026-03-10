@@ -309,9 +309,9 @@ export function CoachingSession() {
             <div className="space-y-2">
               <p className="text-[10px] text-ta-grey px-1">Quick start:</p>
               <div className="flex flex-wrap gap-2">
-                {quickActions.map((action, i) => (
+                {quickActions.map((action) => (
                   <motion.button
-                    key={i}
+                    key={action.message}
                     onClick={() => handleQuickActionClick(action.message)}
                     disabled={isLoading}
                     whileHover={{ scale: 1.02 }}
@@ -424,9 +424,9 @@ function MessageBubble({
           <div className="mt-3 pt-3 border-t border-white/5">
             <p className="text-[10px] text-ta-grey mb-2">Suggested follow-ups:</p>
             <div className="flex flex-wrap gap-1.5">
-              {message.suggestions.map((suggestion, i) => (
+              {message.suggestions.map((suggestion) => (
                 <button
-                  key={i}
+                  key={suggestion}
                   onClick={() => onSuggestionClick(suggestion)}
                   className="px-2 py-1 text-[10px] text-ta-cyan bg-ta-cyan/5 hover:bg-ta-cyan/10 border border-ta-cyan/20 rounded-full transition-colors"
                 >

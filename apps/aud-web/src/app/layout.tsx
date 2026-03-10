@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const organizationSchema = generateOrganizationSchema()
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable}`}>
       <FlowCoreThemeProvider bodyClassName={geistSans.className}>
         <JsonLd schema={organizationSchema} id="organization-schema" />
         <QueryProvider>{children}</QueryProvider>

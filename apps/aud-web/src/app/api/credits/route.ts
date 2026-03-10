@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
@@ -120,12 +121,12 @@ export async function GET(
 // POST - Add credits (for purchases/bonuses)
 // ============================================================================
 
-interface AddCreditsBody {
-  amountPence: number
-  transactionType: 'purchase' | 'refund' | 'bonus'
-  description?: string
-  metadata?: Record<string, unknown>
-}
+const addCreditsSchema = z.object({
+  amountPence: z.number().positive('Amount must be positive'),
+  transactionType: z.enum(['purchase', 'refund', 'bonus']),
+  description: z.string().optional(),
+  metadata: z.record(z.unknown()).optional(),
+})
 
 export async function POST(
   request: NextRequest
@@ -146,21 +147,15 @@ export async function POST(
       )
     }
 
-    // Parse body
-    const body: AddCreditsBody = await request.json()
-    const { amountPence, transactionType, description, metadata } = body
-
-    // Validate
-    if (!amountPence || amountPence <= 0) {
-      return NextResponse.json({ success: false, error: 'Invalid amount' }, { status: 400 })
-    }
-
-    if (!['purchase', 'refund', 'bonus'].includes(transactionType)) {
+    // Parse and validate body
+    const parseResult = addCreditsSchema.safeParse(await request.json())
+    if (!parseResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Invalid transaction type' },
+        { success: false, error: parseResult.error.issues[0]?.message || 'Invalid request' },
         { status: 400 }
       )
     }
+    const { amountPence, transactionType, description, metadata } = parseResult.data
 
     // Call the add_credits function
     // Note: add_credits function added in migration 20251228100000

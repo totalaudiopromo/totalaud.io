@@ -23,6 +23,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import Anthropic from '@anthropic-ai/sdk'
@@ -32,16 +33,21 @@ const log = logger.scope('FlowHubBriefAPI')
 // AI Brief cache duration (4 hours)
 const BRIEF_CACHE_DURATION_MS = 4 * 60 * 60 * 1000
 
+const briefRequestSchema = z.object({
+  period: z.union([z.literal(7), z.literal(30), z.literal(90)]).default(7),
+  force_refresh: z.boolean().default(false),
+})
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { period = 7, force_refresh = false } = body
-
-    // Validate period
-    if (![7, 30, 90].includes(period)) {
-      log.warn('Invalid period parameter', { period })
-      return NextResponse.json({ error: 'period must be 7, 30, or 90' }, { status: 400 })
+    const parseResult = briefRequestSchema.safeParse(await req.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'period must be 7, 30, or 90' },
+        { status: 400 }
+      )
     }
+    const { period, force_refresh } = parseResult.data
 
     const supabase = await createRouteSupabaseClient()
 

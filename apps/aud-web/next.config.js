@@ -3,19 +3,12 @@ const path = require('path')
 const { withSentryConfig } = require('@sentry/nextjs')
 
 const nextConfig = {
-  transpilePackages: [
-    '@total-audio/core-logger',
-    '@total-audio/core-supabase',
-    '@total-audio/core-skills-engine',
-    '@total-audio/ui',
-  ],
+  transpilePackages: ['@total-audio/core-logger', '@total-audio/core-supabase', '@total-audio/ui'],
   typescript: {
-    // Build checks re-enabled after security hardening (December 2025)
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
-    // Build checks re-enabled after security hardening (December 2025)
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   webpack: (config) => {
     // Fix path alias resolution for Vercel builds
