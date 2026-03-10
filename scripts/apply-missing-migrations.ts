@@ -2,8 +2,6 @@ import { createAdminClient } from './config'
 import fs from 'fs'
 import path from 'path'
 
-const supabase = createAdminClient()
-
 /**
  * Migration directories to search for .sql files
  */
@@ -21,17 +19,30 @@ const MIGRATION_DIRS = [
  */
 function splitSqlStatements(sql: string): string[] {
   const statements: string[] = []
-  let currentPosition = 0
+  let currentStatement = ''
   let inString = false
+  let inBlockComment = false
   let dollarQuoteTag: string | null = null
 
   for (let i = 0; i < sql.length; i++) {
     const char = sql[i]
 
+    // Handle Block Comments (/* ... */)
+    if (inBlockComment) {
+      if (char === '*' && sql[i + 1] === '/') {
+        inBlockComment = false
+        i++ // skip the '/'
+      }
+      continue
+    }
+
     // Handle Dollar Quoting ($$ or $tag$)
     if (dollarQuoteTag) {
+      currentStatement += char
       if (char === '$' && sql.startsWith(dollarQuoteTag, i)) {
         i += dollarQuoteTag.length - 1
+        // Add the rest of the tag
+        currentStatement += dollarQuoteTag.substring(1)
         dollarQuoteTag = null
       }
       continue
@@ -39,9 +50,11 @@ function splitSqlStatements(sql: string): string[] {
 
     // Handle Single Quotes ('...')
     if (inString) {
+      currentStatement += char
       if (char === "'") {
         // Check for escaped single quote ('')
         if (sql[i + 1] === "'") {
+          currentStatement += "'"
           i++ // skip next quote
         } else {
           inString = false
@@ -50,9 +63,29 @@ function splitSqlStatements(sql: string): string[] {
       continue
     }
 
-    // Start of String or Dollar Quote
+    // Handle Single-line Comments (--)
+    if (char === '-' && sql[i + 1] === '-') {
+      // Skip until end of line
+      while (i < sql.length && sql[i] !== '\n') {
+        i++
+      }
+      // Preserve newline to maintain statement structure
+      if (i < sql.length) {
+        currentStatement += '\n'
+      }
+      continue
+    }
+
+    // Start of String, Dollar Quote, or Block Comment
     if (char === "'") {
       inString = true
+      currentStatement += char
+      continue
+    }
+
+    if (char === '/' && sql[i + 1] === '*') {
+      inBlockComment = true
+      i++ // skip the '*'
       continue
     }
 
@@ -60,24 +93,31 @@ function splitSqlStatements(sql: string): string[] {
       const match = sql.slice(i).match(/^(\$[a-zA-Z0-9_]*\$)/)
       if (match) {
         dollarQuoteTag = match[0]
+        currentStatement += dollarQuoteTag
         i += dollarQuoteTag.length - 1
         continue
       }
     }
 
-    // Statement Separator
-    if (char === ';') {
-      const statement = sql.substring(currentPosition, i).trim()
-      if (statement && !statement.startsWith('--')) {
-        statements.push(statement)
+    // Handle Statement Separator (Outside of any quotes/comments)
+    if (!inString && !dollarQuoteTag && !inBlockComment) {
+      if (char === ';') {
+        const statement = currentStatement.trim()
+        if (statement) {
+          statements.push(statement)
+        }
+        currentStatement = ''
+        continue
       }
-      currentPosition = i + 1
     }
+
+    // Build current statement
+    currentStatement += char
   }
 
   // Final statement
-  const lastStatement = sql.substring(currentPosition).trim()
-  if (lastStatement && !lastStatement.startsWith('--')) {
+  const lastStatement = currentStatement.trim()
+  if (lastStatement) {
     statements.push(lastStatement)
   }
 
@@ -85,6 +125,7 @@ function splitSqlStatements(sql: string): string[] {
 }
 
 async function main() {
+  const supabase = createAdminClient()
   const migrations: string[] = []
 
   for (const dir of MIGRATION_DIRS) {

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
-const GALLERY_ITEMS = [
+const GALLERY_ITEMS: GalleryItem[] = [
   {
     image: '/images/journey/chris1992.png',
     alt: 'Chris Schofield as a child in 1988, asleep with headphones on',
@@ -123,12 +123,31 @@ export function JourneyGallery() {
         >
           <Link href="/dashboard" className="group">
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="inline-flex items-center gap-3 px-10 py-4 bg-ta-cyan text-ta-black rounded-ta font-bold text-lg hover:bg-ta-cyan/90 transition-all shadow-[0_0_30px_rgba(58,169,190,0.3)] hover:shadow-[0_0_40px_rgba(58,169,190,0.5)]"
+              initial="initial"
+              whileHover="hover"
+              className="inline-flex items-center gap-3 px-10 py-4 bg-ta-cyan text-ta-black rounded-ta font-bold text-lg shadow-[0_0_30px_rgba(58,169,190,0.3)]"
+              variants={{
+                initial: {
+                  backgroundColor: '#3AA9BE',
+                  boxShadow: '0 0 30px rgba(58, 169, 190, 0.3)',
+                  scale: 1,
+                },
+                hover: {
+                  backgroundColor: 'rgba(58, 169, 190, 0.9)',
+                  boxShadow: '0 0 40px rgba(58, 169, 190, 0.5)',
+                  scale: 1.02,
+                },
+              }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             >
               Get Started
-              <svg
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+              <motion.svg
+                variants={{
+                  initial: { x: 0 },
+                  hover: { x: 4 },
+                }}
+                transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="w-5 h-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -139,7 +158,7 @@ export function JourneyGallery() {
                   strokeWidth={2}
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
-              </svg>
+              </motion.svg>
             </motion.div>
           </Link>
 
@@ -170,7 +189,16 @@ export function JourneyGallery() {
   )
 }
 
-function GalleryCard({ item, index }: { item: any; index: number }) {
+interface GalleryItem {
+  year: string
+  label: string
+  description: string
+  image: string
+  alt: string
+  link?: string
+}
+
+function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -199,20 +227,38 @@ function GalleryCard({ item, index }: { item: any; index: number }) {
     y.set(0)
   }
 
-  return (
+  const CardContent = (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{
-        delay: index * 0.08,
-        duration: 0.8,
-        ease: [0.25, 0.1, 0.25, 1],
+      variants={{
+        initial: { opacity: 0, y: 40 },
+        enter: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.24,
+            ease: [0.22, 1, 0.36, 1],
+            delay: index * 0.08,
+          },
+        },
+        hover: {
+          scale: 0.98,
+          borderColor: 'rgba(58, 169, 190, 0.4)',
+          boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+          transition: {
+            duration: 0.24,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
       }}
+      initial="initial"
+      whileInView="enter"
+      whileHover="hover"
+      whileTap={{ scale: 0.96 }}
+      viewport={{ once: true }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group relative flex flex-col bg-ta-panel rounded-ta border border-ta-border hover:border-ta-cyan/40 transition-colors duration-500 overflow-hidden shadow-ta active:scale-[0.98]"
+      className="group relative flex flex-col bg-ta-panel rounded-ta border border-ta-border overflow-hidden shadow-ta h-full"
     >
       <div className="aspect-[4/5] relative overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
         <motion.div
@@ -267,4 +313,20 @@ function GalleryCard({ item, index }: { item: any; index: number }) {
       />
     </motion.div>
   )
+
+  if (item.link) {
+    return (
+      <Link
+        href={item.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`View ${item.label}`}
+        className="h-full block"
+      >
+        {CardContent}
+      </Link>
+    )
+  }
+
+  return CardContent
 }

@@ -18,7 +18,7 @@
  */
 
 import crypto from 'crypto'
-import { createAdminClient, SUPABASE_URL } from './config'
+import { createAdminClient } from './config'
 
 // Check for --skip-db flag
 const skipDb = process.argv.includes('--skip-db')

@@ -174,25 +174,7 @@ export function middleware(request: NextRequest) {
   // ========================================
   // Coming Soon / Preview Access Check
   // ========================================
-  const { shouldGate, setPreviewCookie } = checkPreviewAccess(request)
-
-  // If preview key provided, set cookie and redirect to clean URL
-  if (setPreviewCookie) {
-    const cleanUrl = new URL(pathname, request.url)
-    const response = NextResponse.redirect(cleanUrl)
-    response.cookies.set(PREVIEW_COOKIE, 'true', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
-    return response
-  }
-
-  // If route is gated and no preview access, redirect to home
-  if (shouldGate) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
+  // App is launched! Gate removed.
 
   // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)
   const ip =

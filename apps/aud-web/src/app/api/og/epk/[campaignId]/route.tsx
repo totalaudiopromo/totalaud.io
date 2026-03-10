@@ -62,7 +62,7 @@ export async function GET(
             position: 'relative',
           }}
         >
-          {/* Background Grid Pattern */}
+          {/* Background Grid Pattern - Layered for Satori compatibility */}
           <div
             style={{
               position: 'absolute',
@@ -70,10 +70,19 @@ export async function GET(
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundImage: `
-                linear-gradient(${flowCoreColours.borderGrey} 1px, transparent 1px),
-                linear-gradient(90deg, ${flowCoreColours.borderGrey} 1px, transparent 1px)
-              `,
+              backgroundImage: `linear-gradient(${flowCoreColours.borderGrey} 1px, transparent 1px)`,
+              backgroundSize: '40px 40px',
+              opacity: 0.3,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `linear-gradient(90deg, ${flowCoreColours.borderGrey} 1px, transparent 1px)`,
               backgroundSize: '40px 40px',
               opacity: 0.3,
             }}
@@ -88,7 +97,6 @@ export async function GET(
               justifyContent: 'center',
               padding: '80px',
               textAlign: 'center',
-              zIndex: 1,
             }}
           >
             {/* Campaign Name */}

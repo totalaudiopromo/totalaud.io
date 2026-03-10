@@ -17,7 +17,7 @@
  *   pnpm tsx scripts/seed-opportunities.ts --dry-run
  */
 
-import { createAdminClient, SUPABASE_URL, SUPABASE_SERVICE_KEY } from './config'
+import { createAdminClient } from './config'
 
 // ============================================
 // Configuration
