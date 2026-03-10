@@ -20,6 +20,8 @@ import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { CommandPalette } from '@/components/ui/CommandPalette'
 import { OfflineIndicator } from '@/components/ui/OfflineIndicator'
 import { usePrefetchScout } from '@/hooks/usePrefetchScout'
+import { useWorkspaceBootstrap } from '@/hooks/useWorkspaceBootstrap'
+import { WelcomeOverlay } from '@/components/workspace/WelcomeOverlay'
 
 function OnboardingGate({ children }: { children: ReactNode }) {
   const router = useRouter()
@@ -108,13 +110,17 @@ function OnboardingGate({ children }: { children: ReactNode }) {
 export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   // Phase 2: DESSA Speed Improvement - Pre-fetch Scout opportunities on workspace entry
   usePrefetchScout()
+  const { isBootstrapping } = useWorkspaceBootstrap()
 
   return (
     <TipsProvider>
       <ToastProvider>
         <CommandPalette />
         <OfflineIndicator />
-        <OnboardingGate>{children}</OnboardingGate>
+        <OnboardingGate>
+          <WelcomeOverlay isBootstrapping={isBootstrapping} />
+          {children}
+        </OnboardingGate>
       </ToastProvider>
     </TipsProvider>
   )

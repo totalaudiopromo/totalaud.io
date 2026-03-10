@@ -127,16 +127,12 @@ export function JourneyGallery() {
               whileHover="hover"
               className="inline-flex items-center gap-3 px-10 py-4 bg-ta-cyan text-ta-black rounded-ta font-bold text-lg shadow-[0_0_30px_rgba(58,169,190,0.3)]"
               variants={{
-                initial: {
-                  backgroundColor: '#3AA9BE',
-                  boxShadow: '0 0 30px rgba(58, 169, 190, 0.3)',
-                  scale: 1,
-                },
-                hover: {
-                  backgroundColor: 'rgba(58, 169, 190, 0.9)',
+                initial: { backgroundColor: '#3AA9BE', boxShadow: '0 0 30px rgba(58, 169, 190, 0.3)', scale: 1 },
+                hover: { 
+                  backgroundColor: 'rgba(58, 169, 190, 0.9)', 
                   boxShadow: '0 0 40px rgba(58, 169, 190, 0.5)',
-                  scale: 1.02,
-                },
+                  scale: 1.02 
+                }
               }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -144,7 +140,7 @@ export function JourneyGallery() {
               <motion.svg
                 variants={{
                   initial: { x: 0 },
-                  hover: { x: 4 },
+                  hover: { x: 4 }
                 }}
                 transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
                 className="w-5 h-5"
@@ -231,14 +227,14 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
     <motion.div
       variants={{
         initial: { opacity: 0, y: 40 },
-        enter: {
-          opacity: 1,
+        enter: { 
+          opacity: 1, 
           y: 0,
           transition: {
             duration: 0.24,
             ease: [0.22, 1, 0.36, 1],
             delay: index * 0.08,
-          },
+          }
         },
         hover: {
           scale: 0.98,
@@ -246,9 +242,9 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
           boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
           transition: {
             duration: 0.24,
-            ease: [0.22, 1, 0.36, 1],
-          },
-        },
+            ease: [0.22, 1, 0.36, 1]
+          }
+        }
       }}
       initial="initial"
       whileInView="enter"
@@ -316,10 +312,10 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
 
   if (item.link) {
     return (
-      <Link
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link 
+        href={item.link} 
+        target="_blank" 
+        rel="noopener noreferrer" 
         aria-label={`View ${item.label}`}
         className="h-full block"
       >

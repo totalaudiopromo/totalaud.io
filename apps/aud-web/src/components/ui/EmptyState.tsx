@@ -71,12 +71,12 @@ export const emptyStates = {
   },
   scout: {
     firstTime: {
-      title: 'Discover opportunities',
-      description: 'Browse curated playlists, blogs, radio stations, and press contacts.',
+      title: 'No opportunities',
+      description: 'No opportunities match your current goals.',
     },
     noResults: {
-      title: 'No opportunities found',
-      description: 'Try adjusting your filters or search terms.',
+      title: 'No opportunities',
+      description: 'No opportunities match your current goals.',
     },
     authRequired: {
       title: 'Sign in to explore',
@@ -85,18 +85,18 @@ export const emptyStates = {
   },
   timeline: {
     firstTime: {
-      title: 'Plan your release',
-      description: 'Start with a template or add custom events.',
+      title: 'Your timeline is quiet',
+      description: 'Start planning your next release.',
     },
     noResults: {
-      title: 'Nothing scheduled',
-      description: 'Use Templates to get started quickly.',
+      title: 'Your timeline is quiet',
+      description: 'Start planning your next release.',
     },
   },
   pitch: {
     selectType: {
-      title: 'Choose your pitch type',
-      description: 'Select a template to get started.',
+      title: 'No pitches yet',
+      description: 'Choose an opportunity to write a pitch.',
     },
     noContent: {
       title: 'Start writing',

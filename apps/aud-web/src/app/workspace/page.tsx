@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useIdeasStore } from '@/stores/useIdeasStore'
 import { useWorkspacePreferences } from '@/hooks/useWorkspacePreferences'
 import { useAuth } from '@/hooks/useAuth'
+import { useSyncToasts } from '@/hooks/useSyncToasts'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
@@ -167,6 +168,9 @@ function WorkspaceContent() {
   // Sync workspace preferences to Supabase
   useWorkspacePreferences()
 
+  // Watch for Supabase sync status and show toast
+  useSyncToasts()
+
   // Auth-aware data loading
   useEffect(() => {
     if (authLoading) return // Wait for auth check to complete
@@ -285,7 +289,7 @@ function WorkspaceContent() {
         }}
       >
         {/* Logo - horizontal lockup with wordmark */}
-        <Link href="/console" className="flex items-center gap-2 flex-shrink-0">
+        <Link href="/workspace" className="flex items-center gap-2 flex-shrink-0">
           <Image
             src="/brand/svg/lockup-horizontal-cyan.svg"
             alt="totalaud.io"

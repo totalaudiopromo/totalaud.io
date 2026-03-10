@@ -106,6 +106,9 @@ export function UserMenu() {
 
             {/* Menu items */}
             <div className="py-1.5">
+              <MenuLink href="/console" onClick={() => setIsOpen(false)}>
+                Dashboard
+              </MenuLink>
               <MenuLink href="/settings" onClick={() => setIsOpen(false)}>
                 Settings
               </MenuLink>

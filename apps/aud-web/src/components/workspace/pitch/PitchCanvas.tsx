@@ -159,10 +159,10 @@ export function PitchCanvas() {
           className="text-center mb-10"
         >
           <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
-            Choose your pitch type
+            No pitches yet.
           </h2>
           <p className="text-sm text-ta-grey max-w-md mx-auto">
-            Select a template to get started. You'll have help shaping your pitch along the way.
+            Choose an opportunity to write a pitch.
           </p>
         </motion.div>
 
@@ -294,7 +294,7 @@ export function PitchCanvas() {
 
                 {/* Coach action buttons */}
                 <div
-                  className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  className="flex flex-wrap items-center gap-2 transition-opacity duration-200"
                   role="group"
                   aria-label="Pitch refinement actions"
                 >
