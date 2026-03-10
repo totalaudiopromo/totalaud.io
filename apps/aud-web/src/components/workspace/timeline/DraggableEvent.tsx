@@ -94,7 +94,7 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
           textOverflow: 'ellipsis',
           display: 'block',
           width: '100%',
-          maxWidth: '116px', // 140 - 24px padding
+          maxWidth: '114px', // 140 - 24px padding - 2px border
         }}
       >
         {event.title}

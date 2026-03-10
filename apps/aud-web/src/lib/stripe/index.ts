@@ -17,7 +17,7 @@ export function getStripe(): Stripe {
       throw new Error('Stripe is not configured. STRIPE_SECRET_KEY is required.')
     }
     _stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-12-15.clover',
+      apiVersion: '2026-02-25.clover',
       typescript: true,
     })
   }

@@ -35,9 +35,14 @@ function useOnboardingRedirect() {
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      // Load profile from Supabase to ensure we have the latest status
-      await loadFromSupabase()
-      setIsChecking(false)
+      try {
+        // Load profile from Supabase to ensure we have the latest status
+        await loadFromSupabase()
+      } catch (error) {
+        log.error('Failed to load onboarding status', error)
+      } finally {
+        setIsChecking(false)
+      }
     }
     checkOnboardingStatus()
   }, [loadFromSupabase])
@@ -99,6 +104,16 @@ export function OnboardingChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   // Show loading state while checking onboarding status
   if (isChecking || shouldRedirect) {
     return (
@@ -115,16 +130,6 @@ export function OnboardingChat() {
       </div>
     )
   }
-
-  // Auto-scroll to bottom on new messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  // Focus input on mount
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
 
   // Handle completion and redirect
   const handleComplete = useCallback(

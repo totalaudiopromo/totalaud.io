@@ -1,662 +1,313 @@
-#!/usr/bin/env npx tsx
-/**
- * Seed Opportunities Script
- *
- * Sources:
- * 1. Airtable "Radio Contacts" table (primary source)
- * 2. Curated manual entries for playlists/blogs
- * 3. Optional: Perplexity research for additional opportunities
- *
- * GDPR Compliance:
- * - Only imports corporate email addresses
- * - Tracks source URL for each record
- * - Sets verification timestamp
- *
- * Usage:
- *   pnpm tsx scripts/seed-opportunities.ts
- *   pnpm tsx scripts/seed-opportunities.ts --dry-run
- */
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
 
-import { createAdminClient, SUPABASE_URL, SUPABASE_SERVICE_KEY } from './config'
+dotenv.config({ path: '.env.local' })
 
-// ============================================
-// Configuration
-// ============================================
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appx7uTQWRH8cIC20'
-const AIRTABLE_TABLE_ID = process.env.AIRTABLE_TABLE_ID || 'tblcZnUsB4Swyjcip' // Radio Contacts
-
-// Validate required env vars
-if (!AIRTABLE_API_KEY) {
-  throw new Error('AIRTABLE_API_KEY environment variable is required')
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local')
+  process.exit(1)
 }
 
-// ============================================
-// Types
-// ============================================
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-interface AirtableRecord {
-  id: string
-  fields: {
-    Email?: string
-    'First Name'?: string
-    'Last Name'?: string
-    Station?: string
-    Genres?: string[] | string
-    'Region / Country'?: string
-    'Station Tier'?: string
-    'Enrichment Quality'?: string
-    'Enrichment Notes'?: string
-    Show?: string
-    Status?: string
-  }
-}
-
-interface Opportunity {
-  name: string
-  type: 'radio' | 'playlist' | 'blog' | 'curator' | 'press'
-  genres: string[]
-  vibes: string[]
-  url?: string
-  contact_email?: string
-  contact_name?: string
-  audience_size: 'small' | 'medium' | 'large'
-  importance: number
-  description?: string
-  source: 'curated' | 'airtable' | 'manual' | 'research'
-  source_url?: string
-  last_verified_at: string
-  is_active: boolean
-}
-
-// ============================================
-// Utility Functions
-// ============================================
-
-/**
- * Check if email is a corporate/business email (not personal)
- */
-function isCorporateEmail(email: string): boolean {
-  if (!email) return false
-
-  const personalDomains = [
-    'gmail.com',
-    'googlemail.com',
-    'hotmail.com',
-    'hotmail.co.uk',
-    'outlook.com',
-    'live.com',
-    'yahoo.com',
-    'yahoo.co.uk',
-    'icloud.com',
-    'me.com',
-    'aol.com',
-    'protonmail.com',
-    'proton.me',
-    'mail.com',
-    'gmx.com',
-    'ymail.com',
-  ]
-
-  const domain = email.split('@')[1]?.toLowerCase()
-  return domain ? !personalDomains.includes(domain) : false
-}
-
-/**
- * Map Airtable station tier to audience size
- */
-function mapAudienceSize(tier?: string): 'small' | 'medium' | 'large' {
-  if (!tier) return 'medium'
-
-  const tierLower = tier.toLowerCase()
-  if (tierLower.includes('national') || tierLower.includes('premium')) return 'large'
-  if (tierLower.includes('regional')) return 'medium'
-  if (tierLower.includes('community') || tierLower.includes('local')) return 'small'
-
-  return 'medium'
-}
-
-/**
- * Parse genres from Airtable (can be array or comma-separated string)
- */
-function parseGenres(genres?: string[] | string): string[] {
-  if (!genres) return []
-  if (Array.isArray(genres)) return genres.map((g) => g.trim())
-  return genres.split(',').map((g) => g.trim())
-}
-
-/**
- * Infer vibes from genre and enrichment notes
- */
-function inferVibes(genres: string[], enrichmentNotes?: string): string[] {
-  const vibes: string[] = []
-
-  const genreStr = genres.join(' ').toLowerCase()
-  const notes = (enrichmentNotes || '').toLowerCase()
-
-  if (genreStr.includes('ambient') || genreStr.includes('chill') || notes.includes('relaxed')) {
-    vibes.push('Chill')
-  }
-  if (genreStr.includes('punk') || genreStr.includes('rock') || genreStr.includes('metal')) {
-    vibes.push('Energetic')
-  }
-  if (genreStr.includes('electronic') || genreStr.includes('dance') || genreStr.includes('house')) {
-    vibes.push('Upbeat')
-  }
-  if (genreStr.includes('folk') || genreStr.includes('acoustic') || genreStr.includes('singer')) {
-    vibes.push('Emotional')
-  }
-  if (genreStr.includes('experimental') || notes.includes('experimental')) {
-    vibes.push('Experimental')
-  }
-  if (notes.includes('underground') || notes.includes('indie')) {
-    vibes.push('Underground')
-  }
-
-  return vibes.length > 0 ? vibes : ['Varied']
-}
-
-/**
- * Calculate importance based on enrichment quality and tier
- */
-function calculateImportance(quality?: string, tier?: string): number {
-  let importance = 2 // Default medium
-
-  if (quality === 'High') importance += 2
-  else if (quality === 'Medium') importance += 1
-
-  if (tier?.toLowerCase().includes('national')) importance += 1
-  if (tier?.toLowerCase().includes('premium')) importance += 1
-
-  return Math.min(importance, 5) // Cap at 5
-}
-
-// ============================================
-// Airtable Fetching
-// ============================================
-
-async function fetchAirtableContacts(): Promise<AirtableRecord[]> {
-  console.log('📥 Fetching contacts from Airtable...\n')
-
-  const allRecords: AirtableRecord[] = []
-  let offset: string | undefined
-
-  do {
-    const url = offset
-      ? `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}?offset=${offset}`
-      : `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`
-
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Airtable API error: ${response.status} ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    allRecords.push(...data.records)
-    offset = data.offset
-  } while (offset)
-
-  console.log(`✅ Fetched ${allRecords.length} total contacts from Airtable\n`)
-  return allRecords
-}
-
-/**
- * Filter and transform Airtable records to opportunities
- */
-function processAirtableRecords(records: AirtableRecord[]): Opportunity[] {
-  console.log('🔍 Filtering for high-quality opportunities with corporate emails...\n')
-
-  const opportunities: Opportunity[] = []
-  const seen = new Set<string>()
-
-  for (const record of records) {
-    const { fields } = record
-    const email = fields.Email?.trim()
-    const station = fields.Station?.trim()
-    const quality = fields['Enrichment Quality']
-
-    // Skip if no email, no station name, or personal email
-    if (!email || email === 'no-email' || !station) continue
-    if (!isCorporateEmail(email)) continue
-
-    // Skip duplicates by email
-    if (seen.has(email.toLowerCase())) continue
-    seen.add(email.toLowerCase())
-
-    // Only include High or Medium quality
-    if (quality !== 'High' && quality !== 'Medium') continue
-
-    const genres = parseGenres(fields.Genres)
-    const contactName = [fields['First Name'], fields['Last Name']].filter(Boolean).join(' ').trim()
-
-    const opportunity: Opportunity = {
-      name: station,
-      type: 'radio',
-      genres,
-      vibes: inferVibes(genres, fields['Enrichment Notes']),
-      contact_email: email,
-      contact_name: contactName || undefined,
-      audience_size: mapAudienceSize(fields['Station Tier']),
-      importance: calculateImportance(quality, fields['Station Tier']),
-      description:
-        fields['Enrichment Notes']?.slice(0, 500) ||
-        `${station} - ${fields['Region / Country'] || 'UK'} radio station`,
-      source: 'airtable',
-      source_url: 'https://airtable.com/appx7uTQWRH8cIC20',
-      last_verified_at: new Date().toISOString(),
-      is_active: true,
-    }
-
-    opportunities.push(opportunity)
-  }
-
-  console.log(`✅ Filtered to ${opportunities.length} high-quality radio opportunities\n`)
-  return opportunities
-}
-
-// ============================================
-// Curated Opportunities (Playlists, Blogs, Press)
-// ============================================
-
-const CURATED_OPPORTUNITIES: Opportunity[] = [
-  // UK Radio - Major
+const opportunities = [
   {
-    name: 'BBC Radio 6 Music',
+    name: 'BBC Radio 1 Introducing',
     type: 'radio',
-    genres: ['Alternative', 'Indie', 'Electronic', 'Experimental'],
-    vibes: ['Eclectic', 'Underground'],
-    url: 'https://www.bbc.co.uk/6music',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      "BBC's alternative music station. Key shows include Lauren Laverne, Mary Anne Hobbs, and Gilles Peterson.",
-    source: 'curated',
-    source_url: 'https://www.bbc.co.uk/6music',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'BBC Introducing',
-    type: 'radio',
-    genres: ['All Genres'],
+    genres: ['Electronic', 'Pop', 'Indie', 'Hip Hop'],
     vibes: ['Emerging', 'Fresh'],
+    audience_size: 'huge',
+    description: 'The primary destination for discovering new, unsigned UK talent. Upload your tracks via the Introducing Uploader.',
     url: 'https://www.bbc.co.uk/introducing',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      "BBC's platform for unsigned and emerging artists. Submit via the Uploader for consideration across all BBC stations.",
-    source: 'curated',
-    source_url: 'https://www.bbc.co.uk/introducing',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
   },
-
-  // UK Radio - Independent
   {
-    name: 'NTS Radio',
+    name: 'BBC 6 Music',
     type: 'radio',
-    genres: ['Electronic', 'Experimental', 'World', 'Jazz'],
-    vibes: ['Underground', 'Eclectic', 'Cutting Edge'],
-    url: 'https://www.nts.live',
-    audience_size: 'medium',
-    importance: 4,
-    description:
-      'Independent online radio station broadcasting from London and Manchester. Known for eclectic programming and tastemaker DJs.',
-    source: 'curated',
-    source_url: 'https://www.nts.live',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    genres: ['Alternative', 'Electronic', 'Indie', 'Jazz'],
+    vibes: ['Eclectic', 'Alternative'],
+    audience_size: 'huge',
+    description: 'Alternative music station championing independent and cutting-edge artists.',
+    url: 'https://www.bbc.co.uk/6music',
   },
   {
-    name: 'Soho Radio',
-    type: 'radio',
-    genres: ['Indie', 'Soul', 'Jazz', 'Electronic'],
-    vibes: ['Urban', 'Eclectic'],
-    url: 'https://www.sohoradio.co.uk',
-    audience_size: 'small',
-    importance: 3,
-    description:
-      'London-based community radio station broadcasting from Soho. Strong local following and music industry listeners.',
-    source: 'curated',
-    source_url: 'https://www.sohoradio.co.uk',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'Amazing Radio',
-    type: 'radio',
-    genres: ['Indie', 'Alternative', 'Pop'],
-    vibes: ['Fresh', 'Emerging'],
-    url: 'https://amazingradio.com',
-    contact_email: 'music@amazingradio.com',
-    audience_size: 'medium',
-    importance: 4,
-    description:
-      'UK/US radio station dedicated to new and emerging artists. Known for breaking new acts.',
-    source: 'curated',
-    source_url: 'https://amazingradio.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-
-  // US Radio
-  {
-    name: 'KEXP',
-    type: 'radio',
-    genres: ['Indie', 'Alternative', 'World', 'Electronic'],
-    vibes: ['Eclectic', 'Tastemaker'],
-    url: 'https://www.kexp.org',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      'Seattle-based non-profit radio station. Globally influential tastemaker with live sessions and album premieres.',
-    source: 'curated',
-    source_url: 'https://www.kexp.org',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'KCRW',
-    type: 'radio',
-    genres: ['Indie', 'Electronic', 'World'],
-    vibes: ['Sophisticated', 'Tastemaker'],
-    url: 'https://www.kcrw.com',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      'Los Angeles public radio station. Morning Becomes Eclectic is one of the most influential music shows in the US.',
-    source: 'curated',
-    source_url: 'https://www.kcrw.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-
-  // Music Blogs
-  {
-    name: 'The Line of Best Fit',
-    type: 'blog',
-    genres: ['Indie', 'Alternative', 'Electronic', 'Pop'],
-    vibes: ['Tastemaker', 'Underground'],
-    url: 'https://www.thelineofbestfit.com',
-    contact_email: 'music@thelineofbestfit.com',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      'Leading UK music blog covering indie, alternative, and electronic music. Strong industry influence.',
-    source: 'curated',
-    source_url: 'https://www.thelineofbestfit.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'DIY Magazine',
-    type: 'blog',
-    genres: ['Indie', 'Rock', 'Alternative'],
-    vibes: ['Emerging', 'Underground'],
-    url: 'https://diymag.com',
-    contact_email: 'music@diymag.com',
-    audience_size: 'medium',
-    importance: 4,
-    description:
-      'UK music magazine and website focused on indie and alternative music. Known for breaking new acts.',
-    source: 'curated',
-    source_url: 'https://diymag.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    name: 'NME',
+    type: 'press',
+    genres: ['Indie', 'Rock', 'Pop', 'Alt'],
+    vibes: ['Cultural', 'Trendsetting'],
+    audience_size: 'huge',
+    description: 'Iconic British music journalism platform covering the biggest emerging artists.',
+    url: 'https://www.nme.com',
   },
   {
     name: 'Clash Magazine',
-    type: 'blog',
-    genres: ['Indie', 'Pop', 'Electronic', 'Hip-Hop'],
-    vibes: ['Mainstream', 'Eclectic'],
-    url: 'https://www.clashmusic.com',
-    audience_size: 'medium',
-    importance: 4,
-    description: 'UK music and culture magazine with broad coverage across genres.',
-    source: 'curated',
-    source_url: 'https://www.clashmusic.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'The Quietus',
-    type: 'blog',
-    genres: ['Experimental', 'Indie', 'Electronic', 'Metal'],
-    vibes: ['Experimental', 'Underground', 'Eclectic'],
-    url: 'https://thequietus.com',
-    audience_size: 'medium',
-    importance: 4,
-    description:
-      'Independent UK music and culture website known for in-depth coverage of experimental and underground music.',
-    source: 'curated',
-    source_url: 'https://thequietus.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'Stereogum',
-    type: 'blog',
-    genres: ['Indie', 'Alternative', 'Rock'],
-    vibes: ['Tastemaker', 'Indie'],
-    url: 'https://www.stereogum.com',
+    type: 'press',
+    genres: ['Alternative', 'Electronic', 'Hip Hop', 'R&B'],
+    vibes: ['Fashion-forward', 'Underground'],
     audience_size: 'large',
-    importance: 5,
-    description:
-      'Major US indie music blog with significant influence in the alternative music scene.',
-    source: 'curated',
-    source_url: 'https://www.stereogum.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    description: 'Forward-thinking music and fashion publication.',
+    url: 'https://www.clashmusic.com/',
+  },
+  {
+    name: 'Spotify Fresh Finds',
+    type: 'playlist',
+    genres: ['Pop', 'Indie', 'Electronic'],
+    vibes: ['Fresh', 'Emerging'],
+    audience_size: 'huge',
+    description: 'Editorial playlist focusing on the best independent artists before they break.',
+    url: 'https://artists.spotify.com/pitch',
+  },
+  {
+    name: 'Spotify New Music Friday',
+    type: 'playlist',
+    genres: ['All'],
+    vibes: ['Mainstream', 'Trending'],
+    audience_size: 'huge',
+    description: 'The ultimate editorial playlist for brand new releases.',
+    url: 'https://artists.spotify.com/pitch',
+  },
+  {
+    name: 'KEXP',
+    type: 'radio',
+    genres: ['Alternative', 'Indie', 'World', 'Electronic'],
+    vibes: ['Live', 'Authentic'],
+    audience_size: 'large',
+    description: 'Influential Seattle-based independent radio station and cultural hub.',
+    url: 'https://www.kexp.org/',
+  },
+  {
+    name: 'The Line of Best Fit',
+    type: 'blog',
+    genres: ['Indie', 'Alternative', 'Electronic'],
+    vibes: ['Discovery', 'Critically-acclaimed'],
+    audience_size: 'large',
+    description: 'One of the UK’s biggest independent music discovery sites.',
+    url: 'https://www.thelineofbestfit.com/',
+  },
+  {
+    name: 'DIY Magazine',
+    type: 'press',
+    genres: ['Indie', 'Rock', 'Alternative'],
+    vibes: ['DIY', 'Guitar'],
+    audience_size: 'large',
+    description: 'Fiercely independent music magazine focusing on guitar music and alt-pop.',
+    url: 'https://diymag.com/',
   },
   {
     name: 'Pitchfork',
     type: 'press',
-    genres: ['Indie', 'Electronic', 'Hip-Hop', 'Pop'],
-    vibes: ['Tastemaker', 'Critical'],
-    url: 'https://pitchfork.com',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      'The most influential music publication. A positive review here can launch careers.',
-    source: 'curated',
-    source_url: 'https://pitchfork.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-
-  // Playlist Curators
-  {
-    name: 'Spotify Fresh Finds',
-    type: 'playlist',
-    genres: ['Indie', 'Pop', 'Alternative'],
-    vibes: ['Fresh', 'Emerging'],
-    url: 'https://open.spotify.com/playlist/37i9dQZF1DWWjGdmeTyeJ6',
-    audience_size: 'large',
-    importance: 5,
-    description:
-      "Spotify's editorial playlist for emerging artists. Algorithmic + editorial selection.",
-    source: 'curated',
-    source_url: 'https://artists.spotify.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    genres: ['Alternative', 'Electronic', 'Hip Hop', 'Experimental'],
+    vibes: ['Critical', 'Avant-garde'],
+    audience_size: 'huge',
+    description: 'The most trusted voice in music criticism.',
+    url: 'https://pitchfork.com/',
   },
   {
-    name: 'Spotify POLLEN',
-    type: 'playlist',
-    genres: ['Electronic', 'Indie', 'Alternative'],
-    vibes: ['Experimental', 'Cutting Edge'],
-    url: 'https://open.spotify.com/playlist/37i9dQZF1DWWBHeXOYZf74',
-    audience_size: 'large',
-    importance: 5,
-    description: "Spotify's genre-fluid playlist for boundary-pushing artists.",
-    source: 'curated',
-    source_url: 'https://artists.spotify.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-  {
-    name: 'Apple Music New Music Daily',
-    type: 'playlist',
-    genres: ['Pop', 'Hip-Hop', 'R&B', 'Indie'],
-    vibes: ['Fresh', 'Mainstream'],
-    url: 'https://music.apple.com/playlist/new-music-daily/pl.2b0e6e332fdf4b7a91164da3162127b5',
-    audience_size: 'large',
-    importance: 5,
-    description: "Apple Music's flagship daily new releases playlist.",
-    source: 'curated',
-    source_url: 'https://artists.apple.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
-  },
-
-  // Independent Curators
-  {
-    name: 'Indie Shuffle',
+    name: 'COLORSxSTUDIOS',
     type: 'curator',
-    genres: ['Indie', 'Electronic', 'Folk'],
-    vibes: ['Indie', 'Eclectic'],
-    url: 'https://www.indieshuffle.com',
-    contact_email: 'music@indieshuffle.com',
-    audience_size: 'medium',
-    importance: 3,
-    description: 'Music blog and playlist curator with a focus on indie and electronic music.',
-    source: 'curated',
-    source_url: 'https://www.indieshuffle.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    genres: ['R&B', 'Soul', 'Hip Hop', 'Alternative'],
+    vibes: ['Aesthetic', 'Live'],
+    audience_size: 'huge',
+    description: 'Unique aesthetic music platform showcasing exceptional talent from around the globe.',
+    url: 'https://colorsxstudios.com/',
   },
   {
-    name: 'Hype Machine',
+    name: 'Majestic Casual',
     type: 'curator',
-    genres: ['Indie', 'Electronic', 'Alternative'],
-    vibes: ['Tastemaker', 'Blog Aggregate'],
-    url: 'https://hypem.com',
-    audience_size: 'medium',
-    importance: 4,
-    description: 'Music blog aggregator that tracks what music blogs are posting.',
-    source: 'curated',
-    source_url: 'https://hypem.com',
-    last_verified_at: new Date().toISOString(),
-    is_active: true,
+    genres: ['Electronic', 'R&B', 'Lofi', 'House'],
+    vibes: ['Chill', 'Atmospheric'],
+    audience_size: 'large',
+    description: 'Influential YouTube channel and lifestyle brand focusing on electronic and chill music.',
+    url: 'https://www.majesticcasual.com/',
   },
+  {
+    name: 'Lyrical Lemonade',
+    type: 'curator',
+    genres: ['Hip Hop', 'Rap'],
+    vibes: ['Underground', 'Visual'],
+    audience_size: 'huge',
+    description: 'Premier multimedia company and blog championing the next generation of hip-hop.',
+    url: 'https://lyricallemonade.com/',
+  },
+  {
+    name: 'Gorilla vs. Bear',
+    type: 'blog',
+    genres: ['Indie', 'Electronic', 'Dream Pop'],
+    vibes: ['Nostalgic', 'Ethereal'],
+    audience_size: 'medium',
+    description: 'Texas-based music blog known for its dreamy, nostalgic aesthetic.',
+    url: 'https://www.gorillavsbear.net/',
+  },
+  {
+    name: 'Pigeons & Planes',
+    type: 'blog',
+    genres: ['Hip Hop', 'Pop', 'Alternative'],
+    vibes: ['Discovery', 'Trendsetting'],
+    audience_size: 'large',
+    description: 'Complex-owned platform focused on discovering new artists.',
+    url: 'https://www.complex.com/pigeons-and-planes',
+  },
+  {
+    name: 'Rinse FM',
+    type: 'radio',
+    genres: ['Electronic', 'Dance', 'Grime', 'Garage'],
+    vibes: ['Underground', 'Club'],
+    audience_size: 'large',
+    description: 'Pioneering London community radio station for underground dance music.',
+    url: 'https://rinse.fm/',
+  },
+  {
+    name: 'NTS Radio',
+    type: 'radio',
+    genres: ['Electronic', 'Experimental', 'Ambient', 'World'],
+    vibes: ['Eclectic', 'Avant-garde'],
+    audience_size: 'large',
+    description: 'Global radio platform broadcasting underground music.',
+    url: 'https://www.nts.live/',
+  },
+  {
+    name: 'Resident Advisor',
+    type: 'press',
+    genres: ['Electronic', 'Techno', 'House'],
+    vibes: ['Club', 'Underground'],
+    audience_size: 'huge',
+    description: 'The definitive online music magazine and community platform dedicated to electronic music.',
+    url: 'https://ra.co/',
+  },
+  {
+    name: 'Mixmag',
+    type: 'press',
+    genres: ['Electronic', 'Dance'],
+    vibes: ['Club', 'Mainstream'],
+    audience_size: 'huge',
+    description: 'The world\'s biggest dance music and clubbing destination.',
+    url: 'https://mixmag.net/',
+  },
+  {
+    name: 'Apple Music: New Music Daily',
+    type: 'playlist',
+    genres: ['All'],
+    vibes: ['Mainstream', 'Trending'],
+    audience_size: 'huge',
+    description: 'Apple Music\'s premier playlist for the best new releases.',
+    url: 'https://music.apple.com',
+  },
+  {
+    name: 'HypeMachine',
+    type: 'curator',
+    genres: ['Indie', 'Alternative', 'Electronic'],
+    vibes: ['Blogosphere', 'Discovery'],
+    audience_size: 'large',
+    description: 'Music blog aggregator tracking the most discussed tracks on the internet.',
+    url: 'https://hypem.com/',
+  },
+  {
+    name: 'Under the Radar',
+    type: 'press',
+    genres: ['Indie', 'Alternative'],
+    vibes: ['Print', 'Critical'],
+    audience_size: 'medium',
+    description: 'Indie music magazine with in-depth interviews and reviews.',
+    url: 'https://www.undertheradarmag.com/',
+  },
+  {
+    name: 'Consequence of Sound',
+    type: 'press',
+    genres: ['Alternative', 'Rock', 'Pop', 'Hip Hop'],
+    vibes: ['News', 'Critical'],
+    audience_size: 'large',
+    description: 'Independent publication featuring news, editorials, and reviews.',
+    url: 'https://consequence.net/',
+  },
+  {
+    name: 'FADER',
+    type: 'press',
+    genres: ['Hip Hop', 'R&B', 'Electronic', 'Pop'],
+    vibes: ['Style', 'Culture'],
+    audience_size: 'large',
+    description: 'The definitive voice of emerging music and the lifestyle that surrounds it.',
+    url: 'https://www.thefader.com/',
+  },
+  {
+    name: 'Boiler Room',
+    type: 'curator',
+    genres: ['Electronic', 'Dance', 'Club'],
+    vibes: ['Live', 'Underground'],
+    audience_size: 'huge',
+    description: 'Independent music platform and cultural curator connecting club culture to the wider world.',
+    url: 'https://boilerroom.tv/',
+  },
+  {
+    name: 'Wonderland Magazine',
+    type: 'press',
+    genres: ['Pop', 'R&B', 'Alternative'],
+    vibes: ['Fashion', 'Culture'],
+    audience_size: 'large',
+    description: 'International fashion and culture publication championing new talent.',
+    url: 'https://www.wonderlandmagazine.com/',
+  },
+  {
+    name: 'Earmilk',
+    type: 'blog',
+    genres: ['Electronic', 'Hip Hop', 'Indie'],
+    vibes: ['Discovery', 'Underground'],
+    audience_size: 'medium',
+    description: 'Online music publication covering dance, hip-hop, and indie.',
+    url: 'https://earmilk.com/',
+  },
+  {
+    name: 'This Song Is Sick',
+    type: 'blog',
+    genres: ['Electronic', 'Hip Hop', 'Indie'],
+    vibes: ['Party', 'Upbeat'],
+    audience_size: 'medium',
+    description: 'Music blog connecting people to new music across electronic, hip-hop, and indie.',
+    url: 'https://thissongissick.com/',
+  },
+  {
+    name: 'Stereogum',
+    type: 'blog',
+    genres: ['Indie', 'Rock', 'Alternative'],
+    vibes: ['Critical', 'News'],
+    audience_size: 'large',
+    description: 'Early MP3 blog turned leading music news site focusing on indie and alternative.',
+    url: 'https://www.stereogum.com/',
+  },
+  {
+    name: 'Notion Magazine',
+    type: 'press',
+    genres: ['Pop', 'R&B', 'Alternative'],
+    vibes: ['Culture', 'Fashion'],
+    audience_size: 'medium',
+    description: 'Quarterly printed music and fashion magazine.',
+    url: 'https://notion.online/',
+  }
 ]
 
-// ============================================
-// Supabase Seeding
-// ============================================
-
-async function seedToSupabase(opportunities: Opportunity[], dryRun: boolean): Promise<void> {
-  if (dryRun) {
-    console.log('🧪 DRY RUN - Would insert the following opportunities:\n')
-    opportunities.slice(0, 10).forEach((opp, i) => {
-      console.log(`${i + 1}. [${opp.type}] ${opp.name} (${opp.audience_size})`)
-      console.log(`   Genres: ${opp.genres.join(', ')}`)
-      console.log(`   Email: ${opp.contact_email || 'N/A'}`)
-      console.log('')
-    })
-    if (opportunities.length > 10) {
-      console.log(`... and ${opportunities.length - 10} more\n`)
-    }
-    console.log(`Total: ${opportunities.length} opportunities would be inserted\n`)
-    return
-  }
-
-  console.log('📤 Seeding opportunities to Supabase...\n')
-
-  const supabase = createAdminClient()
-
-  // First, clear existing opportunities (for clean reseed)
-  console.log('🗑️  Clearing existing opportunities...')
-  const { error: deleteError } = await supabase
-    .from('opportunities')
-    .delete()
-    .neq('id', '00000000-0000-0000-0000-000000000000')
-
-  if (deleteError) {
-    console.error('Error clearing opportunities:', deleteError)
-    // Continue anyway - table might be empty
-  }
-
-  // Insert in batches of 50
-  const batchSize = 50
-  let inserted = 0
-
-  for (let i = 0; i < opportunities.length; i += batchSize) {
-    const batch = opportunities.slice(i, i + batchSize)
-
-    const { data, error } = await supabase.from('opportunities').insert(batch).select('id')
-
-    if (error) {
-      console.error(`Error inserting batch ${i / batchSize + 1}:`, error)
-      continue
-    }
-
-    inserted += data?.length || 0
-    console.log(`✅ Inserted batch ${Math.floor(i / batchSize) + 1}: ${data?.length} records`)
-  }
-
-  console.log(`\n🎉 Successfully seeded ${inserted} opportunities!\n`)
-}
-
-// ============================================
-// Main
-// ============================================
-
-async function main(): Promise<void> {
-  console.log('═══════════════════════════════════════════════════════════')
-  console.log('          SCOUT MODE - OPPORTUNITY SEEDER')
-  console.log('═══════════════════════════════════════════════════════════\n')
-
-  const dryRun = process.argv.includes('--dry-run')
-  if (dryRun) {
-    console.log('🧪 Running in DRY RUN mode - no data will be inserted\n')
-  }
+async function seedOpportunities() {
+  console.log('Seeding Scout opportunities...')
 
   try {
-    // 1. Fetch and process Airtable contacts
-    const airtableRecords = await fetchAirtableContacts()
-    const airtableOpportunities = processAirtableRecords(airtableRecords)
-
-    // 2. Combine with curated opportunities
-    const allOpportunities = [...CURATED_OPPORTUNITIES, ...airtableOpportunities]
-
-    // 3. Sort by importance (highest first)
-    allOpportunities.sort((a, b) => b.importance - a.importance)
-
-    // 4. Limit to top 100 for MVP
-    const finalOpportunities = allOpportunities.slice(0, 100)
-
-    console.log('📊 SUMMARY')
-    console.log('═══════════════════════════════════════════════════════════')
-    console.log(`Curated opportunities: ${CURATED_OPPORTUNITIES.length}`)
-    console.log(`Airtable opportunities: ${airtableOpportunities.length}`)
-    console.log(`Total combined: ${allOpportunities.length}`)
-    console.log(`Final selection (top 100): ${finalOpportunities.length}`)
-    console.log('')
-
-    // 5. Show type distribution
-    const byType: Record<string, number> = {}
-    finalOpportunities.forEach((opp) => {
-      byType[opp.type] = (byType[opp.type] || 0) + 1
-    })
-    console.log('By type:')
-    Object.entries(byType).forEach(([type, count]) => {
-      console.log(`  ${type}: ${count}`)
-    })
-    console.log('')
-
-    // 6. Seed to Supabase
-    await seedToSupabase(finalOpportunities, dryRun)
-
-    console.log('✅ Seeding complete!\n')
-  } catch (error) {
-    console.error('❌ Error:', error)
-    process.exit(1)
+    for (const opp of opportunities) {
+      // Use raw SQL / generic insert to skip RLS
+      const { data, error } = await supabase
+        .from('opportunities')
+        .insert(opp)
+        .select()
+      
+      if (error) {
+        console.error(`Failed to insert ${opp.name}:`, error.message)
+      } else {
+        console.log(`✓ Inserted ${opp.name}`)
+      }
+    }
+    
+    console.log('Seed completed successfully.')
+  } catch (err) {
+    console.error('Seed script error:', err)
   }
 }
 
-main()
+seedOpportunities()
