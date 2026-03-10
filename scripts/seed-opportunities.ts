@@ -1,17 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
-import * as dotenv from 'dotenv'
+import { createAdminClient } from './config'
 
-dotenv.config({ path: '.env.local' })
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local')
-  process.exit(1)
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabase = createAdminClient()
 
 const opportunities = [
   {
@@ -292,10 +281,9 @@ async function seedOpportunities() {
   try {
     for (const opp of opportunities) {
       // Use raw SQL / generic insert to skip RLS
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('opportunities')
         .insert(opp)
-        .select()
       
       if (error) {
         console.error(`Failed to insert ${opp.name}:`, error.message)

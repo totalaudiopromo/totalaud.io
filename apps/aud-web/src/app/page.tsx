@@ -9,9 +9,7 @@
  * - Preview users (with cookie) see full LandingPage
  */
 
-import { cookies } from 'next/headers'
 import { LandingPage } from '@/components/landing/LandingPage'
-import { ComingSoonLanding } from '@/components/landing/ComingSoonLanding'
 
 export const metadata = {
   title: 'totalaud.io - Finish better. Release smarter.',
