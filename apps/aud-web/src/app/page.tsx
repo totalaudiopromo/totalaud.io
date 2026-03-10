@@ -25,12 +25,5 @@ export const metadata = {
 }
 
 export default async function Page() {
-  const cookieStore = await cookies()
-  const hasPreviewAccess = cookieStore.get('totalaud_preview_access')?.value === 'true'
-
-  if (hasPreviewAccess) {
-    return <LandingPage />
-  }
-
-  return <ComingSoonLanding />
+  return <LandingPage />
 }
