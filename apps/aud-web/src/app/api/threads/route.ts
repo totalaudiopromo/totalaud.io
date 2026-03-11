@@ -76,7 +76,9 @@ export async function GET() {
     // Type assertion needed until Supabase types are regenerated to include signal_threads
     const threadsResult = await (supabase as any)
       .from('signal_threads')
-      .select('*')
+      .select(
+        'id, user_id, title, thread_type, colour, event_ids, narrative_summary, insights, created_at, updated_at'
+      )
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
 

@@ -14,8 +14,7 @@
 
 'use client'
 
-import { useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -25,23 +24,24 @@ import {
   User,
   MessageSquare,
   CheckCircle,
-  Search,
-  AlertCircle,
-  CreditCard,
   Loader2,
-  ShieldCheck,
 } from 'lucide-react'
 import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import { useCredits } from '@/hooks/useCredits'
 import { useScoutToPitch } from '@/hooks/useScoutToPitch'
-import type { Opportunity, EnrichmentStatus, EnrichedContact } from '@/types/scout'
+import { useTelemetry } from '@/hooks/useTelemetry'
+import type { EnrichmentStatus, EnrichedContact } from '@/types/scout'
 import { TYPE_LABELS, TYPE_COLOURS, AUDIENCE_SIZE_LABELS } from '@/types/scout'
+import { logger } from '@/lib/logger'
+import { ContactEnrichment } from './ContactEnrichment'
+
+const log = logger.scope('OpportunityDetail')
 
 export function OpportunityDetailPanel() {
-  const router = useRouter()
   const { addedToTimeline: showAddedToast, checkAndCelebrate } = useToast()
+  const { track } = useTelemetry()
 
   // Get selected opportunity
   const selectedId = useScoutStore((state) => state.selectedOpportunityId)
@@ -85,6 +85,7 @@ export function OpportunityDetailPanel() {
 
     addFromOpportunity(opportunity, 'post-release')
     markAddedToTimeline(opportunity.id)
+    track('opportunity_add_to_timeline', { opportunityId: opportunity.id, type: opportunity.type })
     showAddedToast()
     checkAndCelebrate('timeline', timelineEvents.length + 1)
   }, [
@@ -95,6 +96,7 @@ export function OpportunityDetailPanel() {
     showAddedToast,
     checkAndCelebrate,
     timelineEvents.length,
+    track,
   ])
 
   const handleCreatePitch = useCallback(() => {
@@ -102,6 +104,42 @@ export function OpportunityDetailPanel() {
     // DESSA Phase 3: Pre-generate pitch from opportunity
     handlePitchOpportunity(opportunity)
   }, [opportunity, handlePitchOpportunity])
+
+  const [isSyncing, setIsSyncing] = useState(false)
+  const handleSyncToTracker = useCallback(async () => {
+    if (!opportunity || isSyncing) return
+
+    setIsSyncing(true)
+    try {
+      track('opportunity_sync_start', { opportunityId: opportunity.id })
+      const response = await fetch('/api/tap/tracker/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opportunityId: opportunity.id,
+          campaignName: `${opportunity.name} Outreach`,
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to sync')
+
+      track('opportunity_sync_success', {
+        opportunityId: opportunity.id,
+        campaignId: data.campaign?.id,
+      })
+      checkAndCelebrate('scout', 1)
+      showAddedToast() // Reuse toast or create new one
+    } catch (error) {
+      log.error('Sync to tracker failed', error)
+      track('opportunity_sync_error', {
+        opportunityId: opportunity.id,
+        error: (error as Error).message,
+      })
+    } finally {
+      setIsSyncing(false)
+    }
+  }, [opportunity, isSyncing, checkAndCelebrate, showAddedToast, track])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -285,139 +323,15 @@ export function OpportunityDetailPanel() {
 
                   {/* Enrichment Section */}
                   {opportunity.contactEmail && (
-                    <div className="mt-3 pt-3 border-t border-white/6">
-                      {/* Idle State - Show validate button */}
-                      {enrichmentStatus === 'idle' && (
-                        <>
-                          {hasSufficientCredits ? (
-                            <button
-                              onClick={handleValidateContact}
-                              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 rounded-lg border border-white/10 hover:border-ta-cyan/30 hover:bg-ta-cyan/5 transition-all text-sm text-white/70 hover:text-white"
-                            >
-                              <Search size={14} />
-                              Validate Contact
-                              <span className="text-white/40">•</span>
-                              <span className="text-ta-cyan">{formatPounds(enrichmentCost)}</span>
-                            </button>
-                          ) : (
-                            <div className="space-y-2">
-                              <button
-                                disabled
-                                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white/3 rounded-lg border border-white/6 text-sm text-white/40 cursor-not-allowed"
-                              >
-                                <Search size={14} />
-                                Validate Contact
-                                <span>•</span>
-                                <span>{formatPounds(enrichmentCost)}</span>
-                              </button>
-                              <p className="text-xs text-white/40 text-center">
-                                No credits available.{' '}
-                                <button
-                                  onClick={() => {
-                                    /* TODO: Navigate to credits purchase */
-                                  }}
-                                  className="text-ta-cyan hover:underline"
-                                >
-                                  Add credits
-                                </button>
-                              </p>
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {/* Loading State */}
-                      {enrichmentStatus === 'loading' && (
-                        <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white/3 rounded-lg border border-white/6 text-sm text-white/50">
-                          <Loader2 size={14} className="animate-spin" />
-                          Validating contact...
-                        </div>
-                      )}
-
-                      {/* Error State */}
-                      {enrichmentStatus === 'error' && (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 px-3 py-2.5 bg-red-500/10 rounded-lg border border-red-500/20 text-sm text-red-400">
-                            <AlertCircle size={14} />
-                            {enrichmentError || 'Validation failed'}
-                          </div>
-                          <button
-                            onClick={handleValidateContact}
-                            className="w-full text-xs text-white/50 hover:text-white transition-colors"
-                          >
-                            Try again
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Success State - Show enrichment results */}
-                      {enrichmentStatus === 'success' && enrichedData && (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-sm text-emerald-400">
-                            <ShieldCheck size={14} />
-                            Contact Validated
-                          </div>
-
-                          {/* Confidence Score */}
-                          {enrichedData.researchConfidence && (
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-white/40">Confidence</span>
-                              <span
-                                className={
-                                  enrichedData.researchConfidence === 'High'
-                                    ? 'text-emerald-400'
-                                    : enrichedData.researchConfidence === 'Medium'
-                                      ? 'text-amber-400'
-                                      : 'text-red-400'
-                                }
-                              >
-                                {enrichedData.researchConfidence}
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Email Validation */}
-                          {enrichedData.emailValidation && (
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-white/40">Email</span>
-                              <span
-                                className={
-                                  enrichedData.emailValidation.isValid
-                                    ? 'text-emerald-400'
-                                    : 'text-red-400'
-                                }
-                              >
-                                {enrichedData.emailValidation.isValid ? 'Verified' : 'Invalid'}
-                                {enrichedData.emailValidation.confidence && (
-                                  <span className="text-white/30 ml-1">
-                                    ({Math.round(enrichedData.emailValidation.confidence * 100)}%)
-                                  </span>
-                                )}
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Contact Intelligence */}
-                          {enrichedData.contactIntelligence && (
-                            <div className="text-xs text-white/50 leading-relaxed mt-2 p-2 bg-white/3 rounded-lg">
-                              {enrichedData.contactIntelligence}
-                            </div>
-                          )}
-
-                          {/* Last Researched */}
-                          {enrichedData.lastResearched && (
-                            <div className="text-xs text-white/30">
-                              Last researched:{' '}
-                              {new Date(enrichedData.lastResearched).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <ContactEnrichment
+                      status={enrichmentStatus}
+                      data={enrichedData}
+                      error={enrichmentError}
+                      cost={enrichmentCost}
+                      hasCredits={hasSufficientCredits}
+                      onValidate={handleValidateContact}
+                      formatPounds={formatPounds}
+                    />
                   )}
                 </div>
               )}
@@ -475,6 +389,19 @@ export function OpportunityDetailPanel() {
                     Add to Timeline
                   </>
                 )}
+              </button>
+
+              <button
+                onClick={handleSyncToTracker}
+                disabled={isSyncing}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 text-white/80 border border-white/10 rounded-xl font-medium text-sm hover:bg-white/10 hover:border-white/20 transition-all"
+              >
+                {isSyncing ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={16} />
+                )}
+                Sync to TAP Tracker
               </button>
 
               {/* Create Pitch */}

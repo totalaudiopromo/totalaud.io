@@ -15,11 +15,13 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
+import { useTelemetry } from '@/hooks/useTelemetry'
 
 const log = logger.scope('Login')
 
 export function LoginForm() {
   const router = useRouter()
+  const { track } = useTelemetry()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -45,8 +47,11 @@ export function LoginForm() {
 
       if (authError) {
         log.error('Auth error', authError)
+        track('login_error', { error: authError.message })
         throw authError
       }
+
+      track('login_success', { userId: data.user?.id })
 
       // Login successful - check if onboarding is completed
       // Fetch user profile to check onboarding status
@@ -428,6 +433,7 @@ export function LoginForm() {
               })
 
               if (error) throw error
+              track('login_google_start')
               // Redirect happens automatically
             } catch (err) {
               log.error('Google Sign In Error', err)

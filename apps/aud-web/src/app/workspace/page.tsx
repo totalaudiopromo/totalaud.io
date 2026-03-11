@@ -29,6 +29,7 @@ import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 import { TipBanner, ModeTour } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { CheckoutToast } from '@/components/workspace/CheckoutToast'
+import { useTelemetry } from '@/hooks/useTelemetry'
 
 // Dynamic imports for code splitting - each mode loads only when needed
 const IdeasCanvas = dynamic(
@@ -92,6 +93,7 @@ const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
 function WorkspaceContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { track } = useTelemetry()
 
   // Get mode from URL or default to 'ideas'
   const modeParam = searchParams?.get('mode') as WorkspaceMode | null
@@ -145,6 +147,7 @@ function WorkspaceContent() {
       const modeConfig = MODES.find((m) => m.key === newMode)
       if (!modeConfig?.available) return
 
+      track('mode_switch', { from: mode, to: newMode, trackId })
       setMode(newMode)
       // Preserve track param when switching modes
       const params = new URLSearchParams({ mode: newMode })

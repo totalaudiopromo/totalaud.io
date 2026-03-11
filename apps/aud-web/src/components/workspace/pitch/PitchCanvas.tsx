@@ -12,11 +12,11 @@
 
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { motion, AnimatePresence } from 'framer-motion'
-import { usePitchStore, type PitchType, type CoachAction } from '@/stores/usePitchStore'
+import { usePitchStore, type CoachAction } from '@/stores/usePitchStore'
 import { useTrackContext } from '@/hooks/useTrackContext'
 import { TAPGenerateModal } from './TAPGenerateModal'
 import { IdentityPanel } from './IdentityPanel'
@@ -24,34 +24,12 @@ import { CoachingSession } from './CoachingSession'
 import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
 import { TypingIndicator } from '@/components/ui/EmptyState'
-import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
-
-import { CopyButton } from '@/components/ui/CopyButton'
-import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
+import { StaggeredEntrance } from '@/components/ui/StaggeredEntrance'
 
 // Pitch template options
-const PITCH_TYPES: { key: PitchType; label: string; description: string }[] = [
-  {
-    key: 'radio',
-    label: 'Radio Pitch',
-    description: 'For BBC Radio 1, 6 Music, specialist shows',
-  },
-  {
-    key: 'press',
-    label: 'Press Release',
-    description: 'For music blogs, magazines, and media outlets',
-  },
-  {
-    key: 'playlist',
-    label: 'Playlist Pitch',
-    description: 'For Spotify editorial and curator submissions',
-  },
-  {
-    key: 'custom',
-    label: 'Custom Pitch',
-    description: 'Start from scratch with helpful prompts',
-  },
-]
+import { PITCH_TYPES } from './PitchUtils'
+import { PitchStepSelection } from './PitchStepSelection'
+import { PitchSection } from './PitchSection'
 
 export function PitchCanvas() {
   const router = useRouter()
@@ -92,7 +70,7 @@ export function PitchCanvas() {
   }, [trackId, setTrackId])
 
   // Get track memory context
-  const { intent, isLoading: isMemoryLoading } = useTrackContext()
+  const { intent } = useTrackContext()
 
   // Gated TAP modal opener
   const handleOpenTAPModal = () => {
@@ -146,59 +124,7 @@ export function PitchCanvas() {
 
   // Template selection view
   if (!currentType) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center min-h-[500px] h-full p-6 overflow-y-auto"
-        role="region"
-        aria-label="Pitch type selection"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-10"
-        >
-          <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
-            No pitches yet.
-          </h2>
-          <p className="text-sm text-ta-grey max-w-md mx-auto">
-            Choose an opportunity to write a pitch.
-          </p>
-        </motion.div>
-
-        <div role="radiogroup" aria-label="Pitch type options">
-          <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-2xl w-full">
-            {PITCH_TYPES.map((type) => (
-              <StaggerItem key={type.key} className="h-full">
-                <motion.button
-                  onClick={() => selectType(type.key)}
-                  aria-label={`${type.label}: ${type.description}`}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group w-full h-full flex flex-col items-start text-left p-6 rounded-xl bg-[#161A1D] border border-white/5 hover:border-ta-cyan/30 hover:shadow-[0_4px_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 relative overflow-hidden"
-                >
-                  {/* Hover Gradient */}
-                  <div
-                    className="absolute inset-0 bg-gradient-to-br from-ta-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    aria-hidden="true"
-                  />
-
-                  <span className="relative z-10 text-base font-semibold text-ta-white group-hover:text-white mb-2 block">
-                    {type.label}
-                  </span>
-                  <span className="relative z-10 text-xs text-ta-grey leading-relaxed">
-                    {type.description}
-                  </span>
-                </motion.button>
-              </StaggerItem>
-            ))}
-          </StaggeredEntrance>
-        </div>
-
-        {/* Cross-mode prompt */}
-        <CrossModePrompt currentMode="pitch" />
-      </div>
-    )
+    return <PitchStepSelection onSelect={selectType} />
   }
 
   // Pitch editor view
@@ -275,74 +201,16 @@ export function PitchCanvas() {
         {/* Sections */}
         <StaggeredEntrance className="flex flex-col gap-6">
           {sections.map((section) => (
-            <StaggerItem
+            <PitchSection
               key={section.id}
-              className={`
-                group rounded-xl border transition-all duration-300 overflow-hidden
-                ${
-                  selectedSectionId === section.id
-                    ? 'bg-[#161A1D]/80 border-ta-cyan/30 shadow-[0_0_20px_-10px_rgba(58,169,190,0.2)]'
-                    : 'bg-transparent border-white/5 hover:border-white/10'
-                }
-              `}
-            >
-              {/* Section header with coach actions */}
-              <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-ta-cyan">{section.title}</span>
-                </div>
-
-                {/* Coach action buttons */}
-                <div
-                  className="flex flex-wrap items-center gap-2 transition-opacity duration-200"
-                  role="group"
-                  aria-label="Pitch refinement actions"
-                >
-                  {section.content && (
-                    <CopyButton
-                      text={section.content}
-                      onCopy={pitchCopied}
-                      className="text-[10px] py-1 px-2 h-auto"
-                    />
-                  )}
-                  {(['improve', 'suggest', 'rewrite'] as CoachAction[]).map((action) => (
-                    <button
-                      key={action}
-                      onClick={() => requestCoach(section.id, action)}
-                      disabled={isCoachLoading}
-                      aria-label={`${action} ${section.title}`}
-                      className="px-2.5 py-1 text-[10px] font-medium text-ta-grey hover:text-white hover:bg-white/10 rounded transition-colors capitalize disabled:opacity-50 disabled:cursor-wait"
-                    >
-                      {action}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Placeholder hint (only when empty) */}
-              {!section.content && (
-                <div
-                  id={`${section.id}-hint`}
-                  className="px-5 py-3 bg-ta-cyan/[0.03] border-b border-ta-cyan/5"
-                >
-                  <span className="text-xs text-ta-cyan/70 italic leading-relaxed">
-                    {section.placeholder}
-                  </span>
-                </div>
-              )}
-
-              {/* Content textarea */}
-              <textarea
-                value={section.content}
-                onChange={(e) => updateSection(section.id, e.target.value)}
-                onFocus={() => selectSection(section.id)}
-                placeholder="Start writing..."
-                aria-label={`${section.title} content`}
-                aria-describedby={!section.content ? `${section.id}-hint` : undefined}
-                className="w-full min-h-[120px] p-5 text-sm leading-relaxed text-ta-white bg-transparent border-none outline-none resize-none placeholder:text-ta-grey/30 focus:bg-white/[0.01] transition-colors"
-                style={{ resize: 'vertical' }}
-              />
-            </StaggerItem>
+              section={section}
+              isSelected={selectedSectionId === section.id}
+              isCoachLoading={isCoachLoading}
+              onSelect={() => selectSection(section.id)}
+              onUpdate={(content) => updateSection(section.id, content)}
+              onCoachAction={(action) => requestCoach(section.id, action)}
+              onCopy={pitchCopied}
+            />
           ))}
         </StaggeredEntrance>
       </div>

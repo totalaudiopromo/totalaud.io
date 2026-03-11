@@ -167,4 +167,14 @@ export const commonSchemas = {
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
     endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   }),
+
+  /** EPK tracking validation */
+  epkTrack: z.object({
+    epkId: z.string().min(1, 'epkId is required'),
+    assetId: z.string().optional(),
+    eventType: z.enum(['view', 'download', 'share']),
+    region: z.string().optional(),
+    device: z.string().optional(),
+    metadata: z.record(z.any()).optional(),
+  }),
 }

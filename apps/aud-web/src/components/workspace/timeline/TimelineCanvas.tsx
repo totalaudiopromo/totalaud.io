@@ -39,70 +39,17 @@ import { ThreadsPanel } from './ThreadsPanel'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
 
-// ============================================================================
-// Helpers
-// ============================================================================
-
-function getWeeksInRange(start: Date, weeks: number): Date[] {
-  const result: Date[] = []
-  const current = new Date(start)
-  for (let i = 0; i < weeks; i++) {
-    result.push(new Date(current))
-    current.setDate(current.getDate() + 7)
-  }
-  return result
-}
-
-function getMonthsInRange(start: Date, months: number): Date[] {
-  const result: Date[] = []
-  const current = new Date(start)
-  // Start from beginning of month
-  current.setDate(1)
-  for (let i = 0; i < months; i++) {
-    result.push(new Date(current))
-    current.setMonth(current.getMonth() + 1)
-  }
-  return result
-}
-
-function getQuartersInRange(start: Date, quarters: number): Date[] {
-  const result: Date[] = []
-  const current = new Date(start)
-  // Start from beginning of current quarter
-  const quarterMonth = Math.floor(current.getMonth() / 3) * 3
-  current.setMonth(quarterMonth, 1)
-  for (let i = 0; i < quarters; i++) {
-    result.push(new Date(current))
-    current.setMonth(current.getMonth() + 3)
-  }
-  return result
-}
-
-function formatWeek(date: Date): string {
-  const day = date.getDate()
-  const month = date.toLocaleDateString('en-GB', { month: 'short' })
-  return `${day} ${month}`
-}
-
-function formatMonth(date: Date): string {
-  return date.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })
-}
-
-function formatQuarter(date: Date): string {
-  const quarter = Math.floor(date.getMonth() / 3) + 1
-  const year = date.getFullYear().toString().slice(-2)
-  return `Q${quarter} '${year}`
-}
-
-// View scale configuration
-const VIEW_SCALE_CONFIG: Record<
-  ViewScale,
-  { count: number; columnWidth: number; daysPerUnit: number }
-> = {
-  weeks: { count: 12, columnWidth: 120, daysPerUnit: 7 },
-  months: { count: 6, columnWidth: 180, daysPerUnit: 30 },
-  quarters: { count: 4, columnWidth: 240, daysPerUnit: 91 },
-}
+import {
+  getWeeksInRange,
+  getMonthsInRange,
+  getQuartersInRange,
+  formatWeek,
+  formatMonth,
+  formatQuarter,
+  VIEW_SCALE_CONFIG,
+} from './TimelineUtils'
+import { TimelineHeader } from './TimelineHeader'
+import { TimelineFooter } from './TimelineFooter'
 
 // ============================================================================
 // Main Component
@@ -386,68 +333,12 @@ export function TimelineCanvas() {
         )}
 
         {/* Timeline header with time columns */}
-        <div
-          style={{
-            display: 'flex',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          }}
-        >
-          {/* Lane labels column */}
-          <div
-            style={{
-              width: 100,
-              minWidth: 100,
-              flexShrink: 0,
-              borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-              padding: '12px 12px',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 500,
-                color: 'rgba(255, 255, 255, 0.4)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Lanes
-            </span>
-          </div>
-
-          {/* Time column headers - scrollable */}
-          <div
-            ref={scrollRef}
-            style={{
-              flex: 1,
-              overflowX: 'auto',
-              display: 'flex',
-            }}
-          >
-            {timeColumns.map((column) => (
-              <div
-                key={column.getTime()}
-                style={{
-                  width: columnWidth,
-                  flexShrink: 0,
-                  padding: '12px 8px',
-                  borderRight: '1px solid rgba(255, 255, 255, 0.03)',
-                  textAlign: 'center',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.5)',
-                  }}
-                >
-                  {formatColumnHeader(column)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <TimelineHeader
+          ref={scrollRef}
+          timeColumns={timeColumns || []}
+          columnWidth={columnWidth}
+          formatColumnHeader={formatColumnHeader}
+        />
 
         {/* Lanes */}
         <div
@@ -534,109 +425,12 @@ export function TimelineCanvas() {
         </DragOverlay>
 
         {/* Footer hint */}
-        <div
-          style={{
-            padding: '12px 24px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}
-        >
-          <span
-            className="hidden md:inline"
-            style={{
-              fontSize: 12,
-              color: 'rgba(255, 255, 255, 0.4)',
-            }}
-          >
-            Drag events between lanes • Scroll to view weeks
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Signal Threads button */}
-            <button
-              onClick={() => setThreadsPanelOpen(!threadsPanelOpen)}
-              aria-label={threadsPanelOpen ? 'Close threads panel' : 'Open threads panel'}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 12px',
-                fontSize: 12,
-                fontWeight: 500,
-                color: threadsPanelOpen ? '#F472B6' : 'rgba(255, 255, 255, 0.6)',
-                backgroundColor: threadsPanelOpen
-                  ? 'rgba(244, 114, 182, 0.15)'
-                  : 'rgba(255, 255, 255, 0.05)',
-                border: threadsPanelOpen
-                  ? '1px solid rgba(244, 114, 182, 0.3)'
-                  : '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 6,
-                cursor: 'pointer',
-                transition: 'all 0.12s ease',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M9 17H7A5 5 0 0 1 7 7h2" />
-                <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-              Threads
-            </button>
-            <button
-              onClick={handleScrollToToday}
-              aria-label="Scroll to today"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 12px',
-                fontSize: 12,
-                fontWeight: 500,
-                color: '#3AA9BE',
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px solid rgba(58, 169, 190, 0.2)',
-                borderRadius: 6,
-                cursor: 'pointer',
-                transition: 'all 0.12s ease',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.15)'
-                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.3)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(58, 169, 190, 0.1)'
-                e.currentTarget.style.borderColor = 'rgba(58, 169, 190, 0.2)'
-              }}
-            >
-              <span style={{ fontSize: 10 }} aria-hidden="true">
-                ◉
-              </span>
-              Today
-            </button>
-            <span
-              style={{
-                fontSize: 12,
-                color: 'rgba(255, 255, 255, 0.3)',
-              }}
-            >
-              {events.length} events
-            </span>
-          </div>
-        </div>
+        <TimelineFooter
+          threadsPanelOpen={threadsPanelOpen}
+          setThreadsPanelOpen={setThreadsPanelOpen}
+          handleScrollToToday={handleScrollToToday}
+          eventCount={events.length}
+        />
 
         {/* Threads Panel */}
         <ThreadsPanel isOpen={threadsPanelOpen} onClose={() => setThreadsPanelOpen(false)} />

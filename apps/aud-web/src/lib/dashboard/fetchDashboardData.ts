@@ -84,6 +84,20 @@ export async function fetchDashboardData(): Promise<DashboardData> {
   const supabase = await createServerSupabaseClient()
 
   try {
+    // 1. Check Cache First
+    const { data: cache } = await (supabase as any)
+      .from('flow_hub_summary_cache')
+      .select('cached_data, updated_at')
+      .single()
+
+    const oneHour = 60 * 60 * 1000
+    if (cache && Date.now() - new Date(cache.updated_at).getTime() < oneHour) {
+      log.debug('Serving dashboard from cache')
+      return cache.cached_data as DashboardData
+    }
+
+    // 2. Cache Miss - Fetch Fresh Data
+    log.debug('Cache miss, fetching fresh dashboard data')
     // Run all queries in parallel
     const [campaignsRes, contactsRes, coverageRes, patternsRes, actionsRes, metricsRes, eventsRes] =
       await Promise.all([
@@ -190,6 +204,23 @@ export async function fetchDashboardData(): Promise<DashboardData> {
       },
       identity: getDefaultIdentity(),
       signals: signals.length > 0 ? signals : getEmptyStateSignals(),
+    }
+
+    // 3. Update Cache (Async)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      supabase
+        .from('flow_hub_summary_cache')
+        .upsert({
+          user_id: user.id,
+          cached_data: data as any,
+          updated_at: new Date().toISOString(),
+        })
+        .then(({ error }) => {
+          if (error) log.debug('Cache update skipped (table may be missing)')
+        })
     }
 
     return data

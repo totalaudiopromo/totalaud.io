@@ -101,12 +101,24 @@ function checkRateLimit(
 // Security Headers
 // ============================================================================
 
+// Define CSP header separately to allow for dynamic modification or cleaner formatting
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob: https:;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.google.com https://*.sentry.io https://*.stripe.com https://*.vercel-analytics.com;
+  frame-src https://*.stripe.com https://accounts.google.com;
+`
+
 const securityHeaders = {
-  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': cspHeader.replace(/\s{2,}/g, ' ').trim(),
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
   'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
 }
 
 // ============================================================================
@@ -176,7 +188,7 @@ export function middleware(request: NextRequest) {
 
   // For non-API routes, just add security headers
   let response = NextResponse.next()
-  
+
   for (const [key, value] of Object.entries(securityHeaders)) {
     response.headers.set(key, value)
   }
