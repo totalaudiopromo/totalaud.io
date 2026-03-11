@@ -22,9 +22,8 @@ import { useAssetFilters } from '@/hooks/useAssetFilters'
 import { useFlowStateTelemetry } from '@/hooks/useFlowStateTelemetry'
 import { toast } from 'sonner'
 import { playAssetAttachSound } from '@/lib/asset-sounds'
-import { getAssetKindIcon } from '@/components/assets/assetKindIcons'
+import { Archive } from 'lucide-react'
 import type { NodeKind } from '@/types/console'
-import { Archive, Lock, X } from 'lucide-react'
 
 const log = logger.scope('AssetInboxDrawer')
 
@@ -35,6 +34,8 @@ export interface AssetInboxDrawerProps {
   currentNodeKind?: NodeKind | null
   campaignId?: string
 }
+import { AssetListItem } from './AssetListItem'
+import { AssetInboxHeader } from './AssetInboxHeader'
 
 export function AssetInboxDrawer({
   open,
@@ -56,7 +57,6 @@ export function AssetInboxDrawer({
     selectedKind,
     setSelectedKind,
     clearFilters,
-    hasActiveFilters,
   } = useAssetFilters()
 
   /**
@@ -82,12 +82,14 @@ export function AssetInboxDrawer({
     }
 
     // Sort by creation date (newest first)
-    return filtered.sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
       const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
       return dateB - dateA
     })
   }, [allAssets, debouncedSearchQuery, selectedKind])
+
+  const sortedAssets = filteredAssets
 
   /**
    * Count new uploads in last 24 hours
@@ -218,11 +220,6 @@ export function AssetInboxDrawer({
   }, [open, onClose])
 
   /**
-   * Get kind icon
-   */
-  const getKindIcon = (kind: string) => getAssetKindIcon(kind)
-
-  /**
    * Format file size
    */
   const formatSize = (bytes: number): string => {
@@ -301,168 +298,16 @@ export function AssetInboxDrawer({
             }}
           >
             {/* Header */}
-            <div
-              style={{
-                padding: '24px',
-                borderBottom: `1px solid ${flowCoreColours.borderGrey}`,
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '16px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <h2
-                    style={{
-                      fontSize: '18px',
-                      fontWeight: 600,
-                      color: flowCoreColours.iceCyan,
-                      margin: 0,
-                      textTransform: 'lowercase',
-                    }}
-                  >
-                    asset inbox
-                  </h2>
-                  {newUploadsCount > 0 && (
-                    <span
-                      style={{
-                        padding: '2px 8px',
-                        backgroundColor: flowCoreColours.slateCyan,
-                        color: flowCoreColours.matteBlack,
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        borderRadius: '12px',
-                      }}
-                    >
-                      {newUploadsCount} new
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={onClose}
-                  aria-label="Close asset inbox"
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: flowCoreColours.textSecondary,
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    transition: 'color var(--flowcore-motion-fast) ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = flowCoreColours.iceCyan
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = flowCoreColours.textSecondary
-                  }}
-                >
-                  <X size={18} strokeWidth={1.5} />
-                </button>
-              </div>
-
-              {/* Search */}
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="search assets..."
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  backgroundColor: flowCoreColours.matteBlack,
-                  border: `1px solid ${flowCoreColours.borderGrey}`,
-                  borderRadius: '4px',
-                  color: flowCoreColours.textPrimary,
-                  fontSize: '13px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  transition: 'border-color var(--flowcore-motion-normal) ease',
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = flowCoreColours.slateCyan
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = flowCoreColours.borderGrey
-                }}
-              />
-
-              {/* Filters */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '8px',
-                  marginTop: '12px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {/* Kind filters */}
-                {(['audio', 'image', 'document', 'archive'] as const).map((kind) => {
-                  const isActive = selectedKind === kind
-                  return (
-                    <button
-                      key={kind}
-                      onClick={() => setSelectedKind(isActive ? null : kind)}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: isActive
-                          ? `${flowCoreColours.slateCyan}20`
-                          : flowCoreColours.matteBlack,
-                        border: `1px solid ${isActive ? flowCoreColours.slateCyan : flowCoreColours.borderGrey}`,
-                        borderRadius: '4px',
-                        color: isActive ? flowCoreColours.slateCyan : flowCoreColours.textSecondary,
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        textTransform: 'lowercase',
-                        transition: 'all var(--flowcore-motion-fast) ease',
-                      }}
-                    >
-                      {kind}
-                    </button>
-                  )
-                })}
-
-                {/* Clear filters */}
-                {selectedKind && (
-                  <button
-                    onClick={clearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: 'transparent',
-                      border: `1px solid ${flowCoreColours.borderGrey}`,
-                      borderRadius: '4px',
-                      color: flowCoreColours.textSecondary,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      textTransform: 'lowercase',
-                    }}
-                  >
-                    clear
-                  </button>
-                )}
-              </div>
-
-              {/* Current node indicator */}
-              {attachableNodeKind && (
-                <div
-                  style={{
-                    marginTop: '12px',
-                    padding: '8px 12px',
-                    backgroundColor: `${flowCoreColours.iceCyan}10`,
-                    border: `1px solid ${flowCoreColours.iceCyan}40`,
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: flowCoreColours.iceCyan,
-                  }}
-                >
-                  attaching to: <strong>{attachableNodeKind} agent</strong>
-                </div>
-              )}
-            </div>
+            <AssetInboxHeader
+              newUploadsCount={newUploadsCount}
+              onClose={onClose}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedKind={selectedKind}
+              setSelectedKind={setSelectedKind}
+              clearFilters={clearFilters}
+              attachableNodeKind={attachableNodeKind}
+            />
 
             {/* Assets List */}
             <div
@@ -485,7 +330,7 @@ export function AssetInboxDrawer({
                 </div>
               )}
 
-              {!loading && filteredAssets.length === 0 && (
+              {!loading && sortedAssets.length === 0 && (
                 <div
                   style={{
                     textAlign: 'center',
@@ -528,120 +373,19 @@ export function AssetInboxDrawer({
                 </div>
               )}
 
-              {!loading && filteredAssets.length > 0 && (
+              {!loading && sortedAssets.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {filteredAssets.map((asset, index) => (
-                    <motion.div
+                  {sortedAssets.map((asset, index) => (
+                    <AssetListItem
                       key={asset.id}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        duration: prefersReducedMotion ? 0 : 0.24,
-                        delay: prefersReducedMotion ? 0 : index * 0.02,
-                      }}
-                      style={{
-                        padding: '12px',
-                        backgroundColor: flowCoreColours.matteBlack,
-                        border: `1px solid ${flowCoreColours.borderGrey}`,
-                        borderRadius: '6px',
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '12px',
-                      }}
-                    >
-                      {/* Asset icon */}
-                      <div
-                        style={{
-                          flexShrink: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          color: flowCoreColours.slateCyan,
-                        }}
-                      >
-                        {(() => {
-                          const Icon = getKindIcon(asset.kind)
-                          return <Icon size={22} strokeWidth={1.5} />
-                        })()}
-                      </div>
-
-                      {/* Asset info */}
-                      <div style={{ flex: 1, overflow: 'hidden' }}>
-                        <div
-                          style={{
-                            fontSize: '13px',
-                            fontWeight: 500,
-                            color: flowCoreColours.textPrimary,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            marginBottom: '4px',
-                          }}
-                        >
-                          {asset.title}
-                          {!asset.is_public && (
-                            <span
-                              style={{
-                                marginLeft: '6px',
-                                fontSize: '11px',
-                                color: flowCoreColours.warningOrange,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                              }}
-                            >
-                              <Lock size={12} strokeWidth={1.5} />
-                              private
-                            </span>
-                          )}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            color: flowCoreColours.textTertiary,
-                          }}
-                        >
-                          {asset.byte_size && formatSize(asset.byte_size)}
-                          {asset.byte_size && asset.created_at && ' · '}
-                          {asset.created_at && formatRelativeTime(asset.created_at)}
-                        </div>
-                      </div>
-
-                      {/* Quick attach button */}
-                      <button
-                        onClick={() => handleQuickAttach(asset)}
-                        disabled={!attachableNodeKind}
-                        aria-label={`Attach ${asset.title}`}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: attachableNodeKind
-                            ? flowCoreColours.slateCyan
-                            : flowCoreColours.borderGrey,
-                          color: attachableNodeKind
-                            ? flowCoreColours.matteBlack
-                            : flowCoreColours.textTertiary,
-                          border: 'none',
-                          borderRadius: '4px',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          cursor: attachableNodeKind ? 'pointer' : 'not-allowed',
-                          textTransform: 'lowercase',
-                          transition: 'all var(--flowcore-motion-fast) ease',
-                          flexShrink: 0,
-                        }}
-                        onMouseEnter={(e) => {
-                          if (attachableNodeKind) {
-                            e.currentTarget.style.backgroundColor = flowCoreColours.iceCyan
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (attachableNodeKind) {
-                            e.currentTarget.style.backgroundColor = flowCoreColours.slateCyan
-                          }
-                        }}
-                      >
-                        attach
-                      </button>
-                    </motion.div>
+                      asset={asset}
+                      index={index}
+                      prefersReducedMotion={prefersReducedMotion ?? false}
+                      attachableNodeKind={attachableNodeKind}
+                      onAttach={handleQuickAttach}
+                      formatSize={formatSize}
+                      formatRelativeTime={formatRelativeTime}
+                    />
                   ))}
                 </div>
               )}
@@ -660,7 +404,7 @@ export function AssetInboxDrawer({
               }}
             >
               <span>
-                {filteredAssets.length} asset{filteredAssets.length === 1 ? '' : 's'}
+                {sortedAssets.length} asset{sortedAssets.length === 1 ? '' : 's'}
               </span>
               <span>
                 <kbd

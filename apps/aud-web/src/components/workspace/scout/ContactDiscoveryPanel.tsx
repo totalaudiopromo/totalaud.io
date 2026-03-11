@@ -9,7 +9,7 @@
 
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Loader2, CheckCircle, AlertCircle, ExternalLink, Plus, Mail } from 'lucide-react'
+import { Search, Loader2, AlertCircle } from 'lucide-react'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
 import type { DiscoveredContact, DiscoveryResponse } from '@/app/api/scout/discover/route'
@@ -17,6 +17,9 @@ import type { DiscoveredContact, DiscoveryResponse } from '@/app/api/scout/disco
 interface ContactDiscoveryPanelProps {
   className?: string
 }
+
+import { DiscoveryStats } from './DiscoveryStats'
+import { DiscoveredContactCard } from './DiscoveredContactCard'
 
 export function ContactDiscoveryPanel({ className }: ContactDiscoveryPanelProps) {
   const [url, setUrl] = useState('')
@@ -200,174 +203,23 @@ export function ContactDiscoveryPanel({ className }: ContactDiscoveryPanelProps)
             exit={{ opacity: 0 }}
           >
             {/* Stats */}
-            <div
-              style={{
-                display: 'flex',
-                gap: 16,
-                marginBottom: 16,
-                padding: '12px 16px',
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: 10,
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#F7F8F9' }}>
-                  {results.totalFound}
-                </div>
-                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' }}>Found</div>
-              </div>
-              <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#3AA9BE' }}>
-                  {results.totalVerified}
-                </div>
-                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' }}>Verified</div>
-              </div>
-              <div style={{ width: 1, backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#22C55E' }}>
-                  {results.totalB2B}
-                </div>
-                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' }}>B2B</div>
-              </div>
-              <div style={{ flex: 1 }} />
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.4)' }}>
-                  {results.fetchTimeMs}ms
-                </div>
-              </div>
-            </div>
+            <DiscoveryStats
+              totalFound={results.totalFound}
+              totalVerified={results.totalVerified}
+              totalB2B={results.totalB2B}
+              fetchTimeMs={results.fetchTimeMs}
+            />
 
             {/* Contact Cards */}
             {results.contacts.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {results.contacts.map((contact) => (
-                  <div
+                  <DiscoveredContactCard
                     key={contact.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '14px 16px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)',
-                      borderRadius: 10,
-                    }}
-                  >
-                    {/* Icon */}
-                    <div
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 8,
-                        backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Mail size={16} style={{ color: '#3AA9BE' }} />
-                    </div>
-
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 500,
-                          color: '#F7F8F9',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {contact.email}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: 'rgba(255, 255, 255, 0.5)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
-                      >
-                        <span>{contact.outlet || contact.sourceDomain}</span>
-                        {contact.outletType && (
-                          <span
-                            style={{
-                              padding: '2px 6px',
-                              backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                              borderRadius: 4,
-                              fontSize: 10,
-                              color: '#3AA9BE',
-                              textTransform: 'uppercase',
-                            }}
-                          >
-                            {contact.outletType}
-                          </span>
-                        )}
-                        <CheckCircle size={12} style={{ color: '#22C55E' }} />
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <a
-                        href={contact.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 6,
-                          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'rgba(255, 255, 255, 0.6)',
-                          textDecoration: 'none',
-                        }}
-                        title="View source"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
-                      <button
-                        onClick={() => handleAddToTimeline(contact)}
-                        disabled={addedToTimeline.has(contact.id)}
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 6,
-                          backgroundColor: addedToTimeline.has(contact.id)
-                            ? 'rgba(34, 197, 94, 0.1)'
-                            : 'rgba(58, 169, 190, 0.1)',
-                          border: `1px solid ${
-                            addedToTimeline.has(contact.id)
-                              ? 'rgba(34, 197, 94, 0.3)'
-                              : 'rgba(58, 169, 190, 0.3)'
-                          }`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: addedToTimeline.has(contact.id) ? '#22C55E' : '#3AA9BE',
-                          cursor: addedToTimeline.has(contact.id) ? 'default' : 'pointer',
-                        }}
-                        title={
-                          addedToTimeline.has(contact.id) ? 'Added to timeline' : 'Add to timeline'
-                        }
-                      >
-                        {addedToTimeline.has(contact.id) ? (
-                          <CheckCircle size={14} />
-                        ) : (
-                          <Plus size={14} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
+                    contact={contact}
+                    isAdded={addedToTimeline.has(contact.id)}
+                    onAdd={() => handleAddToTimeline(contact)}
+                  />
                 ))}
               </div>
             ) : (

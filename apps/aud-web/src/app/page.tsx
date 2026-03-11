@@ -10,6 +10,8 @@
  */
 
 import { LandingPage } from '@/components/landing/LandingPage'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
 export const metadata = {
   title: 'totalaud.io - Finish better. Release smarter.',
@@ -23,5 +25,14 @@ export const metadata = {
 }
 
 export default async function Page() {
+  const supabase = await createServerSupabaseClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (session) {
+    redirect('/console')
+  }
+
   return <LandingPage />
 }

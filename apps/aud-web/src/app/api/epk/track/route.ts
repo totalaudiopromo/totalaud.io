@@ -6,37 +6,16 @@
  * Logs asset views, downloads, and shares with telemetry
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import { createApiHandler, commonSchemas } from '@/lib/api-validation'
 
 const log = logger.scope('EPKTrackAPI')
 
-interface TrackEventRequest {
-  epkId: string
-  assetId?: string
-  eventType: 'view' | 'download' | 'share'
-  region?: string
-  device?: string
-  metadata?: Record<string, unknown>
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const body: TrackEventRequest = await req.json()
-
-    // Validate request
-    if (!body.epkId || !body.eventType) {
-      return NextResponse.json({ error: 'epkId and eventType are required' }, { status: 400 })
-    }
-
-    if (!['view', 'download', 'share'].includes(body.eventType)) {
-      return NextResponse.json(
-        { error: 'eventType must be view, download, or share' },
-        { status: 400 }
-      )
-    }
-
+export const POST = createApiHandler({
+  bodySchema: commonSchemas.epkTrack,
+  handler: async ({ body, req }) => {
     const supabase = await createRouteSupabaseClient()
 
     const {
@@ -88,7 +67,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Note: flow_telemetry table is planned but not yet created in database
-    // Log telemetry information for future implementation
     log.debug('Telemetry event recorded locally', {
       user_id: session.user.id,
       event_type: `epk_${body.eventType}`,
@@ -107,15 +85,9 @@ export async function POST(req: NextRequest) {
       device,
     })
 
-    return NextResponse.json(
-      {
-        success: true,
-        event: analyticsEvent,
-      },
-      { status: 200 }
-    )
-  } catch (error) {
-    log.error('Unexpected error in EPK track API', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+    return {
+      success: true,
+      event: analyticsEvent,
+    }
+  },
+})

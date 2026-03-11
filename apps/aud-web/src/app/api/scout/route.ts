@@ -140,7 +140,10 @@ export async function GET(
     // Build query
     let query = supabase
       .from('opportunities')
-      .select('*', { count: 'exact' })
+      .select(
+        'id, name, type, genres, vibes, audience_size, url, contact_email, contact_name, importance, description, source, last_verified_at, created_at, updated_at',
+        { count: 'exact' }
+      )
       .eq('is_active', true)
       .order('importance', { ascending: false })
       .order('name', { ascending: true })
@@ -165,8 +168,12 @@ export async function GET(
     }
 
     if (q && q.length >= 2) {
+      // Sanitize search query to prevent PostgREST .or() injection (commas, parentheses)
+      const sanitizedQ = q.replace(/[(),]/g, ' ')
       // Search in name, description, and contact_name
-      query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,contact_name.ilike.%${q}%`)
+      query = query.or(
+        `name.ilike.%${sanitizedQ}%,description.ilike.%${sanitizedQ}%,contact_name.ilike.%${sanitizedQ}%`
+      )
     }
 
     // Apply pagination
