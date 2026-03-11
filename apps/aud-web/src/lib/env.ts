@@ -81,12 +81,14 @@ const envSchema = z.object({
   NEXT_PUBLIC_CONVERTKIT_FORM_ID: z.string().optional(),
   NEXT_PUBLIC_CONVERTKIT_API_KEY: z.string().optional(),
 
-  // TAP (Total Audio Platform) Integration
+  // TAP (Total Audio Platform) Integration - Unified API
   TAP_API_KEY: z.string().optional(),
+  TAP_API_URL: z.string().url().optional(),
+
+  // Legacy TAP Service Keys (Deprecated)
   TAP_API_KEY_INTEL: z.string().optional(),
   TAP_API_KEY_PITCH: z.string().optional(),
   TAP_API_KEY_TRACKER: z.string().optional(),
-  TAP_API_URL: z.string().url().optional(),
   TAP_INTEL_URL: z.string().url().optional(),
   TAP_PITCH_URL: z.string().url().optional(),
   TAP_TRACKER_URL: z.string().url().optional(),
@@ -213,25 +215,31 @@ export function isSentryConfigured(): boolean {
 }
 
 /**
- * Check if TAP (Total Audio Platform) Pitch service is configured
- * Requires both API key AND URL to be functional
+ * Check if any TAP services are configured via the unified API
+ */
+export function isTAPConfigured(): boolean {
+  return !!env.TAP_API_KEY && !!env.TAP_API_URL
+}
+
+/**
+ * Check if TAP Pitch service is configured
  */
 export function isTAPPitchConfigured(): boolean {
-  return !!(env.TAP_API_KEY_PITCH || env.TAP_API_KEY) && !!env.TAP_PITCH_URL
+  return isTAPConfigured() || (!!(env.TAP_API_KEY_PITCH || env.TAP_API_KEY) && !!env.TAP_PITCH_URL)
 }
 
 /**
  * Check if TAP Intel service is configured
- * Requires both API key AND URL to be functional
  */
 export function isTAPIntelConfigured(): boolean {
-  return !!(env.TAP_API_KEY_INTEL || env.TAP_API_KEY) && !!env.TAP_INTEL_URL
+  return isTAPConfigured() || (!!(env.TAP_API_KEY_INTEL || env.TAP_API_KEY) && !!env.TAP_INTEL_URL)
 }
 
 /**
  * Check if TAP Tracker service is configured
- * Requires both API key AND URL to be functional
  */
 export function isTAPTrackerConfigured(): boolean {
-  return !!(env.TAP_API_KEY_TRACKER || env.TAP_API_KEY) && !!env.TAP_TRACKER_URL
+  return (
+    isTAPConfigured() || (!!(env.TAP_API_KEY_TRACKER || env.TAP_API_KEY) && !!env.TAP_TRACKER_URL)
+  )
 }

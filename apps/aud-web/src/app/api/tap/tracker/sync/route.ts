@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     // Fetch opportunity details from local DB
     const { data: opportunity, error: fetchError } = await supabase
       .from('opportunities')
-      .select('*')
+      .select('id, name, type, url, description, genres, audience_size, created_at, updated_at')
       .eq('id', opportunityId)
       .single()
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         name: campaignName,
         artist_name: session.user.user_metadata?.display_name || 'Unknown Artist',
         status: 'planning',
-        platform: (platform || opportunity.type) as any,
+        platform: platform || opportunity.type,
         genre: opportunity.genres?.[0],
         notes: `Synced from Scout: ${opportunity.description}`,
       },

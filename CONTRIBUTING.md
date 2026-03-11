@@ -1,24 +1,22 @@
-# Contributing to TotalAud.io
+# Contributing to totalaud.io
 
 Thank you for contributing! This guide will help you get started quickly.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### Using Cursor IDE (Recommended)
+1. **Open your IDE in this directory**
+2. **Follow the rules in [CLAUDE.md](CLAUDE.md)**
+3. **Use the project's British English standards**
 
-1. **Open Cursor in this directory**
-2. **Say:** "Ready to work on [feature]"
-3. **Claude Code handles everything** (git, branches, conventions)
-
-See [CURSOR_QUICK_START.md](CURSOR_QUICK_START.md) for details.
 
 ### Using Terminal
 
 1. **Clone and setup:**
    ```bash
    git clone https://github.com/totalaudiopromo/totalaud.io.git
+
    cd totalaud.io
    pnpm install
    ```
@@ -39,7 +37,7 @@ See [CURSOR_QUICK_START.md](CURSOR_QUICK_START.md) for details.
 
 ---
 
-## 📋 Development Workflow
+## Development Workflow
 
 ### 1. Before Starting Work
 
@@ -99,7 +97,7 @@ git push origin your-branch
 
 ---
 
-## 🎨 Code Standards
+## Code Standards
 
 ### TypeScript
 
@@ -155,7 +153,7 @@ pnpm lint:fix
 
 ---
 
-## 📝 Commit Messages (MANDATORY)
+## Commit Messages (MANDATORY)
 
 ### UK Spelling ONLY
 
@@ -207,14 +205,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Bad:**
 ```
-Added auth 🔐
+Added auth
 ```
 
 See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for full details.
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ### Monorepo Layout
 
@@ -230,15 +228,14 @@ totalaud.io/
 │       │   └── stores/       # Zustand state
 │       └── package.json
 ├── packages/
-│   ├── core/                 # Core business logic
-│   │   ├── agent-executor/   # Agent orchestration
-│   │   ├── ai-provider/      # AI abstraction (OpenAI/Anthropic)
-│   │   ├── integrations/     # External APIs (Google, etc.)
-│   │   ├── skills-engine/    # YAML skill execution
-│   │   ├── supabase/         # Database client
-│   │   └── theme-engine/     # Theme system
+│   └── core/                 # Core shared logic
+│       ├── ai-provider/      # AI abstraction (perspectives)
+│       ├── integrations/     # External APIs
+│       ├── logger/           # Structured logging
+│       └── supabase/         # Database client
+├── packages/
 │   ├── schemas/              # Shared TypeScript types
-│   └── ui/                   # Shared React components
+│   └── ui/                   # Shared React components (Design System)
 └── supabase/                 # Database migrations
 ```
 
@@ -271,7 +268,7 @@ apps/aud-web/src/hooks/useYourHook.ts
 
 ---
 
-## 🔧 Common Tasks
+## Common Tasks
 
 ### Adding a New API Route
 
@@ -360,7 +357,7 @@ apps/aud-web/src/hooks/useYourHook.ts
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Running Tests
 
@@ -379,7 +376,7 @@ src/hooks/useUserPrefs.test.ts
 
 ---
 
-## 🐛 Debugging
+## Debugging
 
 ### Check Logs
 
@@ -434,18 +431,16 @@ lsof -ti:3000 | xargs kill -9
 
 ---
 
-## 📚 Key Documentation
+## Key Documentation
 
 - **[CLAUDE.md](CLAUDE.md)** - Complete project documentation
-- **[CURSOR_QUICK_START.md](CURSOR_QUICK_START.md)** - Cursor IDE setup
+- **[VISION.md](docs/VISION.md)** - Canonical product vision
 - **[COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md)** - Commit message rules
-- **[LINTING_ISSUES.md](LINTING_ISSUES.md)** - Known issues to fix
-- **[WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)** - Detailed workflow
-- **[RAILWAY_SETUP.md](RAILWAY_SETUP.md)** - Deployment guide
+- **[CODEBASE_AUDIT_2026.md](CODEBASE_AUDIT_2026.md)** - Latest technical audit
 
 ---
 
-## 🤝 Code Review
+## Code Review
 
 ### Before Requesting Review
 
@@ -475,7 +470,7 @@ lsof -ti:3000 | xargs kill -9
 
 ---
 
-## 🎓 Learning Resources
+## Learning Resources
 
 ### Project-Specific
 
@@ -494,7 +489,7 @@ lsof -ti:3000 | xargs kill -9
 
 ---
 
-## 🆘 Getting Help
+## Getting Help
 
 ### Before Asking
 
@@ -528,7 +523,7 @@ It doesn't work, help!
 
 ---
 
-## 🚀 Advanced Topics
+## Advanced Topics
 
 ### Pre-commit Hooks
 
@@ -544,7 +539,7 @@ See [TECHNICAL_AUDIT_2025.md](TECHNICAL_AUDIT_2025.md) for current status.
 
 ---
 
-## 📜 License
+## License
 
 Proprietary - © 2025 Total Audio Promo
 
@@ -556,6 +551,6 @@ Your contributions make this project better! Questions? Check CLAUDE.md or ask o
 
 ---
 
-**Last Updated:** October 2025
-**Status:** Active development
-**Maintainers:** Total Audio Promo team
+**Last Updated:** March 2026
+**Status:** Alpha refinement
+**Maintainers:** totalaud.io team

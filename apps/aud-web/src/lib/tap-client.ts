@@ -290,15 +290,31 @@ class BaseClient {
 }
 
 // ============================================================================
-// Intel Client
+// TAP Client (Unified)
 // ============================================================================
 
-class IntelClient extends BaseClient {
+export interface TAPClientConfig {
+  apiKey: string
+  baseUrl: string
+  timeout?: number
+}
+
+export class TAPClient extends BaseClient {
+  constructor(config: TAPClientConfig) {
+    super({
+      apiKey: config.apiKey,
+      baseUrl: config.baseUrl,
+      timeout: config.timeout,
+    })
+  }
+
+  // --- Intel (Enrichment) ---
+
   async enrichContacts(
     contacts: EnrichContactInput[],
     options?: { forceRefresh?: boolean; includeConfidence?: boolean }
   ): Promise<EnrichedContact[]> {
-    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/enrich-claude', {
+    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/enrich', {
       contacts,
       options,
     })
@@ -318,20 +334,16 @@ class IntelClient extends BaseClient {
     const response = await this.validateEmails([email])
     return response.results[0]
   }
-}
 
-// ============================================================================
-// Pitch Client
-// ============================================================================
+  // --- Pitch ---
 
-class PitchClient extends BaseClient {
-  async generate(
+  async generatePitch(
     request: GeneratePitchRequest
   ): Promise<{ pitchId: string; pitch: GeneratedPitch }> {
     return this.post<{ pitchId: string; pitch: GeneratedPitch }>('/api/pitch/generate', request)
   }
 
-  async analyse(request: {
+  async analysePitch(request: {
     pitchBody: string
     subjectLine?: string
     contactType?: string
@@ -340,21 +352,8 @@ class PitchClient extends BaseClient {
     return response.analysis
   }
 
-  // Alias for British English
-  async analyze(request: {
-    pitchBody: string
-    subjectLine?: string
-    contactType?: string
-  }): Promise<PitchAnalysis> {
-    return this.analyse(request)
-  }
-}
+  // --- Tracker ---
 
-// ============================================================================
-// Tracker Client
-// ============================================================================
-
-class TrackerClient extends BaseClient {
   async listCampaigns(userId: string): Promise<{
     campaigns: CampaignWithInsights[]
     metrics: CampaignMetrics
@@ -363,83 +362,44 @@ class TrackerClient extends BaseClient {
     return this.get('/api/campaigns', { userId })
   }
 
-  async getCampaigns(userId: string): Promise<CampaignWithInsights[]> {
-    const response = await this.listCampaigns(userId)
-    return response.campaigns
-  }
-
-  async getMetrics(userId: string): Promise<CampaignMetrics> {
-    const response = await this.listCampaigns(userId)
-    return response.metrics
-  }
-
   async createCampaign(
     campaign: CreateCampaignRequest,
     userId: string
   ): Promise<CampaignWithInsights> {
     return this.post<CampaignWithInsights>('/api/campaigns', campaign, { userId })
   }
-}
 
-// ============================================================================
-// Main Client
-// ============================================================================
-
-export interface TotalAudioClientConfig {
-  apiKey?: string
-  intelApiKey?: string
-  pitchApiKey?: string
-  trackerApiKey?: string
-  intelUrl?: string
-  pitchUrl?: string
-  trackerUrl?: string
-  timeout?: number
-}
-
-export class TotalAudioClient {
-  public readonly intel: IntelClient
-  public readonly pitch: PitchClient
-  public readonly tracker: TrackerClient
-
-  private readonly configured: {
-    intel: boolean
-    pitch: boolean
-    tracker: boolean
+  /**
+   * Legacy Compatibility Layer
+   * @deprecated Use top-level methods instead
+   */
+  get intel() {
+    return this
   }
 
-  constructor(config: TotalAudioClientConfig) {
-    const intelKey = config.intelApiKey || config.apiKey || ''
-    const pitchKey = config.pitchApiKey || config.apiKey || ''
-    const trackerKey = config.trackerApiKey || config.apiKey || ''
-
-    this.intel = new IntelClient({
-      apiKey: intelKey,
-      baseUrl: config.intelUrl || 'https://intel.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.pitch = new PitchClient({
-      apiKey: pitchKey,
-      baseUrl: config.pitchUrl || 'https://pitch.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.tracker = new TrackerClient({
-      apiKey: trackerKey,
-      baseUrl: config.trackerUrl || 'https://tracker.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.configured = {
-      intel: !!intelKey,
-      pitch: !!pitchKey,
-      tracker: !!trackerKey,
+  /**
+   * Legacy Compatibility Layer
+   * @deprecated Use top-level methods instead
+   */
+  get pitch() {
+    return {
+      generate: this.generatePitch.bind(this),
+      analyse: this.analysePitch.bind(this),
+      analyze: this.analysePitch.bind(this),
     }
   }
 
-  isConfigured(service?: 'intel' | 'pitch' | 'tracker'): boolean {
-    if (service) return this.configured[service]
-    return Object.values(this.configured).some(Boolean)
+  /**
+   * Legacy Compatibility Layer
+   * @deprecated Use top-level methods instead
+   */
+  get tracker() {
+    return {
+      listCampaigns: this.listCampaigns.bind(this),
+      getCampaigns: async (userId: string) => (await this.listCampaigns(userId)).campaigns,
+      getMetrics: async (userId: string) => (await this.listCampaigns(userId)).metrics,
+      createCampaign: this.createCampaign.bind(this),
+    }
   }
 }
 
@@ -447,21 +407,32 @@ export class TotalAudioClient {
 // Singleton Factory
 // ============================================================================
 
-let clientInstance: TotalAudioClient | null = null
+let clientInstance: TAPClient | null = null
 
 /**
  * Get or create the TAP client singleton.
  * Uses environment variables for configuration.
  */
-export function getTapClient(): TotalAudioClient {
+export function getTapClient(): TAPClient {
   if (!clientInstance) {
-    clientInstance = new TotalAudioClient({
-      intelApiKey: process.env.TAP_API_KEY_INTEL || process.env.TAP_API_KEY,
-      pitchApiKey: process.env.TAP_API_KEY_PITCH || process.env.TAP_API_KEY,
-      trackerApiKey: process.env.TAP_API_KEY_TRACKER || process.env.TAP_API_KEY,
-      intelUrl: process.env.TAP_INTEL_URL || process.env.TAP_API_URL,
-      pitchUrl: process.env.TAP_PITCH_URL || process.env.TAP_API_URL,
-      trackerUrl: process.env.TAP_TRACKER_URL || process.env.TAP_API_URL,
+    // Priority: Unified TAP_API_URL/KEY -> Specific Legacy Keys
+    const apiKey =
+      process.env.TAP_API_KEY ||
+      process.env.TAP_API_KEY_INTEL ||
+      process.env.TAP_API_KEY_PITCH ||
+      process.env.TAP_API_KEY_TRACKER ||
+      ''
+
+    const baseUrl =
+      process.env.TAP_API_URL ||
+      process.env.TAP_INTEL_URL ||
+      process.env.TAP_PITCH_URL ||
+      process.env.TAP_TRACKER_URL ||
+      'https://api.totalaudiopromo.com'
+
+    clientInstance = new TAPClient({
+      apiKey,
+      baseUrl,
     })
   }
   return clientInstance
@@ -472,8 +443,20 @@ export function getTapClient(): TotalAudioClient {
  * Use this for simple imports.
  */
 export const tapClient = {
+  get api() {
+    return getTapClient()
+  },
+  // Unified methods
+  enrichContacts: (
+    contacts: EnrichContactInput[],
+    options?: { forceRefresh?: boolean; includeConfidence?: boolean }
+  ) => getTapClient().enrichContacts(contacts, options),
+  generatePitch: (req: GeneratePitchRequest) => getTapClient().generatePitch(req),
+  listCampaigns: (userId: string) => getTapClient().listCampaigns(userId),
+
+  // Legacy Compatibility
   get intel() {
-    return getTapClient().intel
+    return getTapClient()
   },
   get pitch() {
     return getTapClient().pitch
@@ -481,7 +464,26 @@ export const tapClient = {
   get tracker() {
     return getTapClient().tracker
   },
+
   isConfigured(service?: 'intel' | 'pitch' | 'tracker') {
-    return getTapClient().isConfigured(service)
+    // If we have a central API key and URL, we consider it configured for everything
+    if (process.env.TAP_API_KEY && process.env.TAP_API_URL) return true
+
+    // Check legacy specific configs
+    if (service === 'intel')
+      return (
+        !!(process.env.TAP_API_KEY_INTEL || process.env.TAP_API_KEY) && !!process.env.TAP_INTEL_URL
+      )
+    if (service === 'pitch')
+      return (
+        !!(process.env.TAP_API_KEY_PITCH || process.env.TAP_API_KEY) && !!process.env.TAP_PITCH_URL
+      )
+    if (service === 'tracker')
+      return (
+        !!(process.env.TAP_API_KEY_TRACKER || process.env.TAP_API_KEY) &&
+        !!process.env.TAP_TRACKER_URL
+      )
+
+    return !!process.env.TAP_API_KEY && !!process.env.TAP_API_URL
   },
 }

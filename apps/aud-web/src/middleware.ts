@@ -109,6 +109,10 @@ const cspHeader = `
   img-src 'self' data: blob: https:;
   connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.google.com https://*.sentry.io https://*.stripe.com https://*.vercel-analytics.com;
   frame-src https://*.stripe.com https://accounts.google.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
 `
 
 const securityHeaders = {

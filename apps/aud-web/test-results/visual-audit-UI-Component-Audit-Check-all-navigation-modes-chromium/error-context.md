@@ -1,0 +1,108 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "totalaud.io" [ref=e4] [cursor=pointer]:
+        - /url: /workspace
+        - img "totalaud.io" [ref=e5]
+      - navigation [ref=e6]:
+        - button "Ideas" [ref=e7] [cursor=pointer]: Ideas
+        - button "Scout" [ref=e9] [cursor=pointer]
+        - button "Timeline" [ref=e10] [cursor=pointer]
+        - button "Pitch" [ref=e11] [cursor=pointer]
+      - generic [ref=e13]:
+        - link "Sign in" [ref=e14] [cursor=pointer]:
+          - /url: /login
+        - link "Sign up free" [ref=e15] [cursor=pointer]:
+          - /url: /signup
+    - main [ref=e16]:
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - tablist "Filter ideas by category" [ref=e20]:
+            - tab "All 3 ideas" [selected] [ref=e21] [cursor=pointer]:
+              - text: All
+              - generic "3 ideas" [ref=e22]: "3"
+            - tab "Content 1 ideas" [ref=e23] [cursor=pointer]:
+              - text: Content
+              - generic "1 ideas" [ref=e25]: "1"
+            - tab "Brand 1 ideas" [ref=e26] [cursor=pointer]:
+              - text: Brand
+              - generic "1 ideas" [ref=e28]: "1"
+            - tab "Promo 1 ideas" [ref=e29] [cursor=pointer]:
+              - text: Promo
+              - generic "1 ideas" [ref=e31]: "1"
+          - generic [ref=e33]:
+            - img [ref=e34]
+            - textbox "Search ideas..." [ref=e36]
+          - generic [ref=e37]:
+            - button "Newest first" [ref=e39] [cursor=pointer]:
+              - text: Newest first
+              - img [ref=e40]
+            - generic [ref=e42]:
+              - button "Canvas view" [ref=e43] [cursor=pointer]:
+                - img [ref=e44]
+              - button "List view" [ref=e46] [cursor=pointer]:
+                - img [ref=e47]
+            - button "Export" [ref=e50] [cursor=pointer]:
+              - text: Export
+              - img [ref=e51]
+            - generic "All changes saved" [ref=e53]:
+              - img [ref=e55]
+              - generic [ref=e57]: Saved
+            - generic [ref=e58]:
+              - button "Add" [ref=e59] [cursor=pointer]:
+                - img [ref=e60]
+                - text: Add
+              - generic [ref=e62]: ⌘N
+        - generic [ref=e63]:
+          - generic [ref=e64]: "?"
+          - generic [ref=e65]:
+            - heading "Capture your ideas" [level=4] [ref=e66]
+            - paragraph [ref=e67]: Click anywhere to create a note. Tag ideas as Content, Brand, Music, or Promo to keep them organized.
+          - button "Dismiss tip" [ref=e68] [cursor=pointer]:
+            - img [ref=e69]
+        - region "Ideas canvas - double-click to add new ideas" [ref=e72]:
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - 'button "Category: content. Click to change category" [ref=e75] [cursor=pointer]': content
+              - paragraph [ref=e77]: Describe your next release in one sentence
+              - generic [ref=e78]:
+                - button "Send to Timeline" [ref=e79] [cursor=pointer]:
+                  - generic [ref=e80]: →
+                - button "Delete card" [ref=e81] [cursor=pointer]:
+                  - generic [ref=e82]: ×
+            - generic [ref=e83]:
+              - 'button "Category: promo. Click to change category" [ref=e84] [cursor=pointer]': promo
+              - paragraph [ref=e86]: Three content ideas for TikTok / Reels
+              - generic [ref=e87]:
+                - button "Send to Timeline" [ref=e88] [cursor=pointer]:
+                  - generic [ref=e89]: →
+                - button "Delete card" [ref=e90] [cursor=pointer]:
+                  - generic [ref=e91]: ×
+            - generic [ref=e92]:
+              - 'button "Category: brand. Click to change category" [ref=e93] [cursor=pointer]': brand
+              - paragraph [ref=e95]: Your artist identity — what makes you different?
+              - generic [ref=e96]:
+                - button "Send to Timeline" [ref=e97] [cursor=pointer]:
+                  - generic [ref=e98]: →
+                - button "Delete card" [ref=e99] [cursor=pointer]:
+                  - generic [ref=e100]: ×
+          - generic: Alt + drag to pan
+          - generic: Starter prompts — edit or delete to make them yours
+    - button "Open navigation menu" [ref=e101] [cursor=pointer]:
+      - img [ref=e102]
+    - dialog "Your Navigation" [ref=e105]:
+      - button "Dismiss tour" [ref=e113] [cursor=pointer]:
+        - img [ref=e114]
+      - generic [ref=e117]:
+        - heading "Your Navigation" [level=2] [ref=e118]
+        - paragraph [ref=e119]: Look for the glowing button in the bottom-left corner. This opens your navigation menu where you can switch between Ideas, Scout, Timeline, and Pitch modes.
+      - generic [ref=e120]:
+        - button "Skip tour" [ref=e121] [cursor=pointer]
+        - button "Next" [ref=e123] [cursor=pointer]:
+          - text: Next
+          - img [ref=e124]
+  - alert [ref=e126]
+```

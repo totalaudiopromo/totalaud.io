@@ -507,7 +507,9 @@ export const useTimelineStore = create<TimelineState>()(
 
           const { data, error } = await supabase
             .from('user_timeline_events')
-            .select('*')
+            .select(
+              'id, user_id, lane, title, event_date, colour, description, url, tags, source, opportunity_id, tracker_campaign_id, tracker_synced_at, created_at, updated_at'
+            )
             .eq('user_id', user.id)
             .order('event_date', { ascending: true })
 

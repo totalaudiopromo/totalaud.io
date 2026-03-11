@@ -12,7 +12,6 @@ import { persist } from 'zustand/middleware'
 import type {
   Opportunity,
   OpportunityType,
-  AudienceSize,
   ScoutFilters,
   EnrichedContact,
   EnrichmentStatus,
@@ -22,18 +21,6 @@ import { DEFAULT_FILTERS } from '@/types/scout'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('Scout Store')
-
-// ============================================================================
-// API Response Type
-// ============================================================================
-
-interface ScoutAPIResponse {
-  success: boolean
-  opportunities: Opportunity[]
-  total: number
-  limit: number
-  offset: number
-}
 
 // ============================================================================
 // Store Interface
@@ -78,6 +65,13 @@ interface ScoutState {
 
   // TAP Intel Actions
   validateContact: (opportunityId: string) => Promise<void>
+  enrichDiscoveredContact: (contact: {
+    id: string
+    name?: string | null
+    email: string
+    outlet?: string | null
+    genres?: string[]
+  }) => Promise<void>
   getEnrichmentStatus: (opportunityId: string) => EnrichmentStatus
   getEnrichedData: (opportunityId: string) => EnrichedContact | null
 }
@@ -275,6 +269,9 @@ export const useScoutStore = create<ScoutState>()(
               enrichedById: {
                 ...s.enrichedById,
                 [opportunityId]: {
+                  id: enriched.id,
+                  name: enriched.name,
+                  email: enriched.email,
                   contactIntelligence: enriched.contactIntelligence,
                   researchConfidence: enriched.researchConfidence,
                   lastResearched: enriched.lastResearched,
@@ -293,6 +290,71 @@ export const useScoutStore = create<ScoutState>()(
             enrichmentErrorById: {
               ...s.enrichmentErrorById,
               [opportunityId]: error instanceof Error ? error.message : 'Validation failed',
+            },
+          }))
+        }
+      },
+
+      enrichDiscoveredContact: async (contact) => {
+        const { id, name, email, outlet, genres } = contact
+
+        // Set loading state
+        set((s) => ({
+          enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'loading' },
+          enrichmentErrorById: { ...s.enrichmentErrorById, [id]: '' },
+        }))
+
+        try {
+          const response = await fetch('/api/tap/intel/enrich', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contacts: [
+                {
+                  id,
+                  name: name || email.split('@')[0],
+                  email,
+                  outlet: outlet || undefined,
+                  genre_tags: genres,
+                },
+              ],
+            }),
+          })
+
+          const data = await response.json()
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.error?.message || 'Failed to enrich contact')
+          }
+
+          const enriched = data.data?.enriched?.[0]
+
+          if (enriched) {
+            set((s) => ({
+              enrichedById: {
+                ...s.enrichedById,
+                [id]: {
+                  id: enriched.id,
+                  name: enriched.name,
+                  email: enriched.email,
+                  contactIntelligence: enriched.contactIntelligence,
+                  researchConfidence: enriched.researchConfidence,
+                  lastResearched: enriched.lastResearched,
+                  errors: enriched.errors,
+                },
+              },
+              enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'success' },
+            }))
+          } else {
+            throw new Error('No enrichment data returned')
+          }
+        } catch (error) {
+          log.error('Enrichment error', error)
+          set((s) => ({
+            enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'error' },
+            enrichmentErrorById: {
+              ...s.enrichmentErrorById,
+              [id]: error instanceof Error ? error.message : 'Enrichment failed',
             },
           }))
         }

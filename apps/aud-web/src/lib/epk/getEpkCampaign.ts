@@ -65,7 +65,13 @@ export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignDat
     { data: assets, error: assetsError },
     { data: campaignRecord, error: campaignError },
   ] = await Promise.all([
-    supabase.from('campaign_context').select('*').eq('id', campaignId).maybeSingle(),
+    supabase
+      .from('campaign_context')
+      .select(
+        'id, user_id, title, artist, genre, goal, horizon_days, followers, created_at, updated_at'
+      )
+      .eq('id', campaignId)
+      .maybeSingle(),
     supabase
       .from('artist_assets')
       .select('id, title, kind, url, byte_size, mime_type, is_public, created_at')
@@ -92,8 +98,8 @@ export async function getEpkCampaign(campaignId: string): Promise<EpkCampaignDat
     return null
   }
 
-  const contextRecord = (context ?? {}) as Record<string, any>
-  const campaignRecordData = (campaignRecord ?? {}) as Record<string, any>
+  const contextRecord = (context ?? {}) as Record<string, unknown>
+  const campaignRecordData = (campaignRecord ?? {}) as Record<string, unknown>
 
   const safeAssets: RawAsset[] = Array.isArray(assets) ? (assets as RawAsset[]) : []
 

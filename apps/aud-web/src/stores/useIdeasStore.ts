@@ -372,18 +372,49 @@ export const useIdeasStore = create<IdeasState>()(
         if (!state.hasSeenStarters && state.cards.length === 0) {
           const now = new Date().toISOString()
           let starterContents: Omit<IdeaCard, 'id' | 'createdAt' | 'updatedAt'>[] = []
-          
+
           if (context?.goal === 'playlisting') {
             starterContents = [
-              { content: 'Research Spotify editorial playlists for ' + (context.genre || 'my genre'), tag: 'promo', position: { x: 120, y: 150 }, isStarter: true },
-              { content: 'Prepare playlist pitching list', tag: 'promo', position: { x: 420, y: 120 }, isStarter: true },
-              { content: 'Create pre-save campaign', tag: 'content', position: { x: 260, y: 350 }, isStarter: true },
+              {
+                content:
+                  'Research Spotify editorial playlists for ' + (context.genre || 'my genre'),
+                tag: 'promo',
+                position: { x: 120, y: 150 },
+                isStarter: true,
+              },
+              {
+                content: 'Prepare playlist pitching list',
+                tag: 'promo',
+                position: { x: 420, y: 120 },
+                isStarter: true,
+              },
+              {
+                content: 'Create pre-save campaign',
+                tag: 'content',
+                position: { x: 260, y: 350 },
+                isStarter: true,
+              },
             ]
           } else if (context?.goal === 'audience growth') {
             starterContents = [
-              { content: 'Plan weekly content series', tag: 'content', position: { x: 120, y: 150 }, isStarter: true },
-              { content: 'Identify community platforms for ' + (context.genre || 'fans'), tag: 'brand', position: { x: 420, y: 120 }, isStarter: true },
-              { content: 'Launch behind-the-scenes posts', tag: 'content', position: { x: 260, y: 350 }, isStarter: true },
+              {
+                content: 'Plan weekly content series',
+                tag: 'content',
+                position: { x: 120, y: 150 },
+                isStarter: true,
+              },
+              {
+                content: 'Identify community platforms for ' + (context.genre || 'fans'),
+                tag: 'brand',
+                position: { x: 420, y: 120 },
+                isStarter: true,
+              },
+              {
+                content: 'Launch behind-the-scenes posts',
+                tag: 'content',
+                position: { x: 260, y: 350 },
+                isStarter: true,
+              },
             ]
           } else {
             starterContents = STARTER_IDEAS
@@ -454,7 +485,9 @@ export const useIdeasStore = create<IdeasState>()(
 
           const { data, error } = await supabase
             .from('user_ideas')
-            .select('*')
+            .select(
+              'id, user_id, content, tag, position_x, position_y, is_starter, created_at, updated_at'
+            )
             .eq('user_id', user.id)
             .order('created_at', { ascending: false })
 
@@ -534,7 +567,7 @@ export const useIdeasStore = create<IdeasState>()(
     {
       name: 'totalaud-ideas-store',
       version: 4, // Bump version for sync fields
-      migrate: (persistedState: unknown, version: number): IdeasState => {
+      migrate: (persistedState: unknown, _version: number): IdeasState => {
         const state = persistedState as PersistedState
 
         // Migration to version 4: add sync fields
