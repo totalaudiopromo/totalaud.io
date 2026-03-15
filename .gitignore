@@ -46,6 +46,8 @@ Thumbs.db
 
 # Testing
 coverage/
+**/test-results/
+**/tests/output/
 
 # Deployment reports
 reports/

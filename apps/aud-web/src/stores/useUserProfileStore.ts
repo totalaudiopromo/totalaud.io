@@ -158,13 +158,18 @@ export const useUserProfileStore = create<UserProfileState>()(
             return
           }
 
-          // Note: user_profiles table has limited columns in totalaud.io
-          // Extended profile fields are stored in localStorage only
           const { data, error } = await supabase
             .from('user_profiles')
             .select(
               `
               artist_name,
+              genre,
+              vibe,
+              project_type,
+              project_title,
+              release_date,
+              primary_goal,
+              goals,
               onboarding_completed,
               onboarding_completed_at,
               created_at,
@@ -185,16 +190,16 @@ export const useUserProfileStore = create<UserProfileState>()(
           if (data) {
             set({
               profile: {
-                // Use database value for artist name, fall back to localStorage value
                 artistName: data.artist_name || existingProfile?.artistName || '',
-                // These fields are stored in localStorage only (not in database)
-                genre: existingProfile?.genre || '',
-                vibe: existingProfile?.vibe || '',
-                projectType: existingProfile?.projectType || 'none',
-                projectTitle: existingProfile?.projectTitle || '',
-                releaseDate: existingProfile?.releaseDate || null,
-                primaryGoal: existingProfile?.primaryGoal || 'explore',
-                goals: existingProfile?.goals || [],
+                genre: data.genre || existingProfile?.genre || '',
+                vibe: data.vibe || existingProfile?.vibe || '',
+                projectType:
+                  (data.project_type as ProjectType) || existingProfile?.projectType || 'none',
+                projectTitle: data.project_title || existingProfile?.projectTitle || '',
+                releaseDate: data.release_date || existingProfile?.releaseDate || null,
+                primaryGoal:
+                  (data.primary_goal as PrimaryGoal) || existingProfile?.primaryGoal || 'explore',
+                goals: data.goals || existingProfile?.goals || [],
                 onboardingCompleted: data.onboarding_completed || false,
                 onboardingCompletedAt:
                   data.onboarding_completed_at || existingProfile?.onboardingCompletedAt || null,
@@ -235,16 +240,20 @@ export const useUserProfileStore = create<UserProfileState>()(
 
           log.debug('saveToSupabase: Upserting profile', {
             userId: user.id,
-            email: user.email,
             onboardingCompleted: profile.onboardingCompleted,
           })
 
-          // Note: Only saving columns that exist in totalaud.io user_profiles table
-          // Extended profile fields (genre, vibe, projectType, etc.) are stored in localStorage only
           const { error } = await supabase.from('user_profiles').upsert(
             {
               id: user.id,
               artist_name: profile.artistName,
+              genre: profile.genre || null,
+              vibe: profile.vibe || null,
+              project_type: profile.projectType === 'none' ? null : profile.projectType,
+              project_title: profile.projectTitle || null,
+              release_date: profile.releaseDate || null,
+              primary_goal: profile.primaryGoal === 'explore' ? null : profile.primaryGoal,
+              goals: profile.goals.length > 0 ? profile.goals : null,
               onboarding_completed: profile.onboardingCompleted,
               onboarding_completed_at: profile.onboardingCompletedAt,
               updated_at: new Date().toISOString(),
