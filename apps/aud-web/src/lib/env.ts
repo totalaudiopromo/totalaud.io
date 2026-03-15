@@ -85,14 +85,6 @@ const envSchema = z.object({
   TAP_API_KEY: z.string().optional(),
   TAP_API_URL: z.string().url().optional(),
 
-  // Legacy TAP Service Keys (Deprecated)
-  TAP_API_KEY_INTEL: z.string().optional(),
-  TAP_API_KEY_PITCH: z.string().optional(),
-  TAP_API_KEY_TRACKER: z.string().optional(),
-  TAP_INTEL_URL: z.string().url().optional(),
-  TAP_PITCH_URL: z.string().url().optional(),
-  TAP_TRACKER_URL: z.string().url().optional(),
-
   // Dev Flags
   NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: z
     .preprocess((val) => val === 'true', z.boolean())
@@ -219,27 +211,4 @@ export function isSentryConfigured(): boolean {
  */
 export function isTAPConfigured(): boolean {
   return !!env.TAP_API_KEY && !!env.TAP_API_URL
-}
-
-/**
- * Check if TAP Pitch service is configured
- */
-export function isTAPPitchConfigured(): boolean {
-  return isTAPConfigured() || (!!(env.TAP_API_KEY_PITCH || env.TAP_API_KEY) && !!env.TAP_PITCH_URL)
-}
-
-/**
- * Check if TAP Intel service is configured
- */
-export function isTAPIntelConfigured(): boolean {
-  return isTAPConfigured() || (!!(env.TAP_API_KEY_INTEL || env.TAP_API_KEY) && !!env.TAP_INTEL_URL)
-}
-
-/**
- * Check if TAP Tracker service is configured
- */
-export function isTAPTrackerConfigured(): boolean {
-  return (
-    isTAPConfigured() || (!!(env.TAP_API_KEY_TRACKER || env.TAP_API_KEY) && !!env.TAP_TRACKER_URL)
-  )
 }

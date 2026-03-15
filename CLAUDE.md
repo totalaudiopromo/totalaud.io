@@ -370,13 +370,7 @@ totalaud.io/
 │       ├── schemas/          # Shared TypeScript types (KEEP)
 │       ├── ai-provider/      # AI integration for Pitch Mode (KEEP)
 │       └── integrations/     # External API integrations (KEEP)
-├── _archive/
-│   └── packages/             # Archived OS/agent packages
-│       ├── operator-os/      # OS personality system (archived)
-│       ├── operator-boot/    # Boot sequence system (archived)
-│       ├── theme-engine/     # Theme switching (archived)
-│       ├── skills-engine/    # Agent skills (archived)
-│       └── agent-executor/   # Multi-agent workflows (archived)
+├── _archive/                 # Archived packages, docs, specs
 └── package.json              # Monorepo root
 ```
 
@@ -426,6 +420,10 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ANTHROPIC_API_KEY=your-anthropic-key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NODE_ENV=development
+
+# TAP Integration (unified API)
+TAP_API_KEY=your-tap-api-key
+TAP_API_URL=https://api.totalaudiopromo.com
 
 # Optional (Google OAuth)
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -867,116 +865,6 @@ If GPT-5, Claude, or another model edits this project:
 
 ---
 
-## 🧪 IMPLEMENTED FEATURES (October 2025)
-
-### Phase 4: Cinematic Onboarding System ✅
-**Status**: Complete - 4-phase component-based onboarding
-**Location**: [apps/aud-web/ONBOARDING.md](apps/aud-web/ONBOARDING.md)
-
-**Components**:
-- `OperatorTerminal` - Phase 1: Boot sequence and operator name input
-- `OSSelector` - Phase 2: Theme selection with arrow key navigation
-- `TransitionSequence` - Phase 3: Animated boot sequence
-- `FlowStudio` - Phase 4: Main workspace with theme integration
-
-**Hooks**:
-- `useOnboardingPhase()` - State machine for phase transitions
-- `useOperatorInput()` - Terminal boot sequence logic
-- `useOSSelection()` - Arrow key theme selection
-
-**Flow**:
-```
-operator (boot) → selection (theme) → transition (boot) → signal (workspace)
-```
-
-**Persistence**: localStorage tracks completion, can skip with `?skip_onboarding=true`
-
-### Phase 5: Agent Spawning System ✅
-**Status**: Complete - Modal-based agent spawning with database persistence
-**Database**: `agent_manifests` table in Supabase
-
-**Components**:
-- `AgentSpawnModal` - Full-featured modal with name, role, personality, colour
-- `GlobalCommandPalette` - Command palette integration (⌘K → spawn agent)
-
-**Hook**:
-- `useAgentSpawner()` - Supabase integration for spawn/list/remove operations
-
-**Agent Roles**: scout, coach, tracker, insight, custom
-
-**Spawning Flow**:
-1. Open modal via ⌘K → "spawn agent scout/coach/tracker/insight/custom"
-2. Configure name, role, personality, colour
-3. Validate + spawn to Supabase
-4. Modal closes with success sound
-
-**Command Palette Integration**:
-- 5 spawn commands (one per role)
-- 1 list agents command
-- Full keyboard navigation
-
-**Database Schema**:
-```sql
-CREATE TABLE agent_manifests (
-  id uuid PRIMARY KEY,
-  user_id uuid REFERENCES auth.users,
-  name text UNIQUE,
-  role text,
-  personality text,
-  colour text,
-  created_at timestamptz,
-  updated_at timestamptz
-);
-```
-
-### Theme System ✅
-**Status**: Complete - 5 themes with layout/narrative/ambient configs
-**Themes**: ascii, xp, aqua, daw, analogue
-
-**Architecture**:
-- `ThemeResolver` - Manages theme selection and CSS variable injection
-- `ThemeContext` - Provides currentTheme, themeConfig, setTheme
-- `themes/` directory - Individual theme configs (ascii.theme.ts, xp.theme.ts, etc.)
-
-**Theme Configs** (type `ThemeConfig`):
-- `colors`: background, foreground, accent, border
-- `typography`: fontFamily, fontSize, letterSpacing, textTransform
-- `motion`: duration, easing, reducedMotion
-- `sound`: oscillator, frequencies, durations
-- `layout`: borderStyle, borderRadius, shadow, depth, glow, padding
-- `narrative`: tagline, personality descriptors
-- `ambient`: gridMotion, gridSpeed, hoverScale, hapticsEnabled
-
-**Theme Personalities**:
-- **ascii**: "type. test. repeat." - minimalist producer, green terminal
-- **xp**: "click. bounce. smile." - nostalgic optimist, spring bounce
-- **aqua**: "craft with clarity." - perfectionist designer, glassy blur
-- **daw**: "sync. sequence. create." - experimental creator, 120 BPM tempo-synced
-- **analogue**: "touch the signal." - human hands, warm lo-fi studio
-
-**Integration**:
-- `MissionPanel` - Uses theme layout for borders, shadows, glows
-- `FlowCanvas` - Theme-aware grid background and motion
-- `AmbientSoundLayer` - Per-theme sound banks (Web Audio API)
-- `GlobalCommandPalette` - Theme switching commands
-
-**UI Sounds** (per theme):
-- ascii: square waves (880Hz/1760Hz/220Hz)
-- xp: sine waves (nostalgic, soft)
-- aqua: triangle waves (smooth, designer)
-- daw: sawtooth waves (producer, experimental)
-- analogue: gentle sine waves (280Hz/120Hz/260Hz, 0.4-0.6s durations)
-
-### Multi-Agent System
-- Agent executor with skill-based architecture
-- Dynamic agent spawning and orchestration
-- Real-time agent communication via Supabase
-
-### Skills Engine
-- Extensible skill registration system
-- Skills can be invoked by agents dynamically
-- Integration with external APIs
-
 ---
 
 ## 🔧 DEVELOPMENT COMMANDS
@@ -1034,6 +922,8 @@ SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ANTHROPIC_API_KEY=<anthropic-key>
 NEXT_PUBLIC_APP_URL=https://totalaud.io
 NODE_ENV=production
+TAP_API_KEY=<tap-api-key>
+TAP_API_URL=https://tap.totalaudiopromo.com
 ```
 
 ---
@@ -1073,188 +963,18 @@ Indie artists don't lack tools. They lack clear, trusted feedback and prioritisa
 
 ---
 
-## 🤖 BROWSER AUTOMATION & VISUAL CONTEXT (October 2025)
+## BROWSER AUTOMATION (MCP)
 
-**Status**: ✅ **DUAL MCP SETUP COMPLETE**
-
-### Two MCP Servers for Different Purposes
-
-#### 1. Chrome DevTools MCP - Visual Context ⭐
-**Purpose**: Let Claude Code **SEE** what it's building in real-time
-
-**When to use:**
-- Building UI components (need visual feedback)
-- Debugging CSS/layout issues (see the page)
-- Performance analysis (profiling tools)
-- Console debugging (JavaScript errors)
-- Network inspection (API requests)
-
-**Available tools:**
-- `take_screenshot` - Screenshot of localhost during development
-- `take_snapshot` - DOM structure with CSS
-- `record_trace` - Performance profiling
-- `get_console_logs` - JavaScript console output
-- `get_network_activity` - Network requests inspection
-
-**Example workflow:**
-```
-User: "Add a new ConsolePanel component to the app"
-Claude: [Writes component code]
-Claude: [Takes screenshot of localhost:3000]
-Claude: "I can see the panel is rendering but the border is too thick, let me adjust..."
-Claude: [Fixes styling]
-Claude: [Takes screenshot to confirm]
-Claude: "Perfect! The console panel now matches the theme."
-```
-
-**Configuration:**
-```json
-{
-  "chrome-devtools": {
-    "command": "npx",
-    "args": ["chrome-devtools-mcp@latest"]
-  }
-}
-```
-
-#### 2. Puppeteer MCP - Background Automation 🤖
-**Purpose**: Automate tasks that don't need visual feedback
-
-**When to use:**
-- Web scraping (radio contacts, playlists)
-- Form automation (login, submissions)
-- Dialog auto-handling (alerts/confirms)
-- Data extraction (emails, contact info)
-- Background workflows (no visual needed)
-
-**Available tools:**
-- `puppeteer_navigate` - Navigate to URLs
-- `puppeteer_screenshot` - Take screenshots
-- `puppeteer_click` - Click elements
-- `puppeteer_fill` - Fill form inputs
-- `puppeteer_evaluate` - Execute JavaScript
-- `puppeteer_select` - Select dropdown options
-- `puppeteer_hover` - Hover elements
-
-**Key feature:** Auto-dialog handling
-```javascript
-// Automatically injected to handle popups
-window.alert = (msg) => console.log('[AUTO-HANDLED] Alert:', msg);
-window.confirm = (msg) => { console.log('[AUTO-HANDLED] Confirm:', msg); return true; };
-window.prompt = (msg, def) => { console.log('[AUTO-HANDLED] Prompt:', msg); return def || ''; };
-```
-
-**Example workflow:**
-```
-User: "Get all BBC Radio 1 DJ email addresses"
-Claude: [Navigates to BBC Radio 1 contacts page]
-Claude: [Auto-handles any dialog popups]
-Claude: [Extracts all email addresses]
-Claude: "Found 15 DJ contacts with emails"
-```
-
-**Configuration:**
-```json
-{
-  "puppeteer": {
-    "command": "npx",
-    "args": ["@modelcontextprotocol/server-puppeteer"]
-  }
-}
-```
-
-### When to Use Which?
-
-| Task | Use This | Why |
-|------|----------|-----|
-| Building UI components | **Chrome DevTools** | Need to see visual result |
-| Debugging CSS/layout | **Chrome DevTools** | Visual feedback required |
-| Performance profiling | **Chrome DevTools** | Built-in trace viewer |
-| JavaScript debugging | **Chrome DevTools** | Console logs + snapshots |
-| Scraping contact info | **Puppeteer** | Background task |
-| Form automation | **Puppeteer** | No visual needed |
-| Login workflows | **Puppeteer** | Dialog handling + automation |
-| Data extraction | **Puppeteer** | Headless efficiency |
-
-### Verify Setup
-
-```bash
-claude mcp list
-
-# Should show:
-# ✓ chrome-devtools: npx chrome-devtools-mcp@latest - Connected
-# ✓ puppeteer: npx @modelcontextprotocol/server-puppeteer - Connected
-```
-
-### Auto-Approval Configuration
-
-**Status**: ✅ Configured in `~/.claude/settings.json`
-
-All Chrome DevTools MCP tools are pre-approved for automatic execution without confirmation prompts:
-- `take_screenshot` - Capture visual state
-- `take_snapshot` - DOM structure analysis
-- `list_pages` - Browser tab management
-- `navigate_page` - Page navigation
-- `click`, `fill`, `hover` - UI interactions
-- `list_console_messages`, `get_console_message` - Console debugging
-- `list_network_requests`, `get_network_request` - Network inspection
-- `performance_*` - Performance profiling
-
-This enables **seamless visual context workflow** without interruptions during UI development.
-
-### Documentation Files
-- [VISUAL_CONTEXT_WORKFLOW.md](VISUAL_CONTEXT_WORKFLOW.md) - Complete Chrome DevTools workflow
-- [BROWSER_AUTOMATION_GUIDE.md](BROWSER_AUTOMATION_GUIDE.md) - Puppeteer automation guide
-
-### Default Behavior for Claude Code
-
-**When building UI:**
-1. Write component code
-2. Take screenshot of localhost:3000 (Chrome DevTools MCP)
-3. Visually verify the result
-4. Make adjustments based on what you see
-5. Take screenshot to confirm
-
-**When automating tasks:**
-1. Navigate to target URL (Puppeteer MCP)
-2. Auto-inject dialog handler
-3. Execute automation workflow
-4. Return structured data
-
-**Key advantage:** Claude Code can now SEE what it's building (visual context) AND automate background tasks (no manual clicking). Best of both worlds!
+- **Chrome DevTools MCP**: Visual context — screenshots, DOM snapshots, console logs, network inspection. Use when building UI.
+- **Claude-in-Chrome MCP**: Browser automation — navigation, clicking, form filling. Use for scraping or automation tasks.
+- MCP tools are auto-approved in `~/.claude/settings.json`.
 
 ---
 
-## 🚨 NOTES FOR CLAUDE CODE
+## NOTES FOR CLAUDE CODE
 
-### Deployment Platform: Railway (October 2025)
-**Decision**: Switched from Vercel to Railway after 70+ failed Vercel deployments
-**Root Cause**: Vercel's Build Output API v3 detection system doesn't properly register Next.js 15 + pnpm workspace + Turborepo builds
-**Railway Status**: ✅ Working perfectly - first deployment succeeded
-
-**Vercel Issues Summary** (documented in `VERCEL_DEPLOYMENT_COMPLETE_SUMMARY.md`):
-- Build completed successfully (55s, all routes generated)
-- But Vercel showed `[0ms]` build time in inspect
-- All routes returned 404 NOT_FOUND
-- Issue is with Vercel's infrastructure, not the code
-- Comprehensive documentation provided for Vercel support ticket if needed
-
-**Railway Advantages**:
-- Nixpacks builder understands pnpm workspaces natively
-- No special configuration needed for monorepo structure
-- Handles `workspace:*` dependencies correctly
-- Fast deployment times
-- Easy domain generation via `railway domain` command
-
-### Theme System Migration (Completed)
-**Changed**: Renamed themes from 'ableton'/'punk' to 'daw'/'analogue'
-**Files Updated**: 6 files (OnboardingOverlay, MissionDashboard, BrokerChat, OSTransition, OSCard, os-selector/page.tsx)
-**Status**: ✅ Complete - All TypeScript errors resolved
-
-### Agent Spawning System
-**Database**: `agent_manifests` table requires RLS policies
-**Migration**: `supabase/migrations/20251022000000_add_agent_manifests.sql`
-**Status**: ✅ Complete - Modal + database integration working
+### Deployment Platform: Railway
+Railway handles Next.js 15 + pnpm workspaces natively. See Railway Configuration section above for details.
 
 ---
 
@@ -1288,9 +1008,7 @@ Project-specific documentation files:
 
 ---
 
-**Last Updated**: January 2026  
-**Status**: Vision Reset — Aligning all documentation  
-**Vision**: See [`docs/VISION.md`](docs/VISION.md) for canonical product direction  
-**Live URL**: <https://totalaud.io>  
-**Focus**: Thinking and finishing system for independent artists  
-**PRD**: See [PRD.md](PRD.md) — being updated to align with Vision
+**Last Updated**: March 2026
+**Vision**: See [`docs/VISION.md`](docs/VISION.md) for canonical product direction
+**Live URL**: <https://totalaud.io>
+**Focus**: Thinking and finishing system for independent artists

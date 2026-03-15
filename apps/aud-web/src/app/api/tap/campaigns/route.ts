@@ -1,11 +1,11 @@
 /**
- * TAP Tracker Campaigns Proxy Route
+ * TAP Campaigns Proxy Route
  *
- * Creates and lists campaigns in Total Audio Platform's Tracker service.
+ * Creates and lists campaigns in Total Audio Platform's unified API.
  * Used by Timeline Mode to log submissions and track outreach.
  *
- * GET  /api/tap/tracker/campaigns - List campaigns
- * POST /api/tap/tracker/campaigns - Create campaign
+ * GET  /api/tap/campaigns - List campaigns
+ * POST /api/tap/campaigns - Create campaign
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -14,12 +14,9 @@ import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { tapClient, TotalAudioApiError } from '@/lib/tap-client'
 
-const log = logger.scope('TAPTrackerCampaigns')
+const log = logger.scope('TAPCampaigns')
 
 // Request validation schema for creating campaigns
-// Note: platform and genre are optional strings because TAP Tracker has
-// specific database check constraints that may not match these enums.
-// The TAP database will validate the actual values.
 const createCampaignSchema = z.object({
   name: z.string().min(1, 'Campaign name is required'),
   artist_name: z.string().optional(),
@@ -27,9 +24,9 @@ const createCampaignSchema = z.object({
     .enum(['planning', 'active', 'completed', 'paused', 'draft'])
     .optional()
     .default('active'),
-  platform: z.string().optional(), // TAP DB has its own constraints
-  genre: z.string().optional(), // TAP DB has its own constraints
-  target_type: z.string().optional(), // TAP DB has its own constraints
+  platform: z.string().optional(),
+  genre: z.string().optional(),
+  target_type: z.string().optional(),
   notes: z.string().optional(),
   start_date: z.string().optional(),
   end_date: z.string().optional(),
@@ -37,10 +34,6 @@ const createCampaignSchema = z.object({
   target_reach: z.number().optional(),
 })
 
-/**
- * GET /api/tap/tracker/campaigns
- * List all campaigns with metrics and patterns
- */
 /**
  * Helper to verify authentication
  */
@@ -54,9 +47,12 @@ async function verifyAuth() {
   return { session, sessionError, supabase }
 }
 
+/**
+ * GET /api/tap/campaigns
+ * List all campaigns with metrics and patterns
+ */
 export async function GET() {
   try {
-    // Authenticate request
     const { session, sessionError } = await verifyAuth()
 
     if (sessionError) {
@@ -74,7 +70,7 @@ export async function GET() {
     }
 
     if (!session) {
-      log.warn('Unauthenticated request to Tracker campaigns GET')
+      log.warn('Unauthenticated request to campaigns GET')
       return NextResponse.json(
         {
           success: false,
@@ -87,15 +83,14 @@ export async function GET() {
       )
     }
 
-    // Check if Tracker is configured
-    if (!tapClient.isConfigured('tracker')) {
-      log.warn('Tracker API not configured')
+    if (!tapClient.isConfigured()) {
+      log.warn('TAP API not configured')
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'NOT_CONFIGURED',
-            message: 'Tracker service is not configured',
+            message: 'TAP service is not configured',
           },
         },
         { status: 503 }
@@ -104,7 +99,7 @@ export async function GET() {
 
     log.info('Fetching campaigns')
 
-    const result = await tapClient.tracker.listCampaigns(session.user.id)
+    const result = await tapClient.listCampaigns(session.user.id)
 
     log.info('Campaigns fetched', { count: result.campaigns.length })
 
@@ -114,7 +109,7 @@ export async function GET() {
     })
   } catch (error) {
     if (error instanceof TotalAudioApiError) {
-      log.error('TAP Tracker API error', undefined, { code: error.code, status: error.status })
+      log.error('TAP API error', undefined, { code: error.code, status: error.status })
       return NextResponse.json(
         {
           success: false,
@@ -142,12 +137,11 @@ export async function GET() {
 }
 
 /**
- * POST /api/tap/tracker/campaigns
+ * POST /api/tap/campaigns
  * Create a new campaign (used when logging timeline submissions)
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate request
     const { session, sessionError } = await verifyAuth()
 
     if (sessionError) {
@@ -165,7 +159,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!session) {
-      log.warn('Unauthenticated request to Tracker campaigns POST')
+      log.warn('Unauthenticated request to campaigns POST')
       return NextResponse.json(
         {
           success: false,
@@ -178,15 +172,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if Tracker is configured
-    if (!tapClient.isConfigured('tracker')) {
-      log.warn('Tracker API not configured')
+    if (!tapClient.isConfigured()) {
+      log.warn('TAP API not configured')
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'NOT_CONFIGURED',
-            message: 'Tracker service is not configured',
+            message: 'TAP service is not configured',
           },
         },
         { status: 503 }
@@ -216,7 +209,7 @@ export async function POST(request: NextRequest) {
 
     log.info('Creating campaign', { name: campaignData.name, platform: campaignData.platform })
 
-    const campaign = await tapClient.tracker.createCampaign(campaignData, session.user.id)
+    const campaign = await tapClient.createCampaign(campaignData, session.user.id)
 
     log.info('Campaign created', { campaignId: campaign.id })
 
@@ -228,7 +221,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof TotalAudioApiError) {
-      log.error('TAP Tracker API error', undefined, { code: error.code, status: error.status })
+      log.error('TAP API error', undefined, { code: error.code, status: error.status })
       return NextResponse.json(
         {
           success: false,

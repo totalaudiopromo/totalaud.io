@@ -1,10 +1,9 @@
 /**
- * TAP Tracker Sync API
- * Phase 90+: Feature Depth
+ * TAP Sync API
  *
- * Syncs an opportunity from Scout mode to TAP Tracker as a new campaign.
+ * Syncs an opportunity from Scout mode to TAP as a new campaign.
  *
- * POST /api/tap/tracker/sync
+ * POST /api/tap/sync
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -13,7 +12,7 @@ import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { tapClient, TotalAudioApiError } from '@/lib/tap-client'
 
-const log = logger.scope('TAPTrackerSync')
+const log = logger.scope('TAPSync')
 
 const syncSchema = z.object({
   opportunityId: z.string().min(1),
@@ -52,12 +51,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
     }
 
-    // Call TAP Tracker API
-    if (!tapClient.isConfigured('tracker')) {
-      return NextResponse.json({ error: 'TAP Tracker is not configured' }, { status: 503 })
+    if (!tapClient.isConfigured()) {
+      return NextResponse.json({ error: 'TAP is not configured' }, { status: 503 })
     }
 
-    const campaign = await tapClient.tracker.createCampaign(
+    const campaign = await tapClient.createCampaign(
       {
         name: campaignName,
         artist_name: session.user.user_metadata?.display_name || 'Unknown Artist',
@@ -69,7 +67,7 @@ export async function POST(req: NextRequest) {
       session.user.id
     )
 
-    log.info('Opportunity synced to TAP Tracker', {
+    log.info('Opportunity synced to TAP', {
       opportunityId,
       campaignId: campaign.id,
       userId: session.user.id,
@@ -78,7 +76,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, campaign }, { status: 201 })
   } catch (error) {
     if (error instanceof TotalAudioApiError) {
-      log.error('TAP Tracker API error', undefined, { code: error.code, status: error.status })
+      log.error('TAP API error', undefined, { code: error.code, status: error.status })
       return NextResponse.json({ error: error.message }, { status: error.status })
     }
 

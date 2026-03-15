@@ -41,7 +41,7 @@ export const createTAPSlice: StateCreator<TAPSlice & PartialDraftsState, [], [],
     set({ tapGenerationStatus: 'loading', tapError: null })
 
     try {
-      const response = await fetch('/api/tap/pitch/generate', {
+      const response = await fetch('/api/tap/pitch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

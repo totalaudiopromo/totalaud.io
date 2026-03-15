@@ -1,12 +1,11 @@
 /**
  * Total Audio Platform (TAP) API Client
  *
- * Local client utility for totalaud.io to communicate with TAP services.
- * Mirrors the @total-audio/api-client SDK interface.
+ * Local client utility for totalaud.io to communicate with TAP's unified API.
  *
  * Usage:
  *   import { tapClient } from '@/lib/tap-client'
- *   const contacts = await tapClient.intel.enrichContacts([...])
+ *   const contacts = await tapClient.enrichContacts([...])
  */
 
 import { logger } from './logger'
@@ -314,7 +313,7 @@ export class TAPClient extends BaseClient {
     contacts: EnrichContactInput[],
     options?: { forceRefresh?: boolean; includeConfidence?: boolean }
   ): Promise<EnrichedContact[]> {
-    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/enrich', {
+    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/intel/enrich', {
       contacts,
       options,
     })
@@ -327,7 +326,7 @@ export class TAPClient extends BaseClient {
   }
 
   async validateEmails(emails: string[]): Promise<{ results: EmailValidationResult[] }> {
-    return this.post<{ results: EmailValidationResult[] }>('/api/validate-emails', { emails })
+    return this.post<{ results: EmailValidationResult[] }>('/api/v1/contacts/validate', { emails })
   }
 
   async validateEmail(email: string): Promise<EmailValidationResult> {
@@ -348,7 +347,7 @@ export class TAPClient extends BaseClient {
     subjectLine?: string
     contactType?: string
   }): Promise<PitchAnalysis> {
-    const response = await this.post<{ analysis: PitchAnalysis }>('/api/pitch/analyze', request)
+    const response = await this.post<{ analysis: PitchAnalysis }>('/api/pitch/improve', request)
     return response.analysis
   }
 
@@ -368,39 +367,6 @@ export class TAPClient extends BaseClient {
   ): Promise<CampaignWithInsights> {
     return this.post<CampaignWithInsights>('/api/campaigns', campaign, { userId })
   }
-
-  /**
-   * Legacy Compatibility Layer
-   * @deprecated Use top-level methods instead
-   */
-  get intel() {
-    return this
-  }
-
-  /**
-   * Legacy Compatibility Layer
-   * @deprecated Use top-level methods instead
-   */
-  get pitch() {
-    return {
-      generate: this.generatePitch.bind(this),
-      analyse: this.analysePitch.bind(this),
-      analyze: this.analysePitch.bind(this),
-    }
-  }
-
-  /**
-   * Legacy Compatibility Layer
-   * @deprecated Use top-level methods instead
-   */
-  get tracker() {
-    return {
-      listCampaigns: this.listCampaigns.bind(this),
-      getCampaigns: async (userId: string) => (await this.listCampaigns(userId)).campaigns,
-      getMetrics: async (userId: string) => (await this.listCampaigns(userId)).metrics,
-      createCampaign: this.createCampaign.bind(this),
-    }
-  }
 }
 
 // ============================================================================
@@ -415,24 +381,9 @@ let clientInstance: TAPClient | null = null
  */
 export function getTapClient(): TAPClient {
   if (!clientInstance) {
-    // Priority: Unified TAP_API_URL/KEY -> Specific Legacy Keys
-    const apiKey =
-      process.env.TAP_API_KEY ||
-      process.env.TAP_API_KEY_INTEL ||
-      process.env.TAP_API_KEY_PITCH ||
-      process.env.TAP_API_KEY_TRACKER ||
-      ''
-
-    const baseUrl =
-      process.env.TAP_API_URL ||
-      process.env.TAP_INTEL_URL ||
-      process.env.TAP_PITCH_URL ||
-      process.env.TAP_TRACKER_URL ||
-      'https://api.totalaudiopromo.com'
-
     clientInstance = new TAPClient({
-      apiKey,
-      baseUrl,
+      apiKey: process.env.TAP_API_KEY || '',
+      baseUrl: process.env.TAP_API_URL || 'https://api.totalaudiopromo.com',
     })
   }
   return clientInstance
@@ -446,44 +397,19 @@ export const tapClient = {
   get api() {
     return getTapClient()
   },
-  // Unified methods
   enrichContacts: (
     contacts: EnrichContactInput[],
     options?: { forceRefresh?: boolean; includeConfidence?: boolean }
   ) => getTapClient().enrichContacts(contacts, options),
+  enrichContact: (contact: EnrichContactInput) => getTapClient().enrichContact(contact),
+  validateEmails: (emails: string[]) => getTapClient().validateEmails(emails),
   generatePitch: (req: GeneratePitchRequest) => getTapClient().generatePitch(req),
+  analysePitch: (req: Parameters<TAPClient['analysePitch']>[0]) => getTapClient().analysePitch(req),
   listCampaigns: (userId: string) => getTapClient().listCampaigns(userId),
+  createCampaign: (campaign: CreateCampaignRequest, userId: string) =>
+    getTapClient().createCampaign(campaign, userId),
 
-  // Legacy Compatibility
-  get intel() {
-    return getTapClient()
-  },
-  get pitch() {
-    return getTapClient().pitch
-  },
-  get tracker() {
-    return getTapClient().tracker
-  },
-
-  isConfigured(service?: 'intel' | 'pitch' | 'tracker') {
-    // If we have a central API key and URL, we consider it configured for everything
-    if (process.env.TAP_API_KEY && process.env.TAP_API_URL) return true
-
-    // Check legacy specific configs
-    if (service === 'intel')
-      return (
-        !!(process.env.TAP_API_KEY_INTEL || process.env.TAP_API_KEY) && !!process.env.TAP_INTEL_URL
-      )
-    if (service === 'pitch')
-      return (
-        !!(process.env.TAP_API_KEY_PITCH || process.env.TAP_API_KEY) && !!process.env.TAP_PITCH_URL
-      )
-    if (service === 'tracker')
-      return (
-        !!(process.env.TAP_API_KEY_TRACKER || process.env.TAP_API_KEY) &&
-        !!process.env.TAP_TRACKER_URL
-      )
-
+  isConfigured() {
     return !!process.env.TAP_API_KEY && !!process.env.TAP_API_URL
   },
 }

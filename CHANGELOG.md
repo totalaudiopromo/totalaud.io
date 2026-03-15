@@ -6,7 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-10-22
 
-### 🎨 Phase 6: Studio Personality Enhancements
+### Phase 6: Studio Personality Enhancements
+
+> **Note (January 2026)**: The 5 Studios, OS themes, agent spawning, and multi-agent
+> systems described in this changelog were archived during the January 2026 Vision pivot.
+> totalaud.io is now a thinking and finishing system — see `docs/VISION.md` for current direction.
 
 **Objective**: Transform 5 Studios from "same dashboard, different colors" into emotionally distinct creative environments.
 

@@ -240,7 +240,7 @@ export const useScoutStore = create<ScoutState>()(
         }))
 
         try {
-          const response = await fetch('/api/tap/intel/enrich', {
+          const response = await fetch('/api/tap/enrich', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -305,7 +305,7 @@ export const useScoutStore = create<ScoutState>()(
         }))
 
         try {
-          const response = await fetch('/api/tap/intel/enrich', {
+          const response = await fetch('/api/tap/enrich', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
