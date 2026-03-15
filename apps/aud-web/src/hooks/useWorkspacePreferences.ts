@@ -34,7 +34,7 @@ export function useWorkspacePreferences() {
   // Get store state and actions
   const viewMode = useIdeasStore((state) => state.viewMode)
   const sortMode = useIdeasStore((state) => state.sortMode)
-  const hasSeenStarters = useIdeasStore((state) => state.hasSeenStarters)
+  // const hasSeenStarters = useIdeasStore((state) => state.hasSeenStarters)
   const setViewMode = useIdeasStore((state) => state.setViewMode)
   const setSortMode = useIdeasStore((state) => state.setSortMode)
 
@@ -48,7 +48,9 @@ export function useWorkspacePreferences() {
 
         const { data, error } = await supabase
           .from('user_workspace_preferences')
-          .select('*')
+          .select(
+            'user_id, ideas_view_mode, ideas_sort_mode, ideas_has_seen_starters, last_active_mode, updated_at'
+          )
           .eq('user_id', user.id)
           .single()
 

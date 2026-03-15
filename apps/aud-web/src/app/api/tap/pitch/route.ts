@@ -1,41 +1,37 @@
 /**
- * TAP Intel Enrichment Proxy Route
+ * TAP Pitch Generation Proxy Route
  *
- * Enriches contacts using Total Audio Platform's Intel service.
- * Used by Scout Mode to validate and enrich opportunity contacts.
+ * Generates professional pitches using Total Audio Platform's unified API.
+ * Used by Pitch Mode alongside the existing Claude coach.
  *
- * POST /api/tap/intel/enrich
+ * POST /api/tap/pitch
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
-import { tapClient, TotalAudioApiError, type EnrichContactInput } from '@/lib/tap-client'
+import { tapClient, TotalAudioApiError } from '@/lib/tap-client'
 
-const log = logger.scope('TAPIntelEnrich')
+const log = logger.scope('TAPPitch')
 
 // Request validation schema
-const enrichRequestSchema = z.object({
-  contacts: z
-    .array(
-      z.object({
-        id: z.string().optional(),
-        name: z.string().min(1, 'Name is required'),
-        email: z.string().email('Valid email is required'),
-        outlet: z.string().optional(),
-        role: z.string().optional(),
-        genre_tags: z.array(z.string()).optional(),
-      })
-    )
-    .min(1, 'At least one contact is required')
-    .max(10, 'Maximum 10 contacts per request'),
-  options: z
+const generateRequestSchema = z.object({
+  contactId: z.string().optional().default('manual'),
+  contact: z
     .object({
-      forceRefresh: z.boolean().optional(),
-      includeConfidence: z.boolean().optional(),
+      name: z.string().min(1),
+      email: z.string().email().optional(),
+      outlet: z.string().optional(),
     })
     .optional(),
+  artistName: z.string().min(1, 'Artist name is required'),
+  trackTitle: z.string().min(1, 'Track title is required'),
+  genre: z.string().optional(),
+  trackLink: z.string().url().optional(),
+  releaseDate: z.string().optional(),
+  keyHook: z.string().min(10, 'Key hook must be at least 10 characters'),
+  tone: z.enum(['casual', 'professional', 'enthusiastic']).optional().default('professional'),
 })
 
 export async function POST(request: NextRequest) {
@@ -62,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!session) {
-      log.warn('Unauthenticated request to Intel enrich')
+      log.warn('Unauthenticated request to pitch generate')
       return NextResponse.json(
         {
           success: false,
@@ -75,15 +71,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if Intel is configured
-    if (!tapClient.isConfigured('intel')) {
-      log.warn('Intel API not configured')
+    // Check if TAP is configured
+    if (!tapClient.isConfigured()) {
+      log.warn('TAP API not configured')
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'NOT_CONFIGURED',
-            message: 'Intel service is not configured',
+            message: 'TAP service is not configured',
           },
         },
         { status: 503 }
@@ -92,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request body
     const body = await request.json()
-    const validationResult = enrichRequestSchema.safeParse(body)
+    const validationResult = generateRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
       log.warn('Validation failed', { errors: validationResult.error.errors })
@@ -109,25 +105,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { contacts, options } = validationResult.data
+    const pitchRequest = validationResult.data
 
-    log.info('Enriching contacts', { count: contacts.length })
+    log.info('Generating pitch', {
+      artistName: pitchRequest.artistName,
+      trackTitle: pitchRequest.trackTitle,
+      tone: pitchRequest.tone,
+    })
 
-    // Call TAP Intel service
-    const enriched = await tapClient.intel.enrichContacts(contacts as EnrichContactInput[], options)
+    // Call TAP pitch API
+    const result = await tapClient.generatePitch(pitchRequest)
 
-    log.info('Enrichment complete', { enrichedCount: enriched.length })
+    log.info('Pitch generated', { pitchId: result.pitchId })
 
     return NextResponse.json({
       success: true,
       data: {
-        enriched,
-        processed: enriched.length,
+        pitchId: result.pitchId,
+        pitch: result.pitch,
       },
     })
   } catch (error) {
     if (error instanceof TotalAudioApiError) {
-      log.error('TAP Intel API error', undefined, { code: error.code, status: error.status })
+      log.error('TAP Pitch API error', undefined, { code: error.code, status: error.status })
       return NextResponse.json(
         {
           success: false,
@@ -140,13 +140,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    log.error('Unexpected error in Intel enrichment', error as Error)
+    log.error('Unexpected error in pitch generation', error as Error)
     return NextResponse.json(
       {
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
-          message: 'Failed to enrich contacts',
+          message: 'Failed to generate pitch',
         },
       },
       { status: 500 }

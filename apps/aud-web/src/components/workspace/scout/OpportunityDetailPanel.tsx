@@ -112,7 +112,7 @@ export function OpportunityDetailPanel() {
     setIsSyncing(true)
     try {
       track('opportunity_sync_start', { opportunityId: opportunity.id })
-      const response = await fetch('/api/tap/tracker/sync', {
+      const response = await fetch('/api/tap/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

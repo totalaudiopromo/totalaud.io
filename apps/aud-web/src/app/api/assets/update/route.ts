@@ -28,7 +28,7 @@ const updateRequestSchema = z.object({
   tags: z.array(z.string().max(50)).max(20).optional(),
 })
 
-type UpdateRequest = z.infer<typeof updateRequestSchema>
+// type UpdateRequest = z.infer<typeof updateRequestSchema>
 
 interface UpdateResponse {
   success: boolean
@@ -114,7 +114,9 @@ export async function POST(request: NextRequest) {
       .update(updateData)
       .eq('id', assetId)
       .eq('user_id', userId)
-      .select('*')
+      .select(
+        'id, user_id, campaign_id, title, description, kind, url, path, mime_type, byte_size, checksum, tags, is_public, created_at, updated_at'
+      )
       .single()
 
     if (updateError) {

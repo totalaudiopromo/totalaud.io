@@ -103,7 +103,9 @@ async function fetchIdentity(): Promise<ArtistIdentity | null> {
 
   const { data, error } = await supabase
     .from('artist_identities')
-    .select('*')
+    .select(
+      'id, user_id, brand_tone, brand_themes, brand_style, key_phrases, primary_motifs, emotional_range, unique_elements, one_liner, press_angle, pitch_hook, comparisons, bio_short, bio_long, last_generated_at, created_at, updated_at'
+    )
     .eq('user_id', user.id)
     .single()
 

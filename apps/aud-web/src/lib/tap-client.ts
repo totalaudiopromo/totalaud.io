@@ -1,12 +1,11 @@
 /**
  * Total Audio Platform (TAP) API Client
  *
- * Local client utility for totalaud.io to communicate with TAP services.
- * Mirrors the @total-audio/api-client SDK interface.
+ * Local client utility for totalaud.io to communicate with TAP's unified API.
  *
  * Usage:
  *   import { tapClient } from '@/lib/tap-client'
- *   const contacts = await tapClient.intel.enrichContacts([...])
+ *   const contacts = await tapClient.enrichContacts([...])
  */
 
 import { logger } from './logger'
@@ -290,15 +289,31 @@ class BaseClient {
 }
 
 // ============================================================================
-// Intel Client
+// TAP Client (Unified)
 // ============================================================================
 
-class IntelClient extends BaseClient {
+export interface TAPClientConfig {
+  apiKey: string
+  baseUrl: string
+  timeout?: number
+}
+
+export class TAPClient extends BaseClient {
+  constructor(config: TAPClientConfig) {
+    super({
+      apiKey: config.apiKey,
+      baseUrl: config.baseUrl,
+      timeout: config.timeout,
+    })
+  }
+
+  // --- Intel (Enrichment) ---
+
   async enrichContacts(
     contacts: EnrichContactInput[],
     options?: { forceRefresh?: boolean; includeConfidence?: boolean }
   ): Promise<EnrichedContact[]> {
-    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/enrich-claude', {
+    const response = await this.post<{ enriched: EnrichedContact[] }>('/api/intel/enrich', {
       contacts,
       options,
     })
@@ -311,66 +326,39 @@ class IntelClient extends BaseClient {
   }
 
   async validateEmails(emails: string[]): Promise<{ results: EmailValidationResult[] }> {
-    return this.post<{ results: EmailValidationResult[] }>('/api/validate-emails', { emails })
+    return this.post<{ results: EmailValidationResult[] }>('/api/v1/contacts/validate', { emails })
   }
 
   async validateEmail(email: string): Promise<EmailValidationResult> {
     const response = await this.validateEmails([email])
     return response.results[0]
   }
-}
 
-// ============================================================================
-// Pitch Client
-// ============================================================================
+  // --- Pitch ---
 
-class PitchClient extends BaseClient {
-  async generate(
+  async generatePitch(
     request: GeneratePitchRequest
   ): Promise<{ pitchId: string; pitch: GeneratedPitch }> {
     return this.post<{ pitchId: string; pitch: GeneratedPitch }>('/api/pitch/generate', request)
   }
 
-  async analyse(request: {
+  async analysePitch(request: {
     pitchBody: string
     subjectLine?: string
     contactType?: string
   }): Promise<PitchAnalysis> {
-    const response = await this.post<{ analysis: PitchAnalysis }>('/api/pitch/analyze', request)
+    const response = await this.post<{ analysis: PitchAnalysis }>('/api/pitch/improve', request)
     return response.analysis
   }
 
-  // Alias for British English
-  async analyze(request: {
-    pitchBody: string
-    subjectLine?: string
-    contactType?: string
-  }): Promise<PitchAnalysis> {
-    return this.analyse(request)
-  }
-}
+  // --- Tracker ---
 
-// ============================================================================
-// Tracker Client
-// ============================================================================
-
-class TrackerClient extends BaseClient {
   async listCampaigns(userId: string): Promise<{
     campaigns: CampaignWithInsights[]
     metrics: CampaignMetrics
     patterns: { bestPerformingPlatform?: string; bestPerformingGenre?: string }
   }> {
     return this.get('/api/campaigns', { userId })
-  }
-
-  async getCampaigns(userId: string): Promise<CampaignWithInsights[]> {
-    const response = await this.listCampaigns(userId)
-    return response.campaigns
-  }
-
-  async getMetrics(userId: string): Promise<CampaignMetrics> {
-    const response = await this.listCampaigns(userId)
-    return response.metrics
   }
 
   async createCampaign(
@@ -382,86 +370,20 @@ class TrackerClient extends BaseClient {
 }
 
 // ============================================================================
-// Main Client
-// ============================================================================
-
-export interface TotalAudioClientConfig {
-  apiKey?: string
-  intelApiKey?: string
-  pitchApiKey?: string
-  trackerApiKey?: string
-  intelUrl?: string
-  pitchUrl?: string
-  trackerUrl?: string
-  timeout?: number
-}
-
-export class TotalAudioClient {
-  public readonly intel: IntelClient
-  public readonly pitch: PitchClient
-  public readonly tracker: TrackerClient
-
-  private readonly configured: {
-    intel: boolean
-    pitch: boolean
-    tracker: boolean
-  }
-
-  constructor(config: TotalAudioClientConfig) {
-    const intelKey = config.intelApiKey || config.apiKey || ''
-    const pitchKey = config.pitchApiKey || config.apiKey || ''
-    const trackerKey = config.trackerApiKey || config.apiKey || ''
-
-    this.intel = new IntelClient({
-      apiKey: intelKey,
-      baseUrl: config.intelUrl || 'https://intel.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.pitch = new PitchClient({
-      apiKey: pitchKey,
-      baseUrl: config.pitchUrl || 'https://pitch.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.tracker = new TrackerClient({
-      apiKey: trackerKey,
-      baseUrl: config.trackerUrl || 'https://tracker.totalaudiopromo.com',
-      timeout: config.timeout,
-    })
-
-    this.configured = {
-      intel: !!intelKey,
-      pitch: !!pitchKey,
-      tracker: !!trackerKey,
-    }
-  }
-
-  isConfigured(service?: 'intel' | 'pitch' | 'tracker'): boolean {
-    if (service) return this.configured[service]
-    return Object.values(this.configured).some(Boolean)
-  }
-}
-
-// ============================================================================
 // Singleton Factory
 // ============================================================================
 
-let clientInstance: TotalAudioClient | null = null
+let clientInstance: TAPClient | null = null
 
 /**
  * Get or create the TAP client singleton.
  * Uses environment variables for configuration.
  */
-export function getTapClient(): TotalAudioClient {
+export function getTapClient(): TAPClient {
   if (!clientInstance) {
-    clientInstance = new TotalAudioClient({
-      intelApiKey: process.env.TAP_API_KEY_INTEL || process.env.TAP_API_KEY,
-      pitchApiKey: process.env.TAP_API_KEY_PITCH || process.env.TAP_API_KEY,
-      trackerApiKey: process.env.TAP_API_KEY_TRACKER || process.env.TAP_API_KEY,
-      intelUrl: process.env.TAP_INTEL_URL || process.env.TAP_API_URL,
-      pitchUrl: process.env.TAP_PITCH_URL || process.env.TAP_API_URL,
-      trackerUrl: process.env.TAP_TRACKER_URL || process.env.TAP_API_URL,
+    clientInstance = new TAPClient({
+      apiKey: process.env.TAP_API_KEY || '',
+      baseUrl: process.env.TAP_API_URL || 'https://api.totalaudiopromo.com',
     })
   }
   return clientInstance
@@ -472,16 +394,22 @@ export function getTapClient(): TotalAudioClient {
  * Use this for simple imports.
  */
 export const tapClient = {
-  get intel() {
-    return getTapClient().intel
+  get api() {
+    return getTapClient()
   },
-  get pitch() {
-    return getTapClient().pitch
-  },
-  get tracker() {
-    return getTapClient().tracker
-  },
-  isConfigured(service?: 'intel' | 'pitch' | 'tracker') {
-    return getTapClient().isConfigured(service)
+  enrichContacts: (
+    contacts: EnrichContactInput[],
+    options?: { forceRefresh?: boolean; includeConfidence?: boolean }
+  ) => getTapClient().enrichContacts(contacts, options),
+  enrichContact: (contact: EnrichContactInput) => getTapClient().enrichContact(contact),
+  validateEmails: (emails: string[]) => getTapClient().validateEmails(emails),
+  generatePitch: (req: GeneratePitchRequest) => getTapClient().generatePitch(req),
+  analysePitch: (req: Parameters<TAPClient['analysePitch']>[0]) => getTapClient().analysePitch(req),
+  listCampaigns: (userId: string) => getTapClient().listCampaigns(userId),
+  createCampaign: (campaign: CreateCampaignRequest, userId: string) =>
+    getTapClient().createCampaign(campaign, userId),
+
+  isConfigured() {
+    return !!process.env.TAP_API_KEY && !!process.env.TAP_API_URL
   },
 }

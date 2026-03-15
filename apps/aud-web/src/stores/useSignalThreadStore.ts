@@ -497,7 +497,9 @@ export const useSignalThreadStore = create<SignalThreadState>()(
 
           const { data, error } = await supabase
             .from('signal_threads')
-            .select('*')
+            .select(
+              'id, user_id, title, thread_type, colour, event_ids, narrative_summary, insights, start_date, end_date, created_at, updated_at'
+            )
             .eq('user_id', user.id)
             .order('created_at', { ascending: false })
 

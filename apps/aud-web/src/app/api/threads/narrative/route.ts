@@ -105,9 +105,11 @@ export async function POST(request: NextRequest) {
     const { threadId } = validation.data
 
     // Fetch the thread
-    const threadResult = await (supabase as any)
+    const threadResult = await supabase
       .from('signal_threads')
-      .select('*')
+      .select(
+        'id, user_id, title, thread_type, colour, event_ids, narrative_summary, insights, start_date, end_date, created_at, updated_at'
+      )
       .eq('id', threadId)
       .eq('user_id', session.user.id)
       .single()
@@ -219,7 +221,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update thread with narrative
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('signal_threads')
       .update({
         narrative_summary: narrativeData.narrativeSummary,

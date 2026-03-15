@@ -160,7 +160,9 @@ export async function ensureTrackMemory(
     // Try to get existing
     const { data: existing, error: selectError } = await supabase
       .from('track_memory')
-      .select('*')
+      .select(
+        'id, user_id, track_id, canonical_intent, canonical_intent_updated_at, created_at, updated_at'
+      )
       .eq('user_id', userId)
       .eq('track_id', trackId)
       .single()
@@ -176,7 +178,9 @@ export async function ensureTrackMemory(
         user_id: userId,
         track_id: trackId,
       })
-      .select('*')
+      .select(
+        'id, user_id, track_id, canonical_intent, canonical_intent_updated_at, created_at, updated_at'
+      )
       .single()
 
     if (insertError) {
@@ -184,7 +188,9 @@ export async function ensureTrackMemory(
       if (insertError.code === '23505') {
         const { data: retry } = await supabase
           .from('track_memory')
-          .select('*')
+          .select(
+            'id, user_id, track_id, canonical_intent, canonical_intent_updated_at, created_at, updated_at'
+          )
           .eq('user_id', userId)
           .eq('track_id', trackId)
           .single()
@@ -215,7 +221,9 @@ export async function getTrackMemory(
 
     const { data, error } = await supabase
       .from('track_memory')
-      .select('*')
+      .select(
+        'id, user_id, track_id, canonical_intent, canonical_intent_updated_at, created_at, updated_at'
+      )
       .eq('user_id', userId)
       .eq('track_id', trackId)
       .single()
@@ -229,7 +237,7 @@ export async function getTrackMemory(
     if (options?.includeEntries) {
       let query = supabase
         .from('track_memory_entries')
-        .select('*')
+        .select('id, track_memory_id, user_id, entry_type, payload, source_mode, created_at')
         .eq('track_memory_id', memory.id)
         .order('created_at', { ascending: false })
 
@@ -280,7 +288,7 @@ export async function appendTrackMemoryEntry(
         payload,
         source_mode: sourceMode ?? null,
       })
-      .select('*')
+      .select('id, track_memory_id, user_id, entry_type, payload, source_mode, created_at')
       .single()
 
     if (error) {
@@ -397,7 +405,7 @@ export async function getRecentEntries(
 
     const { data } = await supabase
       .from('track_memory_entries')
-      .select('*')
+      .select('id, track_memory_id, user_id, entry_type, payload, source_mode, created_at')
       .eq('track_memory_id', memory.id)
       .order('created_at', { ascending: false })
       .limit(limit)
