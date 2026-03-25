@@ -30,7 +30,7 @@ const TIER_PRICES: Record<string, string> = {
   pro: '£19/month',
   pro_annual: '£149/year',
   power: '£79/month',
-  power_annual: '£649/year',
+  power_annual: '£758/year',
 }
 
 export default function SettingsPage() {
