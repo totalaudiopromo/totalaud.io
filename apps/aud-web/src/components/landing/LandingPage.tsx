@@ -456,7 +456,7 @@ export function LandingPage() {
                 letterSpacing: '0.02em',
               }}
             >
-              For independent artists
+              Finish mode coming soon — join the waitlist
             </span>
           </motion.div>
 
@@ -756,6 +756,47 @@ export function LandingPage() {
         {/* Pricing Preview Section */}
         <PricingPreview />
 
+        {/* Founder credibility section */}
+        <section
+          style={{
+            padding: '80px 24px',
+            maxWidth: '700px',
+            margin: '0 auto',
+            textAlign: 'center',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <p
+              style={{
+                fontSize: '15px',
+                lineHeight: 1.8,
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                fontStyle: 'italic',
+              }}
+            >
+              Built by someone who runs real campaigns. Five years in UK radio promotion, hundreds
+              of releases, thousands of contacts. totalaud.io exists because I kept seeing the same
+              problem — talented artists releasing great music with no second opinion and no plan.
+            </p>
+            <p
+              style={{
+                fontSize: '14px',
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                marginTop: '16px',
+              }}
+            >
+              Chris Schofield, founder
+            </p>
+          </motion.div>
+        </section>
+
         {/* Bottom CTA Section */}
         <section
           aria-labelledby="cta-heading"
@@ -904,6 +945,29 @@ export function LandingPage() {
             </span>
           </nav>
         </div>
+        <p
+          style={{
+            maxWidth: '1100px',
+            margin: '16px auto 0',
+            textAlign: 'center',
+            fontSize: '12px',
+            color: 'rgba(255, 255, 255, 0.4)',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          }}
+        >
+          Need professional PR?{' '}
+          <a
+            href="https://totalaudiopromo.com"
+            style={{
+              color: 'rgba(255, 255, 255, 0.5)',
+              textDecoration: 'underline',
+              textUnderlineOffset: '2px',
+            }}
+          >
+            Total Audio Promo
+          </a>{' '}
+          helps agencies run campaigns.
+        </p>
       </footer>
 
       {/* Global styles for gradient animation */}
