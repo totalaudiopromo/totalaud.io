@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 import { QueryProvider } from '@/lib/react-query'
 import { JsonLd } from '@/components/seo'
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <FlowCoreThemeProvider bodyClassName={geistSans.className}>
         <JsonLd schema={organizationSchema} id="organization-schema" />
         <QueryProvider>{children}</QueryProvider>
+        <Analytics />
       </FlowCoreThemeProvider>
     </html>
   )

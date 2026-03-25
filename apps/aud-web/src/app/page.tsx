@@ -1,12 +1,9 @@
 /**
  * Landing Page
- * totalaud.io - Vision Aligned (January 2026)
+ * totalaud.io - Vision Aligned
  *
- * A calm, opinionated system for independent artists
- *
- * NOTE: Coming Soon mode controlled by preview cookie.
- * - Public users see ComingSoonLanding
- * - Preview users (with cookie) see full LandingPage
+ * A calm, opinionated system for independent artists.
+ * Authenticated users redirect to /console.
  */
 
 import { LandingPage } from '@/components/landing/LandingPage'

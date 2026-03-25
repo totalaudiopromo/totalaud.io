@@ -18,28 +18,25 @@ const nextConfig = {
   },
 }
 
-// Sentry configuration options
-const sentryWebpackPluginOptions = {
-  // Suppresses source map uploading logs during build
-  silent: true,
-
-  // Upload source maps to Sentry
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-
-  // Auth token for source map uploads
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-
-  // Hides source maps from public
-  hideSourceMaps: true,
-
-  // Disable when no DSN configured
-  disableServerWebpackPlugin: !process.env.SENTRY_DSN,
-  disableClientWebpackPlugin: !process.env.NEXT_PUBLIC_SENTRY_DSN,
-}
-
 // Only wrap with Sentry if DSN is configured
 module.exports =
   process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
-    ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+    ? withSentryConfig(nextConfig, {
+        // Suppresses source map uploading logs during build
+        silent: true,
+
+        // Source map upload configuration
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+
+        // Hides source maps from generated client bundles
+        hideSourceMaps: true,
+
+        // Widen scope of uploads to include all source map files
+        widenClientFileUpload: true,
+
+        // Automatically instrument server functions and API routes
+        automaticVercelMonitors: true,
+      })
     : nextConfig
