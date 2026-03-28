@@ -1,7 +1,7 @@
 /**
  * POST /api/finish/process
  *
- * Proxy to sadact-finisher /process endpoint.
+ * Proxy to finisher /process endpoint.
  * Accepts multipart form data with audio file + mastering settings.
  * Returns job_id for async polling.
  */

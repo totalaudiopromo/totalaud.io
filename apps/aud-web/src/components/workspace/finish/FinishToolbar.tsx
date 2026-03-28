@@ -98,7 +98,7 @@ export function FinishToolbar() {
   const presetOptions = presets.map((p) => ({
     value: p.name,
     label: p.name
-      .replace('sadact-', '')
+      .replace('finisher-', '')
       .replace(/-/g, ' ')
       .replace(/\b\w/g, (c) => c.toUpperCase()),
   }))

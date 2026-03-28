@@ -1,7 +1,7 @@
 /**
  * Finisher API Client (server-side only)
  *
- * Communicates with the sadact-finisher mastering engine API.
+ * Communicates with the finisher mastering engine API.
  * Used by Next.js API routes to proxy requests, keeping the API key server-side.
  */
 
@@ -9,7 +9,7 @@ import { logger } from './logger'
 
 const log = logger.scope('FinisherClient')
 
-// Types matching sadact-finisher API responses
+// Types matching finisher API responses
 
 export interface AnalysisResult {
   integrated_lufs: number
@@ -76,8 +76,8 @@ export interface JobStatus {
 // Client
 
 const getConfig = () => ({
-  apiUrl: process.env.SADACT_API_URL || 'https://sadact-finisher-production.up.railway.app',
-  apiKey: process.env.SADACT_API_KEY || '',
+  apiUrl: process.env.FINISHER_API_URL || 'https://finisher-production.up.railway.app',
+  apiKey: process.env.FINISHER_API_KEY || '',
 })
 
 function headers(): Record<string, string> {

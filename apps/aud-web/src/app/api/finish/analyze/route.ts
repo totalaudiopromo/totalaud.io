@@ -1,7 +1,7 @@
 /**
  * POST /api/finish/analyze
  *
- * Proxy to sadact-finisher /analyze endpoint.
+ * Proxy to finisher /analyze endpoint.
  * Accepts multipart form data with audio file + optional platform.
  * Returns analysis metrics + suggestions.
  */

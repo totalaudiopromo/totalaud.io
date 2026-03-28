@@ -1,7 +1,7 @@
 /**
  * GET /api/finish/jobs/[jobId]
  *
- * Proxy to sadact-finisher /jobs/{jobId} endpoint.
+ * Proxy to finisher /jobs/{jobId} endpoint.
  * Returns job status, metrics, and download URL when complete.
  */
 

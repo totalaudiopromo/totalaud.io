@@ -1,7 +1,7 @@
 /**
  * GET /api/finish/presets
  *
- * Proxy to sadact-finisher /presets endpoint.
+ * Proxy to finisher /presets endpoint.
  * Returns available genre presets. No auth required (public data).
  */
 

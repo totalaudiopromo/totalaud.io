@@ -1,7 +1,7 @@
 /**
  * GET /api/finish/jobs/[jobId]/download
  *
- * Proxy to sadact-finisher /jobs/{jobId}/download endpoint.
+ * Proxy to finisher /jobs/{jobId}/download endpoint.
  * Streams the processed audio file back to the client.
  */
 
