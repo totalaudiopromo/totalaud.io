@@ -12,7 +12,7 @@ import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import { transition } from '@/lib/motion'
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 interface MobileNavProps {
   mode: WorkspaceMode
@@ -89,6 +89,21 @@ const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [
           d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6zm2 2h4v2H8V6zm0 4h4v2H8v-2z"
           fill="currentColor"
         />
+      </svg>
+    ),
+  },
+  {
+    key: 'finish',
+    label: 'Finish',
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M3 4h2v12H3V4zm4 2h2v8H7V6zm4-1h2v10h-2V5zm4 3h2v4h-2V8z" fill="currentColor" />
       </svg>
     ),
   },
