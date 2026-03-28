@@ -76,7 +76,7 @@ export interface JobStatus {
 // Client
 
 const getConfig = () => ({
-  apiUrl: process.env.FINISHER_API_URL || 'https://finisher-production.up.railway.app',
+  apiUrl: process.env.FINISHER_API_URL || 'https://sadact-finisher-production.up.railway.app',
   apiKey: process.env.FINISHER_API_KEY || '',
 })
 
