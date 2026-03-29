@@ -277,15 +277,19 @@ export function IdeasToolbar() {
 
         {/* Right: Actions - compact on mobile */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          {/* Sort dropdown - hidden on mobile */}
-          <div ref={sortRef} className="relative hidden sm:block">
+          {/* Sort dropdown */}
+          <div ref={sortRef} className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
                 sortOpen ? 'bg-white/8' : ''
               }`}
+              title="Sort ideas"
             >
-              {SORT_OPTIONS.find((o) => o.key === sortMode)?.label}
+              <span className="hidden sm:inline">
+                {SORT_OPTIONS.find((o) => o.key === sortMode)?.label}
+              </span>
+              <span className="sm:hidden">Sort</span>
               <ChevronDownIcon className="h-3 w-3" />
             </button>
             <AnimatePresence>
@@ -342,13 +346,14 @@ export function IdeasToolbar() {
             </button>
           </div>
 
-          {/* Export dropdown - hidden on mobile */}
-          <div ref={exportRef} className="relative hidden sm:block">
+          {/* Export dropdown */}
+          <div ref={exportRef} className="relative">
             <button
               onClick={() => setExportOpen(!exportOpen)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
                 exportOpen ? 'bg-white/8' : ''
               }`}
+              title="Export ideas"
             >
               {exportFeedback || 'Export'}
               <ChevronDownIcon className="h-3 w-3" />
