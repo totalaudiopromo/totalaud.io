@@ -14,8 +14,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useScoutStore, selectFilteredOpportunities } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
+import { useFeatureGate } from '@/hooks/useFeatureGate'
 import { OpportunityCardCalm } from './OpportunityCardCalm'
 import { ScoutPreview } from './ScoutPreview'
+import { UpgradePrompt, NearLimitWarning } from '@/components/shared/UpgradePrompt'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { StaggeredEntrance, StaggerItem } from '@/components/ui/StaggeredEntrance'
 import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
@@ -41,8 +43,10 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
   const timelineEvents = useTimelineStore((state) => state.events)
 
   const { addedToTimeline: showAddedToast, checkAndCelebrate } = useToast()
+  const { canUse, isNearLimit, isAtLimit, recordUsage, getRemaining } = useFeatureGate()
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+  const [showUpgrade, setShowUpgrade] = useState(false)
 
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE)
@@ -74,6 +78,18 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
       checkAndCelebrate,
       timelineEvents.length,
     ]
+  )
+
+  const handleSelectOpportunity = useCallback(
+    (id: string) => {
+      if (!canUse('scout_view')) {
+        setShowUpgrade(true)
+        return
+      }
+      recordUsage('scout_view')
+      selectOpportunity(id)
+    },
+    [canUse, recordUsage, selectOpportunity]
   )
 
   const visibleOpportunities = useMemo(
@@ -132,6 +148,26 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
       role="region"
       aria-label="Opportunities grid"
     >
+      {/* Upgrade prompt when at limit */}
+      <UpgradePrompt
+        feature="scout_view"
+        visible={showUpgrade}
+        onDismiss={() => setShowUpgrade(false)}
+        variant="banner"
+        className="mb-4"
+      />
+
+      {/* Near-limit warning */}
+      <NearLimitWarning
+        feature="scout_view"
+        remaining={(() => {
+          const r = getRemaining('scout_view')
+          return typeof r === 'number' ? r : 0
+        })()}
+        visible={isNearLimit('scout_view') && !isAtLimit('scout_view')}
+        className="mb-4"
+      />
+
       {/* Grid - 3 columns on desktop, fills width */}
       <StaggeredEntrance className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <AnimatePresence mode="popLayout">
@@ -142,7 +178,7 @@ export function ScoutCalmGrid({ className }: ScoutCalmGridProps) {
                 isAddedToTimeline={isInTimeline(opp.id)}
                 isPitched={pitchedIds.has(opp.id)}
                 onAddToTimeline={() => handleAddToTimeline(opp)}
-                onSelect={() => selectOpportunity(opp.id)}
+                onSelect={() => handleSelectOpportunity(opp.id)}
               />
             </StaggerItem>
           ))}
