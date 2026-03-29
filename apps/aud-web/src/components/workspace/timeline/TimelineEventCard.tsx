@@ -2,8 +2,7 @@
  * Timeline Event Card Component
  *
  * An editable timeline event card with inline title/date editing,
- * delete confirmation, click-to-expand functionality,
- * and optional TAP Tracker sync.
+ * delete confirmation, and click-to-expand functionality.
  */
 
 'use client'
@@ -15,26 +14,18 @@ import { transition } from '@/lib/motion'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore, type PitchType } from '@/stores/usePitchStore'
 import { useScoutStore } from '@/stores/useScoutStore'
-import { LANES, type LaneType, type TimelineEvent, type TrackerSyncStatus } from '@/types/timeline'
-import { useAuthGate } from '@/components/auth'
+import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
+import { PitchIntegration } from './PitchIntegration'
 
 interface TimelineEventCardProps {
   event: TimelineEvent
   onClose: () => void
 }
 
-import { SyncSection } from './SyncSection'
-import { PitchIntegration } from './PitchIntegration'
-
 export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
   const router = useRouter()
-  const { requireAuth } = useAuthGate()
-
   const updateEvent = useTimelineStore((state) => state.updateEvent)
   const deleteEvent = useTimelineStore((state) => state.deleteEvent)
-  const syncToTracker = useTimelineStore((state) => state.syncToTracker)
-  const trackerSyncStatusById = useTimelineStore((state) => state.trackerSyncStatusById)
-  const trackerSyncErrorById = useTimelineStore((state) => state.trackerSyncErrorById)
 
   // Pitch store for cross-mode connection
   const selectPitchType = usePitchStore((state) => state.selectType)
@@ -49,32 +40,8 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
   const [lane, setLane] = useState<LaneType>(event.lane)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false)
 
   const titleRef = useRef<HTMLInputElement>(null)
-
-  // TAP Tracker sync state
-  const isSynced = !!event.trackerCampaignId
-  const syncStatus: TrackerSyncStatus = isSynced
-    ? 'synced'
-    : trackerSyncStatusById[event.id] || 'idle'
-  const syncError = trackerSyncErrorById[event.id]
-  const canSync = event.source !== 'sample' && !isSynced && syncStatus !== 'syncing'
-
-  const handleSyncToTracker = useCallback(() => {
-    if (!canSync) return
-
-    // Gate behind auth
-    if (!requireAuth(() => setShowAuthPrompt(true))) {
-      setTimeout(() => {
-        setShowAuthPrompt(false)
-        router.push('/signup?feature=tracker-sync')
-      }, 1500)
-      return
-    }
-
-    syncToTracker(event.id)
-  }, [canSync, syncToTracker, event.id, requireAuth, router])
 
   // Handler to create a pitch from this timeline event
   const handleCreatePitch = useCallback(() => {
@@ -297,19 +264,6 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
               ))}
             </div>
           </div>
-        )}
-
-        {/* TAP Tracker sync section */}
-        {event.source !== 'sample' && (
-          <SyncSection
-            isSynced={isSynced}
-            syncStatus={syncStatus}
-            syncError={syncError}
-            trackerSyncedAt={event.trackerSyncedAt}
-            showAuthPrompt={showAuthPrompt}
-            canSync={canSync}
-            onSync={handleSyncToTracker}
-          />
         )}
 
         {/* Cross-mode: Create Pitch button */}

@@ -1,17 +1,5 @@
-import {
-  Mail,
-  ExternalLink,
-  CheckCircle,
-  Plus,
-  Search,
-  Loader2,
-  AlertCircle,
-  ShieldCheck,
-} from 'lucide-react'
+import { Mail, ExternalLink, CheckCircle, Plus } from 'lucide-react'
 import type { DiscoveredContact } from '@/app/api/scout/discover/route'
-import { useScoutStore } from '@/stores/useScoutStore'
-import { useCredits } from '@/hooks/useCredits'
-import { useCallback } from 'react'
 
 interface DiscoveredContactCardProps {
   contact: DiscoveredContact
@@ -20,42 +8,6 @@ interface DiscoveredContactCardProps {
 }
 
 export function DiscoveredContactCard({ contact, isAdded, onAdd }: DiscoveredContactCardProps) {
-  const enrichmentStatus = useScoutStore(
-    (state) => state.enrichmentStatusById[contact.id] || 'idle'
-  )
-  const enrichedData = useScoutStore((state) => state.enrichedById[contact.id] || null)
-  const enrichmentError = useScoutStore((state) => state.enrichmentErrorById[contact.id] || null)
-  const enrichDiscoveredContact = useScoutStore((state) => state.enrichDiscoveredContact)
-
-  const { hasSufficientCredits, deductForEnrichment, formatPounds, balance } = useCredits()
-  const enrichmentCost = balance?.enrichmentCostPence || 20
-
-  const handleEnrich = useCallback(async () => {
-    if (enrichmentStatus === 'loading' || enrichmentStatus === 'success') return
-
-    if (!hasSufficientCredits) {
-      alert('Insufficient credits for enrichment')
-      return
-    }
-
-    const success = await deductForEnrichment(contact.id, contact.outlet || contact.email)
-    if (success) {
-      await enrichDiscoveredContact({
-        id: contact.id,
-        email: contact.email,
-        name: contact.name,
-        outlet: contact.outlet,
-        genres: [], // Could be passed if available
-      })
-    }
-  }, [
-    contact,
-    enrichmentStatus,
-    hasSufficientCredits,
-    deductForEnrichment,
-    enrichDiscoveredContact,
-  ])
-
   return (
     <div
       style={{
@@ -136,47 +88,6 @@ export function DiscoveredContactCard({ contact, isAdded, onAdd }: DiscoveredCon
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: 6 }}>
-          {enrichmentStatus === 'idle' && (
-            <button
-              onClick={handleEnrich}
-              style={{
-                height: 32,
-                padding: '0 10px',
-                borderRadius: 6,
-                backgroundColor: 'rgba(58, 169, 190, 0.1)',
-                border: '1px solid rgba(58, 169, 190, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                color: '#3AA9BE',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-              title={`Enrich with TAP API - ${formatPounds(enrichmentCost)}`}
-            >
-              <Search size={14} />
-              <span>Enrich</span>
-            </button>
-          )}
-
-          {enrichmentStatus === 'loading' && (
-            <div
-              style={{
-                height: 32,
-                padding: '0 10px',
-                borderRadius: 6,
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                color: 'rgba(255, 255, 255, 0.4)',
-                fontSize: 12,
-              }}
-            >
-              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
-            </div>
-          )}
-
           <a
             href={contact.sourceUrl}
             target="_blank"
@@ -218,96 +129,6 @@ export function DiscoveredContactCard({ contact, isAdded, onAdd }: DiscoveredCon
           </button>
         </div>
       </div>
-
-      {/* Enrichment Results */}
-      {enrichmentStatus === 'success' && enrichedData && (
-        <div
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'rgba(58, 169, 190, 0.05)',
-            borderTop: '1px solid rgba(58, 169, 190, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 12,
-              color: '#3AA9BE',
-            }}
-          >
-            <ShieldCheck size={14} />
-            <span>Enriched via TAP API</span>
-            {enrichedData.researchConfidence && (
-              <span style={{ fontSize: 10, opacity: 0.6 }}>
-                • {enrichedData.researchConfidence} Confidence
-              </span>
-            )}
-          </div>
-          {enrichedData.contactIntelligence && (
-            <div
-              style={{
-                fontSize: 12,
-                color: 'rgba(255, 255, 255, 0.6)',
-                lineHeight: 1.5,
-                padding: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                borderRadius: 6,
-              }}
-            >
-              {enrichedData.contactIntelligence}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Enrichment Error */}
-      {enrichmentStatus === 'error' && (
-        <div
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'rgba(239, 68, 68, 0.05)',
-            borderTop: '1px solid rgba(239, 68, 68, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            fontSize: 11,
-            color: '#EF4444',
-          }}
-        >
-          <AlertCircle size={14} />
-          <span>{enrichmentError || 'Enrichment failed'}</span>
-          <button
-            onClick={handleEnrich}
-            style={{
-              marginLeft: 'auto',
-              backgroundColor: 'transparent',
-              border: 'none',
-              color: '#EF4444',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              fontSize: 11,
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   )
 }
