@@ -50,8 +50,8 @@ const navigation: NavSection[] = [
     title: 'profile',
     items: [
       { name: 'identity', href: '/console/identity', icon: UserCircleIcon },
-      { name: 'threads', href: '/console/threads', icon: ClockIcon, comingSoon: true },
-      { name: 'automations', href: '/console/automations', icon: BoltIcon, comingSoon: true },
+      { name: 'threads', href: '/console/threads', icon: ClockIcon },
+      { name: 'automations', href: '/console/automations', icon: BoltIcon },
     ],
   },
 ]
@@ -143,7 +143,7 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-ta-panel/50">
-        <p className="text-xs text-ta-grey lowercase">© 2025 totalaud.io</p>
+        <p className="text-xs text-ta-grey lowercase">© {new Date().getFullYear()} totalaud.io</p>
       </div>
     </aside>
   )
