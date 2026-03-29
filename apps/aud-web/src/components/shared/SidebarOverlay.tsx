@@ -187,7 +187,9 @@ export function SidebarOverlay() {
 
             {/* Footer */}
             <div className="p-4 border-t border-ta-panel/50">
-              <p className="text-xs text-ta-grey lowercase">© 2025 totalaud.io</p>
+              <p className="text-xs text-ta-grey lowercase">
+                © {new Date().getFullYear()} totalaud.io
+              </p>
             </div>
           </motion.aside>
         </>

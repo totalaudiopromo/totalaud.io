@@ -51,7 +51,7 @@ export function ContactEnrichment({
                 No credits available.{' '}
                 <button
                   onClick={() => {
-                    /* TODO: Navigate to credits purchase */
+                    window.location.href = '/pricing'
                   }}
                   className="text-ta-cyan hover:underline"
                 >
