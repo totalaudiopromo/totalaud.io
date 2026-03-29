@@ -38,12 +38,36 @@ interface Sparklines {
   timeInFlow: SparklineData[] // Daily active time in ms
 }
 
+interface TelemetryEvent {
+  event_type: string
+  created_at: string
+  duration_ms: number | null
+  metadata: Record<string, unknown> | null
+}
+
 interface SummaryResponse {
   success: boolean
   summary: TelemetrySummary
   sparklines: Sparklines
   duration: number
   message?: string
+}
+
+function calculateFlowTime(events: TelemetryEvent[]): number {
+  const sessionEvents = events.filter(
+    (e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd'
+  )
+  let total = 0
+  for (let i = 0; i < sessionEvents.length; i++) {
+    if (sessionEvents[i].event_type === 'sessionStart') {
+      const nextEnd = sessionEvents.slice(i + 1).find((e) => e.event_type === 'sessionEnd')
+      if (nextEnd) {
+        total +=
+          new Date(nextEnd.created_at).getTime() - new Date(sessionEvents[i].created_at).getTime()
+      }
+    }
+  }
+  return total
 }
 
 /**
@@ -123,33 +147,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    interface TelemetryEvent {
-      event_type: string
-      created_at: string
-      duration_ms: number | null
-      metadata: Record<string, unknown> | null
-    }
-
     const events: TelemetryEvent[] = (data ?? []) as TelemetryEvent[]
 
     // Calculate summary metrics
     const saveEvents = events.filter((e) => e.event_type === 'save')
     const shareEvents = events.filter((e) => e.event_type === 'share')
     const agentRunEvents = events.filter((e) => e.event_type === 'agentRun')
-    const sessionEvents = events.filter(
-      (e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd'
-    )
-
-    const summary: TelemetrySummary = {
-      totalSaves: saveEvents.length,
-      totalShares: shareEvents.length,
-      totalAgentRuns: agentRunEvents.length,
-      totalTimeInFlowMs: 0,
-      avgSaveIntervalMs: null,
-      lastActivityAt: events.length > 0 ? events[events.length - 1].created_at : null,
-    }
 
     // Calculate average save interval
+    let avgSaveIntervalMs: number | null = null
     if (saveEvents.length > 1) {
       const intervals: number[] = []
       for (let i = 1; i < saveEvents.length; i++) {
@@ -157,26 +163,17 @@ export async function GET(request: NextRequest) {
         const currTime = new Date(saveEvents[i].created_at).getTime()
         intervals.push(currTime - prevTime)
       }
-      summary.avgSaveIntervalMs = Math.floor(
-        intervals.reduce((a, b) => a + b, 0) / intervals.length
-      )
+      avgSaveIntervalMs = Math.floor(intervals.reduce((a, b) => a + b, 0) / intervals.length)
     }
 
-    // Calculate total time in flow (session durations)
-    let totalFlowTime = 0
-    for (let i = 0; i < sessionEvents.length; i++) {
-      const event = sessionEvents[i]
-      if (event.event_type === 'sessionStart') {
-        // Find next sessionEnd
-        const nextEnd = sessionEvents.slice(i + 1).find((e) => e.event_type === 'sessionEnd')
-        if (nextEnd) {
-          const startTime = new Date(event.created_at).getTime()
-          const endTime = new Date(nextEnd.created_at).getTime()
-          totalFlowTime += endTime - startTime
-        }
-      }
+    const summary: TelemetrySummary = {
+      totalSaves: saveEvents.length,
+      totalShares: shareEvents.length,
+      totalAgentRuns: agentRunEvents.length,
+      totalTimeInFlowMs: calculateFlowTime(events),
+      avgSaveIntervalMs,
+      lastActivityAt: events.length > 0 ? events[events.length - 1].created_at : null,
     }
-    summary.totalTimeInFlowMs = totalFlowTime
 
     // Generate sparkline data (daily aggregates)
     const sparklines: Sparklines = {
@@ -200,23 +197,7 @@ export async function GET(request: NextRequest) {
 
       const daySaves = dayEvents.filter((e) => e.event_type === 'save').length
       const dayAgentRuns = dayEvents.filter((e) => e.event_type === 'agentRun').length
-
-      // Calculate day's flow time
-      let dayFlowTime = 0
-      const daySessions = dayEvents.filter(
-        (e) => e.event_type === 'sessionStart' || e.event_type === 'sessionEnd'
-      )
-      for (let j = 0; j < daySessions.length; j++) {
-        const session = daySessions[j]
-        if (session.event_type === 'sessionStart') {
-          const nextEnd = daySessions.slice(j + 1).find((e) => e.event_type === 'sessionEnd')
-          if (nextEnd) {
-            const startTime = new Date(session.created_at).getTime()
-            const endTime = new Date(nextEnd.created_at).getTime()
-            dayFlowTime += endTime - startTime
-          }
-        }
-      }
+      const dayFlowTime = calculateFlowTime(dayEvents)
 
       sparklines.saves.push({ timestamp: date.toISOString(), value: daySaves })
       sparklines.agentRuns.push({ timestamp: date.toISOString(), value: dayAgentRuns })

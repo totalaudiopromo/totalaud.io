@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build context about what we've collected
-    const collectedContext = Object.entries(collectedData || {})
+    const collectedContext = Object.entries(collectedData)
       .filter(([, value]) => value !== undefined && value !== '')
       .map(([key, value]) => `${key}: ${value}`)
       .join('\n')
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     // Parse natural language for data extraction if Claude didn't extract
     const lastUserMessage = messages[messages.length - 1]?.content || ''
-    const autoExtracted = extractDataFromMessage(lastUserMessage, collectedData || {})
+    const autoExtracted = extractDataFromMessage(lastUserMessage, collectedData)
 
     return NextResponse.json({
       message: parsed.message,

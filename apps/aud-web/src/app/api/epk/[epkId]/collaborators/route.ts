@@ -85,9 +85,6 @@ export async function GET(
     }
 
     const typedProfiles = (profiles ?? []) as UserProfileRow[]
-    const profileMap = new Map<string, string | null>(
-      typedProfiles.map((profile) => [profile.id, profile.full_name])
-    )
 
     let invites: InviteRow[] = []
     if (currentRole === 'owner') {

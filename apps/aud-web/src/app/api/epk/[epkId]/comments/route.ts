@@ -87,21 +87,20 @@ export async function GET(
       typedProfiles.map((profile) => [profile.id, profile.full_name])
     )
 
-    const comments =
-      commentRows.map((row) => ({
-        id: row.id,
-        epkId: row.epk_id,
-        body: row.body,
-        parentId: row.parent_id ?? null,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at ?? null,
-        user: {
-          id: row.user_id,
-          fullName: profileMap.get(row.user_id),
-          email: undefined,
-          role: collaboratorRoleMap.get(row.user_id) ?? 'guest',
-        },
-      })) ?? []
+    const comments = commentRows.map((row) => ({
+      id: row.id,
+      epkId: row.epk_id,
+      body: row.body,
+      parentId: row.parent_id ?? null,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at ?? null,
+      user: {
+        id: row.user_id,
+        fullName: profileMap.get(row.user_id),
+        email: undefined,
+        role: collaboratorRoleMap.get(row.user_id) ?? 'guest',
+      },
+    }))
 
     return NextResponse.json({
       comments,
