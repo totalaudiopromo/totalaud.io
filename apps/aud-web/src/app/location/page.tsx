@@ -7,7 +7,7 @@ import {
   generateWebPageSchema,
   generateBreadcrumbSchema,
 } from '@/lib/seo'
-import { JsonLd, LocationCard } from '@/components/seo'
+import { JsonLd, LocationCard, PseoRelatedSections } from '@/components/seo'
 
 export const metadata: Metadata = {
   title: 'Music Promotion by Location | totalaud.io',
@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     title: 'Music Promotion by Location | totalaud.io',
     description: 'Find local music promotion resources for your city.',
     type: 'website',
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/location',
   },
 }
 
@@ -243,6 +246,9 @@ export default function LocationIndexPage() {
           ))}
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/location" />
 
       {/* Footer */}
       <footer

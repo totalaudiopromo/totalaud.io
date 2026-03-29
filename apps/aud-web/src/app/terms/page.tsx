@@ -8,6 +8,9 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms of service for totalaud.io.',
+  alternates: {
+    canonical: 'https://totalaud.io/terms',
+  },
 }
 
 export default function TermsPage() {

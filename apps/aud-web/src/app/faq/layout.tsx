@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     'how to promote music',
     'music marketing questions',
   ],
+  alternates: {
+    canonical: 'https://totalaud.io/faq',
+  },
 }
 
 export default function FAQLayout({ children }: { children: React.ReactNode }) {

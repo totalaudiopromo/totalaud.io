@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCases, generateWebPageSchema, generateBreadcrumbSchema } from '@/lib/seo'
-import { JsonLd, GuideCard } from '@/components/seo'
+import { JsonLd, GuideCard, PseoRelatedSections } from '@/components/seo'
 
 export const metadata: Metadata = {
   title: 'Release Planning Guides | totalaud.io',
@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     title: 'Release Planning Guides | totalaud.io',
     description: 'Step-by-step guides for planning your music release.',
     type: 'website',
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/for',
   },
 }
 
@@ -185,6 +188,9 @@ export default function GuidesIndexPage() {
           ))}
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/for" />
 
       {/* Footer */}
       <footer

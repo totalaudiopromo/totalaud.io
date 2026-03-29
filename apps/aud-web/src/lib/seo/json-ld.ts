@@ -60,7 +60,7 @@ export function generateSoftwareApplicationSchema() {
         name: 'Starter',
         price: '5.00',
         priceCurrency: 'GBP',
-        priceValidUntil: '2025-12-31',
+        priceValidUntil: '2026-12-31',
         availability: 'https://schema.org/InStock',
       },
       {
@@ -68,7 +68,7 @@ export function generateSoftwareApplicationSchema() {
         name: 'Pro',
         price: '19.00',
         priceCurrency: 'GBP',
-        priceValidUntil: '2025-12-31',
+        priceValidUntil: '2026-12-31',
         availability: 'https://schema.org/InStock',
       },
     ],
@@ -222,5 +222,53 @@ export function generateArticleSchema(
         url: `${siteUrl}/brand/png/ta-logo-cyan-512.png`,
       },
     },
+  }
+}
+
+/**
+ * WebSite schema - establishes site identity for search engines
+ * Used on the home page alongside the Organization schema
+ */
+export function generateWebSiteSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    name: 'totalaud.io',
+    url: siteUrl,
+    description:
+      'Calm creative workspace for independent musicians. Finish better, release smarter.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'totalaud.io',
+    },
+    inLanguage: 'en-GB',
+  }
+}
+
+/**
+ * Speakable schema - marks content sections that AI assistants should extract
+ * Attach to WebPage schemas on key content pages (home, pricing, pSEO)
+ */
+export function generateSpeakableProperty(cssSelectors: string[]) {
+  return {
+    '@type': 'SpeakableSpecification',
+    cssSelector: cssSelectors,
+  }
+}
+
+/**
+ * WebPage schema with speakable - for key content pages
+ * Extended version that includes speakable property for AI extraction
+ */
+export function generateWebPageSchemaWithSpeakable(
+  name: string,
+  description: string,
+  url: string,
+  speakableSelectors: string[]
+) {
+  return {
+    ...generateWebPageSchema(name, description, url),
+    speakable: generateSpeakableProperty(speakableSelectors),
   }
 }

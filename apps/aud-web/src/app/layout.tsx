@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
+import { WebVitalsInit } from '@/components/WebVitalsInit'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 import { QueryProvider } from '@/lib/react-query'
 import { JsonLd } from '@/components/seo'
@@ -51,9 +53,9 @@ export const metadata: Metadata = {
       'Scout contacts, capture ideas, plan releases, craft pitches. One calm workspace for everything that matters.',
     images: [
       {
-        url: '/brand/png/lockup-horizontal-cyan-4096.png',
-        width: 4096,
-        height: 1024,
+        url: '/brand/og-image.png',
+        width: 1200,
+        height: 630,
         alt: 'totalaud.io - Calm creative workspace for independent artists',
       },
     ],
@@ -63,7 +65,7 @@ export const metadata: Metadata = {
     title: 'totalaud.io - Helping indie artists get heard',
     description:
       'Scout contacts, capture ideas, plan releases, craft pitches. One calm workspace for everything that matters.',
-    images: ['/brand/png/lockup-horizontal-cyan-4096.png'],
+    images: ['/brand/og-image.png'],
     creator: '@totalaudiopromo',
   },
   icons: {
@@ -83,6 +85,18 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+  other: {
+    'ai-content-declaration': 'human-authored',
+  },
+  alternates: {
+    canonical: 'https://totalaud.io',
+    types: {
+      'text/plain': '/llms.txt',
+    },
+  },
 }
 
 export const viewport: Viewport = {
@@ -93,14 +107,28 @@ export const viewport: Viewport = {
   // Users with visual impairments need to zoom the page
 }
 
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const organizationSchema = generateOrganizationSchema()
 
   return (
     <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable}`}>
       <FlowCoreThemeProvider bodyClassName={geistSans.className}>
+        {gaId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}
+            </Script>
+          </>
+        )}
         <JsonLd schema={organizationSchema} id="organization-schema" />
         <QueryProvider>{children}</QueryProvider>
+        <WebVitalsInit />
         <Analytics />
       </FlowCoreThemeProvider>
     </html>

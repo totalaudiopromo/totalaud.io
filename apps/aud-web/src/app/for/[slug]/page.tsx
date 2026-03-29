@@ -5,11 +5,11 @@ import Image from 'next/image'
 import {
   getUseCaseBySlug,
   getAllUseCaseSlugs,
-  generateWebPageSchema,
+  generateWebPageSchemaWithSpeakable,
   generateBreadcrumbSchema,
   generateHowToSchema,
 } from '@/lib/seo'
-import { JsonLd } from '@/components/seo'
+import { JsonLd, PseoRelatedSections } from '@/components/seo'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -36,6 +36,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: useCase.description,
       type: 'article',
     },
+    alternates: {
+      canonical: `https://totalaud.io/for/${slug}`,
+    },
   }
 }
 
@@ -47,7 +50,12 @@ export default async function UseCasePage({ params }: PageProps) {
     notFound()
   }
 
-  const pageSchema = generateWebPageSchema(useCase.title, useCase.description, `/for/${slug}`)
+  const pageSchema = generateWebPageSchemaWithSpeakable(
+    useCase.title,
+    useCase.description,
+    `/for/${slug}`,
+    ['h1', 'h2', 'main p']
+  )
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: 'Guides', url: '/for' },
@@ -535,6 +543,9 @@ export default async function UseCasePage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/for" />
 
       {/* CTA */}
       <section
