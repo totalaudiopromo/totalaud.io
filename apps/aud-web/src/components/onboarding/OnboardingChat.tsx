@@ -114,24 +114,7 @@ export function OnboardingChat() {
     inputRef.current?.focus()
   }, [])
 
-  // Show loading state while checking onboarding status
-  if (isChecking || shouldRedirect) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#0F1113',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: 14 }}>Loading...</div>
-      </div>
-    )
-  }
-
-  // Handle completion and redirect
+  // Handle completion and redirect -- must be before early return (Rules of Hooks)
   const handleComplete = useCallback(
     async (data: OnboardingData) => {
       // Save profile (skip auto-sync to avoid race condition with completeOnboarding)
@@ -180,6 +163,23 @@ export function OnboardingChat() {
     },
     [setProfile, completeOnboarding, router]
   )
+
+  // Show loading state while checking onboarding status
+  if (isChecking || shouldRedirect) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#0F1113',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: 14 }}>Loading...</div>
+      </div>
+    )
+  }
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
