@@ -6,9 +6,11 @@ import { Card } from '@/components/console/ui/Card'
 import { Tabbed, Tab } from '@/components/console/ui/Tabbed'
 import { NarrativeThreadView } from '@/components/console/intelligence/NarrativeThreadView'
 import { useSignalThread } from '@/hooks/useIntelligence'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function ThreadsPage() {
-  const artistSlug = 'current-artist'
+  const { displayName } = useAuth()
+  const artistSlug = displayName?.toLowerCase().replace(/\s+/g, '-') || 'unknown-artist'
 
   const { data: narrativeThread, isLoading: narrativeLoading } = useSignalThread(
     artistSlug,
@@ -36,7 +38,7 @@ export default function ThreadsPage() {
       ) : (
         <Card>
           <p className="text-ta-grey lowercase">
-            no narrative thread available yet. your story will build as you use the platform.
+            no narrative thread yet. your story will build as you add ideas and create pitches.
           </p>
         </Card>
       ),
@@ -53,7 +55,7 @@ export default function ThreadsPage() {
       ) : (
         <Card>
           <p className="text-ta-grey lowercase">
-            no campaign thread available yet. start a campaign to see your progress.
+            no campaign thread yet. start a campaign in pitch mode to track your outreach progress.
           </p>
         </Card>
       ),
@@ -70,7 +72,7 @@ export default function ThreadsPage() {
       ) : (
         <Card>
           <p className="text-ta-grey lowercase">
-            no creative thread available yet. add ideas to build your creative timeline.
+            no creative thread yet. add ideas in the workspace to build your creative timeline.
           </p>
         </Card>
       ),

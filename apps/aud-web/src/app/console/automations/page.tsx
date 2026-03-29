@@ -139,12 +139,6 @@ export default function AutomationsPage() {
             )}
           </Card>
         )}
-
-        {/* History Placeholder */}
-        <Card>
-          <h3 className="text-lg font-semibold text-ta-white lowercase mb-4">automation history</h3>
-          <p className="text-sm text-ta-grey lowercase">execution history will appear here</p>
-        </Card>
       </div>
     </PageContainer>
   )
