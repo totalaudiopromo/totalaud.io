@@ -24,6 +24,12 @@ export default defineConfig({
         viewport: { width: 1920, height: 1080 },
       },
     },
+    {
+      name: 'mobile',
+      use: {
+        ...devices['iPhone 13'],
+      },
+    },
   ],
   // Start dev server before running tests
   webServer: {
