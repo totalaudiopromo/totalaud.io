@@ -147,6 +147,15 @@ export function TimelineToolbar() {
   const handleGeneratePlan = useCallback(async () => {
     if (!releaseDate) return
 
+    if (events.length > 0) {
+      if (
+        !window.confirm(
+          'You already have timeline events. Generating a new plan will replace them. Continue?'
+        )
+      )
+        return
+    }
+
     setIsGenerating(true)
     try {
       await generateFromReleaseDate(new Date(releaseDate))
@@ -158,7 +167,7 @@ export function TimelineToolbar() {
     } finally {
       setIsGenerating(false)
     }
-  }, [releaseDate, generateFromReleaseDate, success])
+  }, [releaseDate, generateFromReleaseDate, success, events.length])
 
   return (
     <>
