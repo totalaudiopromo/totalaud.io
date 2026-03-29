@@ -4,7 +4,15 @@
  * Shared layout for login/signup pages
  */
 
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

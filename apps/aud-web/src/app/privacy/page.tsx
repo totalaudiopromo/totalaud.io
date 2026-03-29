@@ -8,6 +8,9 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'Privacy policy for totalaud.io - how we handle your data.',
+  alternates: {
+    canonical: 'https://totalaud.io/privacy',
+  },
 }
 
 export default function PrivacyPage() {

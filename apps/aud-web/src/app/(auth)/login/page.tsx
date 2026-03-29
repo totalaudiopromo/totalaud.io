@@ -10,6 +10,13 @@ import { LoginForm } from './LoginForm'
 export const metadata: Metadata = {
   title: 'Sign in - totalaud.io',
   description: 'Sign in to your totalaud.io workspace',
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/login',
+  },
 }
 
 export default function LoginPage() {

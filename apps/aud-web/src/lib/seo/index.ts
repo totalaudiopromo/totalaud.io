@@ -37,6 +37,9 @@ export {
   generateBreadcrumbSchema,
   generateHowToSchema,
   generateWebPageSchema,
+  generateWebPageSchemaWithSpeakable,
   generateLocalBusinessSchema,
   generateArticleSchema,
+  generateWebSiteSchema,
+  generateSpeakableProperty,
 } from './json-ld'

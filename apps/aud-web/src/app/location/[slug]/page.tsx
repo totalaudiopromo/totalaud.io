@@ -5,10 +5,10 @@ import Image from 'next/image'
 import {
   getLocationBySlug,
   getAllLocationSlugs,
-  generateWebPageSchema,
+  generateWebPageSchemaWithSpeakable,
   generateBreadcrumbSchema,
 } from '@/lib/seo'
-import { JsonLd } from '@/components/seo'
+import { JsonLd, PseoRelatedSections } from '@/components/seo'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -35,6 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: location.description,
       type: 'website',
     },
+    alternates: {
+      canonical: `https://totalaud.io/location/${slug}`,
+    },
   }
 }
 
@@ -46,10 +49,11 @@ export default async function LocationPage({ params }: PageProps) {
     notFound()
   }
 
-  const pageSchema = generateWebPageSchema(
+  const pageSchema = generateWebPageSchemaWithSpeakable(
     location.title,
     location.description,
-    `/location/${slug}`
+    `/location/${slug}`,
+    ['h1', 'h2', 'main p']
   )
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },
@@ -509,6 +513,9 @@ export default async function LocationPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/location" />
 
       {/* CTA */}
       <section

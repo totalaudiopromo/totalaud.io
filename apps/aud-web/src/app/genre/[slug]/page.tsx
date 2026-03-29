@@ -5,10 +5,10 @@ import Image from 'next/image'
 import {
   getGenreBySlug,
   getAllGenreSlugs,
-  generateWebPageSchema,
+  generateWebPageSchemaWithSpeakable,
   generateBreadcrumbSchema,
 } from '@/lib/seo'
-import { JsonLd } from '@/components/seo'
+import { JsonLd, PseoRelatedSections } from '@/components/seo'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -35,6 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: genre.description,
       type: 'website',
     },
+    alternates: {
+      canonical: `https://totalaud.io/genre/${slug}`,
+    },
   }
 }
 
@@ -46,8 +49,12 @@ export default async function GenrePage({ params }: PageProps) {
     notFound()
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://totalaud.io'
-  const pageSchema = generateWebPageSchema(genre.title, genre.description, `/genre/${slug}`)
+  const pageSchema = generateWebPageSchemaWithSpeakable(
+    genre.title,
+    genre.description,
+    `/genre/${slug}`,
+    ['h1', 'h2', 'main p']
+  )
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: 'Genres', url: '/genre' },
@@ -443,6 +450,9 @@ export default async function GenrePage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/genre" />
 
       {/* CTA */}
       <section

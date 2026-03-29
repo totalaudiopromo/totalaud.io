@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: 'Notes — The Unsigned Advantage',
   description:
     'Notes from building tools for independent artists. Decisions, trade-offs, and things I notice about music and releasing.',
+  alternates: {
+    canonical: 'https://totalaud.io/notes',
+  },
 }
 
 export default function NotesPage() {

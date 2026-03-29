@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { comparisons } from '@/lib/seo'
+import { PseoRelatedSections } from '@/components/seo'
 
 export const metadata: Metadata = {
   title: 'Compare Music Promotion Platforms | totalaud.io',
@@ -19,6 +20,9 @@ export const metadata: Metadata = {
     description:
       'Compare totalaud.io with Groover, SubmitHub, Hypeddit, and other music promotion platforms.',
     type: 'website',
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/compare',
   },
 }
 
@@ -158,6 +162,9 @@ export default function ComparePage() {
           </div>
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/compare" />
 
       {/* CTA Section */}
       <section className="border-t border-border/30 bg-gradient-to-b from-muted/20 to-background px-6 py-16">

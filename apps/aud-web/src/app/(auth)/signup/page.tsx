@@ -10,6 +10,13 @@ import { SignupForm } from './SignupForm'
 export const metadata: Metadata = {
   title: 'Create account - totalaud.io',
   description: 'Create your totalaud.io account and start your music journey',
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/signup',
+  },
 }
 
 function SignupFormLoading() {

@@ -5,10 +5,10 @@ import Image from 'next/image'
 import {
   getComparisonBySlug,
   getAllComparisonSlugs,
-  generateWebPageSchema,
+  generateWebPageSchemaWithSpeakable,
   generateBreadcrumbSchema,
 } from '@/lib/seo'
-import { JsonLd } from '@/components/seo'
+import { JsonLd, PseoRelatedSections } from '@/components/seo'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -35,6 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: comparison.description,
       type: 'website',
     },
+    alternates: {
+      canonical: `https://totalaud.io/compare/${slug}`,
+    },
   }
 }
 
@@ -46,10 +49,11 @@ export default async function ComparisonPage({ params }: PageProps) {
     notFound()
   }
 
-  const pageSchema = generateWebPageSchema(
+  const pageSchema = generateWebPageSchemaWithSpeakable(
     comparison.title,
     comparison.description,
-    `/compare/${slug}`
+    `/compare/${slug}`,
+    ['h1', 'h2', 'main p']
   )
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },
@@ -658,6 +662,9 @@ export default async function ComparisonPage({ params }: PageProps) {
           </p>
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/compare" />
 
       {/* CTA */}
       <section

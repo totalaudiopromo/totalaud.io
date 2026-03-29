@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { genres, generateWebPageSchema, generateBreadcrumbSchema } from '@/lib/seo'
-import { JsonLd, GenreCard } from '@/components/seo'
+import { JsonLd, GenreCard, PseoRelatedSections } from '@/components/seo'
 
 export const metadata: Metadata = {
   title: 'Music Promotion by Genre | totalaud.io',
@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     title: 'Music Promotion by Genre | totalaud.io',
     description: 'Find genre-specific music promotion resources tailored to your sound.',
     type: 'website',
+  },
+  alternates: {
+    canonical: 'https://totalaud.io/genre',
   },
 }
 
@@ -184,6 +187,9 @@ export default function GenreIndexPage() {
           ))}
         </div>
       </section>
+
+      {/* Cross-links */}
+      <PseoRelatedSections currentSection="/genre" />
 
       {/* Footer */}
       <footer
