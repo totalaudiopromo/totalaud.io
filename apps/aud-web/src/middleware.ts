@@ -111,7 +111,7 @@ function buildCspHeader(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com`,
-    `style-src 'self' 'nonce-${nonce}'`,
+    `style-src 'self' 'unsafe-inline'`,
     "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com",
     "font-src 'self' data:",
     "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://www.googleapis.com https://www.google-analytics.com",
