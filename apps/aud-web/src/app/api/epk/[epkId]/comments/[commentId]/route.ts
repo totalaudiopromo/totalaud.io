@@ -30,8 +30,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    // Note: epk_comments table is planned but not yet created in database
-    const { data: commentRecord, error: commentError } = await (supabase as any)
+    const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -65,7 +64,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('epk_comments')
       .update({ body: body.body })
       .eq('id', commentId)
@@ -104,8 +103,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
 
-    // Note: epk_comments table is planned but not yet created in database
-    const { data: commentRecord, error: commentError } = await (supabase as any)
+    const { data: commentRecord, error: commentError } = await supabase
       .from('epk_comments')
       .select('user_id')
       .eq('id', commentId)
@@ -139,10 +137,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error: deleteError } = await (supabase as any)
-      .from('epk_comments')
-      .delete()
-      .eq('id', commentId)
+    const { error: deleteError } = await supabase.from('epk_comments').delete().eq('id', commentId)
 
     if (deleteError) {
       log.error('Failed to delete comment', deleteError)

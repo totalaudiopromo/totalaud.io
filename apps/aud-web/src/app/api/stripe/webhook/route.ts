@@ -297,11 +297,10 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     return
   }
 
-  // Calculate access end date (end of current billing period)
-  // Cast to access Stripe subscription properties
-  const sub = subscription as unknown as { current_period_end?: number }
-  const accessEndDate = sub.current_period_end
-    ? new Date(sub.current_period_end * 1000).toLocaleDateString('en-GB', {
+  // Calculate access end date from cancellation/end timestamps
+  const endTimestamp = subscription.cancel_at ?? subscription.ended_at
+  const accessEndDate = endTimestamp
+    ? new Date(endTimestamp * 1000).toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

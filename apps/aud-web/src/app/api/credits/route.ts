@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { ENRICHMENT_COST_PENCE } from '@/lib/credits/constants'
+import type { Json } from '@/lib/supabase/database.types'
 
 const log = logger.scope('CreditsAPI')
 
@@ -75,8 +76,7 @@ export async function GET(
     }
 
     // Fetch or create credits record
-    // Note: user_credits table added in migration 20251228100000
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('user_credits')
       .select('balance_pence, total_purchased_pence, total_spent_pence')
       .eq('user_id', session.user.id)
@@ -158,13 +158,12 @@ export async function POST(
     const { amountPence, transactionType, description, metadata } = parseResult.data
 
     // Call the add_credits function
-    // Note: add_credits function added in migration 20251228100000
-    const { data, error } = await (supabase.rpc as any)('add_credits', {
+    const { data, error } = await supabase.rpc('add_credits', {
       p_user_id: session.user.id,
       p_amount_pence: amountPence,
       p_transaction_type: transactionType,
       p_description: description || `${transactionType} credits`,
-      p_metadata: metadata || {},
+      p_metadata: (metadata || {}) as Json,
     })
 
     if (error) {

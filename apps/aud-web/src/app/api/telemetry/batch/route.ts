@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
+import type { Json } from '@/lib/supabase/database.types'
 
 const log = logger.scope('TelemetryBatchAPI')
 
@@ -86,13 +87,12 @@ export async function POST(request: NextRequest) {
       campaign_id: campaignId || null,
       event_type: event.event_type,
       duration_ms: event.duration_ms || null,
-      metadata: event.metadata || {},
+      metadata: (event.metadata || {}) as Json,
       created_at: event.created_at || new Date().toISOString(),
     }))
 
     // Batch insert to Supabase
-    // Note: flow_telemetry table is planned but not yet created in database
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('flow_telemetry')
       .insert(eventsToInsert)
       .select('id')

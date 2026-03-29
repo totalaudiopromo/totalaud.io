@@ -46,8 +46,7 @@ export async function GET(req: NextRequest) {
     const periodStart = new Date(now)
     periodStart.setDate(periodStart.getDate() - period)
 
-    // Note: flow_hub_summary_cache table is planned but not yet created in database
-    const { data: cachedSummary, error: cacheError } = await (supabase as any)
+    const { data: cachedSummary, error: cacheError } = await supabase
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -65,7 +64,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!summary || !isCacheHit) {
-      const { error: refreshError } = await (supabase as any).rpc('refresh_flow_hub_summary', {
+      const { error: refreshError } = await supabase.rpc('refresh_flow_hub_summary', {
         uid: userId,
       })
 
@@ -74,7 +73,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to refresh analytics summary' }, { status: 500 })
       }
 
-      const refreshed = await (supabase as any)
+      const refreshed = await supabase
         .from('flow_hub_summary_cache')
         .select('metrics, generated_at, expires_at')
         .eq('user_id', userId)

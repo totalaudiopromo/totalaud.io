@@ -97,8 +97,7 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days)
 
     // Build query
-    // Note: flow_telemetry table is planned but not yet created in database
-    let query = (supabase as any)
+    let query = supabase
       .from('flow_telemetry')
       .select('*')
       .eq('user_id', userId)
@@ -127,11 +126,11 @@ export async function GET(request: NextRequest) {
     interface TelemetryEvent {
       event_type: string
       created_at: string
-      duration_ms?: number
-      metadata?: Record<string, unknown>
+      duration_ms: number | null
+      metadata: Record<string, unknown> | null
     }
 
-    const events: TelemetryEvent[] = data || []
+    const events: TelemetryEvent[] = (data ?? []) as TelemetryEvent[]
 
     // Calculate summary metrics
     const saveEvents = events.filter((e) => e.event_type === 'save')

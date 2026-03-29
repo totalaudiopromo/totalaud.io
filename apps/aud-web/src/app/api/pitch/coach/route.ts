@@ -176,10 +176,9 @@ export async function POST(request: NextRequest) {
     const { action, sectionId, sectionTitle, content, pitchType, allSections } = validated
 
     // Fetch artist identity for context (optional, enhances suggestions)
-    // Note: Type assertion needed until Supabase types are regenerated
     let artistIdentity: ArtistIdentity | null = null
     try {
-      const { data: identity } = await (supabase as any)
+      const { data: identity } = await supabase
         .from('artist_identities')
         .select(
           'brand_tone, brand_themes, brand_style, key_phrases, one_liner, press_angle, pitch_hook, comparisons, last_generated_at'
