@@ -16,17 +16,9 @@ import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 
 // Feature-specific contextual headers
 const FEATURE_HEADERS: Record<string, { title: string; subtitle: string }> = {
-  validate: {
-    title: 'Create a free account',
-    subtitle: 'to validate contacts with TAP Intel',
-  },
   'pitch-generator': {
     title: 'Create a free account',
     subtitle: 'to generate pitches with AI',
-  },
-  'tracker-sync': {
-    title: 'Create a free account',
-    subtitle: 'to log submissions to TAP Tracker',
   },
 }
 
