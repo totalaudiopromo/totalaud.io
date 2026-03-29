@@ -7,9 +7,11 @@ import { CorrelationList } from '@/components/console/intelligence/CorrelationLi
 import { TrajectoryForecast } from '@/components/console/intelligence/TrajectoryForecast'
 import { useCorrelations, useTrajectory } from '@/hooks/useIntelligence'
 import { Card } from '@/components/console/ui/Card'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function InsightsPage() {
-  const artistSlug = 'current-artist'
+  const { displayName } = useAuth()
+  const artistSlug = displayName?.toLowerCase().replace(/\s+/g, '-') || 'unknown-artist'
 
   const { data: correlations, isLoading: correlationsLoading } = useCorrelations(artistSlug)
   const { data: trajectory, isLoading: trajectoryLoading } = useTrajectory(artistSlug)
@@ -51,26 +53,6 @@ export default function InsightsPage() {
       ) : (
         <Card>
           <p className="text-ta-grey lowercase">no trajectory data available</p>
-        </Card>
-      ),
-    },
-    {
-      id: 'patterns',
-      label: 'patterns',
-      content: (
-        <Card>
-          <p className="text-sm text-ta-grey lowercase">
-            pattern analysis available in main dashboard
-          </p>
-        </Card>
-      ),
-    },
-    {
-      id: 'next-steps',
-      label: 'next steps',
-      content: (
-        <Card>
-          <p className="text-sm text-ta-grey lowercase">coming soon</p>
         </Card>
       ),
     },

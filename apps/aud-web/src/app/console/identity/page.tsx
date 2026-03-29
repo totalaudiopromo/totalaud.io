@@ -1,13 +1,18 @@
 'use client'
 
+import Link from 'next/link'
 import { PageContainer } from '@/components/console/layout/PageContainer'
 import { SectionHeader } from '@/components/console/ui/SectionHeader'
 import { Card } from '@/components/console/ui/Card'
 import { Badge } from '@/components/console/ui/Badge'
 import { useIdentity } from '@/hooks/useIntelligence'
+import { useAuth } from '@/hooks/useAuth'
+import { useSubscription } from '@/hooks/useSubscription'
 
 export default function IdentityPage() {
-  const artistSlug = 'current-artist'
+  const { user, displayName } = useAuth()
+  const { tier } = useSubscription()
+  const artistSlug = displayName?.toLowerCase().replace(/\s+/g, '-') || 'unknown-artist'
   const { data: identity, isLoading } = useIdentity(artistSlug)
 
   if (isLoading) {
@@ -26,9 +31,30 @@ export default function IdentityPage() {
       <PageContainer>
         <SectionHeader title="identity kernel" description="your unified artist identity profile" />
         <Card>
-          <p className="text-ta-grey lowercase">
-            no identity data available yet. start building your profile in pitch mode.
-          </p>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-ta-grey uppercase tracking-wider">display name</span>
+                <span className="text-sm text-ta-white">{displayName || 'not set'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-ta-grey uppercase tracking-wider">email</span>
+                <span className="text-sm text-ta-white">{user?.email || 'not available'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-ta-grey uppercase tracking-wider">plan</span>
+                <Badge variant="info">{tier || 'free'}</Badge>
+              </div>
+            </div>
+            <div className="pt-3 border-t border-ta-panel/50">
+              <Link href="/settings" className="text-sm text-ta-cyan hover:underline lowercase">
+                manage account settings
+              </Link>
+            </div>
+            <p className="text-sm text-ta-grey lowercase pt-2">
+              your ai-generated identity profile will build as you use the workspace.
+            </p>
+          </div>
         </Card>
       </PageContainer>
     )
