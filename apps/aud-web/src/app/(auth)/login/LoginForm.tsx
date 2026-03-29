@@ -11,7 +11,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
@@ -21,16 +21,22 @@ const log = logger.scope('Login')
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { track } = useTelemetry()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    const message = searchParams.get('message')
+    if (message === 'password-updated') {
+      setSuccessMessage('Password updated. Sign in with your new password.')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -317,6 +323,26 @@ export function LoginForm() {
               }}
             />
           </motion.div>
+
+          {/* Success message */}
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                padding: '12px 14px',
+                marginBottom: '20px',
+                backgroundColor: 'rgba(58, 169, 190, 0.1)',
+                border: '1px solid rgba(58, 169, 190, 0.25)',
+                borderRadius: '10px',
+                fontSize: '13px',
+                color: '#3AA9BE',
+                lineHeight: 1.4,
+              }}
+            >
+              {successMessage}
+            </motion.div>
+          )}
 
           {/* Error message */}
           {error && (

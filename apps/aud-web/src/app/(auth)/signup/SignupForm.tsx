@@ -119,8 +119,8 @@ export function SignupForm() {
         return
       }
 
-      // Check if user was created successfully
-      if (data.user) {
+      // Check if user was created and session established
+      if (data.user && data.session) {
         // If a tier was specified, redirect to checkout
         if (isValidTier(tier)) {
           // Trigger checkout flow for the selected tier
@@ -153,9 +153,11 @@ export function SignupForm() {
 
         // No tier specified - redirect to onboarding for profile setup
         router.push('/onboarding')
+      } else if (data.user && !data.session) {
+        // Email confirmation required -- user needs to check their inbox
+        setError('Account created. Please check your email to verify, then sign in.')
       } else {
-        // This shouldn't happen with email verification disabled
-        setError('Account created. Please check your email to verify.')
+        setError('Something went wrong creating your account. Please try again.')
       }
     } catch {
       setError('Something went wrong. Please try again.')

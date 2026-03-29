@@ -16,7 +16,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
 import { SocialProof } from './SocialProof'
-import { JourneyGallery } from './JourneyGallery'
+// JourneyGallery removed -- founder timeline was too much
 
 // How it works steps - Vision aligned
 const HOW_IT_WORKS = [
@@ -30,8 +30,7 @@ const HOW_IT_WORKS = [
   },
   {
     title: 'Understand what matters',
-    detail:
-      'Clear feedback on arrangement, energy, clarity, and release readiness — no scores, no judgement.',
+    detail: 'Honest notes on arrangement, energy, clarity, and release readiness.',
   },
   {
     title: 'Release with confidence',
@@ -44,8 +43,7 @@ const PILLARS = [
   {
     id: 'finish',
     title: 'A second opinion for music you care about',
-    description:
-      "totalaud.io doesn't tell you what your music is. It helps you understand what's working, what could improve, and what's already good enough.",
+    description: "Understand what's working, what could improve, and what's already good enough.",
     features: [
       'Arrangement & energy',
       'Mix translation & clarity',
@@ -55,22 +53,20 @@ const PILLARS = [
   {
     id: 'release',
     title: 'Release as a narrative — not a checkbox',
-    description:
-      'Plan releases over time, not as isolated drops. Understand timing, momentum, and how your music lands in the real world.',
+    description: 'Plan releases over time, not as isolated drops. Think about timing and momentum.',
     features: [],
   },
   {
     id: 'leverage',
     title: 'Relationships, not lists',
     description:
-      'Keep track of the people who matter — playlists, press, collaborators — with memory and context, not spreadsheets and guesswork.',
+      'Keep track of the people who matter -- playlists, press, collaborators -- with context, not spreadsheets.',
     features: [],
   },
   {
     id: 'pitch',
     title: 'Tell your story once — use it everywhere',
-    description:
-      'Keep your narrative consistent across pitches, bios, playlists, and socials — without rewriting everything from scratch.',
+    description: 'Write your story once. Use it across pitches, bios, playlists, and socials.',
     features: [],
   },
 ]
@@ -438,16 +434,6 @@ export function LandingPage() {
             }}
           >
             <span
-              aria-hidden="true"
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: '#3AA9BE',
-                boxShadow: '0 0 10px rgba(58, 169, 190, 0.8)',
-              }}
-            />
-            <span
               style={{
                 fontSize: '13px',
                 fontWeight: 500,
@@ -456,7 +442,7 @@ export function LandingPage() {
                 letterSpacing: '0.02em',
               }}
             >
-              Finish mode coming soon — join the waitlist
+              New: Finish mode -- master-ready audio in minutes
             </span>
           </motion.div>
 
@@ -506,8 +492,7 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            totalaud.io helps independent artists get clear feedback on their music, plan releases
-            that make sense, and stop guessing what matters.
+            Clear feedback on your music. Releases that make sense. Less guessing.
           </motion.p>
 
           {/* CTAs */}
@@ -608,8 +593,8 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Most music doesn't fail because it's bad — it fails because there's no trusted second
-              opinion before release.
+              Most music doesn't fail because it's bad. It fails because nobody said anything useful
+              before release.
             </p>
             <p
               style={{
@@ -747,8 +732,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Journey Gallery Section */}
-        <JourneyGallery />
+        {/* Journey Gallery removed */}
 
         {/* Social Proof Section */}
         <SocialProof />
@@ -780,9 +764,8 @@ export function LandingPage() {
                 fontStyle: 'italic',
               }}
             >
-              Built by someone who runs real campaigns. Five years in UK radio promotion, hundreds
-              of releases, thousands of contacts. totalaud.io exists because I kept seeing the same
-              problem — talented artists releasing great music with no second opinion and no plan.
+              I run a radio promotion agency. totalaud.io is the tool I wished my artists had before
+              they came to me.
             </p>
             <p
               style={{
@@ -850,7 +833,7 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Make music you're proud to release.
+              Know your music is ready before you put it out.
             </p>
             <MagneticButton href="/signup">Get started</MagneticButton>
           </motion.div>
@@ -897,7 +880,7 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Independent by design. Built with care.
+              Independent by design.
             </span>
           </div>
           <nav

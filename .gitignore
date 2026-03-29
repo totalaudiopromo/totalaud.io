@@ -19,6 +19,8 @@ build/
 *API_KEY*
 *TOKEN*
 *PASSWORD*
+!**/*-password/
+!**/*password*/
 *PRIVATE_KEY*
 *ACCESS_KEY*
 
