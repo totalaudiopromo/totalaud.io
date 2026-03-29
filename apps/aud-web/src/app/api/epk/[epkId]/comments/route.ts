@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 
@@ -56,9 +57,7 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Note: epk_comments table is planned but not yet created in database
-    // Using type assertion to allow build to pass - will handle gracefully at runtime
-    const { data: commentRowsData, error: commentsError } = await (supabase as any)
+    const { data: commentRowsData, error: commentsError } = await supabase
       .from('epk_comments')
       .select('id, epk_id, user_id, body, parent_id, created_at, updated_at')
       .eq('epk_id', epkId)
@@ -88,21 +87,20 @@ export async function GET(
       typedProfiles.map((profile) => [profile.id, profile.full_name])
     )
 
-    const comments =
-      commentRows.map((row) => ({
-        id: row.id,
-        epkId: row.epk_id,
-        body: row.body,
-        parentId: row.parent_id ?? null,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at ?? null,
-        user: {
-          id: row.user_id,
-          fullName: profileMap.get(row.user_id),
-          email: undefined,
-          role: collaboratorRoleMap.get(row.user_id) ?? 'guest',
-        },
-      })) ?? []
+    const comments = commentRows.map((row) => ({
+      id: row.id,
+      epkId: row.epk_id,
+      body: row.body,
+      parentId: row.parent_id ?? null,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at ?? null,
+      user: {
+        id: row.user_id,
+        fullName: profileMap.get(row.user_id),
+        email: undefined,
+        role: collaboratorRoleMap.get(row.user_id) ?? 'guest',
+      },
+    }))
 
     return NextResponse.json({
       comments,
@@ -113,16 +111,25 @@ export async function GET(
   }
 }
 
+const createCommentSchema = z.object({
+  body: z.string().min(1, 'Comment body is required').max(5000, 'Comment too long'),
+  parentId: z.string().uuid('Invalid parent comment ID').nullable().optional(),
+})
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ epkId: string }> }
 ) {
   try {
     const { epkId } = await params
-    const body = (await request.json()) as { body?: string; parentId?: string | null }
-    if (!body.body || !body.body.trim()) {
-      return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
+    const parseResult = createCommentSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid request' },
+        { status: 400 }
+      )
     }
+    const { body: commentBody, parentId: parsedParentId } = parseResult.data
 
     const supabase = await createRouteSupabaseClient()
     const {
@@ -138,7 +145,7 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
     }
-    const parentId = body.parentId ?? null
+    const parentId = parsedParentId ?? null
 
     const { data: roleRecord, error: roleError } = await supabase
       .from('campaign_collaborators')
@@ -149,7 +156,7 @@ export async function POST(
 
     if (roleError) {
       log.error('Failed to check collaborator role', { error: roleError })
-      return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to verify permissions' }, { status: 500 })
     }
 
     if (!roleRecord || !['owner', 'editor'].includes(roleRecord.role)) {
@@ -159,12 +166,11 @@ export async function POST(
     const insertPayload = {
       epk_id: epkId,
       user_id: session.user.id,
-      body: body.body,
+      body: commentBody,
       parent_id: parentId,
     }
 
-    // Note: epk_comments table is planned but not yet created in database
-    const { data: inserted, error: insertError } = await (supabase as any)
+    const { data: inserted, error: insertError } = await supabase
       .from('epk_comments')
       .insert(insertPayload)
       .select('id, epk_id, user_id, body, parent_id, created_at, updated_at')

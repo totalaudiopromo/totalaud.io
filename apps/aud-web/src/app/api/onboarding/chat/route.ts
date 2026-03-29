@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import Anthropic from '@anthropic-ai/sdk'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
@@ -43,6 +44,16 @@ interface QuickReply {
   label: string
   value: string
 }
+
+const chatMessageSchema = z.object({
+  role: z.enum(['assistant', 'user']),
+  content: z.string().min(1),
+})
+
+const chatRequestSchema = z.object({
+  messages: z.array(chatMessageSchema).min(1, 'At least one message is required'),
+  collectedData: z.record(z.unknown()).optional().default({}),
+})
 
 const SYSTEM_PROMPT = `You are "Audio", a calm, friendly assistant helping independent musicians set up their workspace on totalaud.io.
 
@@ -93,13 +104,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { messages, collectedData } = (await request.json()) as {
+    const parseResult = chatRequestSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid request' },
+        { status: 400 }
+      )
+    }
+    const { messages, collectedData } = parseResult.data as {
       messages: ChatMessage[]
       collectedData: CollectedData
     }
 
     // Build context about what we've collected
-    const collectedContext = Object.entries(collectedData || {})
+    const collectedContext = Object.entries(collectedData)
       .filter(([, value]) => value !== undefined && value !== '')
       .map(([key, value]) => `${key}: ${value}`)
       .join('\n')
@@ -181,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     // Parse natural language for data extraction if Claude didn't extract
     const lastUserMessage = messages[messages.length - 1]?.content || ''
-    const autoExtracted = extractDataFromMessage(lastUserMessage, collectedData || {})
+    const autoExtracted = extractDataFromMessage(lastUserMessage, collectedData)
 
     return NextResponse.json({
       message: parsed.message,

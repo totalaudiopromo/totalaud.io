@@ -101,22 +101,28 @@ function checkRateLimit(
 // Security Headers
 // ============================================================================
 
-// Define CSP header separately to allow for dynamic modification or cleaner formatting
-const cspHeader = `
-  default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com;
-  style-src 'self' 'unsafe-inline';
-  img-src 'self' data: blob: https:;
-  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.google.com https://*.sentry.io https://*.stripe.com https://*.vercel-analytics.com;
-  frame-src https://*.stripe.com https://accounts.google.com;
-  object-src 'none';
-  base-uri 'self';
-  form-action 'self';
-  upgrade-insecure-requests;
-`
+function generateNonce(): string {
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+  return btoa(String.fromCharCode(...array))
+}
 
-const securityHeaders = {
-  'Content-Security-Policy': cspHeader.replace(/\s{2,}/g, ' ').trim(),
+function buildCspHeader(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com`,
+    `style-src 'self' 'nonce-${nonce}'`,
+    "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com",
+    "font-src 'self' data:",
+    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://www.googleapis.com https://www.google-analytics.com",
+    "frame-src 'self' https://*.stripe.com https://accounts.google.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+}
+
+const staticSecurityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
@@ -167,7 +173,7 @@ export function middleware(request: NextRequest) {
             'Retry-After': String(Math.ceil((reset - Date.now()) / 1000)),
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': String(reset),
-            ...securityHeaders,
+            ...staticSecurityHeaders,
           },
         }
       )
@@ -176,8 +182,8 @@ export function middleware(request: NextRequest) {
     // Add rate limit headers to successful responses
     const response = NextResponse.next()
 
-    // Add security headers
-    for (const [key, value] of Object.entries(securityHeaders)) {
+    // Add security headers (no CSP needed for API routes)
+    for (const [key, value] of Object.entries(staticSecurityHeaders)) {
       response.headers.set(key, value)
     }
 
@@ -190,10 +196,14 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // For non-API routes, just add security headers
-  let response = NextResponse.next()
+  // For non-API routes, add security headers with nonce-based CSP
+  const nonce = generateNonce()
+  const response = NextResponse.next()
 
-  for (const [key, value] of Object.entries(securityHeaders)) {
+  response.headers.set('Content-Security-Policy', buildCspHeader(nonce))
+  response.headers.set('x-nonce', nonce)
+
+  for (const [key, value] of Object.entries(staticSecurityHeaders)) {
     response.headers.set(key, value)
   }
 

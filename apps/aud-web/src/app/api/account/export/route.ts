@@ -86,33 +86,19 @@ export async function GET() {
       supabase.from('artist_identities').select('*').eq('user_id', user.id).single(),
     ])
 
-    // Query credit tables separately (may not exist in generated types yet)
-    // Use unknown cast since these tables may not be in generated types
-    const rawSupabase = supabase as unknown as {
-      from: (table: string) => {
-        select: (columns: string) => {
-          eq: (
-            column: string,
-            value: string
-          ) => {
-            single: () => Promise<{ data: unknown; error: unknown }>
-            order: (
-              column: string,
-              options: { ascending: boolean }
-            ) => Promise<{ data: unknown; error: unknown }>
-          }
-        }
-      }
-    }
+    // Query credit tables separately (may not exist in all environments)
+    // Wrap in Promise.resolve() because Supabase returns PromiseLike, not Promise
     const creditsData = await safeQuery(() =>
-      rawSupabase.from('user_credits').select('*').eq('user_id', user.id).single()
+      Promise.resolve(supabase.from('user_credits').select('*').eq('user_id', user.id).single())
     )
     const creditTransactionsData = await safeQuery(() =>
-      rawSupabase
-        .from('credit_transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+      Promise.resolve(
+        supabase
+          .from('credit_transactions')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+      )
     )
 
     // Compile export data

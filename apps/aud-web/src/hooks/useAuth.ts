@@ -75,9 +75,16 @@ export function useAuth(): AuthState {
         env.NODE_ENV === 'development' &&
         env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === true
       ) {
+        const devUserId = env.NEXT_PUBLIC_DEV_AUTH_USER_ID
+        const devEmail = env.NEXT_PUBLIC_DEV_AUTH_EMAIL
+        if (!devUserId || !devEmail) {
+          log.error(
+            'Mock auth enabled but NEXT_PUBLIC_DEV_AUTH_USER_ID and NEXT_PUBLIC_DEV_AUTH_EMAIL are required'
+          )
+          setLoading(false)
+          return
+        }
         log.warn('Mock auth enabled: bypassing Supabase and using dev user')
-        const devUserId = env.NEXT_PUBLIC_DEV_AUTH_USER_ID || '62a086b1-411e-4d2b-894e-71dfd8cb5d4e'
-        const devEmail = env.NEXT_PUBLIC_DEV_AUTH_EMAIL || 'verify@totalaud.io'
         const devUser = createDevUser(devUserId, devEmail, 'Verify Artist')
         setUser(devUser)
         setLoading(false)

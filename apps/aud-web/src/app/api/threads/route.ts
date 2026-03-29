@@ -73,8 +73,7 @@ export async function GET() {
     }
 
     // Fetch all threads for user
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const threadsResult = await (supabase as any)
+    const threadsResult = await supabase
       .from('signal_threads')
       .select(
         'id, user_id, title, thread_type, colour, event_ids, narrative_summary, insights, created_at, updated_at'
@@ -143,8 +142,7 @@ export async function POST(request: NextRequest) {
     const { title, threadType, colour, eventIds } = validation.data
 
     // Insert thread
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const insertResult = await (supabase as any)
+    const insertResult = await supabase
       .from('signal_threads')
       .insert({
         user_id: session.user.id,
@@ -252,8 +250,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update thread
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const updateResult = await (supabase as any)
+    const updateResult = await supabase
       .from('signal_threads')
       .update(updateData)
       .eq('id', id)
@@ -279,7 +276,7 @@ export async function PATCH(request: NextRequest) {
     // If eventIds changed, update event references atomically
     // Uses RPC function to prevent race conditions between clear and set operations
     if (eventIds !== undefined) {
-      const rpcResult = await (supabase.rpc as any)('update_thread_events', {
+      const rpcResult = await supabase.rpc('update_thread_events', {
         p_thread_id: id,
         p_user_id: session.user.id,
         p_event_ids: eventIds,
@@ -341,8 +338,7 @@ export async function DELETE(request: NextRequest) {
     const { id } = validation.data
 
     // Delete thread (RLS ensures user can only delete their own)
-    // Type assertion needed until Supabase types are regenerated to include signal_threads
-    const { error: deleteError } = await (supabase as any)
+    const { error: deleteError } = await supabase
       .from('signal_threads')
       .delete()
       .eq('id', id)

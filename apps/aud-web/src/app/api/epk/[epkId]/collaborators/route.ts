@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
 import { logger } from '@/lib/logger'
 
@@ -84,9 +85,6 @@ export async function GET(
     }
 
     const typedProfiles = (profiles ?? []) as UserProfileRow[]
-    const profileMap = new Map<string, string | null>(
-      typedProfiles.map((profile) => [profile.id, profile.full_name])
-    )
 
     let invites: InviteRow[] = []
     if (currentRole === 'owner') {
@@ -118,18 +116,26 @@ export async function GET(
   }
 }
 
+const inviteCollaboratorSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+  role: z.enum(['owner', 'editor', 'viewer', 'guest']).default('viewer'),
+  message: z.string().max(500).optional(),
+})
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ epkId: string }> }
 ) {
   try {
     const { epkId } = await params
-    const body = (await request.json()) as { email?: string; role?: string; message?: string }
-    const { email, role = 'viewer' } = body
-
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    const parseResult = inviteCollaboratorSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid request' },
+        { status: 400 }
+      )
     }
+    const { email, role } = parseResult.data
 
     const supabase = await createRouteSupabaseClient()
     const {

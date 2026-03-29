@@ -358,8 +358,7 @@ export async function POST(request: NextRequest) {
     // Fetch artist identity for context (optional enhancement)
     let artistIdentity: ArtistIdentity | null = null
     try {
-      // Note: Type assertion needed until Supabase types are regenerated
-      const { data: identity } = await (supabase as any)
+      const { data: identity } = await supabase
         .from('artist_identities')
         .select(
           'brand_tone, brand_themes, brand_style, key_phrases, one_liner, press_angle, pitch_hook, comparisons, last_generated_at'

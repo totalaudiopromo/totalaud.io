@@ -31,11 +31,11 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id
 
     // Load last-used campaign (RLS-safe query)
-    const { data: campaigns, error: fetchError } = await (supabase as any)
+    const { data: campaigns, error: fetchError } = await supabase
       .from('campaign_context')
-      .select('id, artist_name, created_at, last_accessed_at')
+      .select('id, artist, created_at, last_saved_at')
       .eq('user_id', userId)
-      .order('last_accessed_at', { ascending: false })
+      .order('last_saved_at', { ascending: false })
       .limit(1)
 
     if (fetchError) {
@@ -48,16 +48,16 @@ export async function POST(req: NextRequest) {
       const campaign = campaigns[0]
       log.info('Last-used campaign found', { campaignId: campaign.id, userId })
 
-      // Update last_accessed_at timestamp
-      await (supabase as any)
+      // Update last_saved_at timestamp
+      await supabase
         .from('campaign_context')
-        .update({ last_accessed_at: new Date().toISOString() })
+        .update({ last_saved_at: new Date().toISOString() })
         .eq('id', campaign.id)
         .eq('user_id', userId)
 
       return NextResponse.json({
         campaignId: campaign.id,
-        artistName: campaign.artist_name,
+        artistName: campaign.artist,
       })
     }
 
@@ -66,17 +66,19 @@ export async function POST(req: NextRequest) {
 
     const newCampaign = {
       user_id: userId,
-      artist_name: 'untitled campaign',
+      title: 'Untitled Campaign',
+      artist: 'untitled',
       genre: '',
-      goals: '',
+      goal: 'explore',
+      horizon_days: 30,
       created_at: new Date().toISOString(),
-      last_accessed_at: new Date().toISOString(),
+      last_saved_at: new Date().toISOString(),
     }
 
-    const { data: createdCampaign, error: createError } = await (supabase as any)
+    const { data: createdCampaign, error: createError } = await supabase
       .from('campaign_context')
       .insert([newCampaign])
-      .select('id, artist_name')
+      .select('id, artist')
       .single()
 
     if (createError || !createdCampaign) {
@@ -88,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       campaignId: createdCampaign.id,
-      artistName: createdCampaign.artist_name,
+      artistName: createdCampaign.artist,
       created: true,
     })
   } catch (error) {

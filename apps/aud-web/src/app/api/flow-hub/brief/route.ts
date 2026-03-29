@@ -71,8 +71,7 @@ export async function POST(req: NextRequest) {
     log.debug('Generating AI brief', { userId, period, force_refresh })
 
     // Fetch summary data
-    // Note: flow_hub_summary_cache table is planned but not yet created in database
-    const { data: summaryRow, error: summaryError } = await (supabase as any)
+    const { data: summaryRow, error: summaryError } = await supabase
       .from('flow_hub_summary_cache')
       .select('metrics, generated_at, expires_at')
       .eq('user_id', userId)
@@ -157,7 +156,7 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('flow_hub_summary_cache')
       .update({ metrics: updatedMetrics })
       .eq('user_id', userId)
