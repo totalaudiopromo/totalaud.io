@@ -14,18 +14,9 @@
 
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X,
-  ExternalLink,
-  Calendar,
-  Mail,
-  User,
-  MessageSquare,
-  CheckCircle,
-  Loader2,
-} from 'lucide-react'
+import { X, ExternalLink, Calendar, Mail, User, MessageSquare, CheckCircle } from 'lucide-react'
 import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { useToast } from '@/contexts/ToastContext'
@@ -104,42 +95,6 @@ export function OpportunityDetailPanel() {
     // DESSA Phase 3: Pre-generate pitch from opportunity
     handlePitchOpportunity(opportunity)
   }, [opportunity, handlePitchOpportunity])
-
-  const [isSyncing, setIsSyncing] = useState(false)
-  const handleSyncToTracker = useCallback(async () => {
-    if (!opportunity || isSyncing) return
-
-    setIsSyncing(true)
-    try {
-      track('opportunity_sync_start', { opportunityId: opportunity.id })
-      const response = await fetch('/api/tap/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          opportunityId: opportunity.id,
-          campaignName: `${opportunity.name} Outreach`,
-        }),
-      })
-
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to sync')
-
-      track('opportunity_sync_success', {
-        opportunityId: opportunity.id,
-        campaignId: data.campaign?.id,
-      })
-      checkAndCelebrate('scout', 1)
-      showAddedToast() // Reuse toast or create new one
-    } catch (error) {
-      log.error('Sync to tracker failed', error)
-      track('opportunity_sync_error', {
-        opportunityId: opportunity.id,
-        error: (error as Error).message,
-      })
-    } finally {
-      setIsSyncing(false)
-    }
-  }, [opportunity, isSyncing, checkAndCelebrate, showAddedToast, track])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -389,19 +344,6 @@ export function OpportunityDetailPanel() {
                     Add to Timeline
                   </>
                 )}
-              </button>
-
-              <button
-                onClick={handleSyncToTracker}
-                disabled={isSyncing}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 text-white/80 border border-white/10 rounded-xl font-medium text-sm hover:bg-white/10 hover:border-white/20 transition-all"
-              >
-                {isSyncing ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <ExternalLink size={16} />
-                )}
-                Sync to TAP Tracker
               </button>
 
               {/* Create Pitch */}

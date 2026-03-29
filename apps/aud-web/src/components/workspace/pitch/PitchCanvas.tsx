@@ -13,15 +13,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type CoachAction } from '@/stores/usePitchStore'
 import { useTrackContext } from '@/hooks/useTrackContext'
-import { TAPGenerateModal } from './TAPGenerateModal'
 import { IdentityPanel } from './IdentityPanel'
 import { CoachingSession } from './CoachingSession'
-import { useAuthGate } from '@/components/auth'
 import { useToast } from '@/contexts/ToastContext'
 import { TypingIndicator } from '@/components/ui/EmptyState'
 import { StaggeredEntrance } from '@/components/ui/StaggeredEntrance'
@@ -32,9 +29,6 @@ import { PitchStepSelection } from './PitchStepSelection'
 import { PitchSection } from './PitchSection'
 
 export function PitchCanvas() {
-  const router = useRouter()
-  const { canAccess: isAuthenticated, requireAuth } = useAuthGate()
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false)
   const { pitchCopied } = useToast()
 
   // Get state and actions from store
@@ -57,8 +51,6 @@ export function PitchCanvas() {
     setCoachError,
     applyCoachSuggestion,
     resetPitch,
-    // TAP Pitch actions
-    openTAPModal,
     setTrackId,
   } = usePitchStore()
 
@@ -71,19 +63,6 @@ export function PitchCanvas() {
 
   // Get track memory context
   const { intent } = useTrackContext()
-
-  // Gated TAP modal opener
-  const handleOpenTAPModal = () => {
-    if (!requireAuth(() => setShowAuthPrompt(true))) {
-      // Show brief prompt, then redirect
-      setTimeout(() => {
-        setShowAuthPrompt(false)
-        router.push('/signup?feature=pitch-generator')
-      }, 1500)
-      return
-    }
-    openTAPModal()
-  }
 
   // Request AI coach feedback
   const requestCoach = async (sectionId: string, action: CoachAction) => {
@@ -161,41 +140,14 @@ export function PitchCanvas() {
           </motion.div>
         )}
 
-        {/* Pitch type header with TAP generate button */}
-        <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
-              {PITCH_TYPES.find((t) => t.key === currentType)?.label}
-            </h2>
-            <p className="text-sm text-ta-grey">
-              {PITCH_TYPES.find((t) => t.key === currentType)?.description}
-            </p>
-          </div>
-
-          {/* Generate with TAP button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleOpenTAPModal}
-            aria-label={
-              !isAuthenticated
-                ? 'Sign up to generate pitches with TAP AI'
-                : 'Generate a pitch using TAP AI'
-            }
-            className={`
-              flex items-center gap-2 px-4 py-2.5 text-xs font-medium rounded-lg border transition-all duration-200
-              ${
-                showAuthPrompt
-                  ? 'bg-orange-500/10 border-orange-500/30 text-orange-500'
-                  : 'bg-ta-cyan/10 border-ta-cyan/30 text-ta-cyan hover:bg-ta-cyan/20 hover:border-ta-cyan/50'
-              }
-            `}
-          >
-            <span className="text-sm" aria-hidden="true">
-              ✦
-            </span>
-            {showAuthPrompt ? 'Sign up to unlock' : 'Generate with TAP'}
-          </motion.button>
+        {/* Pitch type header */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-ta-white mb-2 tracking-tight">
+            {PITCH_TYPES.find((t) => t.key === currentType)?.label}
+          </h2>
+          <p className="text-sm text-ta-grey">
+            {PITCH_TYPES.find((t) => t.key === currentType)?.description}
+          </p>
         </div>
 
         {/* Sections */}
@@ -313,9 +265,6 @@ export function PitchCanvas() {
           Get a Second Opinion
         </motion.button>
       )}
-
-      {/* TAP Generate Modal */}
-      <TAPGenerateModal />
     </div>
   )
 }
