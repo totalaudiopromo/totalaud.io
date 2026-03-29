@@ -15,7 +15,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronRight, ChevronLeft } from 'lucide-react'
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 interface TourStep {
   title: string
@@ -115,6 +115,22 @@ const TOUR_CONTENT: Record<WorkspaceMode, TourStep[]> = {
       title: 'Second Opinion',
       description:
         "Click 'Get Second Opinion' on any section for helpful suggestions to improve your pitch. Good luck!",
+    },
+  ],
+  finish: [
+    {
+      title: 'Welcome to Finish',
+      description:
+        'Upload a track to get detailed audio analysis -- loudness, dynamics, stereo width, and spectral balance.',
+    },
+    {
+      title: 'Genre-Aware Suggestions',
+      description: 'Get actionable suggestions tailored to your genre and target platform.',
+    },
+    {
+      title: 'Process Your Track',
+      description:
+        "Choose a genre preset and settings, then hit Process to master your track. Download the result when it's done.",
     },
   ],
 }

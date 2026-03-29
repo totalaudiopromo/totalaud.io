@@ -19,7 +19,7 @@ import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore } from '@/stores/usePitchStore'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 interface CrossModePromptProps {
   currentMode: WorkspaceMode

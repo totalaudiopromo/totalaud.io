@@ -80,14 +80,23 @@ const OpportunityDetailPanel = dynamic(
   () => import('@/components/workspace/scout').then((m) => ({ default: m.OpportunityDetailPanel })),
   { ssr: false }
 )
+const FinishCanvas = dynamic(
+  () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishCanvas })),
+  { ssr: false }
+)
+const FinishToolbar = dynamic(
+  () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishToolbar })),
+  { ssr: false }
+)
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
   { key: 'ideas', label: 'Ideas', available: true },
   { key: 'scout', label: 'Scout', available: true },
   { key: 'timeline', label: 'Timeline', available: true },
   { key: 'pitch', label: 'Pitch', available: true },
+  { key: 'finish', label: 'Finish', available: true },
 ]
 
 function WorkspaceContent() {
@@ -259,6 +268,17 @@ function WorkspaceContent() {
             </div>
             {/* Detail panel - slides in when opportunity selected */}
             <OpportunityDetailPanel />
+          </div>
+        )
+
+      case 'finish':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <FinishToolbar />
+            <TipBanner tipId="finish" className="mx-4 mt-3" />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <FinishCanvas />
+            </div>
           </div>
         )
 

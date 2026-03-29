@@ -18,7 +18,7 @@ import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore } from '@/stores/usePitchStore'
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch'
+type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 interface WorkflowProgressProps {
   currentMode: WorkspaceMode
@@ -62,6 +62,7 @@ export function WorkflowProgress({ currentMode, onModeChange }: WorkflowProgress
     scout: hasScoutData,
     timeline: hasTimelineData,
     pitch: hasPitchData,
+    finish: false, // Finish mode has no persistent data tracking
   }
 
   // Calculate progress percentage

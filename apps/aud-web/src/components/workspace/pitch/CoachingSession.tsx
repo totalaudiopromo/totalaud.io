@@ -21,6 +21,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, selectCoachingSession, type CoachingMode } from '@/stores/usePitchStore'
+import { useFeatureGate } from '@/hooks/useFeatureGate'
+import { UpgradePrompt } from '@/components/shared/UpgradePrompt'
 import { TypingIndicator } from '@/components/ui/EmptyState'
 
 import { PHASE_INFO, MODE_LABELS, QUICK_ACTIONS } from './CoachingUtils'
@@ -47,6 +49,9 @@ export function CoachingSession() {
   const clearCoachingSession = usePitchStore((s) => s.clearCoachingSession)
   const selectedSectionId = usePitchStore((s) => s.selectedSectionId)
   const closeCoach = usePitchStore((s) => s.closeCoach)
+
+  const { canUse, recordUsage } = useFeatureGate()
+  const [showUpgrade, setShowUpgrade] = useState(false)
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -113,6 +118,14 @@ export function CoachingSession() {
         </div>
 
         <div className="flex-1 flex flex-col justify-center">
+          <UpgradePrompt
+            feature="pitch_coach"
+            visible={showUpgrade}
+            onDismiss={() => setShowUpgrade(false)}
+            variant="banner"
+            className="mb-4"
+          />
+
           <p className="text-xs text-ta-grey text-center mb-6 leading-relaxed">
             Choose how you'd like to work with your coach today
           </p>
@@ -122,7 +135,14 @@ export function CoachingSession() {
               ([modeKey, info]) => (
                 <motion.button
                   key={modeKey}
-                  onClick={() => startCoachingSession(modeKey)}
+                  onClick={() => {
+                    if (!canUse('pitch_coach')) {
+                      setShowUpgrade(true)
+                      return
+                    }
+                    recordUsage('pitch_coach')
+                    startCoachingSession(modeKey)
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full p-4 rounded-xl bg-[#161A1D] border border-white/5 hover:border-ta-cyan/30 hover:shadow-[0_0_20px_-10px_rgba(58,169,190,0.3)] transition-all duration-300 text-left group"

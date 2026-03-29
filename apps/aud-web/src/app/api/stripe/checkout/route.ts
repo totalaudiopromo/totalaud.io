@@ -99,6 +99,8 @@ export async function POST(request: NextRequest) {
           supabase_user_id: user.id,
           tier,
         },
+        // 7-day free trial on Pro tiers to encourage conversion
+        ...(tier === 'pro' || tier === 'pro_annual' ? { trial_period_days: 7 } : {}),
       },
       allow_promotion_codes: true,
       billing_address_collection: 'required',
