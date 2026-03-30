@@ -182,33 +182,35 @@ export function TimelineToolbar() {
           </div>
 
           {/* Right: View controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* View scale toggle */}
             <div className="flex bg-white/5 rounded-ta-sm p-0.5">
               {(['weeks', 'months', 'quarters'] as ViewScale[]).map((scale) => (
                 <button
                   key={scale}
                   onClick={() => setViewScale(scale)}
-                  className={`px-2.5 py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
+                  className={`px-2 sm:px-2.5 py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
                     viewScale === scale
                       ? 'font-medium text-ta-cyan bg-ta-cyan/15'
                       : 'font-normal text-ta-grey/60 hover:text-ta-grey'
                   }`}
                 >
-                  {scale}
+                  {scale === 'quarters' ? 'Q' : scale.charAt(0).toUpperCase()}
+                  <span className="hidden sm:inline">{scale.slice(1)}</span>
                 </button>
               ))}
             </div>
 
-            {/* Export dropdown */}
+            {/* Export dropdown -- icon-only on mobile */}
             <div ref={exportRef} className="relative">
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
-                className="flex items-center gap-2 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+                className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+                title="Export"
               >
                 <DocumentArrowDownIcon className="h-4 w-4" />
-                Export
-                <ChevronDownIcon className="h-3 w-3" />
+                <span className="hidden sm:inline">Export</span>
+                <ChevronDownIcon className="h-3 w-3 hidden sm:block" />
               </button>
 
               <AnimatePresence>
@@ -237,31 +239,33 @@ export function TimelineToolbar() {
               </AnimatePresence>
             </div>
 
-            {/* Generate Plan button */}
+            {/* Generate Plan button -- icon-only on mobile */}
             <button
               onClick={() => setShowGenerateModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+              className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+              title="Generate Plan"
             >
               <SparklesIcon className="h-4 w-4" />
-              Generate Plan
+              <span className="hidden sm:inline">Generate</span>
             </button>
 
-            {/* Templates button */}
+            {/* Templates button -- icon-only on mobile */}
             <button
               onClick={() => setShowTemplateSelector(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+              className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
+              title="Templates"
             >
               <RectangleStackIcon className="h-4 w-4" />
-              Templates
+              <span className="hidden sm:inline">Templates</span>
             </button>
 
             {/* Add event button */}
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium bg-ta-cyan text-ta-black rounded-ta-sm hover:opacity-90 transition-all duration-120"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-[13px] font-medium bg-ta-cyan text-ta-black rounded-ta-sm hover:opacity-90 transition-all duration-120"
             >
               <PlusIcon className="h-4 w-4" />
-              Add
+              <span className="hidden sm:inline">Add</span>
             </button>
           </div>
         </div>
@@ -282,7 +286,7 @@ export function TimelineToolbar() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
+              className="w-full max-w-sm sm:max-w-md p-4 sm:p-6 mx-4 sm:mx-0 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
             >
               <h3 className="text-base font-semibold text-ta-white mb-5">Add Event</h3>
 
@@ -392,7 +396,7 @@ export function TimelineToolbar() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md p-6 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
+              className="w-full max-w-sm sm:max-w-md p-4 sm:p-6 mx-4 sm:mx-0 bg-ta-panel border border-white/10 rounded-ta shadow-ta-lg"
             >
               <div className="mb-5">
                 <h3 className="text-base font-semibold text-ta-white mb-2">Generate Plan</h3>

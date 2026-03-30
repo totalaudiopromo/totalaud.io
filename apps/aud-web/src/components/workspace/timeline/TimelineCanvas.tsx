@@ -62,6 +62,20 @@ export function TimelineCanvas() {
   // Track memory context (Read-only integration)
   const { intent } = useTrackContext()
   const viewScale = useTimelineStore((state) => state.viewScale)
+
+  // Responsive: detect mobile viewport
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  // Responsive dimensions
+  const sidebarWidth = isMobile ? 60 : 100
+  const cardWidth = isMobile ? 110 : 140
+
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
   const [editingEventId, setEditingEventId] = useState<string | null>(null)
@@ -174,17 +188,17 @@ export function TimelineCanvas() {
     }
   }, [getTodayPosition])
 
-  // Configure drag sensors
+  // Configure drag sensors -- longer delay on touch to avoid scroll conflicts
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px movement before drag starts
+        distance: 8,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200,
-        tolerance: 8,
+        delay: 350,
+        tolerance: 12,
       },
     })
   )
@@ -338,6 +352,7 @@ export function TimelineCanvas() {
           timeColumns={timeColumns || []}
           columnWidth={columnWidth}
           formatColumnHeader={formatColumnHeader}
+          sidebarWidth={sidebarWidth}
         />
 
         {/* Lanes */}
@@ -357,6 +372,7 @@ export function TimelineCanvas() {
               lane={lane}
               isOver={overId === lane.id}
               weekWidth={columnWidth}
+              sidebarWidth={sidebarWidth}
             >
               {eventsWithDates
                 .filter((e) => e.lane === lane.id)
@@ -366,6 +382,7 @@ export function TimelineCanvas() {
                     event={event}
                     position={getEventPosition(event.dateObj)}
                     isDragging={activeId === event.id}
+                    cardWidth={cardWidth}
                     onEdit={() => setEditingEventId(event.id)}
                   />
                 ))}
