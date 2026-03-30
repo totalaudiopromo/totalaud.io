@@ -11,6 +11,9 @@ import { withAuth, type AuthenticatedRequest } from '@/lib/api/middleware'
 import { processAudio } from '@/lib/finisher-client'
 import { logger } from '@/lib/logger'
 
+// Next.js default body limit is 1 MB -- audio files need more
+export const maxDuration = 60
+
 const log = logger.scope('FinishProcess')
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024
