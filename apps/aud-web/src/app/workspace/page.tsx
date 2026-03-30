@@ -99,6 +99,24 @@ const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
   { key: 'finish', label: 'Finish', available: true },
 ]
 
+// Mode accent colours for tabs and indicators
+const MODE_COLOURS: Record<WorkspaceMode, string> = {
+  ideas: '#F59E0B',
+  scout: '#10B981',
+  timeline: '#8B5CF6',
+  pitch: '#FB923C',
+  finish: '#3AA9BE',
+}
+
+// Ambient gradient overlays per mode -- subtle atmospheric differentiation
+const MODE_GRADIENTS: Record<WorkspaceMode, string> = {
+  ideas: 'radial-gradient(ellipse at 10% 10%, rgba(245, 158, 11, 0.04) 0%, transparent 60%)',
+  scout: 'radial-gradient(ellipse at 90% 10%, rgba(16, 185, 129, 0.04) 0%, transparent 60%)',
+  timeline: 'radial-gradient(ellipse at 50% 0%, rgba(139, 92, 246, 0.04) 0%, transparent 60%)',
+  pitch: 'radial-gradient(ellipse at 10% 90%, rgba(251, 146, 60, 0.04) 0%, transparent 60%)',
+  finish: 'radial-gradient(ellipse at 50% 50%, rgba(58, 169, 190, 0.06) 0%, transparent 60%)',
+}
+
 function WorkspaceContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -345,7 +363,7 @@ function WorkspaceContent() {
                 gap: 6,
                 padding: '8px 12px',
                 backgroundColor:
-                  mode === modeConfig.key ? 'rgba(58, 169, 190, 0.15)' : 'transparent',
+                  mode === modeConfig.key ? `${MODE_COLOURS[modeConfig.key]}20` : 'transparent',
                 border: 'none',
                 borderRadius: 6,
                 fontSize: 13,
@@ -353,7 +371,7 @@ function WorkspaceContent() {
                 color: !modeConfig.available
                   ? 'rgba(255, 255, 255, 0.25)'
                   : mode === modeConfig.key
-                    ? '#3AA9BE'
+                    ? MODE_COLOURS[modeConfig.key]
                     : 'rgba(255, 255, 255, 0.6)',
                 cursor: modeConfig.available ? 'pointer' : 'not-allowed',
                 transition: 'all 0.12s ease',
@@ -374,7 +392,7 @@ function WorkspaceContent() {
                     transform: 'translateX(-50%)',
                     width: 24,
                     height: 2,
-                    backgroundColor: '#3AA9BE',
+                    backgroundColor: MODE_COLOURS[modeConfig.key],
                     borderRadius: 1,
                   }}
                   transition={{ duration: 0.12 }}
@@ -391,7 +409,15 @@ function WorkspaceContent() {
       </header>
 
       {/* Main content - add bottom padding on mobile for MobileNav */}
-      <main style={{ flex: 1, minHeight: 0 }} className="pb-14 md:pb-0">
+      <main
+        style={{
+          flex: 1,
+          minHeight: 0,
+          backgroundImage: MODE_GRADIENTS[mode],
+          transition: 'background-image 0.3s ease',
+        }}
+        className="pb-14 md:pb-0"
+      >
         {/* Show loading state while auth or data is loading */}
         {(authLoading || isLoading) && mode === 'ideas' ? (
           <div

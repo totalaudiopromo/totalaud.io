@@ -19,6 +19,15 @@ interface MobileNavProps {
   onModeChange: (mode: WorkspaceMode) => void
 }
 
+// Mode accent colours matching workspace page
+const MODE_COLOURS: Record<WorkspaceMode, string> = {
+  ideas: '#F59E0B',
+  scout: '#10B981',
+  timeline: '#8B5CF6',
+  pitch: '#FB923C',
+  finish: '#3AA9BE',
+}
+
 const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [
   {
     key: 'ideas',
@@ -125,18 +134,19 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             className="flex flex-col items-center justify-center gap-0.5 px-4 py-2 bg-transparent border-none cursor-pointer relative min-w-16"
           >
             <span
-              className={clsx(
-                'transition-colors duration-180',
-                isActive ? 'text-ta-cyan' : 'text-ta-white/50'
-              )}
+              className="transition-colors duration-180"
+              style={{
+                color: isActive ? MODE_COLOURS[modeConfig.key] : 'rgba(255, 255, 255, 0.5)',
+              }}
             >
               {modeConfig.icon}
             </span>
             <span
               className={clsx(
                 'text-[10px] font-sans transition-colors duration-180',
-                isActive ? 'text-ta-cyan font-semibold' : 'text-ta-white/50 font-normal'
+                isActive ? 'font-semibold' : 'text-ta-white/50 font-normal'
               )}
+              style={isActive ? { color: MODE_COLOURS[modeConfig.key] } : undefined}
             >
               {modeConfig.label}
             </span>
@@ -145,7 +155,8 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
             {isActive && (
               <motion.div
                 layoutId="mobile-nav-indicator"
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-ta-cyan rounded-sm"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-sm"
+                style={{ backgroundColor: MODE_COLOURS[modeConfig.key] }}
                 transition={transition.fast}
               />
             )}
