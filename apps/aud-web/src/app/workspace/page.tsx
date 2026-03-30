@@ -30,6 +30,7 @@ import { TipBanner, ModeTour } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { CheckoutToast } from '@/components/workspace/CheckoutToast'
 import { useTelemetry } from '@/hooks/useTelemetry'
+import { type WorkspaceMode, MODE_COLOURS } from '@/lib/workspace-modes'
 
 // Loading skeleton for dynamic mode imports
 function ModeLoadingShimmer() {
@@ -39,7 +40,6 @@ function ModeLoadingShimmer() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        gap: 0,
       }}
     >
       {/* Toolbar skeleton */}
@@ -126,8 +126,6 @@ const FinishToolbar = dynamic(
   { ssr: false }
 )
 
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
-
 const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
   { key: 'ideas', label: 'Ideas', available: true },
   { key: 'scout', label: 'Scout', available: true },
@@ -135,15 +133,6 @@ const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
   { key: 'pitch', label: 'Pitch', available: true },
   { key: 'finish', label: 'Finish', available: true },
 ]
-
-// Mode accent colours for tabs and indicators
-const MODE_COLOURS: Record<WorkspaceMode, string> = {
-  ideas: '#F59E0B',
-  scout: '#10B981',
-  timeline: '#8B5CF6',
-  pitch: '#FB923C',
-  finish: '#3AA9BE',
-}
 
 // Ambient gradient overlays per mode -- subtle atmospheric differentiation
 const MODE_GRADIENTS: Record<WorkspaceMode, string> = {

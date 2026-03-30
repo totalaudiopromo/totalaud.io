@@ -11,21 +11,11 @@
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import { transition } from '@/lib/motion'
-
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
+import { type WorkspaceMode, MODE_COLOURS } from '@/lib/workspace-modes'
 
 interface MobileNavProps {
   mode: WorkspaceMode
   onModeChange: (mode: WorkspaceMode) => void
-}
-
-// Mode accent colours matching workspace page
-const MODE_COLOURS: Record<WorkspaceMode, string> = {
-  ideas: '#F59E0B',
-  scout: '#10B981',
-  timeline: '#8B5CF6',
-  pitch: '#FB923C',
-  finish: '#3AA9BE',
 }
 
 const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [

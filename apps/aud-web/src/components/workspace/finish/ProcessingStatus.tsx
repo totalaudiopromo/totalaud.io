@@ -11,6 +11,45 @@
 import { motion } from 'framer-motion'
 import { useFinishStore } from '@/stores/useFinishStore'
 
+function ProgressShimmer({
+  label,
+  subtitle,
+  fileName,
+  duration,
+}: {
+  label: string
+  subtitle?: string
+  fileName: string | null
+  duration: number
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col items-center justify-center gap-4 py-12"
+    >
+      <div className="w-48 h-1 bg-ta-white/[0.06] rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-ta-cyan rounded-full"
+          initial={{ x: '-100%', width: '40%' }}
+          animate={{ x: '250%' }}
+          transition={{ duration, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+
+      <div className="text-center">
+        <p className="text-sm text-ta-white/80">{label}</p>
+        {subtitle && <p className="text-xs text-ta-white/40 mt-1">{subtitle}</p>}
+        {fileName && (
+          <p className="text-xs text-ta-white/30 mt-1 font-mono truncate max-w-[260px]">
+            {fileName}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
 export function ProcessingStatus() {
   const stage = useFinishStore((s) => s.stage)
   const jobStatus = useFinishStore((s) => s.jobStatus)
@@ -22,61 +61,17 @@ export function ProcessingStatus() {
   const process = useFinishStore((s) => s.process)
 
   if (stage === 'analysing') {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center gap-4 py-12"
-      >
-        {/* Indeterminate progress bar */}
-        <div className="w-48 h-1 bg-ta-white/[0.06] rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-ta-cyan rounded-full"
-            initial={{ x: '-100%', width: '40%' }}
-            animate={{ x: '250%' }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </div>
-
-        <div className="text-center">
-          <p className="text-sm text-ta-white/80">Analysing your track...</p>
-          {fileName && (
-            <p className="text-xs text-ta-white/30 mt-1 font-mono truncate max-w-[260px]">
-              {fileName}
-            </p>
-          )}
-        </div>
-      </motion.div>
-    )
+    return <ProgressShimmer label="Analysing your track..." fileName={fileName} duration={1.2} />
   }
 
   if (stage === 'processing') {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center gap-4 py-12"
-      >
-        {/* Indeterminate progress bar */}
-        <div className="w-48 h-1 bg-ta-white/[0.06] rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-ta-cyan rounded-full"
-            initial={{ x: '-100%', width: '40%' }}
-            animate={{ x: '250%' }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </div>
-
-        <div className="text-center">
-          <p className="text-sm text-ta-white/80">Processing your track...</p>
-          <p className="text-xs text-ta-white/40 mt-1">This usually takes 10-30 seconds</p>
-          {fileName && (
-            <p className="text-xs text-ta-white/30 mt-1 font-mono truncate max-w-[260px]">
-              {fileName}
-            </p>
-          )}
-        </div>
-      </motion.div>
+      <ProgressShimmer
+        label="Processing your track..."
+        subtitle="This usually takes 10-30 seconds"
+        fileName={fileName}
+        duration={1.5}
+      />
     )
   }
 
