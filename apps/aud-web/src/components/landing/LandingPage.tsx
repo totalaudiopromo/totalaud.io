@@ -16,7 +16,80 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PricingPreview } from './PricingPreview'
 import { SocialProof } from './SocialProof'
-// JourneyGallery removed -- founder timeline was too much
+import { faqs } from '@/lib/seo'
+
+// FAQ accordion for inline landing page section
+function FAQAccordion({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div
+      style={{
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        paddingBottom: '24px',
+      }}
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '12px',
+          width: '100%',
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          textAlign: 'left',
+          padding: 0,
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+        }}
+        aria-expanded={isOpen}
+      >
+        <span
+          style={{
+            fontSize: '15px',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.85)',
+            lineHeight: 1.4,
+          }}
+        >
+          {question}
+        </span>
+        <span
+          style={{
+            fontSize: '18px',
+            color: 'rgba(255, 255, 255, 0.3)',
+            flexShrink: 0,
+            transition: 'transform 0.2s ease',
+            transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+          }}
+        >
+          +
+        </span>
+      </button>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          transition={{ duration: 0.2 }}
+        >
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              lineHeight: 1.6,
+              marginTop: '12px',
+              fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+            }}
+          >
+            {answer}
+          </p>
+        </motion.div>
+      )}
+    </div>
+  )
+}
 
 // How it works steps - Vision aligned
 const HOW_IT_WORKS = [
@@ -780,6 +853,56 @@ export function LandingPage() {
           </motion.div>
         </section>
 
+        {/* FAQ Section - Compact inline, links to full /faq page */}
+        <section
+          aria-labelledby="faq-heading"
+          style={{
+            padding: '80px 24px',
+            maxWidth: '640px',
+            margin: '0 auto',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <h2
+              id="faq-heading"
+              style={{
+                fontSize: 'clamp(22px, 3vw, 28px)',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
+                marginBottom: '32px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              Common questions
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {faqs.slice(0, 4).map((faq, i) => (
+                <FAQAccordion key={i} question={faq.question} answer={faq.answer} />
+              ))}
+            </div>
+
+            <Link
+              href="/faq"
+              style={{
+                display: 'inline-block',
+                marginTop: '24px',
+                fontSize: '13px',
+                color: '#3AA9BE',
+                textDecoration: 'none',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              View all questions
+            </Link>
+          </motion.div>
+        </section>
+
         {/* Bottom CTA Section */}
         <section
           aria-labelledby="cta-heading"
@@ -916,6 +1039,19 @@ export function LandingPage() {
               }}
             >
               Terms
+            </Link>
+            <Link
+              href="/faq"
+              aria-label="Frequently asked questions"
+              style={{
+                fontSize: '13px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                textDecoration: 'none',
+                transition: 'color 0.2s ease',
+              }}
+            >
+              FAQ
             </Link>
             <span
               style={{
