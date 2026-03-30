@@ -1,7 +1,7 @@
 /**
  * Global Error Boundary
- * Required by Next.js App Router
  * Catches errors in the root layout itself
+ * Must use inline styles (no CSS imports available at this level)
  */
 
 'use client'
@@ -17,7 +17,6 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    // Report to Sentry - logger may not be available at this level
     Sentry.captureException(error, {
       tags: {
         errorBoundary: 'global',
@@ -27,18 +26,103 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <html lang="en">
-      <body>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-8">
-          <h1 className="text-2xl font-bold mb-4">Application Error</h1>
-          <p className="text-gray-400 mb-6">{error.message}</p>
-          <button
-            onClick={reset}
-            className="px-4 py-2 bg-white text-black rounded hover:bg-gray-200 transition-colors"
-          >
-            Try again
-          </button>
+    <html lang="en-GB">
+      <body
+        style={{
+          margin: 0,
+          display: 'flex',
+          minHeight: '100vh',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#0F1113',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          padding: '32px 24px',
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 24,
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#EF4444" strokeWidth="1.5" opacity="0.6" />
+            <line
+              x1="12"
+              y1="8"
+              x2="12"
+              y2="13"
+              stroke="#EF4444"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <circle cx="12" cy="16" r="1" fill="#EF4444" />
+          </svg>
         </div>
+
+        <h1
+          style={{
+            fontSize: 18,
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.85)',
+            margin: '0 0 8px',
+          }}
+        >
+          Application error
+        </h1>
+
+        <p
+          style={{
+            fontSize: 13,
+            color: 'rgba(255, 255, 255, 0.4)',
+            margin: '0 0 24px',
+            maxWidth: 360,
+            lineHeight: 1.5,
+          }}
+        >
+          Something went wrong at the application level. This has been reported automatically.
+        </p>
+
+        <button
+          onClick={reset}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '10px 20px',
+            backgroundColor: '#3AA9BE',
+            color: '#0F1113',
+            border: 'none',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          Try again
+        </button>
+
+        {error.digest && (
+          <p
+            style={{
+              fontSize: 10,
+              color: 'rgba(255, 255, 255, 0.2)',
+              marginTop: 32,
+              fontFamily: 'monospace',
+            }}
+          >
+            Error ID: {error.digest}
+          </p>
+        )}
       </body>
     </html>
   )
