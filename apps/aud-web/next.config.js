@@ -35,8 +35,5 @@ module.exports =
 
         // Widen scope of uploads to include all source map files
         widenClientFileUpload: true,
-
-        // Automatically instrument server functions and API routes
-        automaticVercelMonitors: true,
       })
     : nextConfig
