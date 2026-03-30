@@ -122,12 +122,16 @@ const PILLARS = [
       'Mix translation & clarity',
       'Release readiness (not quality scoring)',
     ],
+    screenshot: '/images/landing/workspace-finish.png',
+    screenshotAlt: 'Finish mode showing audio upload and analysis workspace',
   },
   {
     id: 'release',
     title: 'Release as a narrative — not a checkbox',
     description: 'Plan releases over time, not as isolated drops. Think about timing and momentum.',
     features: [],
+    screenshot: '/images/landing/workspace-timeline.png',
+    screenshotAlt: 'Timeline mode showing visual release planning with lanes and milestones',
   },
   {
     id: 'leverage',
@@ -135,12 +139,16 @@ const PILLARS = [
     description:
       'Keep track of the people who matter -- playlists, press, collaborators -- with context, not spreadsheets.',
     features: [],
+    screenshot: '/images/landing/workspace-scout.png',
+    screenshotAlt: 'Scout mode showing BBC Introducing, Pitchfork, and other opportunity cards',
   },
   {
     id: 'pitch',
     title: 'Tell your story once — use it everywhere',
     description: 'Write your story once. Use it across pitches, bios, playlists, and socials.',
     features: [],
+    screenshot: '/images/landing/workspace-pitch.png',
+    screenshotAlt: 'Pitch mode showing Radio, Press, Playlist, and Custom pitch templates',
   },
 ]
 
@@ -246,6 +254,83 @@ function SecondaryButton({ children, href }: { children: React.ReactNode; href: 
   )
 }
 
+// macOS chrome screenshot card (matches TAP landing page effect)
+function ScreenshotCard({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div style={{ position: 'relative', marginTop: '24px' }}>
+      {/* Cyan glow behind screenshot */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: -1,
+          borderRadius: '24px',
+          opacity: 0.3,
+          filter: 'blur(24px)',
+          background:
+            'radial-gradient(ellipse at center, rgba(14, 116, 144, 0.25), transparent 70%)',
+        }}
+      />
+      <div
+        style={{
+          overflow: 'hidden',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(20, 20, 24, 0.95)',
+          padding: '6px',
+          boxShadow: '0 20px 48px -12px rgba(0, 0, 0, 0.25), 0 8px 20px -8px rgba(0, 0, 0, 0.12)',
+        }}
+      >
+        {/* Window chrome -- macOS traffic lights */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '8px 10px',
+          }}
+        >
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#ff5f57',
+            }}
+          />
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#febc2e',
+            }}
+          />
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#28c840',
+            }}
+          />
+        </div>
+        <Image
+          src={src}
+          alt={alt}
+          width={800}
+          height={500}
+          style={{
+            width: '100%',
+            height: 'auto',
+            borderRadius: '0 0 8px 8px',
+            display: 'block',
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 // Pillar card component
 function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
@@ -344,6 +429,11 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[0]; index: num
             </li>
           ))}
         </ul>
+      )}
+      {pillar.screenshot && (
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <ScreenshotCard src={pillar.screenshot} alt={pillar.screenshotAlt} />
+        </div>
       )}
     </motion.div>
   )
@@ -618,6 +708,73 @@ export function LandingPage() {
             </span>
           </motion.div>
         </motion.section>
+
+        {/* Hero screenshot -- overlaps into next section */}
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            maxWidth: '1024px',
+            margin: '-80px auto 0',
+            padding: '0 24px',
+          }}
+        >
+          {/* Cyan glow */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: -1,
+              borderRadius: '24px',
+              opacity: 0.4,
+              filter: 'blur(48px)',
+              background:
+                'radial-gradient(ellipse at center, rgba(14, 116, 144, 0.3), transparent 70%)',
+            }}
+          />
+          <div
+            style={{
+              overflow: 'hidden',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(20, 20, 24, 0.95)',
+              padding: '8px',
+              boxShadow:
+                '0 32px 64px -12px rgba(0, 0, 0, 0.35), 0 16px 32px -8px rgba(0, 0, 0, 0.15)',
+            }}
+          >
+            {/* macOS traffic lights */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '10px 12px',
+              }}
+            >
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ff5f57' }}
+              />
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#febc2e' }}
+              />
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#28c840' }}
+              />
+            </div>
+            <Image
+              src="/images/landing/workspace-scout.png"
+              alt="totalaud.io workspace showing Scout mode with BBC Introducing, Pitchfork, and playlist opportunities"
+              width={1440}
+              height={900}
+              style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }}
+              priority
+            />
+          </div>
+        </motion.div>
 
         {/* Problem statement section */}
         <section
