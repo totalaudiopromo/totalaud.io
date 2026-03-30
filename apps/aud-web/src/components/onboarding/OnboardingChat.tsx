@@ -208,11 +208,22 @@ export function OnboardingChat() {
         }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to get response')
+      const data = await response.json()
+
+      // Check for error responses (503 = service unavailable, 500 = server error)
+      if (!response.ok || data.error) {
+        const isServiceDown = response.status === 503
+        throw new Error(
+          isServiceDown
+            ? 'Chat is temporarily unavailable. You can skip ahead and set up your workspace manually.'
+            : data.error || 'Something went wrong. Try again or skip ahead.'
+        )
       }
 
-      const data = await response.json()
+      // Validate response has required fields
+      if (!data.message) {
+        throw new Error('Received an empty response. Try again or skip ahead.')
+      }
 
       // Update collected data
       if (data.extractedData) {
@@ -235,13 +246,14 @@ export function OnboardingChat() {
       }
     } catch (error) {
       log.error('Chat error', error)
-      // Add error message
+      const errorMessage =
+        error instanceof Error ? error.message : 'Something went wrong. Try again or skip ahead.'
       setMessages((prev) => [
         ...prev,
         {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: 'Hmm, something went wrong on my end. Could you try that again?',
+          content: errorMessage,
           timestamp: new Date(),
         },
       ])
