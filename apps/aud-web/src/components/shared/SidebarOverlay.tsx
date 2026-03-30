@@ -20,6 +20,7 @@ import {
   MagnifyingGlassIcon,
   CalendarIcon,
   DocumentTextIcon,
+  MusicalNoteIcon,
   XMarkIcon,
   SparklesIcon,
   ClockIcon,
@@ -54,6 +55,7 @@ const navigation: NavSection[] = [
       { name: 'scout', href: '/workspace?mode=scout', icon: MagnifyingGlassIcon },
       { name: 'timeline', href: '/workspace?mode=timeline', icon: CalendarIcon },
       { name: 'pitch', href: '/workspace?mode=pitch', icon: DocumentTextIcon },
+      { name: 'finish', href: '/workspace?mode=finish', icon: MusicalNoteIcon },
     ],
   },
   {

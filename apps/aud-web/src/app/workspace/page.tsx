@@ -31,14 +31,51 @@ import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { CheckoutToast } from '@/components/workspace/CheckoutToast'
 import { useTelemetry } from '@/hooks/useTelemetry'
 
+// Loading skeleton for dynamic mode imports
+function ModeLoadingShimmer() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        gap: 0,
+      }}
+    >
+      {/* Toolbar skeleton */}
+      <div
+        style={{
+          height: 52,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+        }}
+      />
+      {/* Content skeleton */}
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'rgba(255, 255, 255, 0.3)',
+          fontSize: 13,
+          fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+        }}
+      >
+        Loading...
+      </div>
+    </div>
+  )
+}
+
 // Dynamic imports for code splitting - each mode loads only when needed
 const IdeasCanvas = dynamic(
   () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasCanvas })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const IdeasList = dynamic(
   () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasList })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const IdeasToolbar = dynamic(
   () => import('@/components/workspace/ideas').then((m) => ({ default: m.IdeasToolbar })),
@@ -50,7 +87,7 @@ const IdeasUndoProvider = dynamic(
 )
 const TimelineCanvas = dynamic(
   () => import('@/components/workspace/timeline').then((m) => ({ default: m.TimelineCanvas })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const TimelineToolbar = dynamic(
   () => import('@/components/workspace/timeline').then((m) => ({ default: m.TimelineToolbar })),
@@ -62,7 +99,7 @@ const NextSteps = dynamic(
 )
 const PitchCanvas = dynamic(
   () => import('@/components/workspace/pitch').then((m) => ({ default: m.PitchCanvas })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const PitchToolbar = dynamic(
   () => import('@/components/workspace/pitch').then((m) => ({ default: m.PitchToolbar })),
@@ -74,7 +111,7 @@ const ScoutCalmToolbar = dynamic(
 )
 const ScoutCalmGrid = dynamic(
   () => import('@/components/workspace/scout').then((m) => ({ default: m.ScoutCalmGrid })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const OpportunityDetailPanel = dynamic(
   () => import('@/components/workspace/scout').then((m) => ({ default: m.OpportunityDetailPanel })),
@@ -82,7 +119,7 @@ const OpportunityDetailPanel = dynamic(
 )
 const FinishCanvas = dynamic(
   () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishCanvas })),
-  { ssr: false }
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
 const FinishToolbar = dynamic(
   () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishToolbar })),
