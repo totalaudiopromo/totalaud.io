@@ -4,10 +4,11 @@ interface TimelineHeaderProps {
   timeColumns: Date[]
   columnWidth: number
   formatColumnHeader: (date: Date) => string
+  sidebarWidth?: number
 }
 
 export const TimelineHeader = forwardRef<HTMLDivElement, TimelineHeaderProps>(
-  ({ timeColumns, columnWidth, formatColumnHeader }, ref) => {
+  ({ timeColumns, columnWidth, formatColumnHeader, sidebarWidth = 100 }, ref) => {
     return (
       <div
         style={{
@@ -17,11 +18,11 @@ export const TimelineHeader = forwardRef<HTMLDivElement, TimelineHeaderProps>(
       >
         <div
           style={{
-            width: 100,
-            minWidth: 100,
+            width: sidebarWidth,
+            minWidth: sidebarWidth,
             flexShrink: 0,
             borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-            padding: '12px 12px',
+            padding: sidebarWidth < 80 ? '10px 8px' : '12px 12px',
           }}
         >
           <span

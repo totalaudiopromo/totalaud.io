@@ -219,27 +219,27 @@ export function IdeaCard({
 
       {/* Action buttons (visible on hover/select) */}
       <div
-        className={`absolute top-2 sm:top-3 right-2 sm:right-3 flex gap-1 sm:gap-1.5 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        className={`absolute top-1.5 sm:top-3 right-1.5 sm:right-3 flex gap-1.5 sm:gap-1.5 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
         style={{ transitionDuration: `${duration.normal * 1000}ms` }}
       >
         {/* Send to Timeline button */}
         {onSendToTimeline && (
           <button
             onClick={handleSendToTimeline}
-            className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-ta-cyan/10 border border-ta-cyan/20 text-ta-cyan hover:bg-ta-cyan hover:text-ta-black transition-colors"
+            className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 rounded bg-ta-cyan/10 border border-ta-cyan/20 text-ta-cyan hover:bg-ta-cyan hover:text-ta-black transition-colors"
             aria-label="Send to Timeline"
             title="Add to Timeline"
           >
-            <span className="text-[10px] sm:text-xs">→</span>
+            <span className="text-sm sm:text-xs">→</span>
           </button>
         )}
         {/* Delete button */}
         <button
           onClick={handleDeleteClick}
-          className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+          className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
           aria-label="Delete card"
         >
-          <span className="text-xs sm:text-sm">×</span>
+          <span className="text-sm sm:text-sm">×</span>
         </button>
       </div>
     </motion.div>

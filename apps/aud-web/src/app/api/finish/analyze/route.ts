@@ -6,10 +6,13 @@
  * Returns analysis metrics + suggestions.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { withAuth, type AuthenticatedRequest } from '@/lib/api/middleware'
 import { analyzeAudio } from '@/lib/finisher-client'
 import { logger } from '@/lib/logger'
+
+// Next.js default body limit is 1 MB -- audio files need more
+export const maxDuration = 60
 
 const log = logger.scope('FinishAnalyze')
 

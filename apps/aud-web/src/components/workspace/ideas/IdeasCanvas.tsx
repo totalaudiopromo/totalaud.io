@@ -317,7 +317,9 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
             variant="default"
             action={
               <div style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 12, marginTop: 8 }}>
-                Tap + Add or double-click the canvas
+                {isTouchDevice
+                  ? 'Tap + Add to create your first idea'
+                  : 'Tap + Add or double-click the canvas'}
               </div>
             }
           />
@@ -326,7 +328,6 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
 
       {/* Pan hint */}
       <div
-        className="hidden sm:block"
         style={{
           position: 'absolute',
           bottom: 12,
@@ -340,7 +341,7 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
           pointerEvents: 'none',
         }}
       >
-        {isTouchDevice ? 'Two-finger drag to pan' : 'Alt + drag to pan'}
+        {isTouchDevice ? 'Tap card to select • Two-finger drag to pan' : 'Alt + drag to pan'}
       </div>
 
       {/* Starter ideas hint banner */}

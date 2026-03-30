@@ -15,10 +15,17 @@ interface DroppableLaneProps {
   lane: Lane
   isOver: boolean
   weekWidth: number
+  sidebarWidth?: number
   children: ReactNode
 }
 
-export function DroppableLane({ lane, isOver, weekWidth, children }: DroppableLaneProps) {
+export function DroppableLane({
+  lane,
+  isOver,
+  weekWidth,
+  sidebarWidth = 100,
+  children,
+}: DroppableLaneProps) {
   const { setNodeRef } = useDroppable({
     id: lane.id,
     data: { lane },
@@ -40,11 +47,11 @@ export function DroppableLane({ lane, isOver, weekWidth, children }: DroppableLa
       {/* Lane label */}
       <div
         style={{
-          width: 100,
-          minWidth: 100,
+          width: sidebarWidth,
+          minWidth: sidebarWidth,
           flexShrink: 0,
           borderRight: '1px solid rgba(255, 255, 255, 0.06)',
-          padding: '12px 10px',
+          padding: sidebarWidth < 80 ? '10px 6px' : '12px 10px',
           display: 'flex',
           alignItems: 'flex-start',
           gap: 6,

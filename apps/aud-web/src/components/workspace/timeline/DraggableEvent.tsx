@@ -16,10 +16,17 @@ interface DraggableEventProps {
   event: TimelineEvent & { dateObj: Date }
   position: number
   isDragging: boolean
+  cardWidth?: number
   onEdit?: () => void
 }
 
-export function DraggableEvent({ event, position, isDragging, onEdit }: DraggableEventProps) {
+export function DraggableEvent({
+  event,
+  position,
+  isDragging,
+  cardWidth = 140,
+  onEdit,
+}: DraggableEventProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -76,8 +83,8 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
         boxShadow: isHovered && !isDragging ? `0 4px 12px ${event.colour}25` : 'none',
         borderColor: isHovered && !isDragging ? `${event.colour}60` : `${event.colour}40`,
         zIndex: isHovered || isDragging ? 10 : 1,
-        width: 140,
-        maxWidth: 140,
+        width: cardWidth,
+        maxWidth: cardWidth,
         boxSizing: 'border-box',
         touchAction: 'none', // Required for touch drag
         ...style,
@@ -94,7 +101,7 @@ export function DraggableEvent({ event, position, isDragging, onEdit }: Draggabl
           textOverflow: 'ellipsis',
           display: 'block',
           width: '100%',
-          maxWidth: '114px', // 140 - 24px padding - 2px border
+          maxWidth: `${cardWidth - 26}px`, // cardWidth - 24px padding - 2px border
         }}
       >
         {event.title}

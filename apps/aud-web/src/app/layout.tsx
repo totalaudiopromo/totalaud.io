@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/react'
 import { WebVitalsInit } from '@/components/WebVitalsInit'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 import { QueryProvider } from '@/lib/react-query'
@@ -114,14 +113,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://qopmwhdermudwufrloqb.supabase.co" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+      </head>
       <FlowCoreThemeProvider bodyClassName={geistSans.className}>
         {gaId && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
+              strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="lazyOnload">
               {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}
             </Script>
           </>
@@ -129,7 +132,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd schema={organizationSchema} id="organization-schema" />
         <QueryProvider>{children}</QueryProvider>
         <WebVitalsInit />
-        <Analytics />
       </FlowCoreThemeProvider>
     </html>
   )
