@@ -135,13 +135,13 @@ export function UploadZone() {
         </div>
 
         {error && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-3 text-ta-error text-xs text-center"
+            className="mt-3 px-3 py-2 rounded-ta-sm bg-ta-error/10 border border-ta-error/20 text-center"
           >
-            {error}
-          </motion.p>
+            <p className="text-xs text-ta-error">{error}</p>
+          </motion.div>
         )}
 
         <p className="mt-6 text-ta-white/30 text-xs text-center leading-relaxed max-w-xs mx-auto">
