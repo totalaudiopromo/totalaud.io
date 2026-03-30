@@ -805,8 +805,6 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Journey Gallery removed */}
-
         {/* Social Proof Section */}
         <SocialProof />
 
@@ -816,10 +814,9 @@ export function LandingPage() {
         {/* Founder credibility section */}
         <section
           style={{
-            padding: '80px 24px',
-            maxWidth: '700px',
+            padding: '80px 24px 100px',
+            maxWidth: '800px',
             margin: '0 auto',
-            textAlign: 'center',
           }}
         >
           <motion.div
@@ -827,29 +824,71 @@ export function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '32px',
+            }}
           >
-            <p
+            {/* Founder photo */}
+            <div
               style={{
-                fontSize: '15px',
-                lineHeight: 1.8,
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                fontStyle: 'italic',
+                width: 96,
+                height: 96,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid rgba(58, 169, 190, 0.3)',
+                flexShrink: 0,
               }}
             >
-              I run a radio promotion agency. totalaud.io is the tool I wished my artists had before
-              they came to me.
-            </p>
-            <p
-              style={{
-                fontSize: '14px',
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                marginTop: '16px',
-              }}
-            >
-              Chris Schofield, founder
-            </p>
+              <Image
+                src="/images/chris-founder.jpg"
+                alt="Chris Schofield, founder of totalaud.io"
+                width={96}
+                height={96}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              />
+            </div>
+
+            {/* Quote + bio */}
+            <div style={{ textAlign: 'center', maxWidth: '560px' }}>
+              <p
+                style={{
+                  fontSize: '17px',
+                  lineHeight: 1.8,
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  fontStyle: 'italic',
+                  marginBottom: '24px',
+                }}
+              >
+                I run a radio promotion agency. totalaud.io is the tool I wished my artists had
+                before they came to me.
+              </p>
+              <p
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  marginBottom: '8px',
+                }}
+              >
+                Chris Schofield
+              </p>
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  lineHeight: 1.6,
+                }}
+              >
+                5+ years in radio promotion. Ran campaigns across BBC Radio 1, 6 Music, and Global.
+                Built totalaud.io because the tools I needed didn&apos;t exist.
+              </p>
+            </div>
           </motion.div>
         </section>
 
