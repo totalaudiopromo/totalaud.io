@@ -122,12 +122,16 @@ const PILLARS = [
       'Mix translation & clarity',
       'Release readiness (not quality scoring)',
     ],
+    screenshot: '/images/landing/workspace-finish.png',
+    screenshotAlt: 'Finish mode showing audio upload and analysis workspace',
   },
   {
     id: 'release',
     title: 'Release as a narrative — not a checkbox',
     description: 'Plan releases over time, not as isolated drops. Think about timing and momentum.',
     features: [],
+    screenshot: '/images/landing/workspace-timeline.png',
+    screenshotAlt: 'Timeline mode showing visual release planning with lanes and milestones',
   },
   {
     id: 'leverage',
@@ -135,12 +139,16 @@ const PILLARS = [
     description:
       'Keep track of the people who matter -- playlists, press, collaborators -- with context, not spreadsheets.',
     features: [],
+    screenshot: '/images/landing/workspace-scout.png',
+    screenshotAlt: 'Scout mode showing BBC Introducing, Pitchfork, and other opportunity cards',
   },
   {
     id: 'pitch',
     title: 'Tell your story once — use it everywhere',
     description: 'Write your story once. Use it across pitches, bios, playlists, and socials.',
     features: [],
+    screenshot: '/images/landing/workspace-pitch.png',
+    screenshotAlt: 'Pitch mode showing Radio, Press, Playlist, and Custom pitch templates',
   },
 ]
 
@@ -246,6 +254,83 @@ function SecondaryButton({ children, href }: { children: React.ReactNode; href: 
   )
 }
 
+// macOS chrome screenshot card (matches TAP landing page effect)
+function ScreenshotCard({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div style={{ position: 'relative', marginTop: '24px' }}>
+      {/* Cyan glow behind screenshot */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: -1,
+          borderRadius: '24px',
+          opacity: 0.3,
+          filter: 'blur(24px)',
+          background:
+            'radial-gradient(ellipse at center, rgba(14, 116, 144, 0.25), transparent 70%)',
+        }}
+      />
+      <div
+        style={{
+          overflow: 'hidden',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(20, 20, 24, 0.95)',
+          padding: '6px',
+          boxShadow: '0 20px 48px -12px rgba(0, 0, 0, 0.25), 0 8px 20px -8px rgba(0, 0, 0, 0.12)',
+        }}
+      >
+        {/* Window chrome -- macOS traffic lights */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '8px 10px',
+          }}
+        >
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#ff5f57',
+            }}
+          />
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#febc2e',
+            }}
+          />
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              backgroundColor: '#28c840',
+            }}
+          />
+        </div>
+        <Image
+          src={src}
+          alt={alt}
+          width={800}
+          height={500}
+          style={{
+            width: '100%',
+            height: 'auto',
+            borderRadius: '0 0 8px 8px',
+            display: 'block',
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 // Pillar card component
 function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
@@ -344,6 +429,11 @@ function PillarCard({ pillar, index }: { pillar: (typeof PILLARS)[0]; index: num
             </li>
           ))}
         </ul>
+      )}
+      {pillar.screenshot && (
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <ScreenshotCard src={pillar.screenshot} alt={pillar.screenshotAlt} />
+        </div>
       )}
     </motion.div>
   )
@@ -619,6 +709,73 @@ export function LandingPage() {
           </motion.div>
         </motion.section>
 
+        {/* Hero screenshot -- overlaps into next section */}
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            maxWidth: '1024px',
+            margin: '-80px auto 0',
+            padding: '0 24px',
+          }}
+        >
+          {/* Cyan glow */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: -1,
+              borderRadius: '24px',
+              opacity: 0.4,
+              filter: 'blur(48px)',
+              background:
+                'radial-gradient(ellipse at center, rgba(14, 116, 144, 0.3), transparent 70%)',
+            }}
+          />
+          <div
+            style={{
+              overflow: 'hidden',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(20, 20, 24, 0.95)',
+              padding: '8px',
+              boxShadow:
+                '0 32px 64px -12px rgba(0, 0, 0, 0.35), 0 16px 32px -8px rgba(0, 0, 0, 0.15)',
+            }}
+          >
+            {/* macOS traffic lights */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '10px 12px',
+              }}
+            >
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ff5f57' }}
+              />
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#febc2e' }}
+              />
+              <span
+                style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#28c840' }}
+              />
+            </div>
+            <Image
+              src="/images/landing/workspace-scout.png"
+              alt="totalaud.io workspace showing Scout mode with BBC Introducing, Pitchfork, and playlist opportunities"
+              width={1440}
+              height={900}
+              style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }}
+              priority
+            />
+          </div>
+        </motion.div>
+
         {/* Problem statement section */}
         <section
           style={{
@@ -805,8 +962,6 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Journey Gallery removed */}
-
         {/* Social Proof Section */}
         <SocialProof />
 
@@ -816,10 +971,9 @@ export function LandingPage() {
         {/* Founder credibility section */}
         <section
           style={{
-            padding: '80px 24px',
-            maxWidth: '700px',
+            padding: '80px 24px 100px',
+            maxWidth: '800px',
             margin: '0 auto',
-            textAlign: 'center',
           }}
         >
           <motion.div
@@ -827,29 +981,71 @@ export function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '32px',
+            }}
           >
-            <p
+            {/* Founder photo */}
+            <div
               style={{
-                fontSize: '15px',
-                lineHeight: 1.8,
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                fontStyle: 'italic',
+                width: 96,
+                height: 96,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid rgba(58, 169, 190, 0.3)',
+                flexShrink: 0,
               }}
             >
-              I run a radio promotion agency. totalaud.io is the tool I wished my artists had before
-              they came to me.
-            </p>
-            <p
-              style={{
-                fontSize: '14px',
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
-                marginTop: '16px',
-              }}
-            >
-              Chris Schofield, founder
-            </p>
+              <Image
+                src="/images/chris-founder.jpg"
+                alt="Chris Schofield, founder of totalaud.io"
+                width={96}
+                height={96}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              />
+            </div>
+
+            {/* Quote + bio */}
+            <div style={{ textAlign: 'center', maxWidth: '560px' }}>
+              <p
+                style={{
+                  fontSize: '17px',
+                  lineHeight: 1.8,
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  fontStyle: 'italic',
+                  marginBottom: '24px',
+                }}
+              >
+                I run a radio promotion agency. totalaud.io is the tool I wished my artists had
+                before they came to me.
+              </p>
+              <p
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  marginBottom: '8px',
+                }}
+              >
+                Chris Schofield
+              </p>
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                  lineHeight: 1.6,
+                }}
+              >
+                5+ years in radio promotion. Ran campaigns across BBC Radio 1, 6 Music, and Global.
+                Built totalaud.io because the tools I needed didn&apos;t exist.
+              </p>
+            </div>
           </motion.div>
         </section>
 
