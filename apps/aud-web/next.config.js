@@ -4,14 +4,35 @@ const { withSentryConfig } = require('@sentry/nextjs')
 
 const nextConfig = {
   transpilePackages: ['@total-audio/core-logger', '@total-audio/core-supabase', '@total-audio/ui'],
+  poweredByHeader: false,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000, // 30 days
+  },
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: false,
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+        ],
+      },
+    ]
+  },
   webpack: (config) => {
-    // Fix path alias resolution for Vercel builds
+    // Fix path alias resolution for builds
     // Use package-scoped alias instead of generic @/* for better monorepo compatibility
     config.resolve.alias['@aud-web'] = path.resolve(__dirname, 'src')
     return config
