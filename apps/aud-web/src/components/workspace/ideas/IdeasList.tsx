@@ -210,7 +210,7 @@ export function IdeasList({ className }: IdeasListProps) {
                   }
                 }}
               >
-                {/* Tag indicator */}
+                {/* Tag indicator - padded for touch target */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <button
                     onClick={(e) => {
@@ -218,22 +218,30 @@ export function IdeasList({ className }: IdeasListProps) {
                       handleTagCycle(card)
                     }}
                     style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      backgroundColor: TAG_COLOURS[card.tag],
+                      width: 24,
+                      height: 32,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
-                      transition: 'transform 0.16s ease',
+                      padding: 0,
                     }}
                     title={`${card.tag} (click to change)`}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.2)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)'
-                    }}
-                  />
+                    aria-label={`Category: ${card.tag}. Tap to change`}
+                  >
+                    <span
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: '50%',
+                        backgroundColor: TAG_COLOURS[card.tag],
+                        display: 'block',
+                        transition: 'transform 0.16s ease',
+                      }}
+                    />
+                  </button>
                 </div>
 
                 {/* Content */}
@@ -307,7 +315,8 @@ export function IdeasList({ className }: IdeasListProps) {
                       deleteCard(card.id)
                     }}
                     style={{
-                      padding: '4px 8px',
+                      padding: '6px 12px',
+                      minHeight: 32,
                       fontSize: 11,
                       color: 'rgba(255, 255, 255, 0.5)',
                       backgroundColor: 'transparent',

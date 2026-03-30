@@ -253,8 +253,8 @@ export function IdeasToolbar() {
           ))}
         </div>
 
-        {/* Centre: Search - collapses on mobile */}
-        <div className="flex items-center gap-2 flex-[0_1_180px] min-w-[100px]">
+        {/* Centre: Search - hidden on mobile to avoid toolbar overflow */}
+        <div className="hidden sm:flex items-center gap-2 sm:flex-[0_1_180px] sm:min-w-[100px]">
           <div className="flex items-center gap-2 flex-1 px-2.5 py-1.5 bg-white/5 border border-white/5 rounded-ta-sm">
             <MagnifyingGlassIcon className="h-3.5 w-3.5 text-ta-grey/50" />
             <input
@@ -346,8 +346,8 @@ export function IdeasToolbar() {
             </button>
           </div>
 
-          {/* Export dropdown */}
-          <div ref={exportRef} className="relative">
+          {/* Export dropdown - hidden on mobile to save space */}
+          <div ref={exportRef} className="hidden sm:block relative">
             <button
               onClick={() => setExportOpen(!exportOpen)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
