@@ -31,8 +31,9 @@ function OnboardingGate({ children }: { children: ReactNode }) {
 
   // Check auth status and load profile
   useEffect(() => {
+    const supabase = createBrowserSupabaseClient()
+
     const checkAuthAndOnboarding = async () => {
-      const supabase = createBrowserSupabaseClient()
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -53,7 +54,19 @@ function OnboardingGate({ children }: { children: ReactNode }) {
     }
 
     checkAuthAndOnboarding()
-  }, [loadFromSupabase])
+
+    // Listen for auth state changes (H6: detect session expiry mid-session)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false)
+        router.push('/login')
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [loadFromSupabase, router])
 
   // Show loading skeleton while checking
   if (isChecking || isLoading) {
@@ -91,19 +104,12 @@ function OnboardingGate({ children }: { children: ReactNode }) {
     )
   }
 
-  // If authenticated but hasn't completed onboarding, redirect
-  if (isAuthenticated && profile && !profile.onboardingCompleted) {
+  // Redirect to onboarding if authenticated but not yet completed
+  if (isAuthenticated && (!profile || !profile.onboardingCompleted)) {
     router.push('/onboarding')
     return null
   }
 
-  // If authenticated but no profile exists yet, redirect to onboarding
-  if (isAuthenticated && !profile) {
-    router.push('/onboarding')
-    return null
-  }
-
-  // Otherwise, render workspace
   return <>{children}</>
 }
 

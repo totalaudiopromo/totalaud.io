@@ -93,7 +93,7 @@ export const useUserProfileStore = create<UserProfileState>()(
           profile: {
             ...defaultProfile,
             ...profile,
-            createdAt: now,
+            createdAt: get().profile?.createdAt || profile.createdAt || now,
             updatedAt: now,
           },
         })

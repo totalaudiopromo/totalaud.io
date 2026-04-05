@@ -318,6 +318,17 @@ export const useIdentityStore = create<IdentityState>()(
 
       generateIdentity: async () => {
         const state = get()
+
+        // Ensure we have a valid userId before generating
+        const supabase = createBrowserSupabaseClient()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        if (!user) {
+          set({ syncError: 'Sign in to generate your identity' })
+          return
+        }
+
         set({ isGenerating: true, syncError: null })
 
         try {
@@ -338,7 +349,7 @@ export const useIdentityStore = create<IdentityState>()(
           set({
             identity: {
               id: state.identity?.id || crypto.randomUUID(),
-              userId: state.identity?.userId || '',
+              userId: state.identity?.userId || user.id,
               brandVoice: {
                 tone: generated.brandVoice?.tone || null,
                 themes: generated.brandVoice?.themes || [],

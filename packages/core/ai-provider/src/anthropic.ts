@@ -26,7 +26,8 @@ export async function completeWithAnthropic(
     max_tokens: options.max_tokens ?? 2000,
   })
 
-  const content = completion.content[0].type === 'text' ? completion.content[0].text : ''
+  const textBlock = completion.content.find((block) => block.type === 'text')
+  const content = textBlock?.type === 'text' ? textBlock.text : ''
 
   // Rough cost calculation (update with real pricing)
   const inputCost = (completion.usage.input_tokens / 1000) * 0.003

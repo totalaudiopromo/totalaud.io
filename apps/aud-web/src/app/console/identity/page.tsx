@@ -18,7 +18,7 @@ export default function IdentityPage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <SectionHeader title="identity kernel" description="your unified artist identity profile" />
+        <SectionHeader title="identity kernel" description="what the workspace knows about you" />
         <Card>
           <p className="text-ta-grey lowercase">loading identity profile...</p>
         </Card>
@@ -29,7 +29,7 @@ export default function IdentityPage() {
   if (!identity) {
     return (
       <PageContainer>
-        <SectionHeader title="identity kernel" description="your unified artist identity profile" />
+        <SectionHeader title="identity kernel" description="what the workspace knows about you" />
         <Card>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -48,11 +48,12 @@ export default function IdentityPage() {
             </div>
             <div className="pt-3 border-t border-ta-panel/50">
               <Link href="/settings" className="text-sm text-ta-cyan hover:underline lowercase">
-                manage account settings
+                account settings
               </Link>
             </div>
             <p className="text-sm text-ta-grey lowercase pt-2">
-              your ai-generated identity profile will build as you use the workspace.
+              your identity builds as you use the workspace. the more you create, the clearer it
+              gets.
             </p>
           </div>
         </Card>
@@ -62,7 +63,7 @@ export default function IdentityPage() {
 
   return (
     <PageContainer>
-      <SectionHeader title="identity kernel" description="your unified artist identity profile" />
+      <SectionHeader title="identity kernel" description="what the workspace knows about you" />
 
       <div className="space-y-6">
         {/* Brand Voice */}

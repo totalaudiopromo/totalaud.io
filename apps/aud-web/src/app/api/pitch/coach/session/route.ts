@@ -85,7 +85,7 @@ const requestSchema = z.object({
       z.object({
         id: z.string(),
         title: z.string(),
-        content: z.string(),
+        content: z.string().default(''),
       })
     )
     .optional(),
@@ -231,7 +231,7 @@ function buildUserMessage(
   const parts: string[] = []
 
   // Add current pitch content context
-  const filledSections = sections.filter((s) => s.content.trim())
+  const filledSections = sections.filter((s) => (s.content || '').trim())
   if (filledSections.length > 0) {
     parts.push('## Their Current Pitch Content')
     for (const section of filledSections) {

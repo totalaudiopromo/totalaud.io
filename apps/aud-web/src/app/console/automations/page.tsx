@@ -73,10 +73,7 @@ export default function AutomationsPage() {
 
   return (
     <PageContainer>
-      <SectionHeader
-        title="automations drawer"
-        description="ai-powered quick actions for your campaigns"
-      />
+      <SectionHeader title="automations drawer" description="shortcuts for the heavy lifting" />
 
       <div className="space-y-6">
         {/* Automations Grid */}

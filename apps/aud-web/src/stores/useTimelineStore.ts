@@ -126,17 +126,22 @@ function toSupabaseEvent(
   }
 }
 
+const VALID_LANES: Set<string> = new Set(['pre-release', 'release', 'post-release'])
+const VALID_SOURCES: Set<string> = new Set(['manual', 'scout', 'sample'])
+
 function fromSupabaseEvent(data: DatabaseTimelineEvent): TimelineEvent {
   return {
     id: data.id,
-    lane: data.lane as LaneType,
+    lane: VALID_LANES.has(data.lane) ? (data.lane as LaneType) : 'pre-release',
     title: data.title,
     date: data.event_date,
     colour: data.colour ?? '#3AA9BE', // Default to accent colour
     description: data.description ?? undefined,
     url: data.url ?? undefined,
     tags: data.tags ?? undefined,
-    source: data.source as 'manual' | 'scout' | 'sample',
+    source: VALID_SOURCES.has(data.source)
+      ? (data.source as 'manual' | 'scout' | 'sample')
+      : 'manual',
     opportunityId: data.opportunity_id ?? undefined,
     trackerCampaignId: data.tracker_campaign_id ?? undefined,
     trackerSyncedAt: data.tracker_synced_at ?? undefined,
@@ -431,6 +436,9 @@ export const useTimelineStore = create<TimelineState>()(
           }
 
           const campaignId = data.data?.campaign?.id
+          if (!campaignId) {
+            throw new Error('Tracker returned no campaign ID')
+          }
           const syncedAt = new Date().toISOString()
 
           set((s) => ({
