@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
@@ -16,7 +16,7 @@ const log = logger.scope('StripePortal')
 export async function POST() {
   try {
     // Get authenticated user
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { user },
       error: authError,

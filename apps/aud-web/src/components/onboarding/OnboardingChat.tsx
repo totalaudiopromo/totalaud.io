@@ -184,11 +184,13 @@ export function OnboardingChat() {
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
 
+    const trimmed = content.trim()
+
     // Add user message
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: content.trim(),
+      content: trimmed,
       timestamp: new Date(),
     }
     setMessages((prev) => [...prev, userMessage])
@@ -257,6 +259,8 @@ export function OnboardingChat() {
           timestamp: new Date(),
         },
       ])
+      // Restore input so user can retry without retyping
+      setInput(trimmed)
     } finally {
       setIsLoading(false)
       inputRef.current?.focus()

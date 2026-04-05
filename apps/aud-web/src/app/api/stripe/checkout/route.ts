@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { stripe, getPriceId } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
@@ -23,7 +23,7 @@ const checkoutSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createRouteSupabaseClient()
     const {
       data: { user },
       error: authError,
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     // Get price ID for tier and currency
     const priceId = getPriceId(tier, currency)
 
-    // Determine mode based on tier
-    const mode = tier === 'pro_annual' ? 'subscription' : 'subscription'
+    // All tiers are subscription-based
+    const mode = 'subscription' as const
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({

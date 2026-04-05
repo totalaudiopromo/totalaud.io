@@ -134,7 +134,10 @@ function fromSupabaseIdea(idea: DatabaseIdea): IdeaCard {
     id: idea.id,
     content: idea.content,
     tag: idea.tag as IdeaTag,
-    position: { x: idea.position_x ?? 100, y: idea.position_y ?? 100 },
+    position: {
+      x: idea.position_x ?? 100 + Math.random() * 300,
+      y: idea.position_y ?? 100 + Math.random() * 200,
+    },
     createdAt: idea.created_at,
     updatedAt: idea.updated_at,
     isStarter: idea.is_starter ?? false,
@@ -289,8 +292,7 @@ export const useIdeasStore = create<IdeasState>()(
           ),
         }))
 
-        // Debounced sync for position updates (called frequently during drag)
-        // We'll sync position on drag end, not during drag
+        // Sync position to Supabase
         try {
           const supabase = createBrowserSupabaseClient()
           const {

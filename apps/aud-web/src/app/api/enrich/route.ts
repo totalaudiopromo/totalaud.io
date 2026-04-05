@@ -140,14 +140,22 @@ export async function POST(
     })
 
     if (deductError) {
-      log.error('Failed to deduct credits after successful enrichment', deductError)
-      // Still return the data -- enrichment succeeded, credit deduction is secondary
-      // Log for manual reconciliation
+      log.error(
+        'Failed to deduct credits after successful enrichment -- manual reconciliation needed',
+        {
+          userId: session.user.id,
+          contact: name,
+          cost: ENRICHMENT_COST_PENCE,
+          error: deductError,
+        }
+      )
+      // Return the enrichment data (user paid AI tokens) but flag billing issue
       return NextResponse.json({
         success: true,
         data: enrichmentData,
         creditsDeducted: 0,
         newBalance: currentBalance,
+        billingWarning: 'Credit deduction failed. Our team has been notified.',
       })
     }
 

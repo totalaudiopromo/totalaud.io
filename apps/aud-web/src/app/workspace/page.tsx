@@ -117,6 +117,13 @@ const OpportunityDetailPanel = dynamic(
   () => import('@/components/workspace/scout').then((m) => ({ default: m.OpportunityDetailPanel })),
   { ssr: false }
 )
+const CuratedContactsGrid = dynamic(
+  () =>
+    import('@/components/workspace/scout/CuratedContactsGrid').then((m) => ({
+      default: m.CuratedContactsGrid,
+    })),
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
+)
 const FinishCanvas = dynamic(
   () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishCanvas })),
   { ssr: false, loading: () => <ModeLoadingShimmer /> }
@@ -153,6 +160,9 @@ function WorkspaceContent() {
   const [mode, setMode] = useState<WorkspaceMode>(
     modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'ideas'
   )
+
+  // Scout sub-tab (discover opportunities vs curated contacts)
+  const [scoutTab, setScoutTab] = useState<'discover' | 'contacts'>('discover')
 
   // Checkout status state (success, error, cancelled)
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false)
@@ -305,13 +315,53 @@ function WorkspaceContent() {
       case 'scout':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <ScoutCalmToolbar />
-            <TipBanner tipId="scout" className="mx-5 mt-3" />
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-              <ScoutCalmGrid />
+            {/* Scout sub-tabs */}
+            <div
+              style={{
+                display: 'flex',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                paddingLeft: 16,
+              }}
+            >
+              {(['discover', 'contacts'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setScoutTab(tab)}
+                  style={{
+                    padding: '10px 16px',
+                    fontSize: 13,
+                    fontWeight: scoutTab === tab ? 600 : 400,
+                    color: scoutTab === tab ? MODE_COLOURS['scout'] : 'rgba(255, 255, 255, 0.4)',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom:
+                      scoutTab === tab
+                        ? `2px solid ${MODE_COLOURS['scout']}`
+                        : '2px solid transparent',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-geist-sans, system-ui, sans-serif)',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  {tab === 'discover' ? 'Discover' : 'Contacts'}
+                </button>
+              ))}
             </div>
-            {/* Detail panel - slides in when opportunity selected */}
-            <OpportunityDetailPanel />
+
+            {scoutTab === 'discover' ? (
+              <>
+                <ScoutCalmToolbar />
+                <TipBanner tipId="scout" className="mx-5 mt-3" />
+                <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                  <ScoutCalmGrid />
+                </div>
+                <OpportunityDetailPanel />
+              </>
+            ) : (
+              <div style={{ flex: 1, minHeight: 0 }}>
+                <CuratedContactsGrid />
+              </div>
+            )}
           </div>
         )
 

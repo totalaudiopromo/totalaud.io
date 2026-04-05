@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 
 const log = logger.scope('AccountExport')
@@ -30,7 +30,7 @@ async function safeQuery<T>(
 }
 
 export async function GET() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createRouteSupabaseClient()
 
   // Get authenticated user
   const {
