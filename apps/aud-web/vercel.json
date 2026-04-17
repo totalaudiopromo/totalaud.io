@@ -3,11 +3,5 @@
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm run build",
-  "devCommand": "pnpm run dev",
-  "crons": [
-    {
-      "path": "/api/keepalive",
-      "schedule": "0 3 * * *"
-    }
-  ]
+  "devCommand": "pnpm run dev"
 }
