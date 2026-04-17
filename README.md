@@ -121,7 +121,22 @@ pnpm test              # Run Vitest suite
 
 ---
 
-## ⚖️ License
+## Part of Total Audio
+
+Tools I build for music PR, by [Chris Schofield](https://x.com/chrisschouk).
+
+| Project | Description |
+|---------|-------------|
+| [TAP](https://totalaudiopromo.com) | Campaign management for music PR agencies |
+| [totalaud.io](https://totalaud.io) | Release planning for emerging artists |
+| [SpotCheck](https://spotcheck.cc) | Spotify playlist validation |
+| [Newsjack](https://newsjack.cc) | Music industry newsjacking |
+| [Podflow](https://github.com/totalaudiopromo/podflow) | Podcast intelligence for music PR |
+| [Sink](https://github.com/totalaudiopromo/sink-cli) | Contact data hygiene CLI |
+
+Questions? Reach me on [X/@chrisschouk](https://x.com/chrisschouk) or [info@totalaudiopromo.com](mailto:info@totalaudiopromo.com).
+
+## License
 
 Proprietary — © 2026 Total Audio
 
