@@ -147,7 +147,7 @@ export const createCoachSlice: StateCreator<CoachSlice & PartialDraftsState, [],
           allSections: state.sections.map((s) => ({
             id: s.id,
             title: s.title,
-            content: s.content,
+            content: s.content || '',
           })),
         }),
       })

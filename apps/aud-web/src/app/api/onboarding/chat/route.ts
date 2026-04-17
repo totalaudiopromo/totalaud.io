@@ -175,26 +175,47 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Try to extract JSON from the response (Claude sometimes wraps it in text)
-      const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        parsed = JSON.parse(jsonMatch[0])
-      } else {
-        throw new Error('No JSON found')
-      }
+      // Try parsing the full response as JSON first
+      parsed = JSON.parse(textContent.text)
     } catch {
-      // If not valid JSON, treat the whole response as a message
-      // Strip any JSON-like content to show clean text
-      const cleanMessage = textContent.text
-        .replace(/```json[\s\S]*?```/g, '')
-        .replace(/\{[\s\S]*\}/g, '')
-        .trim()
+      try {
+        // Try to extract JSON from the response (Claude sometimes wraps it in text)
+        const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          parsed = JSON.parse(jsonMatch[0])
+        } else {
+          throw new Error('No JSON found')
+        }
+      } catch {
+        // If not valid JSON, treat the whole response as a message
+        // Strip any JSON-like content to show clean text
+        const cleanMessage = textContent.text
+          .replace(/```json[\s\S]*?```/g, '')
+          .replace(/\{[\s\S]*\}/g, '')
+          .trim()
 
-      parsed = {
-        message: cleanMessage || "That's great! Tell me more about your music.",
-        extractedData: {},
-        isComplete: false,
+        // Use stage-appropriate fallback instead of generic message
+        const fallbackMessage = !collectedData?.artistName
+          ? "Lovely! What's your artist or project name?"
+          : !collectedData?.genre
+            ? 'Nice one. What kind of music do you make?'
+            : !collectedData?.projectType
+              ? 'Are you working on anything at the moment -- a single, EP, or album?'
+              : cleanMessage || "That's brilliant. Tell me a bit more."
+
+        parsed = {
+          message: fallbackMessage,
+          extractedData: {},
+          isComplete: false,
+        }
       }
+    }
+
+    // Validate parsed message is non-empty
+    if (!parsed.message || !parsed.message.trim()) {
+      parsed.message = !collectedData?.primaryGoal
+        ? 'What would you like to focus on first?'
+        : "Brilliant, let's get you set up."
     }
 
     // Parse natural language for data extraction if Claude didn't extract

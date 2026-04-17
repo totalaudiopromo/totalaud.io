@@ -115,50 +115,52 @@ export interface ModeRecommendation {
   insights: string[]
 }
 
+// Helper: fetch with graceful handling of missing endpoints (404 → null)
+async function fetchAPI<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, init)
+  if (res.status === 404) {
+    throw new Error('Endpoint not yet available')
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || `Request failed: ${res.status}`)
+  }
+  return res.json()
+}
+
 // API functions
 export const intelligenceAPI = {
   // Navigator
   async askNavigator(question: string): Promise<NavigatorAnswer> {
-    const res = await fetch(`${API_BASE}/navigator/ask`, {
+    return fetchAPI(`${API_BASE}/navigator/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question }),
     })
-    if (!res.ok) throw new Error('Navigator request failed')
-    const data = await res.json()
-    return data
   },
 
   // Correlations
   async getCorrelations(artistSlug: string, windowDays = 90): Promise<CorrelationResult> {
-    const res = await fetch(`${API_BASE}/correlations/${artistSlug}?windowDays=${windowDays}`)
-    if (!res.ok) throw new Error('Correlations request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/correlations/${artistSlug}?windowDays=${windowDays}`)
   },
 
   // Trajectory
   async getTrajectory(artistSlug: string, forecastDays = 90): Promise<TrajectoryForecast> {
-    const res = await fetch(`${API_BASE}/trajectory/${artistSlug}?forecastDays=${forecastDays}`)
-    if (!res.ok) throw new Error('Trajectory request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/trajectory/${artistSlug}?forecastDays=${forecastDays}`)
   },
 
   // Automations
   async runAutomation(action: string, payload: Record<string, unknown>): Promise<AutomationResult> {
-    const res = await fetch(`${API_BASE}/automations/run`, {
+    return fetchAPI(`${API_BASE}/automations/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, payload }),
     })
-    if (!res.ok) throw new Error('Automation request failed')
-    return res.json()
   },
 
   // Identity
   async getIdentity(artistSlug: string): Promise<IdentityProfile> {
-    const res = await fetch(`${API_BASE}/identity/${artistSlug}`)
-    if (!res.ok) throw new Error('Identity request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/identity/${artistSlug}`)
   },
 
   // Coverage Fusion
@@ -172,30 +174,22 @@ export const intelligenceAPI = {
     if (endDate) params.append('endDate', endDate)
     const query = params.toString() ? `?${params.toString()}` : ''
 
-    const res = await fetch(`${API_BASE}/coverage-fusion/${artistSlug}${query}`)
-    if (!res.ok) throw new Error('Coverage Fusion request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/coverage-fusion/${artistSlug}${query}`)
   },
 
   // Benchmarks
   async getBenchmarks(workspaceId: string): Promise<BenchmarkSnapshot> {
-    const res = await fetch(`${API_BASE}/benchmarks/${workspaceId}`)
-    if (!res.ok) throw new Error('Benchmarks request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/benchmarks/${workspaceId}`)
   },
 
   // Signal Threads
   async getSignalThread(artistSlug: string, threadType = 'narrative'): Promise<SignalThread> {
-    const res = await fetch(`${API_BASE}/signal-threads/${artistSlug}?threadType=${threadType}`)
-    if (!res.ok) throw new Error('Signal Thread request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/signal-threads/${artistSlug}?threadType=${threadType}`)
   },
 
   // Modes
   async getModeRecommendation(mode?: string): Promise<ModeRecommendation> {
     const query = mode ? `?mode=${mode}` : ''
-    const res = await fetch(`${API_BASE}/modes/recommend${query}`)
-    if (!res.ok) throw new Error('Mode recommendation request failed')
-    return res.json()
+    return fetchAPI(`${API_BASE}/modes/recommend${query}`)
   },
 }

@@ -201,15 +201,20 @@ export const useSignalThreadStore = create<SignalThreadState>()(
         const id = generateThreadId()
         const now = new Date().toISOString()
 
-        // Get user ID
+        // Get user ID -- require auth for thread creation
         const supabase = createBrowserSupabaseClient()
         const {
           data: { user },
         } = await supabase.auth.getUser()
 
+        if (!user) {
+          log.warn('Cannot create thread without auth')
+          return id // Return ID but don't persist
+        }
+
         const newThread: SignalThread = {
           id,
-          userId: user?.id ?? '',
+          userId: user.id,
           title: threadData.title,
           threadType: threadData.threadType,
           colour: threadData.colour ?? '#3AA9BE',

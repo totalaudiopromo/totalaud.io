@@ -52,9 +52,19 @@ function toSupabaseDraft(
   }
 }
 
+function isValidSection(s: unknown): s is PitchSection {
+  return (
+    typeof s === 'object' &&
+    s !== null &&
+    typeof (s as PitchSection).id === 'string' &&
+    typeof (s as PitchSection).title === 'string'
+  )
+}
+
 function fromSupabaseDraft(data: DatabasePitchDraft): PitchDraft {
-  const sections = Array.isArray(data.sections)
-    ? (data.sections as PitchSection[])
+  const rawSections = Array.isArray(data.sections) ? data.sections : []
+  const sections = rawSections.every(isValidSection)
+    ? rawSections.map((s) => ({ ...s, content: s.content || '', placeholder: s.placeholder || '' }))
     : DEFAULT_SECTIONS
 
   return {

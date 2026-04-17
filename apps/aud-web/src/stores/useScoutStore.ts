@@ -215,149 +215,25 @@ export const useScoutStore = create<ScoutState>()(
           return { pitchedIds: newSet }
         }),
 
-      // TAP Intel Actions
+      // TAP Intel Actions (enrichment endpoint retired -- fail gracefully)
       validateContact: async (opportunityId: string) => {
-        const state = get()
-        const opportunity = state.opportunities.find((o) => o.id === opportunityId)
-
-        if (!opportunity) {
-          log.error('Opportunity not found', undefined, { opportunityId })
-          return
-        }
-
-        if (!opportunity.contactEmail) {
-          set((s) => ({
-            enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
-            enrichmentErrorById: { ...s.enrichmentErrorById, [opportunityId]: 'No contact email' },
-          }))
-          return
-        }
-
-        // Set loading state
         set((s) => ({
-          enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'loading' },
-          enrichmentErrorById: { ...s.enrichmentErrorById, [opportunityId]: '' },
+          enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
+          enrichmentErrorById: {
+            ...s.enrichmentErrorById,
+            [opportunityId]: 'Contact enrichment is not yet available',
+          },
         }))
-
-        try {
-          const response = await fetch('/api/tap/enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contacts: [
-                {
-                  id: opportunityId,
-                  name: opportunity.contactName || opportunity.name,
-                  email: opportunity.contactEmail,
-                  outlet: opportunity.name,
-                  genre_tags: opportunity.genres,
-                },
-              ],
-            }),
-          })
-
-          const data = await response.json()
-
-          if (!response.ok || !data.success) {
-            throw new Error(data.error?.message || 'Failed to validate contact')
-          }
-
-          const enriched = data.data?.enriched?.[0]
-
-          if (enriched) {
-            set((s) => ({
-              enrichedById: {
-                ...s.enrichedById,
-                [opportunityId]: {
-                  id: enriched.id,
-                  name: enriched.name,
-                  email: enriched.email,
-                  contactIntelligence: enriched.contactIntelligence,
-                  researchConfidence: enriched.researchConfidence,
-                  lastResearched: enriched.lastResearched,
-                  errors: enriched.errors,
-                },
-              },
-              enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'success' },
-            }))
-          } else {
-            throw new Error('No enrichment data returned')
-          }
-        } catch (error) {
-          log.error('Enrichment error', error)
-          set((s) => ({
-            enrichmentStatusById: { ...s.enrichmentStatusById, [opportunityId]: 'error' },
-            enrichmentErrorById: {
-              ...s.enrichmentErrorById,
-              [opportunityId]: error instanceof Error ? error.message : 'Validation failed',
-            },
-          }))
-        }
       },
 
       enrichDiscoveredContact: async (contact) => {
-        const { id, name, email, outlet, genres } = contact
-
-        // Set loading state
         set((s) => ({
-          enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'loading' },
-          enrichmentErrorById: { ...s.enrichmentErrorById, [id]: '' },
+          enrichmentStatusById: { ...s.enrichmentStatusById, [contact.id]: 'error' },
+          enrichmentErrorById: {
+            ...s.enrichmentErrorById,
+            [contact.id]: 'Contact enrichment is not yet available',
+          },
         }))
-
-        try {
-          const response = await fetch('/api/tap/enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contacts: [
-                {
-                  id,
-                  name: name || email.split('@')[0],
-                  email,
-                  outlet: outlet || undefined,
-                  genre_tags: genres,
-                },
-              ],
-            }),
-          })
-
-          const data = await response.json()
-
-          if (!response.ok || !data.success) {
-            throw new Error(data.error?.message || 'Failed to enrich contact')
-          }
-
-          const enriched = data.data?.enriched?.[0]
-
-          if (enriched) {
-            set((s) => ({
-              enrichedById: {
-                ...s.enrichedById,
-                [id]: {
-                  id: enriched.id,
-                  name: enriched.name,
-                  email: enriched.email,
-                  contactIntelligence: enriched.contactIntelligence,
-                  researchConfidence: enriched.researchConfidence,
-                  lastResearched: enriched.lastResearched,
-                  errors: enriched.errors,
-                },
-              },
-              enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'success' },
-            }))
-          } else {
-            throw new Error('No enrichment data returned')
-          }
-        } catch (error) {
-          log.error('Enrichment error', error)
-          set((s) => ({
-            enrichmentStatusById: { ...s.enrichmentStatusById, [id]: 'error' },
-            enrichmentErrorById: {
-              ...s.enrichmentErrorById,
-              [id]: error instanceof Error ? error.message : 'Enrichment failed',
-            },
-          }))
-        }
       },
 
       getEnrichmentStatus: (opportunityId: string): EnrichmentStatus => {

@@ -64,8 +64,17 @@ export const POST = withAuth(async (request: AuthenticatedRequest) => {
 
     return NextResponse.json({ success: true, data: result })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Analysis failed'
+    const raw = error instanceof Error ? error.message : 'Analysis failed'
     log.error('Finish analyze failed', error)
+
+    // Translate backend-specific errors to user-friendly messages
+    let message = raw
+    if (raw.includes('MP3 support requires') || raw.includes('[mp3] extra')) {
+      message = 'MP3 analysis is temporarily unavailable. Try uploading a WAV or FLAC file instead.'
+    } else if (raw.includes('ffmpeg') || raw.includes('codec')) {
+      message = 'Could not decode this file. Try a different format (WAV or FLAC).'
+    }
+
     return NextResponse.json({ error: message }, { status: 500 })
   }
 })

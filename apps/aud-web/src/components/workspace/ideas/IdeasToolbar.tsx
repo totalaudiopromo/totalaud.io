@@ -67,6 +67,7 @@ export function IdeasToolbar() {
   const [exportFeedback, setExportFeedback] = useState<string | null>(null)
   const [showClearModal, setShowClearModal] = useState(false)
   const [clearConfirmText, setClearConfirmText] = useState('')
+  const [isClearing, setIsClearing] = useState(false)
 
   // Refs for click outside
   const sortRef = useRef<HTMLDivElement>(null)
@@ -149,13 +150,15 @@ export function IdeasToolbar() {
     [filteredCards, allCards]
   )
 
-  const handleClearAll = useCallback(() => {
-    if (clearConfirmText === 'DELETE') {
-      clearAllCards()
+  const handleClearAll = useCallback(async () => {
+    if (clearConfirmText === 'DELETE' && !isClearing) {
+      setIsClearing(true)
+      await clearAllCards()
       setShowClearModal(false)
       setClearConfirmText('')
+      setIsClearing(false)
     }
-  }, [clearConfirmText, clearAllCards])
+  }, [clearConfirmText, clearAllCards, isClearing])
 
   return (
     <>
@@ -514,7 +517,7 @@ export function IdeasToolbar() {
                 </button>
                 <button
                   onClick={handleClearAll}
-                  disabled={clearConfirmText !== 'DELETE'}
+                  disabled={clearConfirmText !== 'DELETE' || isClearing}
                   className={`px-4 py-2 text-[13px] font-medium border-none rounded-ta-sm transition-all duration-120 ${
                     clearConfirmText === 'DELETE'
                       ? 'bg-ta-error text-white cursor-pointer'

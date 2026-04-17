@@ -16,35 +16,22 @@ import { UploadZone } from './UploadZone'
 import { AnalysisPanel } from './AnalysisPanel'
 import { SuggestionsPanel } from './SuggestionsPanel'
 import { ProcessingStatus } from './ProcessingStatus'
+import { AnalysingView } from './AnalysingView'
 
 export function FinishCanvas() {
   const stage = useFinishStore((s) => s.stage)
   const analysis = useFinishStore((s) => s.analysis)
   const suggestions = useFinishStore((s) => s.suggestions)
+  const fileName = useFinishStore((s) => s.fileName)
 
   // Upload stage -- show the upload zone centred
   if (stage === 'upload') {
     return <UploadZone />
   }
 
-  // Analysing stage -- show spinner
+  // Analysing stage -- show multi-step progress
   if (stage === 'analysing') {
-    return (
-      <div className="flex items-center justify-center h-full gap-3">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="text-ta-cyan animate-spin"
-        >
-          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-        </svg>
-        <span className="text-sm text-ta-white/60">Analysing your track...</span>
-      </div>
-    )
+    return <AnalysingView fileName={fileName} />
   }
 
   // Processing / Complete / Error -- show processing status

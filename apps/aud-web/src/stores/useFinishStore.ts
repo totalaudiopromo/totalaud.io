@@ -49,6 +49,7 @@ interface FinishState {
   // Processing job
   jobId: string | null
   jobStatus: JobStatus | null
+  pollTimeoutId: ReturnType<typeof setTimeout> | null
 
   // Presets cache
   presets: PresetOption[]
@@ -89,6 +90,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   macros: { ...DEFAULT_MACROS },
   jobId: null,
   jobStatus: null,
+  pollTimeoutId: null,
   presets: [],
   presetsLoaded: false,
   error: null,
@@ -110,8 +112,8 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   },
 
   analyze: async () => {
-    const { file, selectedPlatform } = get()
-    if (!file) return
+    const { file, selectedPlatform, stage } = get()
+    if (!file || stage === 'analysing') return
 
     set({ stage: 'analysing', error: null })
 
@@ -203,10 +205,14 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   },
 
   pollJob: async () => {
-    const { jobId } = get()
-    if (!jobId) return
+    const { pollTimeoutId } = get()
+    if (pollTimeoutId) clearTimeout(pollTimeoutId)
 
     const poll = async () => {
+      // Read fresh state each iteration to avoid stale closures
+      const { jobId, stage } = get()
+      if (!jobId || stage !== 'processing') return
+
       try {
         const response = await fetch(`/api/finish/jobs/${encodeURIComponent(jobId)}`)
 
@@ -220,22 +226,23 @@ export const useFinishStore = create<FinishState>((set, get) => ({
         set({ jobStatus: data })
 
         if (data.status === 'complete') {
-          set({ stage: 'complete' })
+          set({ stage: 'complete', pollTimeoutId: null })
           log.info('Processing complete', { jobId, outputLufs: data.output_lufs })
           return
         }
 
         if (data.status === 'failed') {
-          set({ stage: 'error', error: data.error || 'Processing failed' })
+          set({ stage: 'error', error: data.error || 'Processing failed', pollTimeoutId: null })
           return
         }
 
         // Still processing -- poll again in 1.5s
-        setTimeout(poll, 1500)
+        const tid = setTimeout(poll, 1500)
+        set({ pollTimeoutId: tid })
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Job polling failed'
         log.error('Poll failed', error)
-        set({ stage: 'error', error: message })
+        set({ stage: 'error', error: message, pollTimeoutId: null })
       }
     }
 
@@ -256,6 +263,10 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   },
 
   reset: () => {
+    // Cancel any active polling before resetting
+    const { pollTimeoutId } = get()
+    if (pollTimeoutId) clearTimeout(pollTimeoutId)
+
     set({
       stage: 'upload',
       file: null,
@@ -268,6 +279,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       macros: { ...DEFAULT_MACROS },
       jobId: null,
       jobStatus: null,
+      pollTimeoutId: null,
       error: null,
     })
   },

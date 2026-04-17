@@ -73,7 +73,6 @@ export function LoginForm() {
       } else {
         router.push('/workspace')
       }
-      router.refresh()
     } catch (err) {
       log.error('Login error', err)
       const message = err instanceof Error ? err.message : 'Invalid email or password'
@@ -445,10 +444,13 @@ export function LoginForm() {
             try {
               setIsLoading(true)
               const supabase = createBrowserSupabaseClient()
+              // OAuth must go via /auth/callback so the code is exchanged for a session.
+              // From there, useOnboardingRedirect sends completed users to /workspace and
+              // new users through onboarding.
               const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/auth/callback?next=/workspace`,
+                  redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
                   queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',

@@ -110,7 +110,7 @@ Format: `type(scope): short summary` -- British spelling, no emojis, one logical
 ```
 apps/aud-web/src/
   app/              # Next.js app router (workspace/, landing, auth, api/)
-  components/       # workspace/{ideas,scout,timeline,pitch}/, landing/
+  components/       # workspace/{ideas,scout,timeline,pitch,finish}/, landing/
   stores/           # Zustand stores (ideas, scout, timeline, pitch, user profile)
   hooks/            # Custom React hooks
   lib/              # Utilities (logger, env, api-validation, supabase)
@@ -171,6 +171,13 @@ import { validateRequestBody } from '@/lib/api-validation'
 const body = await validateRequestBody(req, schema)
 ```
 
+### Supabase Client in Route Handlers
+```typescript
+// In app/api/**/route.ts -- ALWAYS use Route client, NOT Server client
+import { createRouteSupabaseClient } from '@/lib/supabase/server'
+const supabase = await createRouteSupabaseClient()
+```
+
 ### Gradual Migration
 When touching existing files: replace `console.log` with `logger`, add Zod validation to API routes, replace `any` types.
 
@@ -183,4 +190,4 @@ When touching existing files: replace `console.log` with `logger`, add Zod valid
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: April 2026
