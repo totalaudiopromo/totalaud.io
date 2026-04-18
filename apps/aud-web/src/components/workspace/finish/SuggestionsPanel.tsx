@@ -82,7 +82,7 @@ export function SuggestionsPanel({ suggestions }: SuggestionsPanelProps) {
         animate={{ opacity: 1 }}
         className="flex items-center gap-2 px-3 py-2 rounded-ta-sm bg-ta-success/10 text-ta-success text-xs"
       >
-        No suggestions -- your track looks good as-is.
+        No suggestions — your track looks good as-is.
       </motion.div>
     )
   }

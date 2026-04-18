@@ -38,6 +38,26 @@ export function LoginForm() {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    let cancelled = false
+    const supabase = createBrowserSupabaseClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (cancelled || !user) return
+      supabase
+        .from('user_profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data: profileData }) => {
+          if (cancelled) return
+          router.replace(profileData?.onboarding_completed ? '/workspace' : '/onboarding')
+        })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [router])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -60,14 +80,12 @@ export function LoginForm() {
       track('login_success', { userId: data.user?.id })
 
       // Login successful - check if onboarding is completed
-      // Fetch user profile to check onboarding status
       const { data: profileData } = await supabase
         .from('user_profiles')
         .select('onboarding_completed')
         .eq('id', data.user?.id)
-        .single()
+        .maybeSingle()
 
-      // Redirect based on onboarding status
       if (!profileData?.onboarding_completed) {
         router.push('/onboarding')
       } else {
@@ -75,8 +93,13 @@ export function LoginForm() {
       }
     } catch (err) {
       log.error('Login error', err)
-      const message = err instanceof Error ? err.message : 'Invalid email or password'
-      setError(message)
+      const raw = err instanceof Error ? err.message : ''
+      const friendly = /invalid login credentials/i.test(raw)
+        ? "That email and password don't match. Try again or reset your password."
+        : /email not confirmed/i.test(raw)
+          ? 'Please confirm your email address before signing in.'
+          : raw || 'Something went wrong. Please try again.'
+      setError(friendly)
     } finally {
       setIsLoading(false)
     }
@@ -280,6 +303,11 @@ export function LoginForm() {
                   color: 'rgba(58, 169, 190, 0.9)',
                   textDecoration: 'none',
                   transition: 'color 0.2s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  minHeight: 44,
+                  padding: '0 8px',
+                  marginRight: -8,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = '#3AA9BE'
@@ -528,6 +556,10 @@ export function LoginForm() {
               textDecoration: 'none',
               fontWeight: 500,
               transition: 'opacity 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 44,
+              padding: '0 4px',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = '0.8'

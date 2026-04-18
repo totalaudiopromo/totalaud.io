@@ -52,10 +52,9 @@ export function useWorkspacePreferences() {
             'user_id, ideas_view_mode, ideas_sort_mode, ideas_has_seen_starters, last_active_mode, updated_at'
           )
           .eq('user_id', user.id)
-          .single()
+          .maybeSingle()
 
-        if (error && error.code !== 'PGRST116') {
-          // PGRST116 = no rows found, which is fine
+        if (error) {
           log.error('Failed to load preferences', error)
           return
         }

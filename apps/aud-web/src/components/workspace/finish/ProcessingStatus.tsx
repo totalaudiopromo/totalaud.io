@@ -133,7 +133,7 @@ export function ProcessingStatus() {
           Processing complete
           {jobStatus.qc_passed !== undefined && (
             <span className="text-ta-white/40">
-              -- QC {jobStatus.qc_passed ? 'passed' : 'warnings'}
+              — QC {jobStatus.qc_passed ? 'passed' : 'warnings'}
             </span>
           )}
         </div>

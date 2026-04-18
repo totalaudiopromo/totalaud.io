@@ -82,7 +82,7 @@ export function AnalysisPanel({ analysis }: AnalysisPanelProps) {
         <span>{analysis.qc_passed ? 'QC Passed' : 'QC Issues Detected'}</span>
         {analysis.qc_warnings.length > 0 && (
           <span className="text-ta-white/40">
-            -- {analysis.qc_warnings.length} warning{analysis.qc_warnings.length !== 1 ? 's' : ''}
+            — {analysis.qc_warnings.length} warning{analysis.qc_warnings.length !== 1 ? 's' : ''}
           </span>
         )}
       </div>
