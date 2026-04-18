@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  const { error } = await supabase.from('profiles').select('id').limit(1)
+  const { error } = await supabase.from('user_profiles').select('id').limit(1)
 
   if (error) {
     log.error('Keepalive query failed', error)
