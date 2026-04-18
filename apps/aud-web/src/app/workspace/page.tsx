@@ -26,7 +26,7 @@ import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
-import { TipBanner, ModeTour } from '@/components/onboarding'
+import { TipBanner } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { CheckoutToast } from '@/components/workspace/CheckoutToast'
 import { useTelemetry } from '@/hooks/useTelemetry'
@@ -545,9 +545,6 @@ function WorkspaceContent() {
 
       {/* Sidebar overlay */}
       <SidebarOverlay />
-
-      {/* Mode tour - shows on first visit to each mode */}
-      <ModeTour mode={mode} />
 
       {/* Responsive styles for nav */}
       <style>{`

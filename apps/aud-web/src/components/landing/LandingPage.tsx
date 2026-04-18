@@ -1219,6 +1219,10 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 textDecoration: 'none',
                 transition: 'color 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: 44,
+                padding: '0 4px',
               }}
             >
               Privacy
@@ -1232,6 +1236,10 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 textDecoration: 'none',
                 transition: 'color 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: 44,
+                padding: '0 4px',
               }}
             >
               Terms
@@ -1245,6 +1253,10 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
                 textDecoration: 'none',
                 transition: 'color 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: 44,
+                padding: '0 4px',
               }}
             >
               FAQ

@@ -122,7 +122,7 @@ export function UploadZone() {
             {dragOver ? 'Drop your track here' : 'Drop a track or click to upload'}
           </p>
           <p className="text-ta-white/40 text-xs">
-            WAV, AIFF, FLAC, or MP3 -- up to {MAX_SIZE_MB} MB
+            WAV, AIFF, FLAC, or MP3 — up to {MAX_SIZE_MB} MB
           </p>
 
           <input
