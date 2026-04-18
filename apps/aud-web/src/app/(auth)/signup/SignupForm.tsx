@@ -435,7 +435,6 @@ export function SignupForm() {
         />
       </div>
 
-      {/* Google Sign Up */}
       <button
         type="button"
         disabled={isLoading}

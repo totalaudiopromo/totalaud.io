@@ -38,20 +38,24 @@ export function LoginForm() {
     }
   }, [searchParams])
 
-  // Redirect authenticated users away from /login
   useEffect(() => {
+    let cancelled = false
     const supabase = createBrowserSupabaseClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
+      if (cancelled || !user) return
       supabase
         .from('user_profiles')
         .select('onboarding_completed')
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data: profileData }) => {
+          if (cancelled) return
           router.replace(profileData?.onboarding_completed ? '/workspace' : '/onboarding')
         })
     })
+    return () => {
+      cancelled = true
+    }
   }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
