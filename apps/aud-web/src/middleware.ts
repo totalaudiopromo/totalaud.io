@@ -101,20 +101,18 @@ function checkRateLimit(
 // Security Headers
 // ============================================================================
 
-function generateNonce(): string {
-  const array = new Uint8Array(16)
-  crypto.getRandomValues(array)
-  return btoa(String.fromCharCode(...array))
-}
-
-function buildCspHeader(nonce: string): string {
+function buildCspHeader(): string {
+  // Nonce-based CSP does not work with Next.js statically pre-rendered pages
+  // (the nonce would need to be baked at build time). /signup, /login etc. are
+  // static, so we use a host-allowlist + 'unsafe-inline' CSP instead. This is a
+  // standard tradeoff — weaker than nonce but compatible with static rendering.
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com`,
-    `style-src 'self' 'unsafe-inline'`,
-    "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://*.google-analytics.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com https://*.google-analytics.com https://*.googletagmanager.com",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://www.googleapis.com https://www.google-analytics.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.ingest.us.sentry.io",
+    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://*.googleapis.com https://*.google-analytics.com https://*.googletagmanager.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.ingest.us.sentry.io",
     "worker-src 'self' blob:",
     "frame-src 'self' https://*.stripe.com https://accounts.google.com",
     "object-src 'none'",
@@ -197,20 +195,10 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // For non-API routes, add security headers with nonce-based CSP
-  const nonce = generateNonce()
+  // For non-API routes, add security headers with CSP
+  const response = NextResponse.next()
 
-  // Propagate nonce onto the request so Next.js tags its own inline scripts with it.
-  // Without this, framework-injected hydration scripts fail CSP on every page load.
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', nonce)
-
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  })
-
-  response.headers.set('Content-Security-Policy', buildCspHeader(nonce))
-  response.headers.set('x-nonce', nonce)
+  response.headers.set('Content-Security-Policy', buildCspHeader())
 
   for (const [key, value] of Object.entries(staticSecurityHeaders)) {
     response.headers.set(key, value)
