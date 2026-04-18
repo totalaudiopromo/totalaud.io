@@ -444,12 +444,13 @@ export function LoginForm() {
             try {
               setIsLoading(true)
               const supabase = createBrowserSupabaseClient()
-              // For OAuth, redirect to onboarding -- useOnboardingRedirect will send
-              // completed users straight to /workspace, new users complete onboarding first
+              // OAuth must go via /auth/callback so the code is exchanged for a session.
+              // From there, useOnboardingRedirect sends completed users to /workspace and
+              // new users through onboarding.
               const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/onboarding`,
+                  redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
                   queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',
