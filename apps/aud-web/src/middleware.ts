@@ -110,11 +110,12 @@ function generateNonce(): string {
 function buildCspHeader(nonce: string): string {
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://*.stripe.com https://*.vercel-scripts.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com`,
     `style-src 'self' 'unsafe-inline'`,
     "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://www.googleapis.com https://www.google-analytics.com",
+    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://www.googleapis.com https://www.google-analytics.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.ingest.us.sentry.io",
+    "worker-src 'self' blob:",
     "frame-src 'self' https://*.stripe.com https://accounts.google.com",
     "object-src 'none'",
     "base-uri 'self'",
@@ -198,7 +199,15 @@ export function middleware(request: NextRequest) {
 
   // For non-API routes, add security headers with nonce-based CSP
   const nonce = generateNonce()
-  const response = NextResponse.next()
+
+  // Propagate nonce onto the request so Next.js tags its own inline scripts with it.
+  // Without this, framework-injected hydration scripts fail CSP on every page load.
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-nonce', nonce)
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 
   response.headers.set('Content-Security-Policy', buildCspHeader(nonce))
   response.headers.set('x-nonce', nonce)
