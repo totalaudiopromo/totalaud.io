@@ -36,7 +36,7 @@ export function UserMenu() {
   const handleSignOut = async () => {
     await signOut()
     setIsOpen(false)
-    router.push('/')
+    router.push('/login')
   }
 
   // Loading state

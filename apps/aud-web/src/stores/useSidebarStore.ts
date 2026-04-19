@@ -22,12 +22,11 @@ interface SidebarStore {
 export const useSidebarStore = create<SidebarStore>()(
   persist(
     (set) => ({
-      isOpen: true,
+      isOpen: false,
       hasSeenSidebar: false,
       toggle: () =>
         set((state) => ({
           isOpen: !state.isOpen,
-          // Mark as seen when user opens sidebar for the first time
           hasSeenSidebar: state.hasSeenSidebar || !state.isOpen,
         })),
       open: () => set({ isOpen: true, hasSeenSidebar: true }),
@@ -36,7 +35,7 @@ export const useSidebarStore = create<SidebarStore>()(
     }),
     {
       name: 'ta_sidebar_state',
-      partialize: (state) => ({ hasSeenSidebar: state.hasSeenSidebar, isOpen: state.isOpen }),
+      partialize: (state) => ({ hasSeenSidebar: state.hasSeenSidebar }),
     }
   )
 )

@@ -177,10 +177,9 @@ export const useUserProfileStore = create<UserProfileState>()(
             `
             )
             .eq('id', user.id)
-            .single()
+            .maybeSingle()
 
-          if (error && error.code !== 'PGRST116') {
-            // PGRST116 = no rows returned
+          if (error) {
             throw error
           }
 
