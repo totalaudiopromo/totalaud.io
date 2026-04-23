@@ -14,6 +14,7 @@ import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
+import * as Sentry from '@sentry/nextjs'
 
 const log = logger.scope('useAuth')
 
@@ -92,9 +93,23 @@ export function useAuth(): AuthState {
       }
 
       setUser(user)
+      if (user) {
+        Sentry.setUser({
+          id: user.id,
+          email: user.email ?? undefined,
+          username:
+            user.user_metadata?.full_name ||
+            user.user_metadata?.display_name ||
+            user.email?.split('@')[0] ||
+            undefined,
+        })
+      } else {
+        Sentry.setUser(null)
+      }
     } catch (error) {
       log.error('Error fetching user', error)
       setUser(null)
+      Sentry.setUser(null)
     } finally {
       setLoading(false)
     }
@@ -105,6 +120,7 @@ export function useAuth(): AuthState {
     try {
       await supabase.auth.signOut()
       setUser(null)
+      Sentry.setUser(null)
     } catch (error) {
       log.error('Error signing out', error)
     }
@@ -134,6 +150,19 @@ export function useAuth(): AuthState {
 
       setUser(session?.user ?? null)
       setLoading(false)
+      if (session?.user) {
+        Sentry.setUser({
+          id: session.user.id,
+          email: session.user.email ?? undefined,
+          username:
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.display_name ||
+            session.user.email?.split('@')[0] ||
+            undefined,
+        })
+      } else {
+        Sentry.setUser(null)
+      }
     })
 
     return () => {
