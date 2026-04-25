@@ -51,6 +51,21 @@ export function SiteFooter() {
               <br />
               independent artists
             </p>
+            <a
+              href="https://totalaudiopromo.com"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-block',
+                marginTop: '14px',
+                fontSize: '12px',
+                color: 'rgba(255, 255, 255, 0.55)',
+                textDecoration: 'none',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              For PR agencies → totalaudiopromo.com
+            </a>
           </div>
 
           {/* By Genre */}
