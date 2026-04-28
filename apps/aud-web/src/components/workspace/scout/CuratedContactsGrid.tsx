@@ -617,6 +617,37 @@ export function CuratedContactsGrid() {
           </a>
         </div>
       )}
+
+      {/* Cross-promotion attribution */}
+      {!loading && contacts.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '8px 16px',
+            borderTop: upgradeRequired ? 'none' : '1px solid rgba(255, 255, 255, 0.04)',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 11,
+              color: 'rgba(255, 255, 255, 0.35)',
+              fontFamily: 'var(--font-geist-sans, system-ui, sans-serif)',
+            }}
+          >
+            These contacts are curated by{' '}
+            <a
+              href="https://totalaudiopromo.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'rgba(58, 169, 190, 0.6)', textDecoration: 'none' }}
+            >
+              Total Audio Promo
+            </a>
+          </span>
+        </div>
+      )}
     </div>
   )
 }
