@@ -18,14 +18,18 @@ const supabase = createAdminClient()
 // Dev user ID from .env.local
 const DEV_USER_ID = 'c5c261a8-8b35-4e77-ae6d-e293e65d746d'
 
-// API keys to insert (hashes from previous generation)
+// Legacy API keys to insert (hashes from previous generation under the old
+// tap_live_ prefix scheme). The hashes correspond to literal tap_live_ keys
+// already issued and in use, so the key_prefix metadata is preserved verbatim.
+// New keys must use tap_ak_ and the resource:action scope form -- see
+// docs/TAP_API_REFERENCE.md and scripts/generate-tap-api-keys.ts.
 const API_KEYS = [
   {
     user_id: DEV_USER_ID,
     name: 'totalaud.io - Intel Integration',
     key_prefix: 'tap_live_sEf',
     key_hash: '5549b919a5ab2fb36d6ac2a4529c58e4323824fd0f342a22deb4ae5be31e49f0',
-    scopes: ['intel:read', 'intel:write'],
+    scopes: ['contacts:read', 'contacts:write', 'contacts:enrich', 'emails:validate'],
     rate_limit_rpm: 120,
   },
   {
@@ -33,7 +37,7 @@ const API_KEYS = [
     name: 'totalaud.io - Pitch Integration',
     key_prefix: 'tap_live_oTk',
     key_hash: '8d47b03b79a155715d0150e11bca931deaf59859f0e87a06a2a082ccef7a0e04',
-    scopes: ['pitch:read', 'pitch:write'],
+    scopes: ['pitches:read', 'pitches:write'],
     rate_limit_rpm: 120,
   },
   {
@@ -41,7 +45,7 @@ const API_KEYS = [
     name: 'totalaud.io - Tracker Integration',
     key_prefix: 'tap_live_DaG',
     key_hash: '48d1a8b9f9828de230c2bd20aa0d13c4ce3b0d68d93a48e77a264d07627a3172',
-    scopes: ['tracker:read', 'tracker:write'],
+    scopes: ['campaigns:read', 'campaigns:write', 'outcomes:read', 'outcomes:write'],
     rate_limit_rpm: 120,
   },
 ]

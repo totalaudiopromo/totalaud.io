@@ -23,17 +23,23 @@ import { createAdminClient } from './config'
 // Check for --skip-db flag
 const skipDb = process.argv.includes('--skip-db')
 
+// Token type identifiers for TAP credentials. Keep prefixes short and
+// human-readable so they are recognisable in logs and secret scanners.
+//   tap_ak_  -- API key (server-to-server)
+//   tap_wh_  -- Webhook signing secret (reserved)
+type TapTokenPrefix = 'tap_ak'
+
 /**
  * Generate a TAP API key
  */
-function generateApiKey(prefix: 'tap_live' | 'tap_test' = 'tap_live'): {
+function generateApiKey(prefix: TapTokenPrefix = 'tap_ak'): {
   key: string
   keyPrefix: string
   keyHash: string
 } {
   const keyBody = crypto.randomBytes(32).toString('base64url')
   const key = `${prefix}_${keyBody}`
-  const keyPrefix = key.slice(0, 12)
+  const keyPrefix = key.slice(0, 10)
   const keyHash = crypto.createHash('sha256').update(key).digest('hex')
 
   return { key, keyPrefix, keyHash }
@@ -45,20 +51,22 @@ interface ApiKeyConfig {
   envVar: string
 }
 
+// Scopes follow the resource:action convention across the entire API surface.
+// See docs/TAP_API_REFERENCE.md for the canonical scope list.
 const API_KEYS_TO_CREATE: ApiKeyConfig[] = [
   {
     name: 'totalaud.io - Intel Integration',
-    scopes: ['intel:read', 'intel:write'],
+    scopes: ['contacts:read', 'contacts:write', 'contacts:enrich', 'emails:validate'],
     envVar: 'TAP_API_KEY_INTEL',
   },
   {
     name: 'totalaud.io - Pitch Integration',
-    scopes: ['pitch:read', 'pitch:write'],
+    scopes: ['pitches:read', 'pitches:write'],
     envVar: 'TAP_API_KEY_PITCH',
   },
   {
     name: 'totalaud.io - Tracker Integration',
-    scopes: ['tracker:read', 'tracker:write'],
+    scopes: ['campaigns:read', 'campaigns:write', 'outcomes:read', 'outcomes:write'],
     envVar: 'TAP_API_KEY_TRACKER',
   },
 ]
@@ -115,7 +123,7 @@ async function main() {
     }
 
     // Generate new key
-    const { key, keyPrefix, keyHash } = generateApiKey('tap_live')
+    const { key, keyPrefix, keyHash } = generateApiKey('tap_ak')
 
     // Insert into database (only if not skipping DB)
     if (supabase) {
