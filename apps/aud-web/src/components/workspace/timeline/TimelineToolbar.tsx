@@ -262,6 +262,7 @@ export function TimelineToolbar() {
             {/* Add event button */}
             <button
               onClick={() => setShowAddModal(true)}
+              data-testid="add-event-button"
               className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-[13px] font-medium bg-ta-cyan text-ta-black rounded-ta-sm hover:opacity-90 transition-all duration-120"
             >
               <PlusIcon className="h-4 w-4" />
@@ -301,6 +302,7 @@ export function TimelineToolbar() {
                   onChange={(e) => setNewEventTitle(e.target.value)}
                   placeholder="Event title..."
                   autoFocus
+                  data-testid="event-title-input"
                   className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180"
                 />
               </div>
@@ -361,6 +363,7 @@ export function TimelineToolbar() {
                 <button
                   onClick={handleAddEvent}
                   disabled={!newEventTitle.trim()}
+                  data-testid="submit-event"
                   className={`px-4 py-2 text-[13px] font-medium rounded-ta-sm transition-all duration-120 ${
                     newEventTitle.trim()
                       ? 'bg-ta-cyan text-ta-black hover:opacity-90'

@@ -20,9 +20,12 @@ import {
   waitForElement,
   takeScreenshot,
   logTestResult,
+  isStubSupabase,
 } from '../setup'
 
 test.describe('RLS & Security Enforcement', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for RLS verification')
+
   let userAId: string
   let userASessionToken: string
   let userACampaignId: string

@@ -6,7 +6,7 @@
  */
 
 import { test, expect, Page, BrowserContext } from '@playwright/test'
-import { createTestUser, cleanupTestData, measurePerformance } from '../setup'
+import { createTestUser, cleanupTestData, measurePerformance, isStubSupabase } from '../setup'
 
 // Test configuration
 const TEST_CAMPAIGN_ID = 'test-campaign-collab'
@@ -63,6 +63,8 @@ async function measureFPS(page: Page, durationMs: number = 2000): Promise<number
 }
 
 test.describe('Multi-User Collaboration', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for collaboration')
+
   test.beforeEach(async () => {
     // Clean up test data before each test
     await cleanupTestData(TEST_CAMPAIGN_ID)
@@ -491,6 +493,8 @@ test.describe('Multi-User Collaboration', () => {
 })
 
 test.describe('Performance & Accessibility', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for collaboration')
+
   test('No accessibility regressions with collaboration', async ({ browser }) => {
     const alice = await createTestUser('alice@test.com', 'test-password-123')
     const bob = await createTestUser('bob@test.com', 'test-password-123')

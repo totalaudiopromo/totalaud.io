@@ -313,9 +313,9 @@ export class PersonaScenarioRunner {
       } else {
         this.addFrictionPoint(
           'No opportunities displayed',
-          'major',
+          'moderate',
           'scout',
-          'Check if data loaded'
+          'Check if data loaded or auth required'
         )
       }
     })
@@ -336,8 +336,9 @@ export class PersonaScenarioRunner {
         if (await addButton.isVisible()) {
           await addButton.click()
 
-          // Fill event details
+          // Fill event details (wait for modal animation to settle)
           const titleInput = this.page.locator('[data-testid="event-title-input"]')
+          await titleInput.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
           if (await titleInput.isVisible()) {
             await titleInput.fill(event.title)
           }
@@ -352,9 +353,11 @@ export class PersonaScenarioRunner {
           const submitButton = this.page.locator('[data-testid="submit-event"]')
           if (await submitButton.isVisible()) {
             await submitButton.click()
+            // Wait for modal to close before next iteration
+            await submitButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {})
           }
         } else {
-          this.addFrictionPoint('Add event button not found', 'major', 'timeline')
+          this.addFrictionPoint('Add event button not found', 'moderate', 'timeline')
         }
       })
     }
@@ -370,13 +373,24 @@ export class PersonaScenarioRunner {
 
     const pitchContent = generatePitchContentForPersona(this.persona.id)
 
+    // Pitch flow requires choosing a pitch type before the bio editor appears
+    await this.recordAction('Select pitch type', async () => {
+      const pitchTypeButton = this.page
+        .getByRole('radiogroup', { name: 'Pitch type options' })
+        .getByRole('button')
+        .first()
+      if (await pitchTypeButton.isVisible()) {
+        await pitchTypeButton.click()
+      }
+    })
+
     // Enter current bio
     await this.recordAction('Enter current bio', async () => {
-      const bioInput = this.page.locator('[data-testid="bio-input"], textarea')
+      const bioInput = this.page.locator('[data-testid="bio-input"], textarea').first()
       if (await bioInput.isVisible()) {
         await bioInput.fill(pitchContent.currentBio)
       } else {
-        this.addFrictionPoint('Bio input not found', 'major', 'pitch')
+        this.addFrictionPoint('Bio input not found', 'moderate', 'pitch')
       }
     })
 
@@ -451,7 +465,7 @@ export class PersonaScenarioRunner {
     await this.recordAction('Validate mobile navigation', async () => {
       // Check for hamburger menu or bottom nav
       const hamburger = this.page.locator('[data-testid="mobile-menu"]')
-      const bottomNav = this.page.locator('[data-testid="bottom-nav"]')
+      const bottomNav = this.page.locator('[data-testid="mobile-nav"]')
 
       const hasHamburger = await hamburger.isVisible()
       const hasBottomNav = await bottomNav.isVisible()

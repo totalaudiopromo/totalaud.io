@@ -349,8 +349,8 @@ export function IdeasToolbar() {
             </button>
           </div>
 
-          {/* Export dropdown - hidden on mobile to save space */}
-          <div ref={exportRef} className="hidden sm:block relative">
+          {/* Export dropdown */}
+          <div ref={exportRef} className="relative">
             <button
               onClick={() => setExportOpen(!exportOpen)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120 ${
@@ -447,6 +447,7 @@ export function IdeasToolbar() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleAddCard}
+              data-testid="add-idea-button"
               className="flex items-center gap-1.5 px-3.5 py-1.5 bg-ta-cyan border-none rounded-ta-sm text-xs font-medium text-ta-black cursor-pointer"
               title="Add new idea (⌘N)"
             >

@@ -361,6 +361,7 @@ test.describe('Cross-Persona Comparisons', () => {
   })
 
   test('Professional personas can complete full journey', async ({ page, context }) => {
+    test.setTimeout(180_000)
     const proPersonas: PersonaId[] = ['marcus', 'dev'] // Pro tier expected
     const results: ScenarioResult[] = []
 

@@ -20,9 +20,12 @@ import {
   takeScreenshot,
   logTestResult,
   measurePerformance,
+  isStubSupabase,
 } from '../setup'
 
 test.describe('Realtime Event & Metric Sync', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for realtime sync')
+
   let userId: string
   let sessionToken: string
   let campaignId: string

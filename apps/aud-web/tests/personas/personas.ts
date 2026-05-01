@@ -694,7 +694,7 @@ export function generatePitchContentForPersona(personaId: PersonaId): {
       currentBio: 'House and tech house producer from Manchester',
       desiredBio: `Dev Patel brings Manchester's warehouse energy and South Asian rhythmic DNA to the dancefloor. A coder-turned-producer who traded startup life for studio sessions, his tech house cuts have found homes on respected labels and sound systems from Printworks to Ibiza. Now full-time in the game, he's building something that merges heritage with four-to-the-floor.`,
       pitchRequests: [
-        'Write a bio that mentions my South Asian background authentically',
+        'Write a bio that mentions my South Asian heritage authentically',
         'Help me pitch to Mixmag for a premiere',
         'Write a festival submission that stands out',
       ],

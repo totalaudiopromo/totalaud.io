@@ -20,9 +20,12 @@ import {
   takeScreenshot,
   logTestResult,
   measurePerformance,
+  isStubSupabase,
 } from '../setup'
 
 test.describe('AI Insight Generation', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for insight data')
+
   let userId: string
   let sessionToken: string
   let campaignId: string

@@ -217,9 +217,16 @@ function WorkspaceContent() {
       if (trackId) {
         params.set('track', trackId)
       }
-      router.push(`/workspace?${params.toString()}`, { scroll: false })
+      const url = `/workspace?${params.toString()}`
+      // Next.js 15 App Router silently no-ops router.push when only the search
+      // params change on the current route, so push the URL via history first
+      // and then notify the router so RSC caches stay coherent.
+      if (typeof window !== 'undefined') {
+        window.history.pushState(null, '', url)
+      }
+      router.push(url, { scroll: false })
     },
-    [router, trackId]
+    [router, trackId, mode]
   )
 
   // Get view mode from Ideas store

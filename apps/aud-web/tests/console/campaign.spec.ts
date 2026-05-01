@@ -19,9 +19,12 @@ import {
   takeScreenshot,
   logTestResult,
   measurePerformance,
+  isStubSupabase,
 } from '../setup'
 
 test.describe('Campaign Lifecycle', () => {
+  test.skip(isStubSupabase, 'Requires live Supabase instance for campaign data')
+
   let userId: string
   let sessionToken: string
 

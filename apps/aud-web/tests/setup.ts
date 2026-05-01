@@ -19,6 +19,16 @@ export const TEST_CONFIG = {
   headless: process.env.HEADLESS !== 'false',
 }
 
+/**
+ * Returns true when the configured Supabase URL is a stub/placeholder rather
+ * than a live instance, so integration suites can skip cleanly without crashing
+ * on auth/data calls that have no real backend behind them.
+ */
+export const isStubSupabase =
+  TEST_CONFIG.supabaseUrl.includes('stub.supabase.co') ||
+  TEST_CONFIG.supabaseAnonKey.includes('stub') ||
+  TEST_CONFIG.supabaseServiceKey.includes('stub')
+
 // Validate environment
 if (!TEST_CONFIG.supabaseUrl || !TEST_CONFIG.supabaseAnonKey) {
   throw new Error(
