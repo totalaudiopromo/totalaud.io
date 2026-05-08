@@ -37,6 +37,14 @@ const nextConfig = {
     config.resolve.alias['@aud-web'] = path.resolve(__dirname, 'src')
     return config
   },
+  // Turbopack equivalent of the webpack alias above. Next.js 16 enables
+  // Turbopack by default; without this, Turbopack errors on the webpack-only
+  // config and the build fails before any code is compiled.
+  turbopack: {
+    resolveAlias: {
+      '@aud-web': './src',
+    },
+  },
 }
 
 // Only wrap with Sentry if DSN is configured
