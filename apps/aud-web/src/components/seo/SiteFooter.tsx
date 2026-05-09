@@ -188,6 +188,46 @@ export function SiteFooter() {
             </ul>
           </div>
 
+          {/* Ecosystem */}
+          <div>
+            <h4
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'rgba(255, 255, 255, 0.5)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '16px',
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              Ecosystem
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                { href: 'https://totalaudiopromo.com', label: 'TAP — for PR agencies' },
+                { href: 'https://spotcheck.cc', label: 'SpotCheck — playlist tracker' },
+                { href: 'https://newsjack.cc', label: 'NewsJack — trending stories' },
+              ].map((link) => (
+                <li key={link.href} style={{ marginBottom: '10px' }}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener"
+                    style={{
+                      fontSize: '13px',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      textDecoration: 'none',
+                      fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Company */}
           <div>
             <h4

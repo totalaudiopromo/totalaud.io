@@ -72,13 +72,6 @@ export function generateSoftwareApplicationSchema() {
         availability: 'https://schema.org/InStock',
       },
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '50',
-      bestRating: '5',
-      worstRating: '1',
-    },
     featureList: [
       'Ideas Mode - Capture and organise creative ideas',
       'Scout Mode - Find playlist curators and radio contacts',
