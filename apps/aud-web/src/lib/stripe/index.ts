@@ -27,8 +27,7 @@ export function getStripe(): Stripe {
 // For backwards compatibility - throws if Stripe not configured
 export const stripe = new Proxy({} as Stripe, {
   get(_, prop) {
-    const stripeInstance = getStripe()
-    return (stripeInstance as any)[prop as string]
+    return Reflect.get(getStripe(), prop)
   },
 })
 
