@@ -266,6 +266,14 @@ export function PitchToolbar() {
                         {item.label}
                       </button>
                     ))}
+                    <a
+                      href="https://totalaudiopromo.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full px-3 py-2.5 text-[11px] text-ta-cyan/70 text-left hover:bg-white/5 border-t border-white/5 transition-colors duration-120"
+                    >
+                      Ready to amplify? PR agencies use TAP →
+                    </a>
                   </motion.div>
                 )}
               </AnimatePresence>
