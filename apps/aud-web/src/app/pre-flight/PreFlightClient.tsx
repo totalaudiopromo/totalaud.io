@@ -5,8 +5,11 @@ import Link from 'next/link'
 import { phases, items, type Phase } from '@/lib/pre-flight-data'
 
 const STORAGE_KEY = 'totalaud-pre-flight-v1'
+const EMAIL_STORAGE_KEY = 'totalaud-pre-flight-email-v1'
 
 type ChecklistState = Record<string, boolean>
+
+type EmailStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 export function PreFlightClient({
   totalItems,
@@ -17,12 +20,24 @@ export function PreFlightClient({
 }) {
   const [checked, setChecked] = useState<ChecklistState>({})
   const [hydrated, setHydrated] = useState(false)
+  const [email, setEmail] = useState('')
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>('idle')
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY)
       if (raw) setChecked(JSON.parse(raw))
+    } catch {
+      // ignore corrupt state
+    }
+    try {
+      const savedEmail = window.localStorage.getItem(EMAIL_STORAGE_KEY)
+      if (savedEmail) {
+        setEmail(savedEmail)
+        setEmailStatus('saved')
+      }
     } catch {
       // ignore corrupt state
     }
@@ -40,6 +55,44 @@ export function PreFlightClient({
 
   const completed = useMemo(() => items.filter((i) => checked[i.id]).length, [checked])
   const percent = Math.round((completed / totalItems) * 100)
+
+  async function submitEmail(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = email.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailStatus('error')
+      setEmailError('That email looks off. Mind checking it?')
+      return
+    }
+    setEmailStatus('saving')
+    setEmailError(null)
+    try {
+      const res = await fetch('/api/lead-magnet/capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmed,
+          source: 'totalaud-pre-flight',
+          metadata: { completed, percent },
+        }),
+      })
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string }
+        setEmailStatus('error')
+        setEmailError(data.error ?? "Couldn't save right now. Try again in a sec.")
+        return
+      }
+      try {
+        window.localStorage.setItem(EMAIL_STORAGE_KEY, trimmed)
+      } catch {
+        // ignore quota
+      }
+      setEmailStatus('saved')
+    } catch {
+      setEmailStatus('error')
+      setEmailError("Couldn't reach the server. Try again in a sec.")
+    }
+  }
 
   function toggle(id: string) {
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }))
@@ -93,6 +146,62 @@ export function PreFlightClient({
             </button>
           )}
         </header>
+
+        {hydrated && (
+          <section style={emailCardStyle} aria-labelledby="email-capture-title">
+            {emailStatus === 'saved' ? (
+              <>
+                <p style={emailEyebrowStyle}>Saved to {email}</p>
+                <h2 id="email-capture-title" style={emailH2Style}>
+                  Your checklist is tied to your email.
+                </h2>
+                <p style={emailPStyle}>
+                  Switch devices any time. We'll send the same list as a reference, plus a few
+                  honest notes on release planning. Reply "remove" any time and you're out same-day.
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={emailEyebrowStyle}>Optional</p>
+                <h2 id="email-capture-title" style={emailH2Style}>
+                  Want the checklist sent to you?
+                </h2>
+                <p style={emailPStyle}>
+                  Drop your email and we'll send the same list as a reference, plus a few honest
+                  notes on release planning. No signup. No upsell loop. Reply "remove" any time.
+                </p>
+                <form onSubmit={submitEmail} style={emailFormStyle}>
+                  <input
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (emailStatus === 'error') setEmailStatus('idle')
+                    }}
+                    style={emailInputStyle}
+                    disabled={emailStatus === 'saving'}
+                    aria-label="Email address"
+                  />
+                  <button
+                    type="submit"
+                    style={emailSubmitStyle}
+                    disabled={emailStatus === 'saving'}
+                  >
+                    {emailStatus === 'saving' ? 'Saving…' : 'Send it to me'}
+                  </button>
+                </form>
+                {emailStatus === 'error' && emailError && (
+                  <p style={emailErrorStyle} role="alert">
+                    {emailError}
+                  </p>
+                )}
+              </>
+            )}
+          </section>
+        )}
 
         {phases.map((phase) => (
           <PhaseBlock key={phase.id} phase={phase.id} checked={checked} toggle={toggle} />
@@ -473,4 +582,76 @@ const footerLinkStyle: React.CSSProperties = {
   color: 'rgba(255,255,255,0.55)',
   textDecoration: 'none',
   borderBottom: '1px solid rgba(255,255,255,0.1)',
+}
+
+const emailCardStyle: React.CSSProperties = {
+  marginBottom: '40px',
+  padding: '24px',
+  background: 'rgba(58, 169, 190, 0.06)',
+  border: '1px solid rgba(58, 169, 190, 0.25)',
+  borderRadius: '12px',
+}
+
+const emailEyebrowStyle: React.CSSProperties = {
+  color: '#3AA9BE',
+  fontSize: '12px',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  margin: 0,
+  marginBottom: '8px',
+}
+
+const emailH2Style: React.CSSProperties = {
+  fontSize: '20px',
+  fontWeight: 700,
+  letterSpacing: '-0.3px',
+  margin: 0,
+  marginBottom: '8px',
+  color: '#F7F8F9',
+}
+
+const emailPStyle: React.CSSProperties = {
+  color: 'rgba(255,255,255,0.7)',
+  fontSize: '14px',
+  lineHeight: 1.6,
+  margin: 0,
+  marginBottom: '16px',
+  maxWidth: '560px',
+}
+
+const emailFormStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: '8px',
+  flexWrap: 'wrap',
+}
+
+const emailInputStyle: React.CSSProperties = {
+  flex: '1 1 220px',
+  minWidth: 0,
+  padding: '12px 14px',
+  background: 'rgba(0,0,0,0.3)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  borderRadius: '8px',
+  color: '#F7F8F9',
+  fontSize: '15px',
+  fontFamily: 'inherit',
+}
+
+const emailSubmitStyle: React.CSSProperties = {
+  padding: '12px 18px',
+  background: '#3AA9BE',
+  border: 'none',
+  borderRadius: '8px',
+  color: '#0A0B0C',
+  fontSize: '14px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+}
+
+const emailErrorStyle: React.CSSProperties = {
+  marginTop: '10px',
+  color: '#ef4444',
+  fontSize: '13px',
+  margin: 0,
 }
