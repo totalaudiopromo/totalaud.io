@@ -1,9 +1,10 @@
 /**
  * PricingPreview Component
- * totalaud.io - December 2025
+ * totalaud.io — May 2026 label pivot
  *
- * Pricing: Starter (£5), Pro (£19/£182yr), Power (£79/£758yr)
- * 20% annual discount - affordable for indie artists
+ * Pricing: Studio (£79/£758yr), Indie (£199/£1,910yr), Pro (£499/£4,790yr)
+ * + Concierge onboarding (£750 one-off). 20% annual discount.
+ * All CTAs route to mailto until Stripe is wired in Plan B.
  */
 
 'use client'
@@ -12,27 +13,30 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
-const STARTER_FEATURES = [
-  { text: 'Ideas Mode', description: 'Full access to creative canvas' },
-  { text: 'Scout Mode', description: '10 opportunities per day' },
-  { text: 'Timeline Mode', description: '1 active project' },
-  { text: 'Pitch Mode', description: '3 second opinion sessions/month' },
+const TALK_TO_US = 'mailto:chris@totalaudiopromo.com?subject=totalaud.io%20pricing'
+
+const STUDIO_FEATURES = [
+  { text: '1 label, 3 artists', description: '10 releases per year' },
+  { text: '2 seats', description: 'For you and one collaborator' },
+  { text: 'Brief authoring + asset packs', description: 'Single source of truth per release' },
+  { text: 'Partner handoff', description: 'TAP integration for PR campaigns' },
+]
+
+const INDIE_FEATURES = [
+  { text: 'Everything in Studio', description: 'Plus more capacity' },
+  { text: '1 label, 10 artists', description: '40 releases per year' },
+  { text: '5 seats', description: 'Full team access' },
+  { text: 'Reporting tab', description: 'Track what each partner shipped' },
+  { text: 'Partner directory', description: 'Reusable contacts across releases' },
+  { text: 'Co-pilot when launched', description: 'Early access included' },
 ]
 
 const PRO_FEATURES = [
-  { text: 'Everything in Starter', description: 'Plus unlimited access' },
-  { text: 'Unlimited Scout', description: 'Browse all opportunities' },
-  { text: 'Unlimited Projects', description: 'Manage multiple releases' },
-  { text: 'Unlimited Drafting Help', description: 'Refine every pitch' },
-  { text: 'Export Everywhere', description: 'Markdown, PDF, clipboard' },
-  { text: 'Priority Features', description: 'Early access to new tools' },
-]
-
-const POWER_FEATURES = [
-  { text: 'Everything in Pro', description: 'Plus agency-grade features' },
-  { text: 'White-Label EPKs', description: 'Remove totalaud.io branding' },
-  { text: 'Priority Support', description: 'Direct access to our team' },
-  { text: '20% Credit Discount', description: 'On all contact enrichment' },
+  { text: 'Everything in Indie', description: 'Plus multi-label features' },
+  { text: 'Multi-label, unlimited artists', description: 'Unlimited seats' },
+  { text: 'White-label partner views', description: 'Your brand on every share link' },
+  { text: 'Dedicated onboarding + priority support', description: 'Direct line to our team' },
+  { text: 'Distributor CSV import', description: 'Bring your roster across cleanly' },
 ]
 
 interface PricingTierProps {
@@ -305,7 +309,7 @@ export function PricingPreview() {
             color: '#F7F8F9',
           }}
         >
-          Simple, honest pricing
+          Pricing for small labels
         </h2>
         <p
           style={{
@@ -317,9 +321,9 @@ export function PricingPreview() {
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
-          No per-pitch fees. No credit systems.
+          14-day trial of Studio with card required. No free tier.
           <br />
-          Just one workspace for everything that matters.
+          One workspace for the whole release.
         </p>
 
         {/* Billing toggle */}
@@ -396,37 +400,42 @@ export function PricingPreview() {
         }}
       >
         <PricingTier
-          title="Starter"
-          price="£5"
-          pricePeriod="/month"
-          features={STARTER_FEATURES}
-          ctaText="Start for £5/month"
-          ctaHref="/signup?tier=starter"
+          title="Studio"
+          price={billingPeriod === 'annual' ? '£758' : '£79'}
+          pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
+          priceNote={
+            billingPeriod === 'annual'
+              ? 'Effective £63.17/month — save 20%'
+              : '14-day trial with card'
+          }
+          features={STUDIO_FEATURES}
+          ctaText="Talk to us"
+          ctaHref={TALK_TO_US}
         />
         <PricingTier
-          title="Pro"
-          price={billingPeriod === 'annual' ? '£182' : '£19'}
+          title="Indie"
+          price={billingPeriod === 'annual' ? '£1,910' : '£199'}
           pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-          priceNote={billingPeriod === 'annual' ? 'Effective £15.17/month — save 20%' : undefined}
-          features={PRO_FEATURES}
-          ctaText={billingPeriod === 'annual' ? 'Get Pro Annual' : 'Get Pro'}
-          ctaHref={billingPeriod === 'annual' ? '/signup?tier=pro_annual' : '/signup?tier=pro'}
+          priceNote={billingPeriod === 'annual' ? 'Effective £159.17/month — save 20%' : undefined}
+          features={INDIE_FEATURES}
+          ctaText="Talk to us"
+          ctaHref={TALK_TO_US}
           isPro
           highlight="Most Popular"
         />
         <PricingTier
-          title="Power"
-          price={billingPeriod === 'annual' ? '£758' : '£79'}
+          title="Pro"
+          price={billingPeriod === 'annual' ? '£4,790' : '£499'}
           pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-          priceNote={billingPeriod === 'annual' ? 'Effective £63.17/month — save 20%' : undefined}
-          features={POWER_FEATURES}
-          ctaText={billingPeriod === 'annual' ? 'Get Power Annual' : 'Get Power'}
-          ctaHref={billingPeriod === 'annual' ? '/signup?tier=power_annual' : '/signup?tier=power'}
-          highlight="For Labels & Agencies"
+          priceNote={billingPeriod === 'annual' ? 'Effective £399.17/month — save 20%' : undefined}
+          features={PRO_FEATURES}
+          ctaText="Talk to us"
+          ctaHref={TALK_TO_US}
+          highlight="Multi-label"
         />
       </div>
 
-      {/* Value comparison */}
+      {/* Concierge add-on */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -435,7 +444,7 @@ export function PricingPreview() {
         style={{
           textAlign: 'center',
           marginTop: '48px',
-          padding: '24px',
+          padding: '28px 24px',
           background: 'rgba(255, 255, 255, 0.02)',
           borderRadius: '12px',
           border: '1px solid rgba(255, 255, 255, 0.04)',
@@ -450,24 +459,32 @@ export function PricingPreview() {
             marginBottom: '8px',
           }}
         >
-          <strong style={{ color: '#F7F8F9' }}>Compare to per-pitch platforms:</strong>
+          <strong style={{ color: '#F7F8F9' }}>Concierge onboarding · £750 one-off</strong>
         </p>
         <p
           style={{
             fontSize: '13px',
-            color: 'rgba(255, 255, 255, 0.45)',
+            color: 'rgba(255, 255, 255, 0.55)',
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             lineHeight: 1.6,
+            marginBottom: '12px',
           }}
         >
-          One Groover campaign costs €50-150. One SubmitHub round costs $30-120.
-          <br />
-          totalaud.io Pro gives you{' '}
-          <strong style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            unlimited access every month
-          </strong>{' '}
-          for less than a single campaign.
+          Founder runs onboarding: imports your roster, sets up label templates, drafts your first
+          three release briefs alongside you. Bolt-on for any tier.
         </p>
+        <Link
+          href={TALK_TO_US}
+          style={{
+            display: 'inline-block',
+            fontSize: '13px',
+            color: '#3AA9BE',
+            textDecoration: 'none',
+            fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+          }}
+        >
+          Talk to us →
+        </Link>
       </motion.div>
 
       {/* Bottom note */}
@@ -485,7 +502,7 @@ export function PricingPreview() {
           lineHeight: 1.6,
         }}
       >
-        Cancel anytime. No contracts. No hidden fees.
+        14-day trial of Studio with card required. No free tier. Annual saves 20%.
       </motion.p>
     </section>
   )
