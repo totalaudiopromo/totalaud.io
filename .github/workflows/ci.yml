@@ -31,9 +31,13 @@ jobs:
         run: pnpm test
 
       - name: Build
+        # Falls back to placeholder values when secrets are not available
+        # (Dependabot PRs and forks do not receive repo secrets by design).
+        # The placeholders only need to satisfy build-time env-var validation;
+        # nothing connects to Supabase during turbo build.
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key-for-build-only' }}
         run: pnpm turbo build --filter=aud-web
 
       - name: Security audit
