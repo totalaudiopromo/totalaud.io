@@ -19,7 +19,7 @@ import { PricingPageClient } from './PricingPageClient'
 export const metadata: Metadata = {
   title: 'Pricing - totalaud.io',
   description:
-    'Simple, honest pricing for your creative workspace. Starter from £5/month, Pro unlimited access for £19/month.',
+    'Pricing for small independent record labels. Studio £79/mo, Indie £199/mo, Pro £499/mo. 14-day trial of Studio with card required.',
   alternates: {
     canonical: 'https://totalaud.io/pricing',
   },
@@ -29,7 +29,7 @@ export default function PricingPage() {
   const softwareSchema = generateSoftwareApplicationSchema()
   const pageSchema = generateWebPageSchemaWithSpeakable(
     'Pricing - totalaud.io',
-    'Simple, honest pricing for your creative workspace. Starter from £5/month, Pro unlimited access for £19/month.',
+    'Pricing for small independent record labels. Studio £79/mo, Indie £199/mo, Pro £499/mo. 14-day trial of Studio with card required.',
     '/pricing',
     ['h1', 'h2', 'main p']
   )

@@ -114,8 +114,8 @@ export function LandingPage() {
             Sign in
           </Link>
           <Link
-            href="/signup"
-            aria-label="Get started with a free account"
+            href="mailto:chris@totalaudiopromo.com?subject=totalaud.io%20demo"
+            aria-label="Book a demo of totalaud.io"
             style={{
               fontSize: '14px',
               fontWeight: 600,
@@ -130,7 +130,7 @@ export function LandingPage() {
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
-            Get started
+            Book a demo
           </Link>
         </nav>
       </motion.header>
@@ -189,7 +189,7 @@ export function LandingPage() {
                 letterSpacing: '0.02em',
               }}
             >
-              New: Finish mode -- master-ready audio in minutes
+              Now: a workspace for small independent record labels
             </span>
           </motion.div>
 
@@ -209,7 +209,7 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            Finish better.{' '}
+            Run releases like a{' '}
             <span
               style={{
                 background: 'linear-gradient(135deg, #3AA9BE 0%, #56BFD4 50%, #3AA9BE 100%)',
@@ -220,7 +220,7 @@ export function LandingPage() {
                 animation: 'gradient-shift 4s ease infinite',
               }}
             >
-              Release smarter.
+              real label.
             </span>
           </motion.h1>
 
@@ -239,7 +239,8 @@ export function LandingPage() {
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
             }}
           >
-            Clear feedback on your music. Releases that make sense. Less guessing.
+            Plan every release, package every asset, brief every partner — without the spreadsheets,
+            the lost files, or the 9pm email.
           </motion.p>
 
           {/* CTAs */}
@@ -254,8 +255,10 @@ export function LandingPage() {
               justifyContent: 'center',
             }}
           >
-            <MagneticButton href="/signup">Upload a track</MagneticButton>
-            <SecondaryButton href="#how-it-works">See how it works</SecondaryButton>
+            <MagneticButton href="mailto:chris@totalaudiopromo.com?subject=totalaud.io%20demo">
+              Book a demo
+            </MagneticButton>
+            <SecondaryButton href="#how-it-works">See the product</SecondaryButton>
           </motion.div>
 
           {/* Secondary options */}
@@ -351,7 +354,7 @@ export function LandingPage() {
             </div>
             <Image
               src="/images/landing/workspace-scout.png"
-              alt="totalaud.io workspace showing Scout mode with BBC Introducing, Pitchfork, and playlist opportunities"
+              alt="totalaud.io workspace showing release pipeline with planning, in-progress, live and reported lanes"
               width={1440}
               height={900}
               style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }}
@@ -385,7 +388,7 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Most artists don't need more tools
+              Most labels don't need more tools
             </h2>
             <p
               style={{
@@ -396,7 +399,7 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              They need clarity.
+              They need one place for the work.
             </p>
             <p
               style={{
@@ -407,8 +410,9 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Most music doesn't fail because it's bad. It fails because nobody said anything useful
-              before release.
+              Every release runs across a Notion doc, a Trello board, a Drive folder, and three
+              Slack threads. The brief lives in someone's outbox. The publicist asks for the WAV the
+              night before announce.
             </p>
             <p
               style={{
@@ -418,8 +422,8 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              totalaud.io helps you decide what to fix, what to leave alone, and when your music is
-              ready.
+              totalaud.io is the workspace where the release plan, the brief, and the asset pack all
+              live in one place — and every partner gets the same version.
             </p>
           </motion.div>
         </section>
@@ -604,8 +608,8 @@ export function LandingPage() {
                   marginBottom: '24px',
                 }}
               >
-                I run a radio promotion agency. totalaud.io is the tool I wished my artists had
-                before they came to me.
+                I run a radio promotion agency. totalaud.io is the tool I wished labels had before
+                they briefed me.
               </p>
               <p
                 style={{
@@ -627,7 +631,7 @@ export function LandingPage() {
                 }}
               >
                 5+ years in radio promotion. Ran campaigns across BBC Radio 1, 6 Music, and Global.
-                Built totalaud.io because the tools I needed didn&apos;t exist.
+                Built totalaud.io because the workspace small labels needed didn&apos;t exist.
               </p>
             </div>
           </motion.div>
@@ -723,7 +727,7 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Stop guessing.
+              Want to see it run on a real release?
             </h2>
             <p
               style={{
@@ -736,9 +740,11 @@ export function LandingPage() {
                 fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               }}
             >
-              Know your music is ready before you put it out.
+              Book a 30-minute demo.
             </p>
-            <MagneticButton href="/signup">Get started</MagneticButton>
+            <MagneticButton href="mailto:chris@totalaudiopromo.com?subject=totalaud.io%20demo">
+              Book a demo
+            </MagneticButton>
           </motion.div>
         </section>
       </main>

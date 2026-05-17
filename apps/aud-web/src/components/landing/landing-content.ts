@@ -1,61 +1,75 @@
-// How it works steps - Vision aligned
+// How it works steps — label workspace (May 2026 pivot)
 export const HOW_IT_WORKS = [
   {
-    title: 'Upload',
-    detail: "Upload a track you're preparing to release.",
+    title: 'Plan the release',
+    detail:
+      'Drag every release through planning, in-progress, live, and reported. See what ships next week.',
   },
   {
-    title: 'Choose a perspective',
-    detail: 'Get finishing notes from a producer, listener, mix engineer, or industry lens.',
+    title: 'Author the brief',
+    detail: 'Write the brief once. Approve it once. Keep every fact in one place across the team.',
   },
   {
-    title: 'Understand what matters',
-    detail: 'Honest notes on arrangement, energy, clarity, and release readiness.',
+    title: 'Brief your partners',
+    detail:
+      'Send the brief and asset pack to your publicist, plugger, sync agent, and marketing freelancer in one click.',
   },
   {
-    title: 'Release with confidence',
-    detail: 'Plan your release, tell your story once, and move forward without second-guessing.',
+    title: 'Track what shipped',
+    detail:
+      'See what landed, what stalled, and what each partner is owed — without chasing five inboxes.',
   },
 ]
 
-// What totalaud.io helps with - Vision aligned pillars
+// What totalaud.io helps with — label-side workspace pillars (May 2026 pivot)
 export const PILLARS = [
   {
-    id: 'finish',
-    title: 'A second opinion for music you care about',
-    description: "Understand what's working, what could improve, and what's already good enough.",
-    features: [
-      'Arrangement & energy',
-      'Mix translation & clarity',
-      'Release readiness (not quality scoring)',
-    ],
-    screenshot: '/images/landing/workspace-finish.png',
-    screenshotAlt: 'Finish mode showing audio upload and analysis workspace',
-  },
-  {
-    id: 'release',
-    title: 'Release as a narrative — not a checkbox',
-    description: 'Plan releases over time, not as isolated drops. Think about timing and momentum.',
-    features: [],
-    screenshot: '/images/landing/workspace-timeline.png',
-    screenshotAlt: 'Timeline mode showing visual release planning with lanes and milestones',
-  },
-  {
-    id: 'leverage',
-    title: 'Relationships, not lists',
+    id: 'pipeline',
+    title: 'One pipeline. Every release. Every artist.',
     description:
-      'Keep track of the people who matter -- playlists, press, collaborators -- with context, not spreadsheets.',
-    features: [],
-    screenshot: '/images/landing/workspace-scout.png',
-    screenshotAlt: 'Scout mode showing BBC Introducing, Pitchfork, and other opportunity cards',
+      "Drag releases through planning, in-progress, live, and reported. See exactly what's shipping next week, who's working on it, and what's still missing.",
+    features: [
+      'Planning, in-progress, live, reported lanes',
+      'Per-artist filter and per-release detail',
+      'Release-day countdowns and partner-handoff state',
+    ],
+    screenshot: '/images/landing/workspace-timeline.png',
+    screenshotAlt: 'Release pipeline showing planning, in-progress, live and reported lanes',
   },
   {
-    id: 'pitch',
-    title: 'Tell your story once — use it everywhere',
-    description: 'Write your story once. Use it across pitches, bios, playlists, and socials.',
-    features: [],
+    id: 'briefs',
+    title: 'Briefs that ship themselves',
+    description:
+      'Author the brief once. Approve it once. Send it to your publicist, plugger, sync agent, and marketing freelancer in one click. They get a clean PDF or, if they use TAP, a campaign pre-loaded in their queue.',
+    features: [
+      'Single-source brief authoring',
+      'PDF export for partners who do not use TAP',
+      'Direct handoff to TAP for partners who do',
+    ],
     screenshot: '/images/landing/workspace-pitch.png',
-    screenshotAlt: 'Pitch mode showing Radio, Press, Playlist, and Custom pitch templates',
+    screenshotAlt: 'Brief authoring view with partner handoff options',
+  },
+  {
+    id: 'assets',
+    title: "Asset packs that don't get lost",
+    description:
+      'Master, artwork, bio, press photos, EPK — packaged per release, shared per partner, tracked per click. No more "can you re-send the WAV?".',
+    features: [
+      'Per-release asset pack with master, artwork, bio, photos',
+      'Per-partner share link with click tracking',
+      'Versioned so the latest master is never ambiguous',
+    ],
+    screenshot: '/images/landing/workspace-scout.png',
+    screenshotAlt: 'Asset pack view showing master, artwork, bio and press photos per release',
+  },
+  {
+    id: 'partners',
+    title: 'Reprtoir for distribution. DISCO for sharing. totalaud.io for everything in between.',
+    description:
+      'The operational layer between the release plan and the PR campaign. Your distributor handles the supply chain. Your publicist runs the press. totalaud.io keeps everyone briefed, on the same plan, with the same files.',
+    features: [],
+    screenshot: '/images/landing/workspace-finish.png',
+    screenshotAlt: 'totalaud.io as the layer between distributor and PR campaign',
   },
 ]
 

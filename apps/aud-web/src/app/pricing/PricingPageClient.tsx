@@ -15,29 +15,36 @@ import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
 
-const STARTER_FEATURES = [
-  { text: 'Ideas Mode', description: 'Full access to creative canvas' },
-  { text: 'Scout Mode', description: '10 opportunities per day' },
-  { text: 'Timeline Mode', description: '1 active project' },
-  { text: 'Pitch Mode', description: '3 second-opinion sessions/month' },
+// Label-pivot pricing (May 2026). Stripe wiring lands in Plan B.
+// CTAs route to mailto until then.
+const TALK_TO_US = 'mailto:chris@totalaudiopromo.com?subject=totalaud.io%20pricing'
+
+const STUDIO_FEATURES = [
+  { text: '1 label, 3 artists', description: '10 releases per year' },
+  { text: '2 seats', description: 'For you and one collaborator' },
+  { text: 'Brief authoring + asset packs', description: 'Single source of truth per release' },
+  { text: 'Partner handoff', description: 'TAP integration for PR campaigns' },
+]
+
+const INDIE_FEATURES = [
+  { text: 'Everything in Studio', description: 'Plus more capacity' },
+  { text: '1 label, 10 artists', description: '40 releases per year' },
+  { text: '5 seats', description: 'Full team access' },
+  { text: 'Reporting tab', description: 'Track what each partner shipped' },
+  { text: 'Partner directory', description: 'Reusable contacts across releases' },
+  { text: 'Co-pilot when launched', description: 'Early access included' },
 ]
 
 const PRO_FEATURES = [
-  { text: 'Everything in Starter', description: 'Plus unlimited access' },
-  { text: 'Unlimited Scout', description: 'Browse all opportunities' },
-  { text: 'Unlimited Projects', description: 'Manage multiple releases' },
-  { text: 'Unlimited Second Opinion', description: 'Refine every pitch' },
-  { text: 'Export Everywhere', description: 'Markdown, PDF, clipboard' },
-  { text: 'Priority Features', description: 'Early access to new tools' },
+  { text: 'Everything in Indie', description: 'Plus multi-label features' },
+  { text: 'Multi-label, unlimited artists', description: 'Unlimited seats' },
+  { text: 'White-label partner views', description: 'Your brand on every share link' },
+  { text: 'Dedicated onboarding + priority support', description: 'Direct line to our team' },
+  { text: 'Distributor CSV import', description: 'Bring your roster across cleanly' },
 ]
 
-const POWER_FEATURES = [
-  { text: 'Everything in Pro', description: 'Plus agency-grade features' },
-  { text: 'White-Label EPKs', description: 'Remove totalaud.io branding' },
-  { text: 'Priority Support', description: 'Direct access to our team' },
-  { text: '20% Credit Discount', description: 'On all contact enrichment' },
-]
-
+// Legacy tier identifiers preserved for existing-subscription `currentTier` checks.
+// New tier names are display-only; checkout routes to mailto until Plan B wires Stripe.
 type ValidTier = 'starter' | 'pro' | 'pro_annual' | 'power' | 'power_annual'
 
 interface PricingTierProps {
@@ -69,11 +76,7 @@ function PricingTier({
   isAuthenticated,
   loading = false,
 }: PricingTierProps) {
-  const ctaText = isCurrentTier
-    ? 'Current Plan'
-    : isAuthenticated
-      ? `Upgrade to ${title}`
-      : `Start with ${title}`
+  const ctaText = isCurrentTier ? 'Current Plan' : 'Talk to us'
 
   return (
     <motion.div
@@ -298,21 +301,16 @@ export function PricingPageClient() {
     }
   }, [checkoutStatus])
 
-  const handleCheckout = async (tier: ValidTier) => {
+  const handleCheckout = async (_tier: ValidTier) => {
+    // Plan A Part 2 (May 2026): Stripe checkout for the new Studio/Indie/Pro
+    // label tiers is parked until Plan B Week 1. Until then every CTA routes
+    // to the founder mailto so we can talk to the label first.
     setCheckoutError(null)
-
-    if (!isAuthenticated) {
-      // Redirect to signup with tier
-      window.location.href = `/signup?tier=${tier}`
-      return
-    }
-
-    try {
-      await checkout(tier)
-    } catch {
-      setCheckoutError('Something went wrong. Please try again.')
-    }
+    window.location.href = TALK_TO_US
   }
+  // Touch the subscription checkout reference to keep the import live while
+  // the Stripe flow is parked.
+  void checkout
 
   const loading = authLoading || subLoading
 
@@ -532,10 +530,15 @@ export function PricingPageClient() {
           }}
         >
           <PricingTier
-            title="Starter"
-            price="£5"
-            pricePeriod="/month"
-            features={STARTER_FEATURES}
+            title="Studio"
+            price={billingPeriod === 'annual' ? '£758' : '£79'}
+            pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
+            priceNote={
+              billingPeriod === 'annual'
+                ? 'Effective £63.17/month — save 20%'
+                : '14-day trial with card'
+            }
+            features={STUDIO_FEATURES}
             tier="starter"
             isCurrentTier={currentTier === 'starter'}
             onCheckout={handleCheckout}
@@ -543,11 +546,13 @@ export function PricingPageClient() {
             loading={loading}
           />
           <PricingTier
-            title="Pro"
-            price={billingPeriod === 'annual' ? '£182' : '£19'}
+            title="Indie"
+            price={billingPeriod === 'annual' ? '£1,910' : '£199'}
             pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-            priceNote={billingPeriod === 'annual' ? 'Effective £15.17/month — save 20%' : undefined}
-            features={PRO_FEATURES}
+            priceNote={
+              billingPeriod === 'annual' ? 'Effective £159.17/month — save 20%' : undefined
+            }
+            features={INDIE_FEATURES}
             tier={billingPeriod === 'annual' ? 'pro_annual' : 'pro'}
             isPro
             highlight="Most Popular"
@@ -557,13 +562,15 @@ export function PricingPageClient() {
             loading={loading}
           />
           <PricingTier
-            title="Power"
-            price={billingPeriod === 'annual' ? '£758' : '£79'}
+            title="Pro"
+            price={billingPeriod === 'annual' ? '£4,790' : '£499'}
             pricePeriod={billingPeriod === 'annual' ? '/year' : '/month'}
-            priceNote={billingPeriod === 'annual' ? 'Effective £63.17/month — save 20%' : undefined}
-            features={POWER_FEATURES}
+            priceNote={
+              billingPeriod === 'annual' ? 'Effective £399.17/month — save 20%' : undefined
+            }
+            features={PRO_FEATURES}
             tier={billingPeriod === 'annual' ? 'power_annual' : 'power'}
-            highlight="For Labels & Agencies"
+            highlight="Multi-label"
             isCurrentTier={currentTier === 'power' || currentTier === 'power_annual'}
             onCheckout={handleCheckout}
             isAuthenticated={isAuthenticated}
@@ -593,22 +600,17 @@ export function PricingPageClient() {
               marginBottom: '8px',
             }}
           >
-            <strong style={{ color: '#F7F8F9' }}>Compare to per-pitch platforms:</strong>
+            <strong style={{ color: '#F7F8F9' }}>Concierge onboarding · £750 one-off</strong>
           </p>
           <p
             style={{
               fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.45)',
+              color: 'rgba(255, 255, 255, 0.55)',
               lineHeight: 1.6,
             }}
           >
-            One Groover campaign costs €50-150. One SubmitHub round costs $30-120.
-            <br />
-            totalaud.io Pro gives you{' '}
-            <strong style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-              unlimited access every month
-            </strong>{' '}
-            for less than a single campaign.
+            Founder runs onboarding: imports your roster, sets up label templates, drafts your first
+            three release briefs alongside you. Bolt-on for any tier.
           </p>
         </motion.div>
 
@@ -625,7 +627,7 @@ export function PricingPageClient() {
             lineHeight: 1.6,
           }}
         >
-          Cancel anytime. No contracts. No hidden fees.
+          14-day trial of Studio with card required. No free tier. Annual saves 20%.
         </motion.p>
       </main>
     </div>

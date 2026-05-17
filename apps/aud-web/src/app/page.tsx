@@ -17,12 +17,13 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'totalaud.io - Finish better. Release smarter.',
+  title: 'totalaud.io — Run releases like a real label.',
   description:
-    'A calm, opinionated system that helps independent artists finish their music, understand what matters, and release with confidence.',
+    'The workspace small independent record labels use to plan releases, package assets, and brief every partner. One pipeline, one brief, one source of truth.',
   openGraph: {
-    title: 'totalaud.io - Finish better. Release smarter.',
-    description: 'Get clear feedback on your music. Plan releases that make sense. Stop guessing.',
+    title: 'totalaud.io — Run releases like a real label.',
+    description:
+      'Plan every release, package every asset, brief every partner — without the spreadsheets, the lost files, or the 9pm email.',
     type: 'website',
   },
   alternates: {
@@ -43,8 +44,8 @@ export default async function Page() {
   const softwareSchema = generateSoftwareApplicationSchema()
   const webSiteSchema = generateWebSiteSchema()
   const homePageSchema = generateWebPageSchemaWithSpeakable(
-    'totalaud.io - Finish better. Release smarter.',
-    'A calm, opinionated system that helps independent artists finish their music, understand what matters, and release with confidence.',
+    'totalaud.io — Run releases like a real label.',
+    'The workspace small independent record labels use to plan releases, package assets, and brief every partner.',
     '/',
     ['h1', 'h2', '[id="how-it-works-heading"]']
   )
