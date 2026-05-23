@@ -246,14 +246,15 @@ export function WaitlistLanding() {
         {/* Headline */}
         <h1
           style={{
-            fontSize: 'clamp(30px, 6vw, 50px)',
+            fontSize: 'clamp(24px, 4.5vw, 40px)',
             fontWeight: 600,
-            lineHeight: 1.15,
-            letterSpacing: '-0.03em',
-            marginBottom: '24px',
+            lineHeight: 1.2,
+            letterSpacing: '-0.025em',
+            marginBottom: '20px',
+            maxWidth: '560px',
           }}
         >
-          Release management for{' '}
+          The label workspace{' '}
           <span
             style={{
               background: 'linear-gradient(135deg, #3AA9BE 0%, #56BFD4 100%)',
@@ -262,22 +263,23 @@ export function WaitlistLanding() {
               backgroundClip: 'text',
             }}
           >
-            indie labels.
-          </span>
+            pluggers
+          </span>{' '}
+          actually want to receive briefs from.
         </h1>
 
         {/* Subhead */}
         <p
           style={{
-            fontSize: 'clamp(15px, 2vw, 17px)',
-            color: 'rgba(255,255,255,0.75)',
-            lineHeight: 1.7,
+            fontSize: 'clamp(14px, 1.8vw, 16px)',
+            color: 'rgba(255,255,255,0.65)',
+            lineHeight: 1.65,
             marginBottom: '48px',
-            maxWidth: '480px',
+            maxWidth: '460px',
           }}
         >
-          Plan every release. Package every asset. Brief every partner — before the campaign starts.
-          One place. No chasing, no lost files, no 9pm emails.
+          One complete brief. Assets checked, talking points drafted, sent before the campaign
+          starts.
         </p>
 
         {/* Waitlist card */}
