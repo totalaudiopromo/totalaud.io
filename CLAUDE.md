@@ -97,7 +97,7 @@ Format: `type(scope): short summary` -- British spelling, no emojis, one logical
 ## PROJECT OVERVIEW
 
 **Live URL**: https://totalaud.io
-**Deployment**: Railway (not Vercel -- monorepo detection issues)
+**Deployment**: Vercel (moved off Railway, July 2026 -- `server: Vercel` confirmed on live domain)
 **Vision**: [`docs/VISION.md`](docs/VISION.md)
 
 ### Tech Stack
@@ -139,15 +139,16 @@ pnpm format && pnpm lint && pnpm typecheck && pnpm test
 
 ---
 
-## RAILWAY CONFIGURATION
+## DEPLOYMENT (VERCEL)
 
-**Build**: `pnpm install --no-frozen-lockfile && cd apps/aud-web && pnpm run build`
-**Start**: `cd apps/aud-web && pnpm start`
-**Config**: `railway.json`
+**Config**: `apps/aud-web/vercel.json`
 **Live URL**: https://totalaud.io
-**Railway Domain**: https://aud-web-production.up.railway.app
+**Supabase project**: `qopmwhdermudwufrloqb` (totalaud-io-v2, eu-west-2)
 
-Required env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_APP_URL`, `NODE_ENV`, `TAP_API_KEY`, `TAP_API_URL`.
+Hosting moved from Railway to Vercel in July 2026. `railway.json` has been removed;
+if any Railway service still exists it is unused and can be deleted.
+
+Required env vars (set in Vercel): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_APP_URL`, `NODE_ENV`, `TAP_API_KEY`, `TAP_API_URL`, `CRON_SECRET` (protects `/api/keepalive`).
 
 ---
 
