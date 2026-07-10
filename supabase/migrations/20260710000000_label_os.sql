@@ -1,15 +1,22 @@
 -- ============================================================================
 -- Label OS — multi-tenant workspace for independent labels
--- Tables: labels, label_members, label_artists, label_releases,
---         label_tracks, label_release_tasks, label_contacts
--- Additive-only. Membership-based RLS via SECURITY DEFINER helpers.
+-- Applied to qopmwhdermudwufrloqb on 10 July 2026.
+--
+-- Adapted to coexist with the pre-existing labels/label_members tables
+-- (from an 18 May 2026 experiment already on the remote database, alongside
+-- releases/roster_artists/milestones/partners — those remain untouched and
+-- unused by current code). Additive only: extends labels with three columns,
+-- adds SECURITY DEFINER membership helpers, the create_label RPC, and five
+-- new tables with membership-based RLS.
 -- ============================================================================
 
--- ----------------------------------------------------------------------------
--- Membership helper functions (SECURITY DEFINER to avoid RLS recursion on
--- label_members when policies on other tables consult membership)
--- ----------------------------------------------------------------------------
+-- Extend the existing labels table with columns the Label OS app uses
+ALTER TABLE labels ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE labels ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE labels ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 
+-- Membership helpers (SECURITY DEFINER to avoid RLS recursion on
+-- label_members when policies on other tables consult membership)
 CREATE OR REPLACE FUNCTION is_label_member(p_label_id UUID, p_user_id UUID)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -33,89 +40,7 @@ AS $$
   LIMIT 1;
 $$;
 
--- ----------------------------------------------------------------------------
--- labels
--- ----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS labels (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  description TEXT,
-  website TEXT,
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_labels_created_by ON labels(created_by);
-CREATE INDEX IF NOT EXISTS idx_labels_slug ON labels(slug);
-
-CREATE TRIGGER trigger_labels_updated_at
-  BEFORE UPDATE ON labels
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-ALTER TABLE labels ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Members can read own labels" ON labels
-  FOR SELECT USING (is_label_member(id, auth.uid()));
-
-CREATE POLICY "Owners and managers can update labels" ON labels
-  FOR UPDATE USING (label_member_role(id, auth.uid()) IN ('owner', 'manager'));
-
-CREATE POLICY "Owners can delete labels" ON labels
-  FOR DELETE USING (label_member_role(id, auth.uid()) = 'owner');
-
--- No INSERT policy: label creation goes through the create_label() RPC below,
--- which runs SECURITY DEFINER and inserts label + owner membership atomically.
-
--- ----------------------------------------------------------------------------
--- label_members
--- ----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS label_members (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  label_id UUID REFERENCES labels(id) ON DELETE CASCADE NOT NULL,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('owner', 'manager', 'member')),
-  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  UNIQUE (label_id, user_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_label_members_label_id ON label_members(label_id);
-CREATE INDEX IF NOT EXISTS idx_label_members_user_id ON label_members(user_id);
-
-CREATE TRIGGER trigger_label_members_updated_at
-  BEFORE UPDATE ON label_members
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-ALTER TABLE label_members ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Members can read label membership" ON label_members
-  FOR SELECT USING (
-    auth.uid() = user_id OR is_label_member(label_id, auth.uid())
-  );
-
-CREATE POLICY "Owners and managers can add members" ON label_members
-  FOR INSERT WITH CHECK (
-    label_member_role(label_id, auth.uid()) IN ('owner', 'manager')
-  );
-
-CREATE POLICY "Owners and managers can update members" ON label_members
-  FOR UPDATE USING (
-    label_member_role(label_id, auth.uid()) IN ('owner', 'manager')
-  );
-
-CREATE POLICY "Owners can remove other members" ON label_members
-  FOR DELETE USING (
-    label_member_role(label_id, auth.uid()) = 'owner' AND user_id <> auth.uid()
-  );
-
--- ----------------------------------------------------------------------------
--- create_label() — atomic label + owner membership (RLS chicken-and-egg)
--- ----------------------------------------------------------------------------
-
+-- Atomic label + owner membership creation (RLS chicken-and-egg)
 CREATE OR REPLACE FUNCTION create_label(
   p_name TEXT,
   p_slug TEXT,
@@ -133,8 +58,8 @@ BEGIN
     RAISE EXCEPTION 'Not authenticated';
   END IF;
 
-  INSERT INTO labels (name, slug, description, created_by)
-  VALUES (p_name, p_slug, p_description, auth.uid())
+  INSERT INTO labels (name, slug, description, owner_user_id, created_by, plan_tier)
+  VALUES (p_name, p_slug, p_description, auth.uid(), auth.uid(), 'indie')
   RETURNING * INTO v_label;
 
   INSERT INTO label_members (label_id, user_id, role)
@@ -143,6 +68,8 @@ BEGIN
   RETURN v_label;
 END;
 $$;
+
+GRANT EXECUTE ON FUNCTION create_label TO authenticated;
 
 -- ----------------------------------------------------------------------------
 -- label_artists
@@ -173,13 +100,10 @@ ALTER TABLE label_artists ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Members can read label artists" ON label_artists
   FOR SELECT USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can create label artists" ON label_artists
   FOR INSERT WITH CHECK (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can update label artists" ON label_artists
   FOR UPDATE USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Owners and managers can delete label artists" ON label_artists
   FOR DELETE USING (label_member_role(label_id, auth.uid()) IN ('owner', 'manager'));
 
@@ -216,13 +140,10 @@ ALTER TABLE label_releases ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Members can read label releases" ON label_releases
   FOR SELECT USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can create label releases" ON label_releases
   FOR INSERT WITH CHECK (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can update label releases" ON label_releases
   FOR UPDATE USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Owners and managers can delete label releases" ON label_releases
   FOR DELETE USING (label_member_role(label_id, auth.uid()) IN ('owner', 'manager'));
 
@@ -256,13 +177,10 @@ ALTER TABLE label_tracks ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Members can read label tracks" ON label_tracks
   FOR SELECT USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can create label tracks" ON label_tracks
   FOR INSERT WITH CHECK (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can update label tracks" ON label_tracks
   FOR UPDATE USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can delete label tracks" ON label_tracks
   FOR DELETE USING (is_label_member(label_id, auth.uid()));
 
@@ -298,13 +216,10 @@ ALTER TABLE label_release_tasks ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Members can read label tasks" ON label_release_tasks
   FOR SELECT USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can create label tasks" ON label_release_tasks
   FOR INSERT WITH CHECK (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can update label tasks" ON label_release_tasks
   FOR UPDATE USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can delete label tasks" ON label_release_tasks
   FOR DELETE USING (is_label_member(label_id, auth.uid()));
 
@@ -337,12 +252,9 @@ ALTER TABLE label_contacts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Members can read label contacts" ON label_contacts
   FOR SELECT USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can create label contacts" ON label_contacts
   FOR INSERT WITH CHECK (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can update label contacts" ON label_contacts
   FOR UPDATE USING (is_label_member(label_id, auth.uid()));
-
 CREATE POLICY "Members can delete label contacts" ON label_contacts
   FOR DELETE USING (is_label_member(label_id, auth.uid()));
