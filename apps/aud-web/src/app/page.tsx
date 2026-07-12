@@ -1,31 +1,36 @@
 /**
- * Landing Page
- * totalaud.io - Vision Aligned
+ * totalaud.io — Waiting List
  *
- * A calm, opinionated system for independent artists.
- * Authenticated users redirect to /console.
+ * Product is paused (21 May 2026). This page captures interest and
+ * back-links to TAP (totalaudiopromo.com). The full app remains live
+ * behind auth for existing users.
+ *
+ * SEO targets: "music PR for labels", "label release management", "indie label tools"
  */
 
-import { LandingPage } from '@/components/landing/LandingPage'
-import { JsonLd } from '@/components/seo'
-import {
-  generateSoftwareApplicationSchema,
-  generateWebSiteSchema,
-  generateWebPageSchemaWithSpeakable,
-} from '@/lib/seo'
+import { WaitlistLanding } from '@/components/landing/WaitlistLanding'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'totalaud.io — Run releases like a real label.',
+  title: 'totalaud.io — Coming soon for indie labels',
   description:
-    'The workspace small independent record labels use to plan releases, package assets, and brief every partner. One pipeline, one brief, one source of truth.',
+    'A workspace for indie record labels — release management, asset packaging, and campaign briefing. Join the waiting list.',
   openGraph: {
-    title: 'totalaud.io — Run releases like a real label.',
+    title: 'totalaud.io — Coming soon for indie labels',
     description:
-      'Plan every release, package every asset, brief every partner — without the spreadsheets, the lost files, or the 9pm email.',
+      'Music PR for labels. Release management, asset packaging, campaign briefing — without the spreadsheets. Join the waiting list.',
     type: 'website',
+    url: 'https://totalaud.io',
   },
+  keywords: [
+    'music PR for labels',
+    'label release management',
+    'indie label tools',
+    'release campaign planning',
+    'music campaign briefing',
+    'indie label workspace',
+  ],
   alternates: {
     canonical: 'https://totalaud.io',
   },
@@ -37,23 +42,10 @@ export default async function Page() {
     data: { session },
   } = await supabase.auth.getSession()
 
+  // Existing users keep access to the app
   if (session) {
     redirect('/console')
   }
 
-  const softwareSchema = generateSoftwareApplicationSchema()
-  const webSiteSchema = generateWebSiteSchema()
-  const homePageSchema = generateWebPageSchemaWithSpeakable(
-    'totalaud.io — Run releases like a real label.',
-    'The workspace small independent record labels use to plan releases, package assets, and brief every partner.',
-    '/',
-    ['h1', 'h2', '[id="how-it-works-heading"]']
-  )
-
-  return (
-    <>
-      <JsonLd schema={[softwareSchema, webSiteSchema, homePageSchema]} id="home-schemas" />
-      <LandingPage />
-    </>
-  )
+  return <WaitlistLanding />
 }

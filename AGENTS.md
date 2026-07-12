@@ -1,4 +1,4 @@
-# Claude Code Configuration -- totalaud.io
+# Codex Configuration -- totalaud.io
 
 **A thinking and finishing system for independent artists**
 
@@ -16,7 +16,7 @@
 2. **Never resurrect OS metaphors** -- ascii, xp, aqua, daw, analogue are archived
 3. **Decision support > Automation** -- Help artists think, not replace their thinking
 4. **Finishing notes > Quality scores** -- No judgement, only insight
-5. **Claude is the reasoning layer, not the product** -- Keep invisible to users
+5. **Codex is the reasoning layer, not the product** -- Keep invisible to users
 
 ### Product Pillars
 
@@ -36,7 +36,7 @@ Avoid: "AI-powered", "revolutionary", "game-changing", "agents", corporate SaaS 
 
 ## SESSION START
 
-**Before any work, Claude Code must:**
+**Before any work, Codex must:**
 
 1. Check `git status`
 2. If on main: `git fetch origin && git status` -- offer to pull if behind
@@ -97,7 +97,7 @@ Format: `type(scope): short summary` -- British spelling, no emojis, one logical
 ## PROJECT OVERVIEW
 
 **Live URL**: https://totalaud.io
-**Deployment**: Vercel (moved off Railway, July 2026 -- `server: Vercel` confirmed on live domain)
+**Deployment**: Railway (not Vercel -- monorepo detection issues)
 **Vision**: [`docs/VISION.md`](docs/VISION.md)
 
 ### Tech Stack
@@ -139,16 +139,15 @@ pnpm format && pnpm lint && pnpm typecheck && pnpm test
 
 ---
 
-## DEPLOYMENT (VERCEL)
+## RAILWAY CONFIGURATION
 
-**Config**: `apps/aud-web/vercel.json`
+**Build**: `pnpm install --no-frozen-lockfile && cd apps/aud-web && pnpm run build`
+**Start**: `cd apps/aud-web && pnpm start`
+**Config**: `railway.json`
 **Live URL**: https://totalaud.io
-**Supabase project**: `qopmwhdermudwufrloqb` (totalaud-io-v2, eu-west-2)
+**Railway Domain**: https://aud-web-production.up.railway.app
 
-Hosting moved from Railway to Vercel in July 2026. `railway.json` has been removed;
-if any Railway service still exists it is unused and can be deleted.
-
-Required env vars (set in Vercel): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_APP_URL`, `NODE_ENV`, `TAP_API_KEY`, `TAP_API_URL`, `CRON_SECRET` (protects `/api/keepalive`).
+Required env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_APP_URL`, `NODE_ENV`, `TAP_API_KEY`, `TAP_API_URL`.
 
 ---
 
@@ -187,7 +186,7 @@ When touching existing files: replace `console.log` with `logger`, add Zod valid
 ## BROWSER AUTOMATION (MCP)
 
 - **Chrome DevTools MCP**: Screenshots, DOM snapshots, console logs, network inspection
-- **Claude-in-Chrome MCP**: Navigation, clicking, form filling, scraping
+- **Codex-in-Chrome MCP**: Navigation, clicking, form filling, scraping
 
 ---
 

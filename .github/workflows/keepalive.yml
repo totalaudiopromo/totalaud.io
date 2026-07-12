@@ -2,7 +2,10 @@ name: Supabase Keepalive
 
 on:
   schedule:
-    - cron: '0 3 * * *'
+    # Twice daily: Supabase free tier pauses after 7 days without database
+    # activity, and a paused project cannot be revived by this ping — only
+    # restored from the dashboard. Extra margin costs nothing.
+    - cron: '0 3,15 * * *'
   workflow_dispatch:
 
 jobs:
