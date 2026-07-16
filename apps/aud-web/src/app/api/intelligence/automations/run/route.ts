@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           content: `Run the "${action.replace(/_/g, ' ')}" automation now. Return only valid JSON.`,
         },
       ],
-      { model: 'claude-3-5-haiku-20241022', max_tokens: 1024 }
+      { model: 'claude-haiku-4-5', max_tokens: 1024 }
     )
 
     // Parse JSON from response (greedy regex to capture full nested object)

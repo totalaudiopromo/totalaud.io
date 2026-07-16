@@ -1,9 +1,9 @@
 /**
  * WaitlistLanding — totalaud.io
  *
- * Minimal waiting list page. Product paused 21 May 2026.
- * Captures email into totalaud_io_waitlist via /api/waitlist.
- * Links back to totalaudiopromo.com (TAP) as the live product.
+ * Minimal waiting list page, artist-first copy (July 2026 recommitment,
+ * see docs/STRATEGY_2026.md). Captures email into totalaud_io_waitlist
+ * via /api/waitlist. Links back to totalaudiopromo.com (TAP) for agencies.
  *
  * Design: same dark token (#0A0B0C) + cyan (#3AA9BE) as the rest of the app.
  * No framer-motion dependency — static server render preferred.
@@ -239,7 +239,7 @@ export function WaitlistLanding() {
           <span
             style={{ fontSize: '12px', fontWeight: 500, color: '#3AA9BE', letterSpacing: '0.03em' }}
           >
-            Coming soon — for indie labels
+            Coming soon — for independent artists
           </span>
         </div>
 
@@ -254,7 +254,7 @@ export function WaitlistLanding() {
             maxWidth: '560px',
           }}
         >
-          The label workspace{' '}
+          A calm{' '}
           <span
             style={{
               background: 'linear-gradient(135deg, #3AA9BE 0%, #56BFD4 100%)',
@@ -263,9 +263,9 @@ export function WaitlistLanding() {
               backgroundClip: 'text',
             }}
           >
-            pluggers
+            second opinion
           </span>{' '}
-          actually want to receive briefs from.
+          before you release.
         </h1>
 
         {/* Subhead */}
@@ -278,8 +278,8 @@ export function WaitlistLanding() {
             maxWidth: '460px',
           }}
         >
-          One complete brief. Assets checked, talking points drafted, sent before the campaign
-          starts.
+          Finish your music, plan the release, and reach the right people — with your audio never
+          leaving your device. No scores. No hype. Just what matters.
         </p>
 
         {/* Waitlist card */}

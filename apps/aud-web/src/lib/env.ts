@@ -85,6 +85,10 @@ const envSchema = z.object({
   TAP_API_KEY: z.string().optional(),
   TAP_API_URL: z.string().url().optional(),
 
+  // Feature Flags
+  // Label OS is parked (docs/STRATEGY_2026.md §8) — enforced in middleware.ts
+  NEXT_PUBLIC_ENABLE_LABEL_OS: z.preprocess((val) => val === 'true', z.boolean()).default(false),
+
   // Dev Flags
   NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: z
     .preprocess((val) => val === 'true', z.boolean())
@@ -114,6 +118,7 @@ function validateEnv(): Env {
       NEXT_PUBLIC_CONVERTKIT_FORM_ID: process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID,
       NEXT_PUBLIC_CONVERTKIT_API_KEY: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
       NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+      NEXT_PUBLIC_ENABLE_LABEL_OS: process.env.NEXT_PUBLIC_ENABLE_LABEL_OS === 'true',
       NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH: process.env.NEXT_PUBLIC_ENABLE_DEV_MOCK_AUTH === 'true',
       NEXT_PUBLIC_DEV_AUTH_USER_ID: process.env.NEXT_PUBLIC_DEV_AUTH_USER_ID,
       NEXT_PUBLIC_DEV_AUTH_EMAIL: process.env.NEXT_PUBLIC_DEV_AUTH_EMAIL,
