@@ -9,6 +9,14 @@
 > totalaud.io is a calm, opinionated system that helps independent artists finish their music, understand what matters, and release with confidence.
 
 **Canonical Source**: [`docs/VISION.md`](docs/VISION.md) -- supersedes all prior docs.
+**Strategy & roadmap**: [`docs/STRATEGY_2026.md`](docs/STRATEGY_2026.md) + [`docs/ROADMAP_2026.md`](docs/ROADMAP_2026.md) (July 2026, artist-first recommitment; agent-native architecture principles; trust commitments).
+
+### Current state notes (July 2026)
+
+- **Label OS is PARKED** behind `NEXT_PUBLIC_ENABLE_LABEL_OS` (default off). Code stays compiling; pre-park tag `label-os-v1`. Revival criteria in STRATEGY_2026 §8. Do not delete label code.
+- **The external finisher engine is DEAD** (`sadact-finisher-production.up.railway.app` → 404). Finish is being rebuilt on client-side Web Audio analysis + a Claude perspectives route — audio never leaves the artist's device.
+- **TAP is the engine room for Intel** — live server-side integration with `api.totalaudiopromo.com/v1` per [`docs/TAP_API_REFERENCE.md`](docs/TAP_API_REFERENCE.md). Keep `TAP_API_KEY`/`TAP_API_URL`. Degrade gracefully when TAP is unreachable.
+- **Agent-native rule for new work**: every capability is a typed, documented server route first, UI second (Zod, idempotency on mutations, resource-shaped responses). Claude calls go through `@total-audio/core-ai-provider` — no ad-hoc `new Anthropic()`.
 
 ### Hard Rules
 
