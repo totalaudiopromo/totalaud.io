@@ -32,28 +32,40 @@ export async function DELETE() {
     // Get admin client with service role for deletion
     const adminClient = getSupabaseServiceRoleClient()
 
-    // Delete user data from related tables (cascade should handle most)
-    // These are explicit deletes for tables that may not have cascade
-    // Note: User ideas, timeline events, pitch drafts are stored in localStorage (Zustand stores),
-    // not in the database, so we only need to clean actual database tables here.
+    // Explicitly delete every table that stores this user's data, rather
+    // than trusting cascade rules that may not exist. Everything the
+    // workspace syncs to Supabase is covered here.
     const tablesToClean = [
-      'artist_assets',
-      'agent_results',
-      'agent_sessions',
-      'campaign_outreach_logs',
+      'user_ideas',
+      'user_timeline_events',
+      'user_pitch_drafts',
+      'user_workspace_preferences',
+      'finish_notes',
+      'artist_identities',
+      'signal_threads',
+      'flow_telemetry',
+      'flow_hub_summary_cache',
+      'credit_transactions',
+      'user_credits',
+      'agent_manifests',
+      'label_members',
     ] as const
 
     for (const table of tablesToClean) {
-      try {
-        const { error } = await adminClient.from(table).delete().eq('user_id', userId)
-        if (error) {
-          // Log but don't fail - table might not exist or have different schema
-          log.warn(`Failed to clean ${table}`, { error: error.message })
-        }
-      } catch (err) {
-        // Table might not exist - log and continue
-        log.warn(`Error cleaning ${table}`, { error: err })
+      const { error } = await adminClient.from(table).delete().eq('user_id', userId)
+      if (error) {
+        // Log but continue; the auth-user delete below cascades where FKs exist
+        log.warn(`Failed to clean ${table}`, { error: error.message })
       }
+    }
+
+    // user_profiles is keyed by the auth user id directly
+    const { error: profileError } = await adminClient
+      .from('user_profiles')
+      .delete()
+      .eq('id', userId)
+    if (profileError) {
+      log.warn('Failed to clean user_profiles', { error: profileError.message })
     }
 
     // Delete the auth user (this will cascade to profiles if set up)

@@ -201,8 +201,24 @@ const currencySymbols: Record<string, string> = {
   eur: '€',
 }
 
+/**
+ * Email and name live in Stripe (and the auth user), not user_profiles —
+ * the table has no email/full_name columns.
+ */
+async function getCustomerContact(
+  customerId: string
+): Promise<{ email: string | null; name: string | null }> {
+  try {
+    const customer = await stripe.customers.retrieve(customerId)
+    if (customer.deleted) return { email: null, name: null }
+    return { email: customer.email, name: customer.name ?? null }
+  } catch (error) {
+    log.warn('Could not retrieve Stripe customer for email', { customerId, error })
+    return { email: null, name: null }
+  }
+}
+
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
-  const supabaseAdmin = getSupabaseAdmin()
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
 
@@ -213,13 +229,10 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   await handleSubscriptionChange(subscription)
 
   // Send payment confirmation email
-  const { data: profile } = await supabaseAdmin
-    .from('user_profiles')
-    .select('email, full_name')
-    .eq('stripe_customer_id', customerId)
-    .single()
+  const email = session.customer_details?.email ?? (await getCustomerContact(customerId)).email
+  const customerName = session.customer_details?.name
 
-  if (profile?.email) {
+  if (email) {
     const priceId = subscription.items.data[0]?.price.id
     const tier = getTierFromPrice(priceId)
     const price = subscription.items.data[0]?.price
@@ -229,8 +242,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     const isAnnual = tier.includes('annual')
 
     await sendPaymentConfirmationEmail({
-      to: profile.email,
-      customerName: profile.full_name || 'there',
+      to: email,
+      customerName: customerName || 'there',
       tierName: tierDisplayNames[tier] || 'Pro',
       amount,
       currency,
@@ -285,10 +298,10 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const supabaseAdmin = getSupabaseAdmin()
   const customerId = subscription.customer as string
 
-  // Get user by Stripe customer ID - include email and tier for cancellation email
+  // Get user by Stripe customer ID - include tier for the cancellation email
   const { data: profile, error } = await supabaseAdmin
     .from('user_profiles')
-    .select('id, email, full_name, subscription_tier')
+    .select('id, subscription_tier')
     .eq('stripe_customer_id', customerId)
     .single()
 
@@ -327,10 +340,11 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   log.info('Subscription cancelled', { userId: profile.id })
 
   // Send cancellation email
-  if (profile.email) {
+  const contact = await getCustomerContact(customerId)
+  if (contact.email) {
     await sendCancellationEmail({
-      to: profile.email,
-      customerName: profile.full_name || 'there',
+      to: contact.email,
+      customerName: contact.name || 'there',
       tierName: tierDisplayNames[previousTier || 'pro'] || 'Pro',
       accessEndDate,
     })
@@ -341,10 +355,10 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const supabaseAdmin = getSupabaseAdmin()
   const customerId = invoice.customer as string
 
-  // Get user by Stripe customer ID - include full name and tier for email
+  // Get user by Stripe customer ID - include tier for the email
   const { data: profile } = await supabaseAdmin
     .from('user_profiles')
-    .select('id, email, full_name, subscription_tier')
+    .select('id, subscription_tier')
     .eq('stripe_customer_id', customerId)
     .single()
 
@@ -370,7 +384,8 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   log.warn('Payment failed', { userId: profile.id, invoiceId: invoice.id })
 
   // Send payment failed email
-  if (profile.email) {
+  const contact = await getCustomerContact(customerId)
+  if (contact.email) {
     // Generate Stripe customer portal URL for updating payment method
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
@@ -378,8 +393,8 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     })
 
     await sendPaymentFailedEmail({
-      to: profile.email,
-      customerName: profile.full_name || 'there',
+      to: contact.email,
+      customerName: contact.name || 'there',
       tierName: tierDisplayNames[profile.subscription_tier || 'pro'] || 'Pro',
       portalUrl: portalSession.url,
     })
