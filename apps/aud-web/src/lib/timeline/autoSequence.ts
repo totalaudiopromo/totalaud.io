@@ -64,6 +64,13 @@ const RELEASE_SEQUENCE: SequenceTemplate[] = [
     description: 'Share links, thank supporters',
   },
   {
+    offsetDays: 5,
+    lane: 'post-release',
+    title: 'Thank who supported it',
+    description:
+      'Message the curators and press who added or covered it, and log what happened in Follow-ups',
+  },
+  {
     offsetDays: 7,
     lane: 'post-release',
     title: 'Week 1 recap',
@@ -73,7 +80,13 @@ const RELEASE_SEQUENCE: SequenceTemplate[] = [
     offsetDays: 14,
     lane: 'post-release',
     title: 'Follow-up outreach',
-    description: "Re-pitch to contacts who didn't respond",
+    description: "Re-pitch to contacts who didn't respond, then log the outcomes",
+  },
+  {
+    offsetDays: 21,
+    lane: 'post-release',
+    title: 'Review what worked',
+    description: 'Read The picture in Scout and note what to repeat next release',
   },
 ]
 
@@ -90,19 +103,22 @@ const RELEASE_SEQUENCE: SequenceTemplate[] = [
  * events.forEach(event => await addEvent(event))
  * ```
  */
-export function generateReleaseSequence(releaseDate: Date): NewTimelineEvent[] {
+export function generateReleaseSequence(releaseDate: Date, trackName?: string): NewTimelineEvent[] {
   return RELEASE_SEQUENCE.map((template) => {
     const eventDate = new Date(releaseDate)
     eventDate.setDate(eventDate.getDate() + template.offsetDays)
 
+    const isReleaseDay = template.offsetDays === 0
+    const title = isReleaseDay && trackName ? `Release day: ${trackName}` : template.title
+
     return {
       lane: template.lane,
-      title: template.title,
+      title,
       date: eventDate.toISOString(),
       colour: getLaneColour(template.lane),
       description: template.description,
       source: 'manual' as const,
-      tags: ['auto-generated'],
+      tags: trackName ? ['auto-generated', trackName] : ['auto-generated'],
     }
   })
 }

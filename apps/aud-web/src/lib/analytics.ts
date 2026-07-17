@@ -29,7 +29,14 @@ export function initAnalytics(): void {
   initialised = true
 }
 
-type AnalyticsEvent = 'waitlist_joined' | 'finish_track_analysed' | 'finishing_notes_generated'
+type AnalyticsEvent =
+  | 'waitlist_joined'
+  | 'finish_track_analysed'
+  | 'finishing_notes_generated'
+  | 'outcome_logged'
+  | 'intel_summary_generated'
+  | 'release_plan_created'
+  | 'consistency_checked'
 
 export function capture(event: AnalyticsEvent, properties?: Record<string, unknown>): void {
   if (!initialised) return

@@ -11,7 +11,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePitchStore, type CoachAction } from '@/stores/usePitchStore'
@@ -26,6 +26,7 @@ import { StaggeredEntrance } from '@/components/ui/StaggeredEntrance'
 import { PITCH_TYPES } from './PitchUtils'
 import { PitchStepSelection } from './PitchStepSelection'
 import { PitchSection } from './PitchSection'
+import { ConsistencyCheck } from './ConsistencyCheck'
 
 export function PitchCanvas() {
   const { pitchCopied } = useToast()
@@ -164,6 +165,14 @@ export function PitchCanvas() {
             />
           ))}
         </StaggeredEntrance>
+
+        {/* Tone guardian: check the draft against the saved identity */}
+        <ConsistencyCheck
+          draft={sections
+            .map((s) => s.content.trim())
+            .filter(Boolean)
+            .join('\n\n')}
+        />
       </div>
 
       {/* AI Coach sidebar - Intelligence Navigator (Phase 1.5) */}

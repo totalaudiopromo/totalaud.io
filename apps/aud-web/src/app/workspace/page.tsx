@@ -124,6 +124,10 @@ const CuratedContactsGrid = dynamic(
     })),
   { ssr: false, loading: () => <ModeLoadingShimmer /> }
 )
+const IntelPanel = dynamic(
+  () => import('@/components/workspace/scout').then((m) => ({ default: m.IntelPanel })),
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
+)
 const FinishCanvas = dynamic(
   () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishCanvas })),
   { ssr: false, loading: () => <ModeLoadingShimmer /> }
@@ -161,8 +165,16 @@ function WorkspaceContent() {
     modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'ideas'
   )
 
+  // Keep mode in step with the URL so cross-mode hand-offs (router.push from
+  // CrossModePrompt, Finish → Timeline) and browser back/forward land properly
+  useEffect(() => {
+    if (modeParam && modeParam !== mode && MODES.find((m) => m.key === modeParam)?.available) {
+      setMode(modeParam)
+    }
+  }, [modeParam, mode])
+
   // Scout sub-tab (discover opportunities vs curated contacts)
-  const [scoutTab, setScoutTab] = useState<'discover' | 'contacts'>('discover')
+  const [scoutTab, setScoutTab] = useState<'discover' | 'contacts' | 'follow-ups'>('discover')
 
   // Checkout status state (success, error, cancelled)
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false)
@@ -323,7 +335,7 @@ function WorkspaceContent() {
                 paddingLeft: 16,
               }}
             >
-              {(['discover', 'contacts'] as const).map((tab) => (
+              {(['discover', 'contacts', 'follow-ups'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setScoutTab(tab)}
@@ -343,7 +355,7 @@ function WorkspaceContent() {
                     transition: 'color 0.15s',
                   }}
                 >
-                  {tab === 'discover' ? 'Discover' : 'Contacts'}
+                  {tab === 'discover' ? 'Discover' : tab === 'contacts' ? 'Contacts' : 'Follow-ups'}
                 </button>
               ))}
             </div>
@@ -357,9 +369,13 @@ function WorkspaceContent() {
                 </div>
                 <OpportunityDetailPanel />
               </>
-            ) : (
+            ) : scoutTab === 'contacts' ? (
               <div style={{ flex: 1, minHeight: 0 }}>
                 <CuratedContactsGrid />
+              </div>
+            ) : (
+              <div style={{ flex: 1, minHeight: 0 }}>
+                <IntelPanel />
               </div>
             )}
           </div>
