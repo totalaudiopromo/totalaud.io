@@ -303,6 +303,102 @@ function SummarySection() {
   )
 }
 
+function WhatWorkedSection() {
+  const whatWorked = useIntelStore((s) => s.whatWorked)
+  const headline = useIntelStore((s) => s.whatWorkedHeadline)
+  const whatWorkedStatus = useIntelStore((s) => s.whatWorkedStatus)
+  const whatWorkedError = useIntelStore((s) => s.whatWorkedError)
+  const generateWhatWorked = useIntelStore((s) => s.generateWhatWorked)
+
+  return (
+    <section className="space-y-3">
+      <div className="space-y-1">
+        <h4 className="text-xs font-medium text-ta-white/50 border-b border-ta-white/[0.06] pb-1.5">
+          What worked
+        </h4>
+        <p className="text-xs text-ta-white/40 leading-relaxed pt-1">
+          The release retrospective, from your own numbers. Patterns worth repeating.
+        </p>
+      </div>
+
+      {whatWorkedStatus === 'idle' && (
+        <button
+          onClick={generateWhatWorked}
+          className="px-4 py-2.5 rounded-ta-sm border border-ta-cyan/30 text-ta-cyan text-xs font-medium hover:border-ta-cyan/60 transition-colors"
+        >
+          Review what worked
+        </button>
+      )}
+
+      {whatWorkedStatus === 'generating' && (
+        <div className="space-y-2.5">
+          <p className="text-xs text-ta-white/50">Reading your history…</p>
+          <SkeletonLine width="85%" delay={0} />
+          <SkeletonLine width="70%" delay={0.15} />
+          <SkeletonLine width="78%" delay={0.3} />
+        </div>
+      )}
+
+      {whatWorkedStatus === 'unavailable' && (
+        <p className="text-xs text-ta-white/35 leading-relaxed">
+          The retrospective connects when TAP is linked.
+        </p>
+      )}
+
+      {whatWorkedStatus === 'empty' && (
+        <p className="text-xs text-ta-white/40 leading-relaxed">
+          Not enough history yet{headline ? ` (${headline})` : ''}. Log outcomes as pitches land and
+          this becomes your release retrospective.
+        </p>
+      )}
+
+      {whatWorkedStatus === 'error' && (
+        <div className="space-y-2">
+          <p className="text-xs text-ta-white/40 leading-relaxed">{whatWorkedError}</p>
+          <button
+            onClick={generateWhatWorked}
+            className="px-3 py-1.5 rounded-ta-sm border border-ta-white/[0.12] text-ta-white/60 text-xs hover:border-ta-white/25 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
+      {whatWorkedStatus === 'ready' && whatWorked && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={NORMAL_TRANSITION}
+          className="space-y-3"
+        >
+          {headline && <p className="text-[11px] font-mono text-ta-cyan/70">{headline}</p>}
+          <p className="text-xs text-ta-white/70 leading-relaxed">{whatWorked.summary}</p>
+          <div className="space-y-2">
+            {whatWorked.patterns.map((pattern, i) => (
+              <div
+                key={i}
+                className="rounded-ta-sm border border-ta-white/[0.06] bg-ta-panel/50 p-3 space-y-1.5"
+              >
+                <p className="text-xs text-ta-white/80 leading-relaxed">{pattern.observation}</p>
+                <p className="text-xs text-ta-white/50 leading-relaxed">
+                  <span className="text-ta-cyan/70">Worth considering:</span>{' '}
+                  {pattern.worth_considering}
+                </p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={generateWhatWorked}
+            className="text-[11px] text-ta-white/40 hover:text-ta-white/70 transition-colors"
+          >
+            Refresh
+          </button>
+        </motion.div>
+      )}
+    </section>
+  )
+}
+
 export function IntelPanel() {
   const loadQueue = useIntelStore((s) => s.loadQueue)
 
@@ -315,6 +411,7 @@ export function IntelPanel() {
       <div className="mx-auto max-w-2xl space-y-8">
         <QueueSection />
         <SummarySection />
+        <WhatWorkedSection />
       </div>
     </div>
   )
