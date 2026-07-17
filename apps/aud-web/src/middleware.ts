@@ -163,6 +163,14 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Finish is the primary pillar — give it a canonical /finish entry point
+  // that opens the workspace straight into Finish mode. (useSearchParams reads
+  // the browser URL, so a redirect that carries ?mode=finish is what actually
+  // selects the mode; a silent rewrite would fall back to the default.)
+  if (pathname === '/finish') {
+    return NextResponse.redirect(new URL('/workspace?mode=finish', request.url))
+  }
+
   // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)
   const ip =
     request.headers.get('cf-connecting-ip') ||
