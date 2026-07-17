@@ -1,11 +1,13 @@
 /**
  * totalaud.io — Waiting List
  *
- * Product is paused (21 May 2026). This page captures interest and
- * back-links to TAP (totalaudiopromo.com). The full app remains live
- * behind auth for existing users.
+ * Artist-first recommitment (July 2026, see docs/STRATEGY_2026.md).
+ * This page captures interest while sign-ups are paused and back-links
+ * to TAP (totalaudiopromo.com). The full app remains live behind auth
+ * for existing users.
  *
- * SEO targets: "music PR for labels", "label release management", "indie label tools"
+ * SEO targets: "finish your music", "release planning for independent artists",
+ * "second opinion before release"
  */
 
 import { WaitlistLanding } from '@/components/landing/WaitlistLanding'
@@ -13,23 +15,23 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'totalaud.io — Coming soon for indie labels',
+  title: 'totalaud.io — A calm second opinion for independent artists',
   description:
-    'A workspace for indie record labels — release management, asset packaging, and campaign briefing. Join the waiting list.',
+    'Finish your music, plan the release, and reach the right people — with your audio never leaving your device. Join the waiting list.',
   openGraph: {
-    title: 'totalaud.io — Coming soon for indie labels',
+    title: 'totalaud.io — A calm second opinion for independent artists',
     description:
-      'Music PR for labels. Release management, asset packaging, campaign briefing — without the spreadsheets. Join the waiting list.',
+      'Finishing notes, release planning, and relationship memory for independent artists. No scores, no hype — just what matters. Join the waiting list.',
     type: 'website',
     url: 'https://totalaud.io',
   },
   keywords: [
-    'music PR for labels',
-    'label release management',
-    'indie label tools',
-    'release campaign planning',
-    'music campaign briefing',
-    'indie label workspace',
+    'finish your music',
+    'release planning for independent artists',
+    'second opinion before release',
+    'music release checklist',
+    'independent artist tools',
+    'playlist pitching alternative',
   ],
   alternates: {
     canonical: 'https://totalaud.io',
@@ -44,7 +46,7 @@ export default async function Page() {
 
   // Existing users keep access to the app
   if (session) {
-    redirect('/console')
+    redirect('/workspace')
   }
 
   return <WaitlistLanding />

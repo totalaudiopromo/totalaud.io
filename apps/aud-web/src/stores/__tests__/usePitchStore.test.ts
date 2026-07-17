@@ -260,33 +260,4 @@ describe('usePitchStore', () => {
       expect(newResult.current.drafts.some((d) => d.name === 'Persisted Draft')).toBe(true)
     })
   })
-
-  describe('TAP Integration', () => {
-    it('should open TAP modal', () => {
-      const { result } = renderHook(() => usePitchStore())
-
-      act(() => {
-        result.current.openTAPModal()
-      })
-
-      expect(result.current.isTAPModalOpen).toBe(true)
-    })
-
-    it('should close TAP modal', () => {
-      const { result } = renderHook(() => usePitchStore())
-
-      act(() => {
-        result.current.openTAPModal()
-        result.current.closeTAPModal()
-      })
-
-      expect(result.current.isTAPModalOpen).toBe(false)
-    })
-
-    it('should track TAP generation status', () => {
-      const { result } = renderHook(() => usePitchStore())
-
-      expect(result.current.tapGenerationStatus).toBe('idle')
-    })
-  })
 })

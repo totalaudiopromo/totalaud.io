@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { WebVitalsInit } from '@/components/WebVitalsInit'
+import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 import { FlowCoreThemeProvider } from '@/providers/FlowCoreThemeProvider'
 import { QueryProvider } from '@/lib/react-query'
 import { JsonLd } from '@/components/seo'
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
         <JsonLd schema={organizationSchema} id="organization-schema" />
+        <AnalyticsProvider />
         <QueryProvider>{children}</QueryProvider>
         <WebVitalsInit />
       </FlowCoreThemeProvider>

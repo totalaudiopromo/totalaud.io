@@ -22,7 +22,6 @@ function formatFileSize(bytes: number): string {
 
 export function UploadZone() {
   const setFile = useFinishStore((s) => s.setFile)
-  const analyze = useFinishStore((s) => s.analyze)
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -48,9 +47,9 @@ export function UploadZone() {
       }
 
       setFile(file)
-      // Auto-start analysis
+      // Auto-start analysis (runs locally in the browser)
       setTimeout(() => {
-        useFinishStore.getState().analyze()
+        useFinishStore.getState().analyse(file)
       }, 100)
     },
     [setFile]
@@ -147,6 +146,10 @@ export function UploadZone() {
         <p className="mt-6 text-ta-white/30 text-xs text-center leading-relaxed max-w-xs mx-auto">
           Your track will be analysed for loudness, dynamics, stereo width, and spectral balance
           with genre-aware suggestions.
+        </p>
+
+        <p className="mt-2 text-ta-white/30 text-xs text-center leading-relaxed max-w-xs mx-auto">
+          Your audio never leaves this device — analysis runs in your browser.
         </p>
       </motion.div>
     </div>

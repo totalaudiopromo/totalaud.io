@@ -64,7 +64,7 @@ export default function PrivacyPage() {
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
-          Last updated: November 2025
+          Last updated: July 2026
         </p>
 
         <div
@@ -78,6 +78,44 @@ export default function PrivacyPage() {
             fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
           }}
         >
+          <section>
+            <h2
+              style={{
+                fontSize: '20px',
+                fontWeight: 600,
+                marginBottom: '16px',
+                color: '#F7F8F9',
+              }}
+            >
+              Our Commitments
+            </h2>
+            <p>Before the detail, the commitments that shape how totalaud.io is built:</p>
+            <ul style={{ marginTop: '12px', paddingLeft: '24px' }}>
+              <li>
+                <strong>Your audio never leaves your device.</strong> Track analysis in Finish mode
+                runs in your browser. Only the resulting measurements — numbers, not sound — are
+                sent to our servers.
+              </li>
+              <li>
+                <strong>We never train AI models on your data.</strong> Not your music, not your
+                ideas, not your contacts. Ever.
+              </li>
+              <li>
+                <strong>Nothing sends without you.</strong> totalaud.io never emails, pitches or
+                posts on your behalf. You always press send.
+              </li>
+              <li>
+                <strong>Your work is yours to take.</strong> You can export your data and delete
+                your account at any time.
+              </li>
+              <li>
+                <strong>Independent-owned.</strong> totalaud.io is owned by Total Audio Promo Ltd,
+                an independent UK company — your data is never shared with or sold to labels,
+                distributors or data brokers.
+              </li>
+            </ul>
+          </section>
+
           <section>
             <h2
               style={{

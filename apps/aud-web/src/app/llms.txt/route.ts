@@ -9,7 +9,6 @@ export function GET() {
 
 ## What it does
 - [Workspace modes](/workspace) -- Ideas, Scout, Timeline, Pitch, Finish
-- [Console](/console) -- AI-powered intelligence, threads, automations
 - [Pricing](/pricing) -- Free, Starter (GBP5/mo), Pro (GBP19/mo), Power (GBP79/mo)
 
 ## Who it's for
@@ -23,11 +22,11 @@ export function GET() {
 - Artists looking for distribution or playlist pitching services
 
 ## Key features
-- AI-powered contact discovery and enrichment
-- Pitch coaching and AI draft generation
+- Contact discovery and enrichment
+- Pitch coaching and drafting
 - Release timeline planning
-- Audio mastering (Finish mode)
-- Campaign tracking and analytics
+- Finishing notes on your tracks (Finish mode)
+- Release outcome tracking
 
 ## Guides
 - [Compare music PR tools](/compare)

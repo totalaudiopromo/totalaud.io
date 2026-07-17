@@ -7,7 +7,6 @@
  *
  * Integrates with:
  * - Local AI Coach (Claude) for section-level improvements
- * - TAP Pitch service for full pitch generation from metadata
  */
 
 'use client'

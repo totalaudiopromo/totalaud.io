@@ -138,8 +138,7 @@ export function OrchestrationProvider({ children, campaignId }: OrchestrationPro
           },
         })
 
-        // In real implementation, POST to /api/agents/tracker
-        // For now, just update local state
+        // Local state only — there is no server-side tracker endpoint
 
         toast.success('outreach logged to tracker', {
           description: `${newLog.contact_name || 'Contact'} — ${newLog.asset_ids.length} asset${newLog.asset_ids.length === 1 ? '' : 's'}`,

@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     log.debug('Calling Claude', { questionPreview: question.substring(0, 50) })
 
     const message = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-haiku-4-5',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [

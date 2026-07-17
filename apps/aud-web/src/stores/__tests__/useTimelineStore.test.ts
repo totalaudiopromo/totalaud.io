@@ -251,43 +251,4 @@ describe('useTimelineStore', () => {
       expect(newResult.current.events.some((e) => e.title === 'Persisted Event')).toBe(true)
     })
   })
-
-  describe('Tracker Integration', () => {
-    it('should check if event is synced to Tracker', async () => {
-      const { result } = renderHook(() => useTimelineStore())
-      let eventId: string
-
-      await act(async () => {
-        await result.current.clearSampleEvents()
-        eventId = await result.current.addEvent({
-          lane: 'post-release',
-          title: 'Test Event',
-          date: '2024-06-01',
-          colour: '#10B981',
-          source: 'manual',
-        })
-      })
-
-      expect(result.current.isEventSynced(eventId!)).toBe(false)
-    })
-
-    it('should get tracker sync status', async () => {
-      const { result } = renderHook(() => useTimelineStore())
-      let eventId: string
-
-      await act(async () => {
-        await result.current.clearSampleEvents()
-        eventId = await result.current.addEvent({
-          lane: 'post-release',
-          title: 'Test Event',
-          date: '2024-06-01',
-          colour: '#10B981',
-          source: 'manual',
-        })
-      })
-
-      const status = result.current.getTrackerSyncStatus(eventId!)
-      expect(['idle', 'syncing', 'synced', 'error']).toContain(status)
-    })
-  })
 })

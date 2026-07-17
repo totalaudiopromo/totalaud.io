@@ -6,7 +6,6 @@
  * A Zustand store for managing timeline events across 5 swim lanes with:
  * - Supabase sync for authenticated users
  * - localStorage fallback for unauthenticated users
- * - TAP Tracker integration for campaign logging
  */
 
 import { create } from 'zustand'
@@ -18,7 +17,6 @@ import type {
   NewTimelineEvent,
   TimelineEventUpdate,
   LaneType,
-  TrackerSyncStatus,
 } from '@/types/timeline'
 import { SAMPLE_EVENTS, generateEventId, getLaneColour } from '@/types/timeline'
 import type { Opportunity } from '@/types/scout'
@@ -46,10 +44,6 @@ interface TimelineState {
   selectedEventId: string | null
   viewScale: ViewScale
 
-  // TAP Tracker sync state (per-event)
-  trackerSyncStatusById: Record<string, TrackerSyncStatus>
-  trackerSyncErrorById: Record<string, string>
-
   // Supabase sync state
   isLoading: boolean
   isSyncing: boolean
@@ -71,11 +65,6 @@ interface TimelineState {
 
   // Auto-sequence generation
   generateFromReleaseDate: (releaseDate: Date) => Promise<void>
-
-  // TAP Tracker integration
-  syncToTracker: (eventId: string) => Promise<void>
-  getTrackerSyncStatus: (eventId: string) => TrackerSyncStatus
-  isEventSynced: (eventId: string) => boolean
 
   // Supabase sync actions
   loadFromSupabase: () => Promise<void>
@@ -163,10 +152,6 @@ export const useTimelineStore = create<TimelineState>()(
       error: null,
       selectedEventId: null,
       viewScale: 'weeks' as ViewScale,
-
-      // TAP Tracker sync state
-      trackerSyncStatusById: {},
-      trackerSyncErrorById: {},
 
       // Supabase sync state
       isLoading: false,
@@ -383,120 +368,6 @@ export const useTimelineStore = create<TimelineState>()(
         })
       },
 
-      // ========== TAP Tracker Integration ==========
-
-      syncToTracker: async (eventId: string) => {
-        const state = get()
-        const event = state.events.find((e) => e.id === eventId)
-
-        if (!event) {
-          log.error('Event not found', { eventId })
-          return
-        }
-
-        if (event.source === 'sample') {
-          set((s) => ({
-            trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'error' },
-            trackerSyncErrorById: {
-              ...s.trackerSyncErrorById,
-              [eventId]: 'Cannot sync sample events',
-            },
-          }))
-          return
-        }
-
-        if (event.trackerCampaignId) {
-          set((s) => ({
-            trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'synced' },
-          }))
-          return
-        }
-
-        set((s) => ({
-          trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'syncing' },
-          trackerSyncErrorById: { ...s.trackerSyncErrorById, [eventId]: '' },
-        }))
-
-        try {
-          const response = await fetch('/api/tap/campaigns', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: event.title,
-              status: 'active',
-              notes: `Lane: ${event.lane}${event.description ? ` — ${event.description}` : ''}`,
-              start_date: event.date,
-            }),
-          })
-
-          const data = await response.json()
-
-          if (!response.ok || !data.success) {
-            throw new Error(data.error?.message || 'Failed to sync to Tracker')
-          }
-
-          const campaignId = data.data?.campaign?.id
-          if (!campaignId) {
-            throw new Error('Tracker returned no campaign ID')
-          }
-          const syncedAt = new Date().toISOString()
-
-          set((s) => ({
-            events: s.events.map((e) =>
-              e.id === eventId
-                ? {
-                    ...e,
-                    trackerCampaignId: campaignId,
-                    trackerSyncedAt: syncedAt,
-                    updatedAt: syncedAt,
-                  }
-                : e
-            ),
-            trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'synced' },
-          }))
-
-          // Also update in Supabase
-          const supabase = createBrowserSupabaseClient()
-          const {
-            data: { user },
-          } = await supabase.auth.getUser()
-
-          if (user) {
-            await supabase
-              .from('user_timeline_events')
-              .update({
-                tracker_campaign_id: campaignId,
-                tracker_synced_at: syncedAt,
-                updated_at: syncedAt,
-              })
-              .eq('id', eventId)
-              .eq('user_id', user.id)
-          }
-        } catch (error) {
-          log.error('Tracker sync error', error)
-          set((s) => ({
-            trackerSyncStatusById: { ...s.trackerSyncStatusById, [eventId]: 'error' },
-            trackerSyncErrorById: {
-              ...s.trackerSyncErrorById,
-              [eventId]: error instanceof Error ? error.message : 'Sync failed',
-            },
-          }))
-        }
-      },
-
-      getTrackerSyncStatus: (eventId: string): TrackerSyncStatus => {
-        const state = get()
-        const event = state.events.find((e) => e.id === eventId)
-        if (event?.trackerCampaignId) return 'synced'
-        return state.trackerSyncStatusById[eventId] || 'idle'
-      },
-
-      isEventSynced: (eventId: string): boolean => {
-        const state = get()
-        const event = state.events.find((e) => e.id === eventId)
-        return !!event?.trackerCampaignId
-      },
-
       // ========== Supabase Sync Actions ==========
 
       loadFromSupabase: async () => {
@@ -635,23 +506,6 @@ export const selectEventCountByLane = (state: TimelineState): Record<LaneType, n
 
 export const selectScoutEvents = (state: TimelineState): TimelineEvent[] => {
   return state.events.filter((event) => event.source === 'scout')
-}
-
-export const selectSyncedEvents = (state: TimelineState): TimelineEvent[] => {
-  return state.events.filter((event) => !!event.trackerCampaignId)
-}
-
-export const selectTrackerSyncStatus = (
-  state: TimelineState,
-  eventId: string
-): TrackerSyncStatus => {
-  const event = state.events.find((e) => e.id === eventId)
-  if (event?.trackerCampaignId) return 'synced'
-  return state.trackerSyncStatusById[eventId] || 'idle'
-}
-
-export const selectTrackerSyncError = (state: TimelineState, eventId: string): string | null => {
-  return state.trackerSyncErrorById[eventId] || null
 }
 
 export const selectSyncStatus = (state: TimelineState) => ({

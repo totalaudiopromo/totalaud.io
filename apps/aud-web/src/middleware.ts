@@ -7,7 +7,6 @@
  *
  * Rate limits by route pattern:
  * - /api/pitch/*: 10 req/min (AI-heavy)
- * - /api/tap/*: 20 req/min (external API calls)
  * - /api/scout: 30 req/min (database queries)
  * - /api/*: 60 req/min (default)
  *
@@ -51,7 +50,7 @@ function cleanupExpiredEntries() {
 // Rate limit configuration per route pattern
 const RATE_LIMITS: { pattern: RegExp; limit: number; windowMs: number }[] = [
   { pattern: /^\/api\/pitch\//, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
-  { pattern: /^\/api\/tap\//, limit: 20, windowMs: 60 * 1000 }, // 20/min for TAP routes
+  { pattern: /^\/api\/finish\/perspectives/, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
   { pattern: /^\/api\/scout/, limit: 30, windowMs: 60 * 1000 }, // 30/min for Scout
   { pattern: /^\/api\//, limit: 60, windowMs: 60 * 1000 }, // 60/min default
 ]
@@ -112,7 +111,7 @@ function buildCspHeader(): string {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://*.google.com https://*.googleusercontent.com https://*.stripe.com https://*.google-analytics.com https://*.googletagmanager.com",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://*.googleapis.com https://*.google-analytics.com https://*.googletagmanager.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.ingest.us.sentry.io",
+    "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.stripe.com https://api.anthropic.com https://accounts.google.com https://*.googleapis.com https://*.google-analytics.com https://*.googletagmanager.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.ingest.us.sentry.io https://eu.posthog.com https://*.i.posthog.com",
     "worker-src 'self' blob:",
     "frame-src 'self' https://*.stripe.com https://accounts.google.com",
     "object-src 'none'",
@@ -134,6 +133,11 @@ const staticSecurityHeaders = {
 // Middleware
 // ============================================================================
 
+// Label OS is parked (July 2026 artist-first recommitment, docs/STRATEGY_2026.md §8).
+// Flip NEXT_PUBLIC_ENABLE_LABEL_OS=true to revive. Pre-park state: commit 68c2cf4.
+// Code and tables are intentionally kept intact.
+const LABEL_OS_ENABLED = process.env.NEXT_PUBLIC_ENABLE_LABEL_OS === 'true'
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -144,6 +148,19 @@ export function middleware(request: NextRequest) {
     pathname.includes('.') // Skip files with extensions (images, etc.)
   ) {
     return NextResponse.next()
+  }
+
+  // Label OS gate — parked while the flag is off
+  if (!LABEL_OS_ENABLED) {
+    if (pathname === '/label' || pathname.startsWith('/label/')) {
+      return NextResponse.redirect(new URL('/workspace', request.url))
+    }
+    if (pathname.startsWith('/api/label/')) {
+      return NextResponse.json(
+        { success: false, error: { code: 'NOT_FOUND', message: 'Not found' } },
+        { status: 404, headers: staticSecurityHeaders }
+      )
+    }
   }
 
   // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)

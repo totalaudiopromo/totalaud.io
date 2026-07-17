@@ -2,8 +2,8 @@
  * AnalysingView
  *
  * Multi-step animated progress during audio analysis.
- * Simulates step progression on a timer since the backend
- * returns all results in one response.
+ * Analysis runs locally in the browser — the audio never leaves the
+ * device. Steps advance on a timer since the analysis completes in one go.
  */
 
 'use client'
@@ -17,12 +17,12 @@ interface AnalysingViewProps {
 }
 
 const STEPS = [
-  'Reading audio file',
+  'Reading audio file on your device',
   'Measuring loudness',
   'Checking dynamics',
   'Analysing stereo image',
   'Scanning spectral balance',
-  'Generating finishing notes',
+  'Preparing results',
 ] as const
 
 const STEP_INTERVAL = 1400

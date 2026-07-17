@@ -57,7 +57,7 @@ export function ProcessingStatus() {
   const reset = useFinishStore((s) => s.reset)
   const error = useFinishStore((s) => s.error)
   const fileName = useFinishStore((s) => s.fileName)
-  const analyze = useFinishStore((s) => s.analyze)
+  const analyse = useFinishStore((s) => s.analyse)
   const process = useFinishStore((s) => s.process)
 
   if (stage === 'analysing') {
@@ -100,8 +100,8 @@ export function ProcessingStatus() {
                   // Had analysis, so error was during processing -- retry process
                   process()
                 } else {
-                  // Error was during analysis -- retry analysis
-                  analyze()
+                  // Error was during analysis -- retry analysis (in the browser)
+                  analyse()
                 }
               }}
               className="w-full sm:w-auto flex-1 px-4 py-2.5 rounded-ta-sm bg-ta-cyan text-ta-black text-xs font-medium hover:bg-ta-cyan/90 transition-colors"

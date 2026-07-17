@@ -3,49 +3,39 @@ import { persist } from 'zustand/middleware'
 import {
   PitchType,
   CoachAction,
-  TAPTone,
-  TAPGenerationStatus,
   CoachingMode,
   CoachingPhase,
   CoachingMessage,
-  TAPPitchRequest,
-  TAPPitchResult,
   PitchSection,
   PitchDraft,
 } from './pitch/types'
 import { createDraftsSlice, DraftsSlice } from './pitch/draftsSlice'
 import { createCoachSlice, CoachSlice } from './pitch/coachSlice'
-import { createTAPSlice, TAPSlice } from './pitch/tapSlice'
 
 // Re-export types for backward compatibility
 export type {
   PitchType,
   CoachAction,
-  TAPTone,
-  TAPGenerationStatus,
   CoachingMode,
   CoachingPhase,
   CoachingMessage,
-  TAPPitchRequest,
-  TAPPitchResult,
   PitchSection,
   PitchDraft,
 }
 
-export interface PitchState extends DraftsSlice, CoachSlice, TAPSlice {}
+export interface PitchState extends DraftsSlice, CoachSlice {}
 
 /**
  * Pitch Mode Store
  *
  * Refactored in Feb 2026 into modular slices for better maintainability.
- * Combines Draft management, AI Coaching, and TAP Generation.
+ * Combines Draft management and AI Coaching.
  */
 export const usePitchStore = create<PitchState>()(
   persist(
     (...a) => ({
       ...createDraftsSlice(...a),
       ...createCoachSlice(...a),
-      ...createTAPSlice(...a),
     }),
     {
       name: 'totalaud-pitch-store',
@@ -68,13 +58,6 @@ export const selectHasContent = (state: PitchState): boolean => {
 export const selectDraftCount = (state: PitchState): number => {
   return state.drafts.length
 }
-
-export const selectTAPStatus = (state: PitchState) => ({
-  status: state.tapGenerationStatus,
-  result: state.tapPitchResult,
-  error: state.tapError,
-  isModalOpen: state.isTAPModalOpen,
-})
 
 export const selectSyncStatus = (state: PitchState) => ({
   isLoading: state.isLoading,

@@ -2,7 +2,7 @@
  * Pitch Store Types
  *
  * Type definitions for the Pitch Mode store.
- * Includes coaching, TAP integration, and draft management.
+ * Includes coaching and draft management.
  */
 
 // ============================================================================
@@ -11,8 +11,6 @@
 
 export type PitchType = 'radio' | 'press' | 'playlist' | 'custom'
 export type CoachAction = 'improve' | 'suggest' | 'rewrite'
-export type TAPTone = 'casual' | 'professional' | 'enthusiastic'
-export type TAPGenerationStatus = 'idle' | 'loading' | 'success' | 'error'
 
 // Intelligence Navigator types
 export type CoachingMode = 'quick' | 'guided'
@@ -25,24 +23,6 @@ export interface CoachingMessage {
   timestamp: string
   sectionId?: string
   suggestions?: string[]
-}
-
-export interface TAPPitchRequest {
-  artistName: string
-  trackTitle: string
-  genre?: string
-  trackLink?: string
-  releaseDate?: string
-  keyHook: string
-  tone?: TAPTone
-}
-
-export interface TAPPitchResult {
-  subject?: string
-  body: string
-  signature?: string
-  confidence?: 'High' | 'Medium' | 'Low'
-  generatedAt: string
 }
 
 export interface PitchSection {
@@ -113,21 +93,6 @@ export interface PitchNavigatorState {
 }
 
 // ============================================================================
-// TAP Integration State
-// ============================================================================
-
-export interface PitchTAPState {
-  /** TAP generation status */
-  tapGenerationStatus: TAPGenerationStatus
-  /** TAP generation result */
-  tapPitchResult: TAPPitchResult | null
-  /** TAP error message */
-  tapError: string | null
-  /** Whether TAP modal is open */
-  isTAPModalOpen: boolean
-}
-
-// ============================================================================
 // Sync State Interface
 // ============================================================================
 
@@ -175,13 +140,6 @@ export interface PitchActions {
   sendSessionMessage: (content: string, sectionId?: string) => Promise<void>
   clearCoachingSession: () => void
 
-  // TAP Integration
-  openTAPModal: () => void
-  closeTAPModal: () => void
-  generateWithTAP: (request: TAPPitchRequest) => Promise<void>
-  applyTAPResult: () => void
-  clearTAPResult: () => void
-
   // Draft Management
   saveDraft: (name: string) => Promise<string>
   loadDraft: (id: string) => void
@@ -200,7 +158,6 @@ export interface PitchActions {
 export type PitchState = PitchStateData &
   PitchCoachState &
   PitchNavigatorState &
-  PitchTAPState &
   PitchSyncState &
   PitchActions
 
@@ -211,7 +168,6 @@ export type PitchState = PitchStateData &
 export const createInitialPitchState = (): PitchStateData &
   PitchCoachState &
   PitchNavigatorState &
-  PitchTAPState &
   PitchSyncState => ({
   currentType: null,
   sections: [],
@@ -228,10 +184,6 @@ export const createInitialPitchState = (): PitchStateData &
   coachingMode: null,
   coachingPhase: null,
   isSessionActive: false,
-  tapGenerationStatus: 'idle',
-  tapPitchResult: null,
-  tapError: null,
-  isTAPModalOpen: false,
   isLoading: false,
   isSyncing: false,
   syncError: null,

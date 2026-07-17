@@ -6,8 +6,6 @@
 
 export type PitchType = 'radio' | 'press' | 'playlist' | 'custom'
 export type CoachAction = 'improve' | 'suggest' | 'rewrite'
-export type TAPTone = 'casual' | 'professional' | 'enthusiastic'
-export type TAPGenerationStatus = 'idle' | 'loading' | 'success' | 'error'
 
 // Intelligence Navigator types (Phase 1.5)
 export type CoachingMode = 'quick' | 'guided'
@@ -20,24 +18,6 @@ export interface CoachingMessage {
   timestamp: string
   sectionId?: string
   suggestions?: string[]
-}
-
-export interface TAPPitchRequest {
-  artistName: string
-  trackTitle: string
-  genre?: string
-  trackLink?: string
-  releaseDate?: string
-  keyHook: string
-  tone?: TAPTone
-}
-
-export interface TAPPitchResult {
-  subject?: string
-  body: string
-  signature?: string
-  confidence?: 'High' | 'Medium' | 'Low'
-  generatedAt: string
 }
 
 export interface PitchSection {

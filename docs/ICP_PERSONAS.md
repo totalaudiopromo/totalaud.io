@@ -1,7 +1,40 @@
 # ICP Personas — totalaud.io
 
 **Purpose**: Realistic customer profiles for understanding how indie artists would use totalaud.io
-**Last Updated**: December 2025
+**Last Updated**: July 2026 (refreshed against market research — see [`STRATEGY_2026.md`](STRATEGY_2026.md))
+
+---
+
+## Primary ICP Statement
+
+**The independent artist with releases behind them and momentum ahead of them** — Maya and
+Marcus are the centre of gravity. They already spend £50–400/month on their music, they've
+been burned by pay-per-pitch promo (Groover credits, playlist placement scams), and what
+they lack isn't tools — it's a trusted second opinion, a visible plan, and memory of who
+actually mattered last time.
+
+The product must also deliver real value at the edges on day one: Chloe (first release,
+guest mode teaches her what a release even involves) and Dev (full-timer, needs the whole
+loop). If a feature only makes sense for one persona, it waits.
+
+### What the July 2026 research changed
+
+- **Pricing validated**: £5 Starter / £19 Pro sits comfortably against what these artists
+  already pay elsewhere (Viberate $19.90, Soundcharts $10–49, DISCO $10, Haulix $22) — and
+  against what they waste per release on pay-per-pitch (~£40 per Groover round, $285+ per
+  PlaylistPush campaign).
+- **The pitching-fatigue pain is sharper than assumed**: an estimated $400M went into
+  playlist promo in 2025 with under 18% reporting measurable ROI; median placement lasts
+  ~11 days. Every persona's promo budget is leaking into a treadmill. totalaud.io's answer
+  is relationship memory, not more submissions.
+- **Trust is a feature**: these artists are sceptical of AI making music and of platforms
+  harvesting their data. "Your audio never leaves your device" (client-side Finish
+  analysis), nothing auto-sends, no scores, export everything — these are ICP requirements,
+  not marketing lines.
+- **New surfaces personas will meet**: Finish perspectives (second opinion on a track
+  before release), the Intel action queue ("worth a follow-up"), the ICS calendar feed
+  (release plan in their actual calendar), smart links per release, and "What worked"
+  release-loop analytics.
 
 ---
 
@@ -501,6 +534,26 @@ honest and unhurried."
 - Must handle "I don't know my sound yet" (Chloe)
 - Must handle "I've levelled up, update my story" (Marcus)
 - Export to clipboard is essential for all
+
+### Finish Mode (perspectives)
+- Maya and Chloe need reassurance framed gently — a second opinion, never a verdict
+- Marcus and Dev need the industry/release-context perspective most ("is this single-ready?")
+- Sarah & James use it to settle disagreements without either being "wrong"
+- All personas: analysis runs in the browser — their unreleased music never leaves
+  their device. This is the trust moment that earns the rest of the product.
+
+### Intel / relationship memory
+- Marcus: "who played the last single?" answered instantly at the next release
+- Sarah & James: folk radio contacts carry across years-apart releases
+- Dev: booking enquiries and label contacts stop living in DMs
+- The action queue ("worth a follow-up") replaces guilt-driven spreadsheet checking —
+  quiet, in-workspace, nothing sends itself
+
+### What worked (analytics)
+- Plain-English answers, not dashboards: "both placements this year came from blog
+  relationships, not cold playlist forms"
+- Maya/Chloe: proof their effort did something (retention through the plateau)
+- Dev: quarterly review material for his manager conversation
 
 ---
 
