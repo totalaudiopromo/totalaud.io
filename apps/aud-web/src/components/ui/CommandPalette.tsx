@@ -115,7 +115,7 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       id: 'settings-account',
       label: 'Account Settings',
       icon: <Settings className="w-4 h-4" />,
-      action: () => router.push('/console/settings'),
+      action: () => router.push('/settings'),
       category: 'settings',
     },
     {

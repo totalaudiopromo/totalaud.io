@@ -47,10 +47,11 @@ export async function POST(request: NextRequest) {
 
     const { tier, currency } = validated.data
 
-    // Get or create Stripe customer
+    // Get or create Stripe customer. Email and name come from the auth user
+    // and artist profile; user_profiles has no email/full_name columns.
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('stripe_customer_id, email, full_name')
+      .select('stripe_customer_id, artist_name')
       .eq('id', user.id)
       .single()
 
@@ -59,8 +60,8 @@ export async function POST(request: NextRequest) {
     if (!customerId) {
       // Create new Stripe customer
       const customer = await stripe.customers.create({
-        email: user.email ?? profile?.email ?? undefined,
-        name: profile?.full_name ?? undefined,
+        email: user.email ?? undefined,
+        name: profile?.artist_name ?? undefined,
         metadata: {
           supabase_user_id: user.id,
         },

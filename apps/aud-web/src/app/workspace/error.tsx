@@ -91,11 +91,11 @@ export default function WorkspaceError({
           </button>
 
           <Link
-            href="/console"
+            href="/workspace"
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2A2D31] text-white rounded-lg font-medium text-sm hover:bg-[#2A2D31]/80 transition-colors min-h-[44px]"
           >
             <Home className="w-4 h-4" />
-            Go to Console
+            Go to Workspace
           </Link>
         </motion.div>
 

@@ -1,23 +1,16 @@
 /**
  * useTrackMemoryDeposit Hook
  *
- * Client-side helper for depositing to Track Memory.
- * Silent, failure-safe, and only deposits when track context exists.
- *
- * Usage:
- *   const { deposit } = useTrackMemoryDeposit()
- *
- *   // Deposit story fragment when pitch is saved
- *   deposit('story_fragment', { content: 'My hook is...' }, 'story')
+ * Client-side helper that used to deposit entries to the console-era
+ * track-memory store (track_memory / track_memory_entries tables). That
+ * store was removed -- it never existed in production -- so deposits are
+ * now silent no-ops. The hook keeps its shape so callers need no changes.
  */
 
 'use client'
 
 import { useCallback } from 'react'
 import { useCurrentTrackId } from './useCurrentTrackId'
-import { logger } from '@/lib/logger'
-
-const log = logger.scope('TrackMemoryDeposit')
 
 type MemoryEntryType =
   | 'intent'
@@ -44,49 +37,19 @@ export function useTrackMemoryDeposit() {
 
   /**
    * Deposit a memory entry.
+   * The persistence layer was removed, so this is a silent no-op.
    * Silent: never throws, always returns boolean.
    */
   const deposit = useCallback(
     async (
-      entryType: MemoryEntryType,
-      payload: Record<string, unknown>,
-      sourceMode?: SourceMode,
-      options?: DepositOptions
+      _entryType: MemoryEntryType,
+      _payload: Record<string, unknown>,
+      _sourceMode?: SourceMode,
+      _options?: DepositOptions
     ): Promise<boolean> => {
-      const requireTrack = options?.requireTrack ?? true
-
-      // Skip if no track context
-      if (!trackId) {
-        log.debug('Deposit skipped: no track context')
-        return false
-      }
-
-      try {
-        const response = await fetch('/api/track-memory/deposit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            trackId,
-            entryType,
-            payload,
-            sourceMode,
-          }),
-        })
-
-        if (!response.ok) {
-          log.debug('Deposit failed: HTTP error', { status: response.status })
-          return false
-        }
-
-        const result = await response.json()
-        return result.deposited === true
-      } catch (error) {
-        // Silent failure
-        log.debug('Deposit failed: network error', { error })
-        return false
-      }
+      return false
     },
-    [trackId]
+    []
   )
 
   /**
