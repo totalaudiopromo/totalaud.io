@@ -55,6 +55,34 @@ Tick items off as they're updated; suggested replacement copy at the bottom.
 
 ---
 
+## Ready-to-send: label waitlist email
+
+Subject: **A change of direction for totalaud.io**
+
+> Hi —
+>
+> You joined the totalaud.io waiting list when it was heading towards being a
+> workspace for indie labels. An honest update: we've changed direction.
+>
+> totalaud.io is now built for independent artists — a calm second opinion
+> before you release. Finishing notes on your tracks (analysed in your
+> browser, so your audio never leaves your device), release planning, and a
+> memory of the people who actually supported your music.
+>
+> If you're an artist as well as running a label, you'll feel right at home —
+> you're still on the list and you'll be first in when we open the doors.
+> If you were here purely for the label tools, no hard feelings: reply
+> "remove me" and we'll delete your details, or just ignore this and we
+> won't email again about it.
+>
+> Thanks for the early interest — it genuinely helped us work out what this
+> should be.
+>
+> Chris
+> totalaud.io / Total Audio Promo
+
+---
+
 ## Suggested replacement copy (short form)
 
 > **totalaud.io** — a calm second opinion for independent artists. Finish your music,

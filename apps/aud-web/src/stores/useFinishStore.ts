@@ -16,6 +16,7 @@
 
 import { create } from 'zustand'
 import { logger } from '@/lib/logger'
+import { capture } from '@/lib/analytics'
 import type { AnalysisResult, Suggestion, JobStatus } from '@/lib/finisher-client'
 import type { FinishingNotes, TrackContext } from '@/lib/finish/perspectives'
 
@@ -54,6 +55,8 @@ interface FinishState {
   // Finishing notes (perspectives)
   trackContext: TrackContext
   finishingNotes: FinishingNotes | null
+  /** Perspectives held back for guests — sign up to unlock. */
+  notesLocked: string[]
   notesStatus: NotesStatus
   notesError: string | null
 
@@ -105,6 +108,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   suggestions: [],
   trackContext: {},
   finishingNotes: null,
+  notesLocked: [],
   notesStatus: 'idle',
   notesError: null,
   selectedPreset: null,
@@ -128,6 +132,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       analysis: null,
       suggestions: [],
       finishingNotes: null,
+      notesLocked: [],
       notesStatus: 'idle',
       notesError: null,
       jobId: null,
@@ -145,6 +150,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       stage: 'analysing',
       error: null,
       finishingNotes: null,
+      notesLocked: [],
       notesStatus: 'idle',
       notesError: null,
     })
@@ -164,6 +170,10 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       log.info('Analysis complete', {
         lufs: analysis.integrated_lufs,
         suggestions: analysis.suggestions?.length,
+      })
+      capture('finish_track_analysed', {
+        duration_seconds: analysis.duration_seconds,
+        qc_passed: analysis.qc_passed,
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Analysis failed'
@@ -199,10 +209,18 @@ export const useFinishStore = create<FinishState>((set, get) => ({
 
       const body = await response.json()
 
-      set({ finishingNotes: body.notes, notesStatus: 'ready' })
+      set({
+        finishingNotes: body.notes,
+        notesLocked: Array.isArray(body.locked) ? body.locked : [],
+        notesStatus: 'ready',
+      })
 
       log.info('Finishing notes ready', {
         perspectives: body.notes?.perspectives?.length,
+      })
+      capture('finishing_notes_generated', {
+        perspectives: body.notes?.perspectives?.length,
+        guest: Boolean(body.guest),
       })
     } catch (error) {
       const message =
@@ -338,6 +356,7 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       suggestions: [],
       trackContext: {},
       finishingNotes: null,
+      notesLocked: [],
       notesStatus: 'idle',
       notesError: null,
       selectedPreset: null,

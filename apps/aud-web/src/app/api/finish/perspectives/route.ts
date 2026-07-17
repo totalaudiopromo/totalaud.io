@@ -20,6 +20,8 @@ import {
   buildSystemPrompt,
   buildUserPrompt,
   parseFinishingNotes,
+  PERSPECTIVE_IDS,
+  type PerspectiveId,
   type TrackContext,
 } from '@/lib/finish/perspectives'
 import type { AnalysisResult } from '@/lib/finisher-client'
@@ -74,8 +76,11 @@ const requestSchema = z.object({
 })
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  // Guests get a real taste before sign-up (STRATEGY_2026 §4, "real value
+  // before sign-up"): the listener perspective, not persisted. Signed-in
+  // artists get all four perspectives, saved to their notes.
   const auth = await requireAuth()
-  if (!auth.ok) return auth.response
+  const isGuest = !auth.ok
 
   let body: z.input<typeof requestSchema>
   try {
@@ -87,17 +92,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const analysis = body.analysis as AnalysisResult
   const context = (body.context ?? {}) as TrackContext
+  const perspectives: readonly PerspectiveId[] = isGuest ? ['listener'] : PERSPECTIVE_IDS
 
   try {
     const result = await completeWithAnthropic(
       [
-        { role: 'system', content: buildSystemPrompt() },
-        { role: 'user', content: buildUserPrompt(analysis, context) },
+        { role: 'system', content: buildSystemPrompt(perspectives) },
+        { role: 'user', content: buildUserPrompt(analysis, context, perspectives) },
       ],
-      { max_tokens: 3000 }
+      { max_tokens: isGuest ? 1200 : 3000 }
     )
 
     const notes = parseFinishingNotes(result.content)
+
+    if (isGuest) {
+      return NextResponse.json({
+        notes,
+        guest: true,
+        locked: PERSPECTIVE_IDS.filter((id) => !perspectives.includes(id)),
+      })
+    }
 
     // Persist quietly — a failed insert should never cost the artist their notes
     const { error: insertError } = await auth.supabase.from('finish_notes').insert({

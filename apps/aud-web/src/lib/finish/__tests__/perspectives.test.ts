@@ -81,6 +81,17 @@ describe('prompt guardrails', () => {
   it('handles empty context gracefully', () => {
     expect(formatContext({})).toBe('No additional context provided.')
   })
+
+  it('guest prompts only request the listener perspective', () => {
+    const system = buildSystemPrompt(['listener'])
+    expect(system).toContain('"perspective": "listener"')
+    expect(system).not.toContain('"perspective": "producer"')
+    expect(system).not.toContain('"perspective": "industry"')
+
+    const user = buildUserPrompt(analysisFixture, {}, ['listener'])
+    expect(user).toContain('listener:')
+    expect(user).not.toContain('producer:')
+  })
 })
 
 describe('parseFinishingNotes', () => {

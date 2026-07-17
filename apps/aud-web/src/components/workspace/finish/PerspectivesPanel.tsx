@@ -189,10 +189,14 @@ function ErrorState() {
 
 function NotesView() {
   const finishingNotes = useFinishStore((s) => s.finishingNotes)
-  const [activeTab, setActiveTab] = useState<PerspectiveId>('producer')
+  const notesLocked = useFinishStore((s) => s.notesLocked)
+  const firstAvailable =
+    PERSPECTIVE_IDS.find((id) => !notesLocked.includes(id)) ?? ('producer' as PerspectiveId)
+  const [activeTab, setActiveTab] = useState<PerspectiveId>(firstAvailable)
 
   if (!finishingNotes) return null
 
+  const isLocked = (id: PerspectiveId) => notesLocked.includes(id)
   const activePerspective = finishingNotes.perspectives.find((p) => p.perspective === activeTab)
 
   return (
@@ -210,6 +214,7 @@ function NotesView() {
       <div className="flex flex-wrap gap-1" role="tablist" aria-label="Perspectives">
         {PERSPECTIVE_IDS.map((id) => {
           const isActive = id === activeTab
+          const locked = isLocked(id)
           return (
             <button
               key={id}
@@ -219,10 +224,13 @@ function NotesView() {
               className={`px-3 py-1.5 rounded-ta-sm text-xs transition-colors ${
                 isActive
                   ? 'bg-ta-cyan/[0.12] text-ta-cyan'
-                  : 'text-ta-white/40 hover:text-ta-white/70'
+                  : locked
+                    ? 'text-ta-white/25 hover:text-ta-white/40'
+                    : 'text-ta-white/40 hover:text-ta-white/70'
               }`}
             >
               {PERSPECTIVE_LABELS[id]}
+              {locked && <span aria-hidden> ·</span>}
             </button>
           )
         })}
@@ -239,7 +247,24 @@ function NotesView() {
           className="space-y-3"
           role="tabpanel"
         >
-          {activePerspective ? (
+          {isLocked(activeTab) ? (
+            <div className="rounded-ta-sm border border-ta-white/[0.06] bg-ta-panel/50 p-4 space-y-2">
+              <p className="text-xs text-ta-white/70 leading-relaxed">
+                The {PERSPECTIVE_LABELS[activeTab].toLowerCase()} perspective is part of the full
+                set of finishing notes.
+              </p>
+              <p className="text-xs text-ta-white/50 leading-relaxed">
+                Create a free account to hear from all four perspectives and keep your notes between
+                sessions.
+              </p>
+              <a
+                href="/signup"
+                className="inline-block px-4 py-2 rounded-ta-sm bg-ta-cyan text-ta-black text-xs font-medium hover:bg-ta-cyan/90 transition-colors"
+              >
+                Sign up free
+              </a>
+            </div>
+          ) : activePerspective ? (
             <>
               <p className="text-xs text-ta-white/70 leading-relaxed">
                 {activePerspective.summary}

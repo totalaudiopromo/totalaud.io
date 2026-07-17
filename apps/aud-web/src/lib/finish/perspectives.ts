@@ -83,7 +83,16 @@ export function formatContext(context: TrackContext): string {
   return parts.length > 0 ? parts.join('\n') : 'No additional context provided.'
 }
 
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(
+  perspectives: readonly PerspectiveId[] = PERSPECTIVE_IDS
+): string {
+  const perspectiveLines = perspectives
+    .map(
+      (id, index) =>
+        `    { "perspective": "${id}", "summary": "${index === 0 ? 'one-sentence overall read' : '...'}", "notes": [ ${index === 0 ? '{ "observation": "...", "worth_considering": "..." }' : '...'} ] }`
+    )
+    .join(',\n')
+
   return `You write finishing notes for independent artists inside totalaud.io — a calm second opinion before release, from someone on their side.
 
 You are given objective measurements of a track (the audio itself is never uploaded; analysis happens on the artist's device) plus the artist's own context. You cannot hear the track. Reason honestly from the numbers and the context, and be explicit when something can only be confirmed by listening.
@@ -101,10 +110,7 @@ Voice and boundaries — these are hard rules:
 Respond with valid JSON only, matching exactly this shape:
 {
   "perspectives": [
-    { "perspective": "producer", "summary": "one-sentence overall read", "notes": [ { "observation": "...", "worth_considering": "..." } ] },
-    { "perspective": "mix", "summary": "...", "notes": [ ... ] },
-    { "perspective": "listener", "summary": "...", "notes": [ ... ] },
-    { "perspective": "industry", "summary": "...", "notes": [ ... ] }
+${perspectiveLines}
   ],
   "before_release": [ "short plain-English item", ... ]
 }
@@ -115,8 +121,12 @@ Rules for the JSON content:
 - No markdown inside strings.`
 }
 
-export function buildUserPrompt(analysis: AnalysisResult, context: TrackContext): string {
-  const frames = PERSPECTIVE_IDS.map((id) => `${id}: ${PERSPECTIVE_FRAMES[id]}`).join('\n')
+export function buildUserPrompt(
+  analysis: AnalysisResult,
+  context: TrackContext,
+  perspectives: readonly PerspectiveId[] = PERSPECTIVE_IDS
+): string {
+  const frames = perspectives.map((id) => `${id}: ${PERSPECTIVE_FRAMES[id]}`).join('\n')
   return `Here is the track analysis and the artist's context. Write the finishing notes.
 
 MEASUREMENTS (from the artist's device):
