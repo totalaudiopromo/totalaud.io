@@ -121,17 +121,15 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days)
 
     // Build query
-    let query = supabase
+    // Note: flow_telemetry has no campaign_id column -- the campaignId
+    // parameter is accepted for compatibility but only used for logging.
+    const query = supabase
       .from('flow_telemetry')
       .select('*')
       .eq('user_id', userId)
       .gte('created_at', startDate.toISOString())
       .lte('created_at', endDate.toISOString())
       .order('created_at', { ascending: true })
-
-    if (campaignId) {
-      query = query.eq('campaign_id', campaignId)
-    }
 
     // Fetch telemetry data
     const { data, error } = await query
@@ -147,7 +145,21 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const events: TelemetryEvent[] = (data ?? []) as TelemetryEvent[]
+    // Map database rows to the summary event shape. The table stores the
+    // event payload in event_data (Json); duration lives inside it if set.
+    const events: TelemetryEvent[] = (data ?? []).map((row) => {
+      const eventData =
+        row.event_data && typeof row.event_data === 'object' && !Array.isArray(row.event_data)
+          ? (row.event_data as Record<string, unknown>)
+          : null
+      const duration = eventData?.duration_ms
+      return {
+        event_type: row.event_type,
+        created_at: row.created_at ?? new Date(0).toISOString(),
+        duration_ms: typeof duration === 'number' ? duration : null,
+        metadata: eventData,
+      }
+    })
 
     // Calculate summary metrics
     const saveEvents = events.filter((e) => e.event_type === 'save')

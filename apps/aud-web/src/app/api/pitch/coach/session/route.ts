@@ -20,7 +20,6 @@ import { completeWithAnthropic } from '@total-audio/core-ai-provider'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { createRouteSupabaseClient } from '@aud-web/lib/supabase/server'
-import { getTrackMemory } from '@/lib/track-memory'
 
 const log = logger.scope('PitchCoachSessionAPI')
 
@@ -344,16 +343,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = requestSchema.parse(body)
 
-    const {
-      message,
-      sectionId,
-      trackId,
-      pitchType,
-      mode,
-      phase,
-      history = [],
-      allSections = [],
-    } = validated
+    const { message, sectionId, pitchType, mode, phase, history = [], allSections = [] } = validated
 
     // Fetch artist identity for context (optional enhancement)
     let artistIdentity: ArtistIdentity | null = null
@@ -373,34 +363,10 @@ export async function POST(request: NextRequest) {
       // Identity not found - continue without it
     }
 
-    // Fetch track memory for context (silent failure)
-    let trackMemoryContext: TrackMemoryContext | null = null
-    if (trackId) {
-      try {
-        const memory = await getTrackMemory(session.user.id, trackId, {
-          includeEntries: true,
-          entryTypes: ['story_fragment'],
-        })
-
-        if (memory) {
-          trackMemoryContext = {
-            canonicalIntent: memory.canonicalIntent,
-            storyFragments:
-              memory.entries
-                ?.filter((e) => {
-                  const payload = e.payload as Record<string, unknown> | null
-                  return payload && typeof payload === 'object' && 'content' in payload
-                })
-                .map((e) => {
-                  const payload = e.payload as Record<string, unknown>
-                  return String(payload?.content ?? '')
-                }) || [],
-          }
-        }
-      } catch {
-        // Track memory not found - continue without it
-      }
-    }
+    // The console-era track-memory store was removed (its tables never
+    // existed in production), so coaching runs without persisted track
+    // context. Conversation history still provides session continuity.
+    const trackMemoryContext: TrackMemoryContext | null = null
 
     // Build prompts (convert undefined to null for type safety)
     const systemPrompt = buildSystemPrompt(

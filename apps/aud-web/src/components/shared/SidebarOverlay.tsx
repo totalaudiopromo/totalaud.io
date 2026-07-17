@@ -14,7 +14,6 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 import {
-  HomeIcon,
   LightBulbIcon,
   UserCircleIcon,
   MagnifyingGlassIcon,
@@ -22,9 +21,6 @@ import {
   DocumentTextIcon,
   MusicalNoteIcon,
   XMarkIcon,
-  SparklesIcon,
-  ClockIcon,
-  BoltIcon,
 } from '@heroicons/react/24/outline'
 import { useSidebarStore } from '@/stores/useSidebarStore'
 
@@ -40,14 +36,8 @@ interface NavSection {
   items: NavItem[]
 }
 
+// Console-era navigation removed -- the workspace is the product home.
 const navigation: NavSection[] = [
-  {
-    title: 'overview',
-    items: [
-      { name: 'dashboard', href: '/console', icon: HomeIcon },
-      { name: 'insights', href: '/console/insights', icon: SparklesIcon },
-    ],
-  },
   {
     title: 'workspace',
     items: [
@@ -60,11 +50,7 @@ const navigation: NavSection[] = [
   },
   {
     title: 'profile',
-    items: [
-      { name: 'identity', href: '/console/identity', icon: UserCircleIcon },
-      { name: 'threads', href: '/console/threads', icon: ClockIcon, comingSoon: true },
-      { name: 'automations', href: '/console/automations', icon: BoltIcon, comingSoon: true },
-    ],
+    items: [{ name: 'settings', href: '/settings', icon: UserCircleIcon }],
   },
 ]
 
@@ -74,10 +60,6 @@ export function SidebarOverlay() {
   const { isOpen, close } = useSidebarStore()
 
   const isActive = (href: string) => {
-    // Exact match for console routes
-    if (href.startsWith('/console')) {
-      return pathname === href
-    }
     // For workspace routes, check if current path includes the mode
     if (href.includes('?mode=')) {
       const mode = href.split('mode=')[1]
@@ -118,7 +100,7 @@ export function SidebarOverlay() {
           >
             {/* Header with logo and close button */}
             <div className="p-6 border-b border-ta-panel/50 flex items-center justify-between">
-              <Link href="/console" onClick={handleNavClick}>
+              <Link href="/workspace" onClick={handleNavClick}>
                 <Image
                   src="/brand/svg/lockup-horizontal-cyan.svg"
                   alt="totalaud.io"

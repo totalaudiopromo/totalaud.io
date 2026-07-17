@@ -28,14 +28,7 @@ export default function robots(): MetadataRoute.Robots {
   ]
 
   // Protected app sections
-  const protectedSections = [
-    '/api/',
-    '/console/',
-    '/workspace/',
-    '/settings/',
-    '/onboarding/',
-    '/_archive/',
-  ]
+  const protectedSections = ['/api/', '/workspace/', '/settings/', '/onboarding/', '/_archive/']
 
   return {
     rules: [
