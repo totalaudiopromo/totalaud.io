@@ -100,7 +100,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         { role: 'system', content: buildSystemPrompt(perspectives) },
         { role: 'user', content: buildUserPrompt(analysis, context, perspectives) },
       ],
-      { max_tokens: isGuest ? 1200 : 3000 }
+      // Finishing notes are a bounded JSON formatting task, not an in-band
+      // reasoning one. Disabling extended thinking keeps the whole token budget
+      // for the response so the JSON isn't truncated (Sonnet 5 thinks by
+      // default; those tokens otherwise eat max_tokens and 502 the route).
+      { max_tokens: isGuest ? 1200 : 3000, thinking: 'disabled' }
     )
 
     const notes = parseFinishingNotes(result.content)

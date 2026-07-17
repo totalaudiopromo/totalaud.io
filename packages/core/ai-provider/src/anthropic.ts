@@ -36,7 +36,14 @@ export async function completeWithAnthropic(
 
   // Note: `temperature` is intentionally not forwarded. Current Claude models
   // (Sonnet 5 and newer) reject non-default sampling parameters with a 400.
-  const completion = await anthropic.messages.create({
+  //
+  // Sonnet 5 also enables extended thinking by default, and thinking tokens
+  // count against `max_tokens` — which silently truncates bounded outputs
+  // (a partial JSON body, or an empty text block). Callers that need a
+  // deterministic, budget-bounded response opt out via `thinking: 'disabled'`.
+  // The installed SDK (0.17.2) predates the param, so it's attached directly;
+  // the API accepts it under the version header the SDK sends.
+  const createParams = {
     model,
     system: systemMessage,
     messages: conversationMessages.map((m) => ({
@@ -44,7 +51,10 @@ export async function completeWithAnthropic(
       content: m.content,
     })),
     max_tokens: options.max_tokens ?? 2000,
-  })
+    ...(options.thinking === 'disabled' ? { thinking: { type: 'disabled' as const } } : {}),
+  } as Anthropic.MessageCreateParamsNonStreaming
+
+  const completion = await anthropic.messages.create(createParams)
 
   const textBlock = completion.content.find((block) => block.type === 'text')
   const content = textBlock?.type === 'text' ? textBlock.text : ''
