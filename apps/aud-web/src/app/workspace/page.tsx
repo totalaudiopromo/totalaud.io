@@ -176,6 +176,15 @@ function WorkspaceContent() {
   // Scout sub-tab (discover opportunities vs curated contacts)
   const [scoutTab, setScoutTab] = useState<'discover' | 'contacts' | 'follow-ups'>('discover')
 
+  // Honour a ?tab= param so the command palette and deep links can land on
+  // a specific Scout tab
+  const tabParam = searchParams?.get('tab')
+  useEffect(() => {
+    if (tabParam === 'discover' || tabParam === 'contacts' || tabParam === 'follow-ups') {
+      setScoutTab(tabParam)
+    }
+  }, [tabParam])
+
   // Checkout status state (success, error, cancelled)
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false)
   const [showCheckoutError, setShowCheckoutError] = useState(false)
