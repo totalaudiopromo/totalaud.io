@@ -30,6 +30,16 @@ import { logger } from '@/lib/logger'
 
 const log = logger.scope('FinishPerspectivesRoute')
 
+// Monthly allowance of full finishing-note sessions per tier; null = unlimited
+const MONTHLY_NOTE_LIMITS: Record<string, number | null> = {
+  none: 3,
+  starter: 10,
+  pro: null,
+  pro_annual: null,
+  power: null,
+  power_annual: null,
+}
+
 const suggestionSchema = z.object({
   category: z.string(),
   severity: z.enum(['critical', 'warning', 'info']),
@@ -93,6 +103,47 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const analysis = body.analysis as AnalysisResult
   const context = (body.context ?? {}) as TrackContext
   const perspectives: readonly PerspectiveId[] = isGuest ? ['listener'] : PERSPECTIVE_IDS
+
+  // Included-with-limits, not per-use credits (docs/ROADMAP_2026.md Phase 6).
+  // Free and Starter get a monthly allowance of full four-perspective runs;
+  // Pro and Power are unlimited.
+  if (!isGuest) {
+    const { data: profile } = await auth.supabase
+      .from('user_profiles')
+      .select('subscription_tier, subscription_status')
+      .eq('id', auth.user.id)
+      .maybeSingle()
+
+    const activeStatuses = new Set(['active', 'trialing'])
+    const tier = activeStatuses.has(profile?.subscription_status ?? '')
+      ? (profile?.subscription_tier?.toLowerCase().replace('-', '_') ?? 'none')
+      : 'none'
+    const monthlyLimit = MONTHLY_NOTE_LIMITS[tier] ?? MONTHLY_NOTE_LIMITS.none
+
+    if (monthlyLimit !== null) {
+      const monthStart = new Date()
+      monthStart.setUTCDate(1)
+      monthStart.setUTCHours(0, 0, 0, 0)
+
+      const { count } = await auth.supabase
+        .from('finish_notes')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', auth.user.id)
+        .gte('created_at', monthStart.toISOString())
+
+      if ((count ?? 0) >= monthlyLimit) {
+        return NextResponse.json(
+          {
+            error: `That is your ${monthlyLimit} finishing-note sessions for this month. They reset on the 1st, or Pro includes unlimited notes.`,
+            limit_reached: true,
+            limit: monthlyLimit,
+            used: count ?? 0,
+          },
+          { status: 429 }
+        )
+      }
+    }
+  }
 
   try {
     const result = await completeWithAnthropic(

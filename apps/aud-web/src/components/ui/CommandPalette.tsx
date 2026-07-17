@@ -21,6 +21,8 @@ import {
   Plus,
   Search,
   Command,
+  Headphones,
+  Users,
 } from 'lucide-react'
 import { transition, variants, duration } from '@/lib/motion'
 
@@ -86,6 +88,21 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
       shortcut: `${modKey}4`,
       icon: <MessageSquare className="w-4 h-4" />,
       action: () => router.push('/workspace?mode=pitch'),
+      category: 'navigation',
+    },
+    {
+      id: 'nav-finish',
+      label: 'Go to Finish',
+      shortcut: `${modKey}5`,
+      icon: <Headphones className="w-4 h-4" />,
+      action: () => router.push('/workspace?mode=finish'),
+      category: 'navigation',
+    },
+    {
+      id: 'nav-follow-ups',
+      label: 'Go to Follow-ups',
+      icon: <Users className="w-4 h-4" />,
+      action: () => router.push('/workspace?mode=scout&tab=follow-ups'),
       category: 'navigation',
     },
     // Actions

@@ -14,6 +14,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
 import { createBrowserSupabaseClient } from '@/lib/supabase/client'
+import { AssistantTokensSection } from '@/components/settings/AssistantTokensSection'
 
 // Tier display names
 const TIER_DISPLAY_NAMES: Record<string, string> = {
@@ -838,6 +839,22 @@ export default function SettingsPage() {
                 </div>
               )}
             </div>
+          </section>
+
+          {/* Bring your own assistant */}
+          <section style={{ marginBottom: 40 }}>
+            <h2
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: '#F7F8F9',
+                marginBottom: 16,
+                fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
+              }}
+            >
+              Bring your own assistant
+            </h2>
+            <AssistantTokensSection />
           </section>
 
           {/* Session */}
