@@ -10,7 +10,7 @@
  * "second opinion before release"
  */
 
-import { WaitlistLanding } from '@/components/landing/WaitlistLanding'
+import { ArtistLanding } from '@/components/landing/ArtistLanding'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -49,5 +49,5 @@ export default async function Page() {
     redirect('/workspace')
   }
 
-  return <WaitlistLanding />
+  return <ArtistLanding />
 }
