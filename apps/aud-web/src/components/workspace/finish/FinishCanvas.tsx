@@ -2,11 +2,14 @@
  * FinishCanvas
  *
  * Main Finish mode component. Orchestrates the flow:
- * Upload -> Analyse -> Results (metrics + suggestions) -> Process -> Download
+ * Upload -> Analyse (in the browser) -> Results (metrics + finishing notes)
  *
- * Left panel: metrics + suggestions (scrollable)
- * Right panel: upload zone or processing status
+ * Left panel: analysis metrics (scrollable)
+ * Right panel: suggestions + finishing-note perspectives
  * Mobile: stacked vertically
+ *
+ * Mastering (process/download) is parked while the engine is rebuilt --
+ * ProcessingStatus still handles error recovery and the parked stages.
  */
 
 'use client'
@@ -17,6 +20,7 @@ import { AnalysisPanel } from './AnalysisPanel'
 import { SuggestionsPanel } from './SuggestionsPanel'
 import { ProcessingStatus } from './ProcessingStatus'
 import { AnalysingView } from './AnalysingView'
+import { PerspectivesPanel } from './PerspectivesPanel'
 
 export function FinishCanvas() {
   const stage = useFinishStore((s) => s.stage)
@@ -53,7 +57,7 @@ export function FinishCanvas() {
     )
   }
 
-  // Results stage -- show analysis + suggestions side by side
+  // Results stage -- analysis metrics alongside suggestions + finishing notes
   if (stage === 'results' && analysis) {
     return (
       <div className="flex flex-col lg:flex-row h-full overflow-hidden">
@@ -62,16 +66,19 @@ export function FinishCanvas() {
           <AnalysisPanel analysis={analysis} />
         </div>
 
-        {/* Right: Suggestions */}
-        <div className="flex-1 overflow-y-auto p-4">
+        {/* Right: Suggestions + finishing notes */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <SuggestionsPanel suggestions={suggestions} />
 
-          {/* Hint about processing */}
-          <p className="mt-6 text-xs text-ta-white/30 leading-relaxed">
-            Choose a genre preset and settings in the toolbar above, then hit Process to master your
-            track. The engine applies EQ, compression, limiting, and stereo treatment tuned for your
-            genre and target platform.
-          </p>
+          <PerspectivesPanel />
+
+          {/* Mastering parked */}
+          <div className="rounded-ta-sm border border-ta-white/[0.06] bg-ta-panel/50 px-3 py-2.5">
+            <p className="text-xs text-ta-white/40 leading-relaxed">
+              Mastering is taking a break while we rebuild it. Analysis and finishing notes work
+              fully — on your device.
+            </p>
+          </div>
         </div>
       </div>
     )

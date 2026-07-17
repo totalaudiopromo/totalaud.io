@@ -2,7 +2,14 @@
  * Finish Mode Store
  *
  * Zustand store for audio finishing workflow:
- * Upload → Analyse → Configure → Process → Download
+ * Upload → Analyse (in the browser) → Results → Finishing notes
+ *
+ * Analysis runs entirely on the artist's device via the Web Audio API —
+ * the audio never leaves the browser. Only the resulting measurements are
+ * sent to /api/finish/perspectives for finishing notes.
+ *
+ * Mastering (process/download) is parked while the engine is rebuilt; its
+ * state and actions are kept compiling but are not wired into the UI.
  *
  * No persistence needed -- results are ephemeral per session.
  */
@@ -10,12 +17,15 @@
 import { create } from 'zustand'
 import { logger } from '@/lib/logger'
 import type { AnalysisResult, Suggestion, JobStatus } from '@/lib/finisher-client'
+import type { FinishingNotes, TrackContext } from '@/lib/finish/perspectives'
 
 const log = logger.scope('Finish Store')
 
 // Types
 
 export type FinishStage = 'upload' | 'analysing' | 'results' | 'processing' | 'complete' | 'error'
+
+export type NotesStatus = 'idle' | 'generating' | 'ready' | 'error'
 
 export interface PresetOption {
   name: string
@@ -41,7 +51,13 @@ interface FinishState {
   analysis: AnalysisResult | null
   suggestions: Suggestion[]
 
-  // Processing config
+  // Finishing notes (perspectives)
+  trackContext: TrackContext
+  finishingNotes: FinishingNotes | null
+  notesStatus: NotesStatus
+  notesError: string | null
+
+  // Processing config (mastering is parked -- kept compiling, unused)
   selectedPreset: string | null
   selectedPlatform: string | null
   macros: MacroSettings
@@ -60,7 +76,9 @@ interface FinishState {
 
   // Actions
   setFile: (file: File) => void
-  analyze: () => Promise<void>
+  analyse: (file?: File) => Promise<void>
+  setTrackContext: (context: Partial<TrackContext>) => void
+  generatePerspectives: () => Promise<void>
   setPreset: (preset: string | null) => void
   setPlatform: (platform: string | null) => void
   setMacro: <K extends keyof MacroSettings>(key: K, value: MacroSettings[K]) => void
@@ -85,6 +103,10 @@ export const useFinishStore = create<FinishState>((set, get) => ({
   fileSize: null,
   analysis: null,
   suggestions: [],
+  trackContext: {},
+  finishingNotes: null,
+  notesStatus: 'idle',
+  notesError: null,
   selectedPreset: null,
   selectedPlatform: null,
   macros: { ...DEFAULT_MACROS },
@@ -105,52 +127,90 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       stage: 'upload',
       analysis: null,
       suggestions: [],
+      finishingNotes: null,
+      notesStatus: 'idle',
+      notesError: null,
       jobId: null,
       jobStatus: null,
       error: null,
     })
   },
 
-  analyze: async () => {
-    const { file, selectedPlatform, stage } = get()
-    if (!file || stage === 'analysing') return
+  analyse: async (file?: File) => {
+    const state = get()
+    const target = file ?? state.file
+    if (!target || state.stage === 'analysing') return
 
-    set({ stage: 'analysing', error: null })
+    set({
+      stage: 'analysing',
+      error: null,
+      finishingNotes: null,
+      notesStatus: 'idle',
+      notesError: null,
+    })
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      if (selectedPlatform) {
-        formData.append('platform', selectedPlatform)
-      }
-
-      const response = await fetch('/api/finish/analyze', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ error: 'Analysis failed' }))
-        throw new Error(err.error || `Analysis failed: ${response.status}`)
-      }
-
-      const body = await response.json()
-      const data = body.data || body
+      // Client-only module -- decodes and analyses the audio in the browser.
+      // The audio never leaves the device.
+      const { analyseAudioFile } = await import('@/lib/finish/analyse-client')
+      const analysis = await analyseAudioFile(target)
 
       set({
         stage: 'results',
-        analysis: data,
-        suggestions: data.suggestions || [],
+        analysis,
+        suggestions: analysis.suggestions || [],
       })
 
       log.info('Analysis complete', {
-        lufs: data.integrated_lufs,
-        suggestions: data.suggestions?.length,
+        lufs: analysis.integrated_lufs,
+        suggestions: analysis.suggestions?.length,
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Analysis failed'
       log.error('Analysis failed', error)
       set({ stage: 'error', error: message })
+    }
+  },
+
+  setTrackContext: (context: Partial<TrackContext>) =>
+    set((state) => ({
+      trackContext: { ...state.trackContext, ...context },
+    })),
+
+  generatePerspectives: async () => {
+    const { analysis, trackContext, notesStatus } = get()
+    if (!analysis || notesStatus === 'generating') return
+
+    set({ notesStatus: 'generating', notesError: null })
+
+    try {
+      const response = await fetch('/api/finish/perspectives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analysis, context: trackContext }),
+      })
+
+      if (!response.ok) {
+        const err = await response
+          .json()
+          .catch(() => ({ error: 'Finishing notes are taking a moment — try again shortly' }))
+        throw new Error(err.error || `Finishing notes failed: ${response.status}`)
+      }
+
+      const body = await response.json()
+
+      set({ finishingNotes: body.notes, notesStatus: 'ready' })
+
+      log.info('Finishing notes ready', {
+        perspectives: body.notes?.perspectives?.length,
+      })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Finishing notes are taking a moment — try again shortly'
+      log.error('Finishing notes failed', error)
+      set({ notesStatus: 'error', notesError: message })
     }
   },
 
@@ -163,6 +223,8 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       macros: { ...state.macros, [key]: value },
     })),
 
+  // Mastering is parked while the engine is rebuilt. The actions below are
+  // intentionally kept compiling but are not wired into the UI.
   process: async () => {
     const { file, macros, selectedPlatform, selectedPreset } = get()
     if (!file) return
@@ -274,6 +336,10 @@ export const useFinishStore = create<FinishState>((set, get) => ({
       fileSize: null,
       analysis: null,
       suggestions: [],
+      trackContext: {},
+      finishingNotes: null,
+      notesStatus: 'idle',
+      notesError: null,
       selectedPreset: null,
       selectedPlatform: null,
       macros: { ...DEFAULT_MACROS },

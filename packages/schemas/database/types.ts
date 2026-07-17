@@ -1428,6 +1428,33 @@ export type Database = {
           },
         ]
       }
+      finish_notes: {
+        Row: {
+          analysis: Json
+          created_at: string
+          id: string
+          notes: Json
+          track_name: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis: Json
+          created_at?: string
+          id?: string
+          notes: Json
+          track_name?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis?: Json
+          created_at?: string
+          id?: string
+          notes?: Json
+          track_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       flow_hub_summary_cache: {
         Row: {
           campaign_id: string | null
