@@ -37,6 +37,7 @@ type AnalyticsEvent =
   | 'intel_summary_generated'
   | 'release_plan_created'
   | 'consistency_checked'
+  | 'follow_up_planned'
 
 export function capture(event: AnalyticsEvent, properties?: Record<string, unknown>): void {
   if (!initialised) return

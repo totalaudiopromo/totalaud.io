@@ -90,6 +90,7 @@ interface DatabaseTimelineEvent {
   opportunity_id: string | null
   tracker_campaign_id: string | null
   tracker_synced_at: string | null
+  contact_id?: string | null
   created_at: string
   updated_at: string
 }
@@ -112,6 +113,7 @@ function toSupabaseEvent(
     opportunity_id: event.opportunityId ?? null,
     tracker_campaign_id: event.trackerCampaignId ?? null,
     tracker_synced_at: event.trackerSyncedAt ?? null,
+    contact_id: event.contactId ?? null,
   }
 }
 
@@ -134,6 +136,7 @@ function fromSupabaseEvent(data: DatabaseTimelineEvent): TimelineEvent {
     opportunityId: data.opportunity_id ?? undefined,
     trackerCampaignId: data.tracker_campaign_id ?? undefined,
     trackerSyncedAt: data.tracker_synced_at ?? undefined,
+    contactId: data.contact_id ?? undefined,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
   }
@@ -236,6 +239,7 @@ export const useTimelineStore = create<TimelineState>()(
             if (updates.description !== undefined) supabaseUpdates.description = updates.description
             if (updates.url !== undefined) supabaseUpdates.url = updates.url
             if (updates.tags) supabaseUpdates.tags = updates.tags
+            if (updates.contactId !== undefined) supabaseUpdates.contact_id = updates.contactId
 
             const { error } = await supabase
               .from('user_timeline_events')
