@@ -15,6 +15,7 @@ import { logger } from '@/lib/logger'
 import { capture } from '@/lib/analytics'
 import type { TapActionQueueItem, TapOutcomeStatus } from '@/lib/tap/types'
 import type { IntelSummary } from '@/lib/intel/summary'
+import type { WhatWorkedReview } from '@/lib/intel/what-worked'
 
 const log = logger.scope('Intel Store')
 
@@ -29,9 +30,15 @@ interface IntelState {
   summaryStatus: SummaryStatus
   summaryError: string | null
 
+  whatWorked: WhatWorkedReview | null
+  whatWorkedHeadline: string | null
+  whatWorkedStatus: SummaryStatus
+  whatWorkedError: string | null
+
   loadQueue: () => Promise<void>
   logOutcome: (item: TapActionQueueItem, status: TapOutcomeStatus) => Promise<void>
   generateSummary: () => Promise<void>
+  generateWhatWorked: () => Promise<void>
 }
 
 export const useIntelStore = create<IntelState>((set, get) => ({
@@ -40,6 +47,10 @@ export const useIntelStore = create<IntelState>((set, get) => ({
   summary: null,
   summaryStatus: 'idle',
   summaryError: null,
+  whatWorked: null,
+  whatWorkedHeadline: null,
+  whatWorkedStatus: 'idle',
+  whatWorkedError: null,
 
   loadQueue: async () => {
     if (get().queueStatus === 'loading') return
@@ -118,6 +129,45 @@ export const useIntelStore = create<IntelState>((set, get) => ({
         error instanceof Error ? error.message : 'The notes are taking a moment, try again shortly'
       log.error('Intel summary failed', error)
       set({ summaryStatus: 'error', summaryError: message })
+    }
+  },
+
+  generateWhatWorked: async () => {
+    if (get().whatWorkedStatus === 'generating') return
+    set({ whatWorkedStatus: 'generating', whatWorkedError: null })
+
+    try {
+      const response = await fetch('/api/intel/what-worked')
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        throw new Error(err.error || `Retrospective failed: ${response.status}`)
+      }
+      const body = await response.json()
+
+      if (body.available === false) {
+        set({ whatWorkedStatus: 'unavailable' })
+        return
+      }
+      if (body.empty) {
+        set({ whatWorkedStatus: 'empty', whatWorkedHeadline: body.headline ?? null })
+        return
+      }
+      set({
+        whatWorked: body.review,
+        whatWorkedHeadline: body.headline ?? null,
+        whatWorkedStatus: 'ready',
+      })
+      capture('what_worked_generated', {
+        settled: body.stats?.settled,
+        response_rate: body.stats?.response_rate,
+      })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'The retrospective is taking a moment, try again shortly'
+      log.error('What-worked review failed', error)
+      set({ whatWorkedStatus: 'error', whatWorkedError: message })
     }
   },
 }))

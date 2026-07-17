@@ -52,6 +52,7 @@ const RATE_LIMITS: { pattern: RegExp; limit: number; windowMs: number }[] = [
   { pattern: /^\/api\/pitch\//, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
   { pattern: /^\/api\/finish\/perspectives/, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
   { pattern: /^\/api\/intel\/summary/, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
+  { pattern: /^\/api\/intel\/what-worked/, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
   { pattern: /^\/api\/scout/, limit: 30, windowMs: 60 * 1000 }, // 30/min for Scout
   { pattern: /^\/api\//, limit: 60, windowMs: 60 * 1000 }, // 60/min default
 ]
