@@ -205,7 +205,7 @@ when TAP is unreachable — never block the workspace on an engine.
 The label pivot built a real multi-tenant system (`app/label/*`, migration
 `20260710000000_label_os.sql`, role-based RLS). It is parked behind
 `NEXT_PUBLIC_ENABLE_LABEL_OS` (default off): routes redirect, APIs 404, code keeps compiling,
-tables stay in place. Pre-park state is tagged `label-os-v1`.
+tables stay in place. Pre-park state: commit `68c2cf4`.
 
 **Revival criteria** (any two of):
 1. Organic inbound label interest reaching a meaningful monthly rate

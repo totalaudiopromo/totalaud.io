@@ -15,7 +15,7 @@ stops misleading future work.
 
 | Item | Where | Size |
 |---|---|---|
-| Park Label OS behind `NEXT_PUBLIC_ENABLE_LABEL_OS` (default off); tag `label-os-v1` | `lib/env.ts`, `app/label/layout.tsx`, `app/api/label/*` | S |
+| Park Label OS behind `NEXT_PUBLIC_ENABLE_LABEL_OS` (default off); pre-park state at commit `68c2cf4` | `lib/env.ts`, `app/label/layout.tsx`, `app/api/label/*` | S |
 | Homepage back to artist-first; signed-in users land on `/workspace` | `app/page.tsx`, `components/landing/*` | M |
 | Pricing back to artist tiers wired to live Stripe checkout | `app/pricing/*` | M |
 | Label copy sweep (SEO pages, metadata) | `/compare`, `/for/*`, `/genre/*`, `/location/*` | S |

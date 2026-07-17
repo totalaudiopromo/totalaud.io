@@ -50,6 +50,7 @@ function cleanupExpiredEntries() {
 // Rate limit configuration per route pattern
 const RATE_LIMITS: { pattern: RegExp; limit: number; windowMs: number }[] = [
   { pattern: /^\/api\/pitch\//, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
+  { pattern: /^\/api\/finish\/perspectives/, limit: 10, windowMs: 60 * 1000 }, // 10/min for AI routes
   { pattern: /^\/api\/scout/, limit: 30, windowMs: 60 * 1000 }, // 30/min for Scout
   { pattern: /^\/api\//, limit: 60, windowMs: 60 * 1000 }, // 60/min default
 ]
@@ -133,8 +134,8 @@ const staticSecurityHeaders = {
 // ============================================================================
 
 // Label OS is parked (July 2026 artist-first recommitment, docs/STRATEGY_2026.md §8).
-// Flip NEXT_PUBLIC_ENABLE_LABEL_OS=true to revive. Pre-park state: tag label-os-v1
-// (commit 68c2cf4). Code and tables are intentionally kept intact.
+// Flip NEXT_PUBLIC_ENABLE_LABEL_OS=true to revive. Pre-park state: commit 68c2cf4.
+// Code and tables are intentionally kept intact.
 const LABEL_OS_ENABLED = process.env.NEXT_PUBLIC_ENABLE_LABEL_OS === 'true'
 
 export function middleware(request: NextRequest) {
