@@ -165,6 +165,14 @@ function WorkspaceContent() {
     modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'ideas'
   )
 
+  // Keep mode in step with the URL so cross-mode hand-offs (router.push from
+  // CrossModePrompt, Finish → Timeline) and browser back/forward land properly
+  useEffect(() => {
+    if (modeParam && modeParam !== mode && MODES.find((m) => m.key === modeParam)?.available) {
+      setMode(modeParam)
+    }
+  }, [modeParam, mode])
+
   // Scout sub-tab (discover opportunities vs curated contacts)
   const [scoutTab, setScoutTab] = useState<'discover' | 'contacts' | 'follow-ups'>('discover')
 

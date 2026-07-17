@@ -16,8 +16,13 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useFinishStore } from '@/stores/useFinishStore'
+import { useTimelineStore } from '@/stores/useTimelineStore'
+import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
+import { generateReleaseSequence } from '@/lib/timeline/autoSequence'
+import { capture } from '@/lib/analytics'
 import { PERSPECTIVE_IDS, type PerspectiveId } from '@/lib/finish/perspectives'
 
 // Normal motion token: pane transitions
@@ -187,6 +192,94 @@ function ErrorState() {
   )
 }
 
+/** Format a date as YYYY-MM-DD in local time for a date input. */
+function toDateInputValue(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function fourWeeksFromToday(): string {
+  const date = new Date()
+  date.setDate(date.getDate() + 28)
+  return toDateInputValue(date)
+}
+
+/**
+ * Finish → Timeline hand-off: once the notes are in, offer one calm next
+ * step — turn the release into a week-by-week plan in Timeline.
+ */
+function PlanReleaseCard() {
+  const router = useRouter()
+  const trackId = useCurrentTrackId()
+  const trackName = useFinishStore((s) => s.trackContext.trackName)
+  const addEvent = useTimelineStore((s) => s.addEvent)
+  const [releaseDate, setReleaseDate] = useState(fourWeeksFromToday)
+  const [creating, setCreating] = useState(false)
+
+  const handleCreate = async () => {
+    if (creating || !releaseDate) return
+    setCreating(true)
+    try {
+      // Midday local time keeps the date stable across timezones
+      const events = generateReleaseSequence(
+        new Date(`${releaseDate}T12:00:00`),
+        trackName?.trim() || undefined
+      )
+      for (const event of events) {
+        await addEvent(event)
+      }
+      capture('release_plan_created', { events: events.length, from: 'finish' })
+
+      // Switch to Timeline, preserving the track param
+      const params = new URLSearchParams({ mode: 'timeline' })
+      if (trackId) params.set('track', trackId)
+      router.push(`/workspace?${params.toString()}`, { scroll: false })
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  return (
+    <div className="rounded-ta-sm border border-ta-cyan/[0.15] bg-ta-cyan/[0.04] p-4 space-y-3">
+      <div className="space-y-1">
+        <h5 className="text-xs font-medium text-ta-white/80">Plan the release</h5>
+        <p className="text-xs text-ta-white/50 leading-relaxed">
+          Turn this into a week-by-week plan in Timeline.
+        </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="finish-release-date"
+            className="text-[10px] uppercase tracking-wider text-ta-white/40"
+          >
+            Release date
+          </label>
+          <input
+            id="finish-release-date"
+            type="date"
+            value={releaseDate}
+            min={toDateInputValue(new Date())}
+            onChange={(e) => setReleaseDate(e.target.value)}
+            className="bg-ta-panel border border-ta-white/[0.08] rounded-ta-sm px-3 py-2 text-xs text-ta-white/80 focus:border-ta-cyan/40 focus:outline-none transition-colors [color-scheme:dark]"
+          />
+        </div>
+
+        <button
+          onClick={handleCreate}
+          disabled={creating || !releaseDate}
+          className="px-4 py-2.5 rounded-ta-sm bg-ta-cyan text-ta-black text-xs font-medium hover:bg-ta-cyan/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {creating ? 'Creating the plan…' : 'Create the plan'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function NotesView() {
   const finishingNotes = useFinishStore((s) => s.finishingNotes)
   const notesLocked = useFinishStore((s) => s.notesLocked)
@@ -305,6 +398,9 @@ function NotesView() {
           </ul>
         </div>
       )}
+
+      {/* Finish → Timeline hand-off */}
+      <PlanReleaseCard />
     </motion.div>
   )
 }

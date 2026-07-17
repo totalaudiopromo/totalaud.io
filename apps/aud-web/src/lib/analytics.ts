@@ -35,6 +35,8 @@ type AnalyticsEvent =
   | 'finishing_notes_generated'
   | 'outcome_logged'
   | 'intel_summary_generated'
+  | 'release_plan_created'
+  | 'consistency_checked'
 
 export function capture(event: AnalyticsEvent, properties?: Record<string, unknown>): void {
   if (!initialised) return
