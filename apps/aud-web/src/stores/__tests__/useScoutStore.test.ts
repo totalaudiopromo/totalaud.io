@@ -62,7 +62,7 @@ describe('useScoutStore', () => {
             total: mockOpportunities.length,
           }),
       })
-    ) as unknown as ReturnType<typeof vi.fn>
+    ) as unknown as typeof global.fetch
 
     // Reset store before each test
     const { result } = renderHook(() => useScoutStore())

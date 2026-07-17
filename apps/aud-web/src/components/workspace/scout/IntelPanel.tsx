@@ -10,9 +10,12 @@
 
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIntelStore } from '@/stores/useIntelStore'
+import { useTimelineStore } from '@/stores/useTimelineStore'
+import { getLaneColour } from '@/types/timeline'
+import { capture } from '@/lib/analytics'
 import type { TapActionQueueItem, TapOutcomeStatus } from '@/lib/tap/types'
 
 const NORMAL_TRANSITION = { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const }
@@ -75,10 +78,39 @@ function SkeletonLine({ width, delay }: { width: string; delay: number }) {
   )
 }
 
+/** When a follow-up should land on the timeline: its due date, or a few days out. */
+function plannedDate(item: TapActionQueueItem): string {
+  if (item.follow_up?.due_at) return new Date(item.follow_up.due_at * 1000).toISOString()
+  const date = new Date()
+  date.setDate(date.getDate() + 3)
+  return date.toISOString()
+}
+
 function QueueSection() {
   const queue = useIntelStore((s) => s.queue)
   const queueStatus = useIntelStore((s) => s.queueStatus)
   const logOutcome = useIntelStore((s) => s.logOutcome)
+  const addEvent = useTimelineStore((s) => s.addEvent)
+  const [plannedIds, setPlannedIds] = useState<Set<string>>(new Set())
+
+  const planOnTimeline = async (item: TapActionQueueItem) => {
+    if (plannedIds.has(item.id)) return
+    const label = itemLabel(item)
+    await addEvent({
+      lane: 'post-release',
+      title: item.type === 'pending_pitch' ? 'Send the pitch' : 'Follow up',
+      date: plannedDate(item),
+      colour: getLaneColour('post-release'),
+      description: label.contact
+        ? `From your follow-ups in Scout. Contact: ${label.contact}`
+        : 'From your follow-ups in Scout.',
+      source: 'manual',
+      tags: ['follow-up'],
+      contactId: label.contact ?? null,
+    })
+    setPlannedIds((previous) => new Set(previous).add(item.id))
+    capture('follow_up_planned', { type: item.type })
+  }
 
   return (
     <section className="space-y-3">
@@ -144,9 +176,9 @@ function QueueSection() {
                       </span>
                     )}
                   </div>
-                  {canLogOutcome && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {OUTCOME_ACTIONS.map((action) => (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {canLogOutcome &&
+                      OUTCOME_ACTIONS.map((action) => (
                         <button
                           key={action.status}
                           onClick={() => logOutcome(item, action.status)}
@@ -155,8 +187,19 @@ function QueueSection() {
                           {action.label}
                         </button>
                       ))}
-                    </div>
-                  )}
+                    {plannedIds.has(item.id) ? (
+                      <span className="px-2.5 py-1 text-[11px] text-ta-cyan/70">
+                        On the timeline
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => void planOnTimeline(item)}
+                        className="px-2.5 py-1 rounded-ta-sm border border-ta-cyan/25 text-[11px] text-ta-cyan/80 hover:border-ta-cyan/50 hover:text-ta-cyan transition-colors"
+                      >
+                        Put it on the timeline
+                      </button>
+                    )}
+                  </div>
                 </motion.li>
               )
             })}

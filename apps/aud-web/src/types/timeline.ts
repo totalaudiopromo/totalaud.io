@@ -74,6 +74,10 @@ export interface TimelineEvent {
   // Signal Threads integration (Phase 2)
   /** ID of the signal thread this event belongs to */
   threadId?: string | null
+
+  // Relationship memory (release loop, Phase 4)
+  /** TAP contact this event is about (ctc_...), so completing it can log an outcome */
+  contactId?: string | null
 }
 
 // ============================================================================

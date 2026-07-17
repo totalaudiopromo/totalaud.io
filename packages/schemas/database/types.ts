@@ -3237,6 +3237,7 @@ export type Database = {
       user_timeline_events: {
         Row: {
           colour: string | null
+          contact_id: string | null
           created_at: string
           description: string | null
           event_date: string
@@ -3255,6 +3256,7 @@ export type Database = {
         }
         Insert: {
           colour?: string | null
+          contact_id?: string | null
           created_at?: string
           description?: string | null
           event_date: string
@@ -3273,6 +3275,7 @@ export type Database = {
         }
         Update: {
           colour?: string | null
+          contact_id?: string | null
           created_at?: string
           description?: string | null
           event_date?: string

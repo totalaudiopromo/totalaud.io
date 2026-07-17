@@ -16,6 +16,72 @@ import { usePitchStore, type PitchType } from '@/stores/usePitchStore'
 import { useScoutStore } from '@/stores/useScoutStore'
 import { LANES, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { PitchIntegration } from './PitchIntegration'
+import { capture } from '@/lib/analytics'
+import type { TapOutcomeStatus } from '@/lib/tap/types'
+
+const OUTCOME_ACTIONS: { status: TapOutcomeStatus; label: string }[] = [
+  { status: 'replied', label: 'Replied' },
+  { status: 'added', label: 'Added' },
+  { status: 'declined', label: 'Declined' },
+  { status: 'no_response', label: 'No response' },
+]
+
+type OutcomeState = 'idle' | 'logging' | 'logged' | 'error'
+
+/**
+ * When an event is about a specific person (a TAP contact), completing it is
+ * the moment to remember what happened. One tap logs the outcome; nothing
+ * sends anything.
+ */
+function OutcomeLogger({ contactId }: { contactId: string }) {
+  const [state, setState] = useState<OutcomeState>('idle')
+
+  const logOutcome = async (status: TapOutcomeStatus) => {
+    if (state === 'logging' || state === 'logged') return
+    setState('logging')
+    try {
+      const response = await fetch('/api/intel/outcomes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contact: contactId, status }),
+      })
+      if (!response.ok) throw new Error(`Outcome log failed: ${response.status}`)
+      capture('outcome_logged', { status, from: 'timeline' })
+      setState('logged')
+    } catch {
+      setState('error')
+    }
+  }
+
+  return (
+    <div className="mb-5">
+      <label className="block text-[11px] font-medium text-ta-grey mb-1.5">What happened?</label>
+      {state === 'logged' ? (
+        <p className="text-xs text-ta-cyan/80">Logged. Your next release starts smarter.</p>
+      ) : (
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap gap-1.5">
+            {OUTCOME_ACTIONS.map((action) => (
+              <button
+                key={action.status}
+                onClick={() => void logOutcome(action.status)}
+                disabled={state === 'logging'}
+                className="px-2.5 py-1 rounded border border-white/10 text-[11px] text-ta-grey hover:border-ta-cyan/40 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {action.label}
+              </button>
+            ))}
+          </div>
+          {state === 'error' && (
+            <p className="text-[11px] text-ta-grey/60">
+              Could not log it just now, try again shortly.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface TimelineEventCardProps {
   event: TimelineEvent
@@ -265,6 +331,9 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             </div>
           </div>
         )}
+
+        {/* Relationship memory: log what happened with this contact */}
+        {event.contactId && <OutcomeLogger contactId={event.contactId} />}
 
         {/* Cross-mode: Create Pitch button */}
         {event.source !== 'sample' && <PitchIntegration onCreatePitch={handleCreatePitch} />}
