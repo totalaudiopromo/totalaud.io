@@ -348,6 +348,39 @@ export type Database = {
         }
         Relationships: []
       }
+      gmail_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          refresh_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          refresh_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       label_artists: {
         Row: {
           bio: string | null
@@ -937,6 +970,39 @@ export type Database = {
           },
         ]
       }
+      pitch_sends: {
+        Row: {
+          gmail_message_id: string | null
+          gmail_thread_id: string | null
+          id: string
+          idempotency_key: string | null
+          sent_at: string
+          subject: string
+          to_email: string
+          user_id: string
+        }
+        Insert: {
+          gmail_message_id?: string | null
+          gmail_thread_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          sent_at?: string
+          subject: string
+          to_email: string
+          user_id: string
+        }
+        Update: {
+          gmail_message_id?: string | null
+          gmail_thread_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          sent_at?: string
+          subject?: string
+          to_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       release_briefs: {
         Row: {
           approved_at: string | null
@@ -1167,6 +1233,42 @@ export type Database = {
           thread_type?: string
           title?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streaming_stats: {
+        Row: {
+          created_at: string
+          followers: number | null
+          id: string
+          listeners: number | null
+          saves: number | null
+          source: string
+          stat_date: string
+          streams: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          followers?: number | null
+          id?: string
+          listeners?: number | null
+          saves?: number | null
+          source?: string
+          stat_date: string
+          streams?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          followers?: number | null
+          id?: string
+          listeners?: number | null
+          saves?: number | null
+          source?: string
+          stat_date?: string
+          streams?: number | null
           user_id?: string
         }
         Relationships: []

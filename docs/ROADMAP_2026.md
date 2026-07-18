@@ -8,7 +8,7 @@ differentiator, then the moat, then the loop, then analytics and polish.
 
 ---
 
-## Phase 1 — Recommit, park, clean (M) — IN PROGRESS
+## Phase 1 — Recommit, park, clean (M) — SHIPPED
 
 The product says "artists" everywhere again; Label OS is dormant but revivable; dead code
 stops misleading future work.
@@ -22,7 +22,7 @@ stops misleading future work.
 | Remove dead code: `api/tap/*` 410 stubs, Pitch TAP UI, timeline TAP sync, placeholder `api/agents/*` | as named | M |
 | AI provider hygiene: configurable model id, current pricing | `packages/core/ai-provider/src/anthropic.ts` | S |
 
-## Phase 2 — Finish revival: client-side analysis + perspectives (L) — flagship
+## Phase 2 — Finish revival: client-side analysis + perspectives (L) — SHIPPED (flagship)
 
 - Browser analysis module producing the existing `AnalysisResult` shape (LUFS, true peak,
   dynamics, stereo, spectral) — *audio never leaves the device*.
@@ -32,7 +32,7 @@ stops misleading future work.
 - `finish_notes` table (RLS by user). PerspectivesPanel UI. Mastering UI parked gracefully.
 - Founder tone review across 3–4 genres before launch.
 
-## Phase 3 — Intel: TAP-powered relationship memory (L) — the moat
+## Phase 3 — Intel: TAP-powered relationship memory (L) — SHIPPED (the moat)
 
 - Full TAP live integration via `lib/tap/client.ts`: enrichment (credits), outcome logging
   from Pitch/Scout actions, action-queue panel ("worth a follow-up" — quiet, in-workspace,
@@ -41,7 +41,7 @@ stops misleading future work.
 - Data foundations: commit the missing `aud_curated_contacts` migration (introspect live
   DB), seed `opportunities` across ICP genres, regenerate Supabase types, burn down `as any`.
 
-## Phase 4 — The release loop (M)
+## Phase 4 — The release loop (M) — SHIPPED
 
 - Post-release phases in timeline auto-sequencing (week +1: thank curators, log outcomes;
   week +2: review what worked); completing a follow-up offers to log a TAP outcome.
@@ -49,31 +49,35 @@ stops misleading future work.
 - Pitch consistency checker against the stored identity narrative.
 - Finish → Timeline hand-off ("plan this release", reuse `CrossModePrompt`).
 
-## Phase 5 — Analytics: "What worked" (M)
+## Phase 5 — Analytics: "What worked" (M) — SHIPPED
 
 - Own-data analytics from TAP outcomes + timeline: reply/placement rates per release,
   placement lifespan, which relationships produced results, momentum across releases.
-  Plain-English summaries first, small charts second.
-- Streaming stats via aggregator API (Songstats/Soundcharts — pricing check first) or
-  Spotify for Artists CSV import. **Not** the Spotify Web API (see STRATEGY_2026 §5).
+  Plain-English summaries first, small charts second. *(Shipped — the What Worked
+  retrospective in Intel.)*
+- Streaming stats via Spotify for Artists CSV import *(shipped — the Streaming section
+  in Intel, `/api/intel/streaming`)*. An aggregator API (Songstats/Soundcharts) remains
+  a later option — pricing check first. **Not** the Spotify Web API (see STRATEGY_2026 §5).
 
-## Phase 6 — Agent-native surface + polish (M)
+## Phase 6 — Agent-native surface + polish (M) — SHIPPED
 
 - totalaud.io MCP server exposing the public routes as consent-scoped tools
-  ("bring your own assistant") — read-mostly at first.
-- Command palette (⌘K), keyboard-first pass.
+  ("bring your own assistant") — read-mostly at first. *(Shipped — `/api/mcp`.)*
+- Command palette (⌘K), keyboard-first pass. *(Shipped.)*
 - Console surface (`app/console/*`) archived or flag-gated; workspace is home.
+  *(Shipped — console removed; workspace is home.)*
 - Landing/Lighthouse/mobile pass; perspectives tier-gating wired into Stripe
-  (included-with-limits, not per-use credits).
+  (included-with-limits, not per-use credits). *(Shipped.)*
 - Gmail send-from-your-own-inbox for pitches (OAuth clients already exist in
-  `packages/core/integrations`).
+  `packages/core/integrations`). *(Shipped — `/api/pitch/send` + the send panel in
+  Pitch; needs `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` set in Vercel.)*
 
 ---
 
 ## Quick wins shipped alongside (Phase 1–2 window)
 
-- **ICS calendar feed** for Timeline (subscribe in Google/Apple Calendar)
-- **Odesli smart links** per release (every-platform links, free API)
+- **ICS calendar feed** for Timeline (subscribe in Google/Apple Calendar) — shipped
+- **Odesli smart links** per release (every-platform links, free API) — shipped
 
 ## Standing verification (every phase)
 
@@ -82,4 +86,8 @@ manual walk of `/`, `/pricing`, `/workspace`, `/label` (expect redirect while pa
 Playwright e2e for upload → notes and the release loop as they land; RLS tests on new
 tables; Stripe test-mode checkout after pricing changes.
 
-**Last updated**: July 2026
+All six phases have shipped. New work starts from [`STRATEGY_2026.md`](STRATEGY_2026.md)
+priorities: Label OS revival criteria (§8), the aggregator pricing check, and whatever
+the artists ask for next.
+
+**Last updated**: 18 July 2026

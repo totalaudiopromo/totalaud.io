@@ -27,6 +27,7 @@ import { PITCH_TYPES } from './PitchUtils'
 import { PitchStepSelection } from './PitchStepSelection'
 import { PitchSection } from './PitchSection'
 import { ConsistencyCheck } from './ConsistencyCheck'
+import { SendPitchPanel } from './SendPitchPanel'
 
 export function PitchCanvas() {
   const { pitchCopied } = useToast()
@@ -168,6 +169,14 @@ export function PitchCanvas() {
 
         {/* Tone guardian: check the draft against the saved identity */}
         <ConsistencyCheck
+          draft={sections
+            .map((s) => s.content.trim())
+            .filter(Boolean)
+            .join('\n\n')}
+        />
+
+        {/* Send from the artist's own inbox — appears only when Gmail OAuth is configured */}
+        <SendPitchPanel
           draft={sections
             .map((s) => s.content.trim())
             .filter(Boolean)
