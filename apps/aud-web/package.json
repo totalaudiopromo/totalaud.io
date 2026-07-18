@@ -35,6 +35,7 @@
     "@supabase/supabase-js": "^2.88.0",
     "@tanstack/react-query": "5",
     "@total-audio/core-ai-provider": "workspace:*",
+    "@total-audio/core-integrations": "workspace:*",
     "@total-audio/core-supabase": "workspace:*",
     "@vercel/analytics": "^1.5.0",
     "@vercel/og": "^0.8.5",

@@ -117,6 +117,9 @@ importers:
       '@total-audio/core-ai-provider':
         specifier: workspace:*
         version: link:../../packages/core/ai-provider
+      '@total-audio/core-integrations':
+        specifier: workspace:*
+        version: link:../../packages/core/integrations
       '@total-audio/core-supabase':
         specifier: workspace:*
         version: link:../../packages/core/supabase
