@@ -13,6 +13,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIntelStore } from '@/stores/useIntelStore'
+import { StreamingSection } from './StreamingSection'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { getLaneColour } from '@/types/timeline'
 import { capture } from '@/lib/analytics'
@@ -412,6 +413,7 @@ export function IntelPanel() {
         <QueueSection />
         <SummarySection />
         <WhatWorkedSection />
+        <StreamingSection />
       </div>
     </div>
   )

@@ -1171,6 +1171,42 @@ export type Database = {
         }
         Relationships: []
       }
+      streaming_stats: {
+        Row: {
+          created_at: string
+          followers: number | null
+          id: string
+          listeners: number | null
+          saves: number | null
+          source: string
+          stat_date: string
+          streams: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          followers?: number | null
+          id?: string
+          listeners?: number | null
+          saves?: number | null
+          source?: string
+          stat_date: string
+          streams?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          followers?: number | null
+          id?: string
+          listeners?: number | null
+          saves?: number | null
+          source?: string
+          stat_date?: string
+          streams?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       stripe_webhook_events: {
         Row: {
           created_at: string

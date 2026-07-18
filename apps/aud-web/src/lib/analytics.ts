@@ -39,6 +39,7 @@ type AnalyticsEvent =
   | 'consistency_checked'
   | 'follow_up_planned'
   | 'what_worked_generated'
+  | 'streaming_stats_imported'
 
 export function capture(event: AnalyticsEvent, properties?: Record<string, unknown>): void {
   if (!initialised) return
