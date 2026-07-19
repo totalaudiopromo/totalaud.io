@@ -199,4 +199,4 @@ When touching existing files: replace `console.log` with `logger`, add Zod valid
 
 ---
 
-**Last Updated**: April 2026
+**Last Updated**: July 2026
