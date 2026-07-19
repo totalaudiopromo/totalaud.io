@@ -358,6 +358,58 @@ export function ArtistLanding() {
           </div>
         </section>
 
+        {/* Deep Dive — the agentic-first showcase */}
+        <section className="mx-auto w-full max-w-5xl px-6 pt-28 pb-4">
+          <div className="grid items-center gap-10 md:grid-cols-2">
+            <FadeIn className="order-2 md:order-1">
+              <div className="rounded-2xl border border-white/[0.08] bg-ta-panel/80 p-5">
+                <div className="mb-4 flex items-center gap-2">
+                  <span aria-hidden className="h-2 w-2 rounded-full bg-ta-cyan" />
+                  <span className="text-[13px] font-medium text-white/80">Deep Dive</span>
+                  <span className="text-[11px] text-white/35">
+                    · Understanding your sound and story
+                  </span>
+                </div>
+                <div className="rounded-xl bg-white/[0.03] p-4 text-[13px] leading-relaxed text-white/70">
+                  There&apos;s real hunger for this kind of house right now — NTS, Rinse, the
+                  dance-leaning corners of 6 Music. Before we shape a pitch, tell me where the
+                  record actually comes from. Whose lineage is it in?
+                </div>
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-ta-cyan/30 bg-ta-cyan/10 px-3 py-2">
+                  <span aria-hidden className="text-ta-cyan">
+                    +
+                  </span>
+                  <span className="text-[13px] font-medium text-ta-cyan">
+                    Set up my workspace from this chat
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-white/50">
+                  <span className="rounded-md bg-white/5 px-2 py-1">5 ideas captured</span>
+                  <span className="rounded-md bg-white/5 px-2 py-1">pitch drafted</span>
+                  <span className="rounded-md bg-white/5 px-2 py-1">timeline planned</span>
+                </div>
+              </div>
+            </FadeIn>
+            <FadeIn delay={0.08} className="order-1 md:order-2">
+              <SectionLabel>Agentic, actually</SectionLabel>
+              <h2 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+                Start with a proper conversation
+              </h2>
+              <p className="mb-4 text-[15px] leading-relaxed text-white/60">
+                Not a chatbot. A sit-down with someone who has spent years in the independent scene
+                — pitching to radio, sitting in A&amp;R rooms, watching records break. It asks the
+                questions a well-connected friend would, one at a time, and it has opinions.
+              </p>
+              <p className="text-[15px] leading-relaxed text-white/60">
+                Then it does the thing no chat does: turns what you talked about into a set-up
+                workspace. Ideas captured, a first pitch drafted in your voice, a release timeline
+                planned — in one move. The conversation isn&apos;t the novelty. It&apos;s the
+                engine.
+              </p>
+            </FadeIn>
+          </div>
+        </section>
+
         {/* Bring your own assistant */}
         <section className="mx-auto w-full max-w-5xl px-6 py-28">
           <div className="grid items-center gap-10 md:grid-cols-2">
