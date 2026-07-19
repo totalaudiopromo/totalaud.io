@@ -208,6 +208,7 @@ export function TimelineToolbar() {
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
                 title="Export"
+                aria-label="Export timeline"
               >
                 <DocumentArrowDownIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Export</span>
@@ -245,6 +246,7 @@ export function TimelineToolbar() {
               onClick={() => setShowGenerateModal(true)}
               className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
               title="Generate Plan"
+              aria-label="Generate plan from release date"
             >
               <SparklesIcon className="h-4 w-4" />
               <span className="hidden sm:inline">Generate</span>
@@ -255,6 +257,7 @@ export function TimelineToolbar() {
               onClick={() => setShowTemplateSelector(true)}
               className="flex items-center gap-1.5 px-2 sm:px-3 py-2 text-[13px] text-ta-grey hover:text-ta-white bg-transparent border border-white/10 hover:border-white/20 rounded-ta-sm transition-all duration-120"
               title="Templates"
+              aria-label="Choose a release plan template"
             >
               <RectangleStackIcon className="h-4 w-4" />
               <span className="hidden sm:inline">Templates</span>
@@ -264,6 +267,8 @@ export function TimelineToolbar() {
             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-[13px] font-medium bg-ta-cyan text-ta-black rounded-ta-sm hover:opacity-90 transition-all duration-120"
+              title="Add event"
+              aria-label="Add event"
             >
               <PlusIcon className="h-4 w-4" />
               <span className="hidden sm:inline">Add</span>

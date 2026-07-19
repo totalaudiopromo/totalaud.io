@@ -9,7 +9,8 @@ const opportunities = [
     genres: ['Electronic', 'Pop', 'Indie', 'Hip Hop'],
     vibes: ['Emerging', 'Fresh'],
     audience_size: 'huge',
-    description: 'The primary destination for discovering new, unsigned UK talent. Upload your tracks via the Introducing Uploader.',
+    description:
+      'The primary destination for discovering new, unsigned UK talent. Upload your tracks via the Introducing Uploader.',
     url: 'https://www.bbc.co.uk/introducing',
   },
   {
@@ -99,7 +100,8 @@ const opportunities = [
     genres: ['R&B', 'Soul', 'Hip Hop', 'Alternative'],
     vibes: ['Aesthetic', 'Live'],
     audience_size: 'huge',
-    description: 'Unique aesthetic music platform showcasing exceptional talent from around the globe.',
+    description:
+      'Unique aesthetic music platform showcasing exceptional talent from around the globe.',
     url: 'https://colorsxstudios.com/',
   },
   {
@@ -108,7 +110,8 @@ const opportunities = [
     genres: ['Electronic', 'R&B', 'Lofi', 'House'],
     vibes: ['Chill', 'Atmospheric'],
     audience_size: 'large',
-    description: 'Influential YouTube channel and lifestyle brand focusing on electronic and chill music.',
+    description:
+      'Influential YouTube channel and lifestyle brand focusing on electronic and chill music.',
     url: 'https://www.majesticcasual.com/',
   },
   {
@@ -162,7 +165,8 @@ const opportunities = [
     genres: ['Electronic', 'Techno', 'House'],
     vibes: ['Club', 'Underground'],
     audience_size: 'huge',
-    description: 'The definitive online music magazine and community platform dedicated to electronic music.',
+    description:
+      'The definitive online music magazine and community platform dedicated to electronic music.',
     url: 'https://ra.co/',
   },
   {
@@ -171,7 +175,7 @@ const opportunities = [
     genres: ['Electronic', 'Dance'],
     vibes: ['Club', 'Mainstream'],
     audience_size: 'huge',
-    description: 'The world\'s biggest dance music and clubbing destination.',
+    description: "The world's biggest dance music and clubbing destination.",
     url: 'https://mixmag.net/',
   },
   {
@@ -180,7 +184,7 @@ const opportunities = [
     genres: ['All'],
     vibes: ['Mainstream', 'Trending'],
     audience_size: 'huge',
-    description: 'Apple Music\'s premier playlist for the best new releases.',
+    description: "Apple Music's premier playlist for the best new releases.",
     url: 'https://music.apple.com',
   },
   {
@@ -225,7 +229,8 @@ const opportunities = [
     genres: ['Electronic', 'Dance', 'Club'],
     vibes: ['Live', 'Underground'],
     audience_size: 'huge',
-    description: 'Independent music platform and cultural curator connecting club culture to the wider world.',
+    description:
+      'Independent music platform and cultural curator connecting club culture to the wider world.',
     url: 'https://boilerroom.tv/',
   },
   {
@@ -272,7 +277,7 @@ const opportunities = [
     audience_size: 'medium',
     description: 'Quarterly printed music and fashion magazine.',
     url: 'https://notion.online/',
-  }
+  },
 ]
 
 async function seedOpportunities() {
@@ -281,17 +286,15 @@ async function seedOpportunities() {
   try {
     for (const opp of opportunities) {
       // Use raw SQL / generic insert to skip RLS
-      const { error } = await supabase
-        .from('opportunities')
-        .insert(opp)
-      
+      const { error } = await supabase.from('opportunities').insert(opp)
+
       if (error) {
         console.error(`Failed to insert ${opp.name}:`, error.message)
       } else {
         console.log(`✓ Inserted ${opp.name}`)
       }
     }
-    
+
     console.log('Seed completed successfully.')
   } catch (err) {
     console.error('Seed script error:', err)

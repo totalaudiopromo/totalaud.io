@@ -2,8 +2,6 @@ import { createAdminClient } from './config'
 import fs from 'fs'
 import path from 'path'
 
-
-
 /**
  * Migration directories to search for .sql files
  */
