@@ -25,15 +25,7 @@ import { useIdeasKeyboard } from '@/hooks/useIdeasKeyboard'
 import { IdeaCard } from './IdeaCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { getLaneColour, type LaneType } from '@/types/timeline'
-
-// Detect touch device
-function useIsTouchDevice() {
-  const [isTouch, setIsTouch] = useState(false)
-  useEffect(() => {
-    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0)
-  }, [])
-  return isTouch
-}
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 
 interface IdeasCanvasProps {
   className?: string
@@ -190,17 +182,31 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
     setIsPanning(false)
   }, [])
 
-  // Touch panning (two-finger)
+  // Touch panning (single-finger on empty canvas, or two-finger anywhere)
   const touchStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null)
+
+  const isBackgroundTarget = useCallback(
+    (target: EventTarget | null) =>
+      target === canvasRef.current || !!(target as HTMLElement)?.dataset?.canvasBackground,
+    []
+  )
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      // Two-finger touch initiates panning
-      if (e.touches.length === 2) {
-        const touch1 = e.touches[0]
-        const touch2 = e.touches[1]
-        const centerX = (touch1.clientX + touch2.clientX) / 2
-        const centerY = (touch1.clientY + touch2.clientY) / 2
+      // Two-finger touch pans from anywhere; one finger pans from empty canvas
+      const isTwoFinger = e.touches.length === 2
+      const isOneFingerOnBackground = e.touches.length === 1 && isBackgroundTarget(e.target)
+
+      if (isTwoFinger || isOneFingerOnBackground) {
+        let centerX: number
+        let centerY: number
+        if (isTwoFinger) {
+          centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2
+          centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2
+        } else {
+          centerX = e.touches[0].clientX
+          centerY = e.touches[0].clientY
+        }
         touchStartRef.current = {
           x: centerX,
           y: centerY,
@@ -210,21 +216,28 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
         setIsPanning(true)
       }
     },
-    [panOffset]
+    [panOffset, isBackgroundTarget]
   )
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2 && touchStartRef.current) {
-      const touch1 = e.touches[0]
-      const touch2 = e.touches[1]
-      const centerX = (touch1.clientX + touch2.clientX) / 2
-      const centerY = (touch1.clientY + touch2.clientY) / 2
+    if (!touchStartRef.current) return
 
-      setPanOffset({
-        x: touchStartRef.current.panX + (centerX - touchStartRef.current.x),
-        y: touchStartRef.current.panY + (centerY - touchStartRef.current.y),
-      })
+    let centerX: number
+    let centerY: number
+    if (e.touches.length === 2) {
+      centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2
+      centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2
+    } else if (e.touches.length === 1) {
+      centerX = e.touches[0].clientX
+      centerY = e.touches[0].clientY
+    } else {
+      return
     }
+
+    setPanOffset({
+      x: touchStartRef.current.panX + (centerX - touchStartRef.current.x),
+      y: touchStartRef.current.panY + (centerY - touchStartRef.current.y),
+    })
   }, [])
 
   const handleTouchEnd = useCallback(() => {
@@ -341,7 +354,9 @@ export function IdeasCanvas({ className }: IdeasCanvasProps) {
           pointerEvents: 'none',
         }}
       >
-        {isTouchDevice ? 'Tap card to select • Two-finger drag to pan' : 'Alt + drag to pan'}
+        {isTouchDevice
+          ? 'Tap to select • Tap again to edit • Drag empty space to pan'
+          : 'Alt + drag to pan'}
       </div>
 
       {/* Starter ideas hint banner */}

@@ -25,6 +25,7 @@ import { useSyncToasts } from '@/hooks/useSyncToasts'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
+import { WelcomeOverlay } from '@/components/workspace/WelcomeOverlay'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 import { TipBanner } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
@@ -136,8 +137,13 @@ const FinishToolbar = dynamic(
   () => import('@/components/workspace/finish').then((m) => ({ default: m.FinishToolbar })),
   { ssr: false }
 )
+const HomeCanvas = dynamic(
+  () => import('@/components/workspace/home').then((m) => ({ default: m.HomeCanvas })),
+  { ssr: false, loading: () => <ModeLoadingShimmer /> }
+)
 
 const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
+  { key: 'home', label: 'Home', available: true },
   { key: 'ideas', label: 'Ideas', available: true },
   { key: 'scout', label: 'Scout', available: true },
   { key: 'timeline', label: 'Timeline', available: true },
@@ -147,6 +153,7 @@ const MODES: { key: WorkspaceMode; label: string; available: boolean }[] = [
 
 // Ambient gradient overlays per mode -- subtle atmospheric differentiation
 const MODE_GRADIENTS: Record<WorkspaceMode, string> = {
+  home: 'radial-gradient(ellipse at 50% 0%, rgba(58, 169, 190, 0.04) 0%, transparent 60%)',
   ideas: 'radial-gradient(ellipse at 10% 10%, rgba(245, 158, 11, 0.04) 0%, transparent 60%)',
   scout: 'radial-gradient(ellipse at 90% 10%, rgba(16, 185, 129, 0.04) 0%, transparent 60%)',
   timeline: 'radial-gradient(ellipse at 50% 0%, rgba(139, 92, 246, 0.04) 0%, transparent 60%)',
@@ -159,10 +166,11 @@ function WorkspaceContent() {
   const router = useRouter()
   const { track } = useTelemetry()
 
-  // Get mode from URL or default to 'ideas'
+  // Get mode from URL or default to 'home' — arriving without a destination
+  // should orient, not drop the artist into a room mid-thought
   const modeParam = searchParams?.get('mode') as WorkspaceMode | null
   const [mode, setMode] = useState<WorkspaceMode>(
-    modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'ideas'
+    modeParam && MODES.find((m) => m.key === modeParam)?.available ? modeParam : 'home'
   )
 
   // Keep mode in step with the URL so cross-mode hand-offs (router.push from
@@ -273,6 +281,9 @@ function WorkspaceContent() {
 
   const renderModeContent = () => {
     switch (mode) {
+      case 'home':
+        return <HomeCanvas onNavigate={handleModeChange} />
+
       case 'ideas':
         return (
           <IdeasUndoProvider>
@@ -517,7 +528,7 @@ function WorkspaceContent() {
           backgroundImage: MODE_GRADIENTS[mode],
           transition: 'background-image 0.3s ease',
         }}
-        className="pb-14 md:pb-0"
+        className="pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0"
       >
         {/* Show loading state while auth or data is loading */}
         {(authLoading || isLoading) && mode === 'ideas' ? (
@@ -571,11 +582,21 @@ function WorkspaceContent() {
       {/* Sidebar overlay */}
       <SidebarOverlay />
 
+      {/* One-time welcome on first visit */}
+      <WelcomeOverlay />
+
       {/* Responsive styles for nav */}
       <style>{`
         @media (min-width: 768px) {
           .workspace-nav {
             display: flex !important;
+          }
+        }
+        /* Dynamic viewport height keeps the bottom nav visible under
+           mobile browser chrome (iOS Safari address bar) */
+        @supports (height: 100dvh) {
+          [data-testid='workspace-container'] {
+            height: 100dvh !important;
           }
         }
       `}</style>

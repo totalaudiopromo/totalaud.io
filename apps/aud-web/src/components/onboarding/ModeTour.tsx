@@ -14,8 +14,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronRight, ChevronLeft } from 'lucide-react'
-
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
+import type { WorkspaceMode } from '@/lib/workspace-modes'
 
 interface TourStep {
   title: string
@@ -30,6 +29,7 @@ interface ModeTourProps {
 
 // Tour content for each mode
 const TOUR_CONTENT: Record<WorkspaceMode, TourStep[]> = {
+  home: [], // Home orients itself — no tour needed
   ideas: [
     {
       title: 'Your Navigation',

@@ -24,7 +24,7 @@ export function OfflineIndicator() {
       {showOffline && (
         <motion.div
           key="offline"
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+          className="fixed bottom-[calc(3.5rem+16px+env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-[55]"
           {...variants.slideUp}
           transition={transition.normal}
         >
@@ -50,7 +50,7 @@ export function OfflineIndicator() {
       {showReconnected && (
         <motion.div
           key="reconnected"
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+          className="fixed bottom-[calc(3.5rem+16px+env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-[55]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}

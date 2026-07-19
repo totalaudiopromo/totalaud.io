@@ -66,7 +66,7 @@ function OutcomeLogger({ contactId }: { contactId: string }) {
                 key={action.status}
                 onClick={() => void logOutcome(action.status)}
                 disabled={state === 'logging'}
-                className="px-2.5 py-1 rounded border border-white/10 text-[11px] text-ta-grey hover:border-ta-cyan/40 hover:text-white transition-colors disabled:opacity-50"
+                className="px-3 py-2 sm:px-2.5 sm:py-1 rounded border border-white/10 text-xs sm:text-[11px] text-ta-grey hover:border-ta-cyan/40 hover:text-white transition-colors disabled:opacity-50"
               >
                 {action.label}
               </button>
@@ -253,7 +253,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Event title..."
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-base sm:text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors"
           />
         </div>
 
@@ -264,7 +264,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors [color-scheme:dark]"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-base sm:text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors [color-scheme:dark]"
           />
         </div>
 
@@ -275,7 +275,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             <select
               value={lane}
               onChange={(e) => setLane(e.target.value as LaneType)}
-              className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors appearance-none cursor-pointer"
+              className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-base sm:text-sm text-ta-white focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors appearance-none cursor-pointer"
             >
               {LANES.map((l) => (
                 <option key={l.id} value={l.id} className="bg-[#1A1D21]">
@@ -296,7 +296,7 @@ export function TimelineEventCard({ event, onClose }: TimelineEventCardProps) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add notes..."
             rows={3}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors resize-none min-h-[80px]"
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-base sm:text-sm text-ta-white placeholder-ta-grey/30 focus:outline-none focus:border-ta-cyan/50 focus:bg-white/10 transition-colors resize-none min-h-[80px]"
           />
         </div>
 

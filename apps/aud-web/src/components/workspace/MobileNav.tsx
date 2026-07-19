@@ -20,6 +20,24 @@ interface MobileNavProps {
 
 const MODES: { key: WorkspaceMode; label: string; icon: React.ReactNode }[] = [
   {
+    key: 'home',
+    label: 'Home',
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 2.5l7 6.3V17a1 1 0 01-1 1h-4v-5H8v5H4a1 1 0 01-1-1V8.8l7-6.3zm0 2.69L5 9.69V16h1v-5h8v5h1V9.69l-5-4.5z"
+          fill="currentColor"
+        />
+      </svg>
+    ),
+  },
+  {
     key: 'ideas',
     label: 'Ideas',
     icon: (
@@ -121,7 +139,7 @@ export function MobileNav({ mode, onModeChange }: MobileNavProps) {
           <button
             key={modeConfig.key}
             onClick={() => onModeChange(modeConfig.key)}
-            className="flex flex-col items-center justify-center gap-0.5 px-4 py-2 bg-transparent border-none cursor-pointer relative min-w-16"
+            className="flex flex-col items-center justify-center gap-0.5 px-2 py-2 bg-transparent border-none cursor-pointer relative min-w-12 flex-1"
           >
             <span
               className="transition-colors duration-180"

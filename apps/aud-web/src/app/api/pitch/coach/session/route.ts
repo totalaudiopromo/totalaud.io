@@ -65,8 +65,8 @@ interface TrackMemoryContext {
 const requestSchema = z.object({
   message: z.string().min(1, 'Message is required'),
   sectionId: z.string().optional(),
-  trackId: z.string().optional(), // Track context for memory lookup
   // Use .nullish() to accept null, undefined, or omitted values
+  trackId: z.string().nullish(),
   pitchType: z.enum(['radio', 'press', 'playlist', 'custom']).nullish(),
   mode: z.enum(['quick', 'guided']).nullish(),
   phase: z.enum(['foundation', 'refinement', 'optimisation']).nullish(),

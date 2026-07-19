@@ -188,15 +188,15 @@ export function PitchCanvas() {
       <AnimatePresence>
         {isCoachOpen && (
           <motion.div
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 360, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className="border-l border-white/5 bg-[#0F1113]/95 backdrop-blur-xl flex-shrink-0 relative z-20"
+            initial={{ opacity: 0, x: 32 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 32 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[60] bg-[#0F1113] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] md:static md:inset-auto md:z-20 md:w-[360px] md:flex-shrink-0 md:border-l md:border-white/5 md:bg-[#0F1113]/95 md:backdrop-blur-xl md:pt-0 md:pb-0"
           >
-            <div className="h-full w-[360px]">
-              {/* Show CoachingSession for multi-turn conversations */}
-              {isSessionActive ? (
+            <div className="h-full w-full md:w-[360px]">
+              {/* Show CoachingSession for multi-turn conversations and the default mode picker */}
+              {isSessionActive || (!isCoachLoading && !coachResponse && !coachError) ? (
                 <CoachingSession />
               ) : (
                 <div className="p-6 h-full overflow-y-auto">
@@ -255,9 +255,6 @@ export function PitchCanvas() {
                       )}
                     </div>
                   )}
-
-                  {/* Default state with session starter */}
-                  {!isCoachLoading && !coachResponse && !coachError && <CoachingSession />}
                 </div>
               )}
             </div>

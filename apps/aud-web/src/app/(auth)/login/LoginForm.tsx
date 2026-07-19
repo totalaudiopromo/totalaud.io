@@ -222,7 +222,7 @@ export function LoginForm() {
           </h1>
           <p
             style={{
-              fontSize: '15px',
+              fontSize: '16px',
               color: 'rgba(255, 255, 255, 0.85)',
               lineHeight: 1.5,
             }}
@@ -259,7 +259,7 @@ export function LoginForm() {
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                fontSize: '15px',
+                fontSize: '16px',
                 color: '#F7F8F9',
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -335,7 +335,7 @@ export function LoginForm() {
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                fontSize: '15px',
+                fontSize: '16px',
                 color: '#F7F8F9',
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -406,7 +406,7 @@ export function LoginForm() {
             style={{
               width: '100%',
               padding: '14px 24px',
-              fontSize: '15px',
+              fontSize: '16px',
               fontWeight: 600,
               color: '#0F1113',
               background: 'linear-gradient(135deg, #3AA9BE 0%, #2D8A9C 100%)',
@@ -506,7 +506,7 @@ export function LoginForm() {
           style={{
             width: '100%',
             padding: '14px 24px',
-            fontSize: '15px',
+            fontSize: '16px',
             fontWeight: 500,
             color: '#F7F8F9',
             backgroundColor: 'rgba(255, 255, 255, 0.06)',

@@ -14,6 +14,7 @@ import { motion } from 'framer-motion'
 import type { IdeaCard as IdeaCardType, IdeaTag } from '@/stores/useIdeasStore'
 import { transition, duration } from '@/lib/motion'
 import { suggestTag } from '@/lib/ideas/suggestTag'
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 
 const TAG_COLOURS: Record<IdeaTag, { bg: string; border: string; text: string }> = {
   content: {
@@ -57,6 +58,7 @@ export function IdeaCard({
   const [editContent, setEditContent] = useState(card.content)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const isTouchDevice = useIsTouchDevice()
 
   const tagColour = TAG_COLOURS[card.tag]
 
@@ -76,7 +78,7 @@ export function IdeaCard({
     [card.position, onMove]
   )
 
-  const handleDoubleClick = useCallback(() => {
+  const startEditing = useCallback(() => {
     setIsEditing(true)
     setEditContent(card.content)
     setTimeout(() => {
@@ -84,6 +86,16 @@ export function IdeaCard({
       textareaRef.current?.select()
     }, 0)
   }, [card.content])
+
+  // On touch devices a second tap on an already-selected card opens the editor
+  // (double-tap is unreliable on draggable cards). Desktop keeps click-to-select.
+  const handleCardClick = useCallback(() => {
+    if (isTouchDevice && isSelected && !isEditing) {
+      startEditing()
+      return
+    }
+    onSelect()
+  }, [isTouchDevice, isSelected, isEditing, startEditing, onSelect])
 
   const handleBlur = useCallback(() => {
     const trimmedContent = editContent.trim()
@@ -159,8 +171,8 @@ export function IdeaCard({
       }}
       transition={transition.normal}
       whileHover={{ scale: isSelected || isDragging ? 1 : 1.02 }}
-      onClick={onSelect}
-      onDoubleClick={handleDoubleClick}
+      onClick={handleCardClick}
+      onDoubleClick={startEditing}
       className={`
         absolute w-[180px] sm:w-[220px] min-h-[90px] sm:min-h-[100px] p-3 sm:p-4 rounded-xl backdrop-blur-md transition-all duration-200 group
         ${isDragging ? 'cursor-grabbing z-50 scale-105 shadow-2xl' : 'cursor-grab z-10'}
@@ -208,20 +220,50 @@ export function IdeaCard({
           onChange={(e) => setEditContent(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="w-full min-h-[50px] sm:min-h-[60px] bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-ta-white leading-relaxed font-sans placeholder:text-ta-grey/30"
+          className="w-full min-h-[50px] sm:min-h-[60px] bg-transparent border-none outline-none resize-none text-base sm:text-sm text-ta-white leading-relaxed font-sans placeholder:text-ta-grey/30"
           autoFocus
         />
       ) : (
         <p className="text-xs sm:text-sm text-ta-white/90 leading-relaxed font-sans whitespace-pre-wrap word-break">
-          {card.content || <span className="text-ta-grey/40 italic">Double-click to edit...</span>}
+          {card.content || (
+            <span className="text-ta-grey/40 italic">
+              {isTouchDevice ? 'Tap to edit...' : 'Double-click to edit...'}
+            </span>
+          )}
         </p>
       )}
 
-      {/* Action buttons (visible on hover/select) */}
+      {/* Action buttons (always visible on touch, hover/select on desktop) */}
       <div
-        className={`absolute top-1.5 sm:top-3 right-1.5 sm:right-3 flex gap-1.5 sm:gap-1.5 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        className={`absolute top-1.5 sm:top-3 right-1.5 sm:right-3 flex gap-1.5 sm:gap-1.5 transition-opacity ${
+          isSelected || isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}
         style={{ transitionDuration: `${duration.normal * 1000}ms` }}
       >
+        {/* Edit button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            startEditing()
+          }}
+          className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 rounded bg-white/5 border border-white/10 text-ta-white/60 hover:bg-white/15 hover:text-ta-white transition-colors"
+          aria-label="Edit idea"
+          title="Edit idea"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+          </svg>
+        </button>
         {/* Send to Timeline button */}
         {onSendToTimeline && (
           <button

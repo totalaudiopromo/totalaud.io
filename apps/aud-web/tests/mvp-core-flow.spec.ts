@@ -12,14 +12,12 @@ test.describe('MVP Core Flow', () => {
   })
 
   test('should complete full user journey: Ideas → Scout → Timeline → Pitch', async ({ page }) => {
-    // Step 1: Navigate to Workspace
+    // Step 1: Navigate to Workspace — Home is the default landing view
     await page.goto('/workspace')
-
-    // Should show Ideas mode by default (URL may or may not have ?mode=ideas)
     await expect(page.getByRole('button', { name: 'Ideas' })).toBeVisible()
 
-    // Step 2: Verify ideas interface is visible
-    // The "Add" button should be visible in the toolbar
+    // Step 2: Enter Ideas mode and verify the interface is visible
+    await page.goto('/workspace?mode=ideas')
     const addButton = page.getByRole('button', { name: /Add/i })
     await expect(addButton).toBeVisible()
 

@@ -21,6 +21,7 @@ import { SuggestionsPanel } from './SuggestionsPanel'
 import { ProcessingStatus } from './ProcessingStatus'
 import { AnalysingView } from './AnalysingView'
 import { PerspectivesPanel } from './PerspectivesPanel'
+import { DownloadReportButton } from './DownloadReportButton'
 
 export function FinishCanvas() {
   const stage = useFinishStore((s) => s.stage)
@@ -71,6 +72,9 @@ export function FinishCanvas() {
           <SuggestionsPanel suggestions={suggestions} />
 
           <PerspectivesPanel />
+
+          {/* Keep a copy of the report */}
+          <DownloadReportButton />
 
           {/* Mastering parked */}
           <div className="rounded-ta-sm border border-ta-white/[0.06] bg-ta-panel/50 px-3 py-2.5">

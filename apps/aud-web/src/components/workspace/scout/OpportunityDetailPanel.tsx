@@ -165,7 +165,7 @@ export function OpportunityDetailPanel() {
             exit={{ x: '100%' }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             onKeyDown={handleKeyDown}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#1A1D21] border-l border-white/8 z-50 flex flex-col overflow-hidden"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#1A1D21] border-l border-white/8 z-[60] flex flex-col overflow-hidden pb-[env(safe-area-inset-bottom)]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="panel-title"

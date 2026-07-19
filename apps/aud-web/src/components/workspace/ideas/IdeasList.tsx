@@ -15,6 +15,7 @@ import {
   type IdeaCard,
   type IdeaTag,
 } from '@/stores/useIdeasStore'
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 
 const TAG_COLOURS: Record<IdeaTag, string> = {
   content: '#3AA9BE',
@@ -35,18 +36,24 @@ export function IdeasList({ className }: IdeasListProps) {
 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
-
-  const handleRowClick = useCallback(
-    (id: string) => {
-      selectCard(id)
-    },
-    [selectCard]
-  )
+  const isTouchDevice = useIsTouchDevice()
 
   const handleRowDoubleClick = useCallback((card: IdeaCard) => {
     setEditingId(card.id)
     setEditContent(card.content)
   }, [])
+
+  // On touch devices a second tap on the selected row opens the editor
+  const handleRowClick = useCallback(
+    (card: IdeaCard) => {
+      if (isTouchDevice && selectedCardId === card.id && editingId !== card.id) {
+        handleRowDoubleClick(card)
+        return
+      }
+      selectCard(card.id)
+    },
+    [isTouchDevice, selectedCardId, editingId, handleRowDoubleClick, selectCard]
+  )
 
   const handleEditSave = useCallback(
     (id: string) => {
@@ -186,7 +193,7 @@ export function IdeasList({ className }: IdeasListProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.16, delay: index * 0.02 }}
-                onClick={() => handleRowClick(card.id)}
+                onClick={() => handleRowClick(card)}
                 onDoubleClick={() => handleRowDoubleClick(card)}
                 style={{
                   display: 'grid',
@@ -261,7 +268,8 @@ export function IdeasList({ className }: IdeasListProps) {
                       style={{
                         width: '100%',
                         padding: '4px 8px',
-                        fontSize: 13,
+                        // 16px on touch stops iOS auto-zooming the page on focus
+                        fontSize: isTouchDevice ? 16 : 13,
                         color: '#F7F8F9',
                         backgroundColor: 'rgba(255, 255, 255, 0.06)',
                         border: '1px solid rgba(58, 169, 190, 0.4)',

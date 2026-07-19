@@ -3,9 +3,10 @@
  * Single source of truth -- used by workspace page, MobileNav, and any mode-aware component.
  */
 
-export type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
+export type WorkspaceMode = 'home' | 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
 
 export const MODE_COLOURS: Record<WorkspaceMode, string> = {
+  home: '#E6E8EA',
   ideas: '#F59E0B',
   scout: '#10B981',
   timeline: '#8B5CF6',
