@@ -36,6 +36,11 @@ export function LoginForm() {
     if (message === 'password-updated') {
       setSuccessMessage('Password updated. Sign in with your new password.')
     }
+
+    const errorParam = searchParams.get('error')
+    if (errorParam === 'not_approved') {
+      setError("You're on the waiting list — we'll email you as soon as access opens.")
+    }
   }, [searchParams])
 
   useEffect(() => {
