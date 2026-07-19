@@ -41,6 +41,7 @@ type AnalyticsEvent =
   | 'follow_up_planned'
   | 'what_worked_generated'
   | 'streaming_stats_imported'
+  | 'workspace_setup_from_chat'
 
 export function capture(event: AnalyticsEvent, properties?: Record<string, unknown>): void {
   if (!initialised) return

@@ -27,6 +27,7 @@ import { TypingIndicator } from '@/components/ui/EmptyState'
 
 import { PHASE_INFO, MODE_LABELS, QUICK_ACTIONS } from './CoachingUtils'
 import { MessageBubble } from './MessageBubble'
+import { WorkspaceSetup } from './WorkspaceSetup'
 
 export function CoachingSession() {
   const [inputValue, setInputValue] = useState('')
@@ -255,8 +256,9 @@ export function CoachingSession() {
                 </>
               ) : (
                 <>
-                  Let's dive deep into your pitch together. I'll ask questions to understand your
-                  music and help you find your authentic voice. What would you like to work on?
+                  Let's have a proper sit-down about your music before we shape anything. Tell me
+                  what you're working on and who you are as an artist — once we've got somewhere, I
+                  can set up your whole workspace from what we talk about. So, what's the record?
                 </>
               )}
             </div>
@@ -318,6 +320,9 @@ export function CoachingSession() {
 
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Turn the conversation into a set-up workspace (guided mode only) */}
+      <WorkspaceSetup />
 
       {/* Input area */}
       <div className="p-4 border-t border-white/5">

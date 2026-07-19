@@ -15,7 +15,7 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTimelineStore } from '@/stores/useTimelineStore'
-import { LANES, LANE_MAP, type LaneType, type TimelineEvent } from '@/types/timeline'
+import { LANE_MAP, type LaneType, type TimelineEvent } from '@/types/timeline'
 import { TimelineEventCard } from './TimelineEventCard'
 import { EmptyState, emptyStates } from '@/components/ui/EmptyState'
 import { CrossModePrompt } from '@/components/workspace/CrossModePrompt'
