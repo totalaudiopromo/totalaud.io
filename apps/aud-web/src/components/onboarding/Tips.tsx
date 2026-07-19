@@ -24,7 +24,7 @@ const TIPS: Record<string, TipConfig> = {
     id: 'ideas',
     title: 'Capture your ideas',
     description:
-      'Click anywhere to create a note. Tag ideas as Content, Brand, Music, or Promo to keep them organized.',
+      'Click anywhere to create a note. Tag ideas as Content, Brand, Music, or Promo to keep them organised.',
   },
   scout: {
     id: 'scout',
@@ -36,7 +36,7 @@ const TIPS: Record<string, TipConfig> = {
     id: 'timeline',
     title: 'Plan your release',
     description:
-      'Drag events between lanes to organize your campaign. Events from Scout appear here automatically.',
+      'Tap an event to edit it or move it between lanes — on desktop you can drag. Events from Scout appear here automatically.',
   },
   pitch: {
     id: 'pitch',

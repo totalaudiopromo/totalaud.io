@@ -8,11 +8,11 @@ import { usePitchStore } from '@/stores/usePitchStore'
 
 export function useSyncToasts() {
   const { success } = useToast()
-  
+
   const ideasSyncedAt = useIdeasStore((state) => state.lastSyncedAt)
   const timelineSyncedAt = useTimelineStore((state) => state.lastSyncedAt)
   const pitchSyncedAt = usePitchStore((state) => state.lastSyncedAt)
-  
+
   // Keep track of previous values to only trigger on change
   const prevIdeasSyncedAt = useRef(ideasSyncedAt)
   const prevTimelineSyncedAt = useRef(timelineSyncedAt)
