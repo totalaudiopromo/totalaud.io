@@ -1,34 +1,23 @@
 /**
- * Waitlist Form Component - totalaud.io
+ * Waitlist / newsletter signup form — totalaud.io
  *
- * Kit (ConvertKit) v4 API integration for waitlist signups.
- * Uses the v4 API endpoint: api.kit.com/v4/forms/:id/subscribers
- *
- * NOTE: Create a form in Kit dashboard first:
- * 1. Create form: "totalaud.io Waitlist"
- * 2. Add tag: "totalaud-waitlist"
- * 3. Set NEXT_PUBLIC_CONVERTKIT_FORM_ID env variable
- * 4. Set NEXT_PUBLIC_CONVERTKIT_API_KEY env variable (v4 key starting with kit_)
+ * Posts to /api/waitlist, which captures the email into Supabase
+ * (totalaud_io_waitlist) and sends a Resend confirmation. No third-party
+ * form provider — one capture path, one email provider.
  */
 
 'use client'
 
 import { useState, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { env } from '@/lib/env'
-import { logger } from '@/lib/logger'
-
-const log = logger.scope('WaitlistForm')
+import { capture } from '@/lib/analytics'
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
-export function WaitlistForm() {
+export function WaitlistForm({ source = 'newsletter-notes' }: { source?: string }) {
   const [email, setEmail] = useState('')
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
-
-  const formId = env.NEXT_PUBLIC_CONVERTKIT_FORM_ID
-  const apiKey = env.NEXT_PUBLIC_CONVERTKIT_API_KEY
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -43,31 +32,17 @@ export function WaitlistForm() {
     setErrorMessage('')
 
     try {
-      // ConvertKit form submission
-      // If no form ID, simulate success for development
-      if (!formId) {
-        log.debug('No CONVERTKIT_FORM_ID set, simulating success')
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setFormState('success')
-        return
-      }
-
-      // Kit API v4 endpoint - uses X-Kit-Api-Key header
-      const response = await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
+      const res = await fetch('/api/waitlist', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Kit-Api-Key': apiKey || '',
-        },
-        body: JSON.stringify({
-          email_address: email,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to subscribe')
+      if (!res.ok) {
+        throw new Error('Request failed')
       }
 
+      capture('waitlist_joined', { source })
       setFormState('success')
     } catch {
       setFormState('error')
@@ -100,7 +75,7 @@ export function WaitlistForm() {
                 fontWeight: 500,
               }}
             >
-              You&apos;re on the list! We&apos;ll be in touch.
+              You&apos;re on the list! Check your inbox for a confirmation.
             </p>
           </motion.div>
         ) : (

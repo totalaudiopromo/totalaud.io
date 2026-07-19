@@ -10,10 +10,9 @@ export const newsletter = {
   tagline: 'For independent artists who want to understand what actually matters',
   contextLabel: 'Notes from building totalaud.io',
 
-  // Kit integration (same form as waitlist, or dedicated newsletter form)
+  // Newsletter archive (externally hosted). Signups go through /api/waitlist.
   archiveUrl:
     process.env.NEXT_PUBLIC_NEWSLETTER_ARCHIVE_URL || 'https://theadvantage.kit.com/posts',
-  formId: process.env.NEXT_PUBLIC_NEWSLETTER_FORM_ID || process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID,
 
   // Shared across both properties
   sharedAcross: [
