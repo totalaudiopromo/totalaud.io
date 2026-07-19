@@ -50,6 +50,7 @@ import {
 } from './TimelineUtils'
 import { TimelineHeader } from './TimelineHeader'
 import { TimelineFooter } from './TimelineFooter'
+import { TimelineAgenda } from './TimelineAgenda'
 
 // ============================================================================
 // Main Component
@@ -300,6 +301,13 @@ export function TimelineCanvas() {
     setActiveId(null)
     setOverId(null)
   }, [])
+
+  // Mobile gets a calm vertical agenda instead of the horizontal drag grid —
+  // no 1400px-wide scroll, no touch-drag-vs-scroll fight. Same store, same
+  // edit sheet. All hooks above run on every render, so this branch is safe.
+  if (isMobile) {
+    return <TimelineAgenda />
+  }
 
   return (
     <DndContext

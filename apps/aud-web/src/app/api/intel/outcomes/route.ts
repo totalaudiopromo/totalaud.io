@@ -49,8 +49,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       available: true,
     })
   } catch (error) {
-    if (error instanceof TapApiError && error.isTransient) {
-      log.warn('TAP unreachable, degrading to empty outcomes', { code: error.code })
+    // Reads degrade quietly on any TAP failure (STRATEGY_2026 §7).
+    if (error instanceof TapApiError) {
+      if (error.isTransient) {
+        log.warn('TAP unreachable, degrading to empty outcomes', { code: error.code })
+      } else {
+        log.error('TAP rejected the outcomes request — check TAP_API_KEY/TAP_API_URL', undefined, {
+          status: error.status,
+          code: error.code,
+        })
+      }
       return NextResponse.json({ data: [], has_more: false, available: false })
     }
     log.error('Outcome list failed', error instanceof Error ? error : undefined)

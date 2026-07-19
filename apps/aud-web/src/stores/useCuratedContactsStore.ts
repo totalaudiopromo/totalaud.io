@@ -38,6 +38,8 @@ interface CuratedContactsState {
   maxContacts: number
   upgradeRequired: boolean
   hasFetched: boolean
+  /** False when the contacts engine (TAP) is away — show a calm note, not an error. */
+  available: boolean
 
   // Filters
   platformFilter: PlatformFilter
@@ -65,6 +67,7 @@ export const useCuratedContactsStore = create<CuratedContactsState>((set, get) =
   maxContacts: 10,
   upgradeRequired: false,
   hasFetched: false,
+  available: true,
 
   platformFilter: null,
   genreFilter: null,
@@ -118,6 +121,8 @@ export const useCuratedContactsStore = create<CuratedContactsState>((set, get) =
         tier: data.tier ?? 'free',
         maxContacts: data.maxContacts ?? 10,
         upgradeRequired: data.upgradeRequired ?? false,
+        // The route returns available:false when TAP is unconfigured or away.
+        available: data.available !== false,
         savedIds,
         loading: false,
         hasFetched: true,

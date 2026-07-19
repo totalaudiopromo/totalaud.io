@@ -339,6 +339,7 @@ export function CuratedContactsGrid() {
   const maxContacts = useCuratedContactsStore((s) => s.maxContacts)
   const upgradeRequired = useCuratedContactsStore((s) => s.upgradeRequired)
   const hasFetched = useCuratedContactsStore((s) => s.hasFetched)
+  const available = useCuratedContactsStore((s) => s.available)
   const fetchContacts = useCuratedContactsStore((s) => s.fetchContacts)
   const platformFilter = useCuratedContactsStore((s) => s.platformFilter)
   const setPlatformFilter = useCuratedContactsStore((s) => s.setPlatformFilter)
@@ -521,8 +522,46 @@ export function CuratedContactsGrid() {
         </div>
       )}
 
-      {/* Empty state */}
-      {!loading && !error && hasFetched && contacts.length === 0 && (
+      {/* Engine room away — TAP unreachable/unconfigured. Calm, never an error. */}
+      {!loading && !error && hasFetched && contacts.length === 0 && !available && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 48,
+            textAlign: 'center',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(58, 169, 190, 0.1)',
+              borderRadius: 12,
+              color: '#3AA9BE',
+              fontSize: 20,
+            }}
+          >
+            <RadioIcon />
+          </div>
+          <p style={{ fontSize: 14, color: '#F7F8F9', fontWeight: 500, margin: 0 }}>
+            Contacts are warming up
+          </p>
+          <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', margin: 0, maxWidth: 280 }}>
+            Your curated contacts will be here when the connection is back. Nothing to do — check
+            again shortly.
+          </p>
+        </div>
+      )}
+
+      {/* Empty state (engine room is up, filters just matched nothing) */}
+      {!loading && !error && hasFetched && contacts.length === 0 && available && (
         <div
           style={{
             display: 'flex',

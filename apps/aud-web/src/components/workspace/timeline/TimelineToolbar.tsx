@@ -183,8 +183,9 @@ export function TimelineToolbar() {
 
           {/* Right: View controls */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* View scale toggle */}
-            <div className="flex bg-white/5 rounded-ta-sm p-0.5">
+            {/* View scale toggle — hidden on mobile, where the timeline is a
+                vertical agenda with no horizontal week/month/quarter axis */}
+            <div className="hidden sm:flex bg-white/5 rounded-ta-sm p-0.5">
               {(['weeks', 'months', 'quarters'] as ViewScale[]).map((scale) => (
                 <button
                   key={scale}

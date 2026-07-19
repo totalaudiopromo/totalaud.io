@@ -63,8 +63,17 @@ export async function GET(): Promise<NextResponse> {
       outcome_count: outcomes.data.length,
     })
   } catch (error) {
-    if (error instanceof TapApiError && error.isTransient) {
-      log.warn('TAP unreachable for intel summary', { code: error.code })
+    // Any TAP failure degrades to available:false — a rejected key is as much
+    // "the engine room is away" to the artist as a timeout (STRATEGY_2026 §7).
+    if (error instanceof TapApiError) {
+      if (error.isTransient) {
+        log.warn('TAP unreachable for intel summary', { code: error.code })
+      } else {
+        log.error('TAP rejected the intel-summary request — check TAP_API_KEY/TAP_API_URL', undefined, {
+          status: error.status,
+          code: error.code,
+        })
+      }
       return NextResponse.json({ available: false })
     }
     log.error('Intel summary failed', error instanceof Error ? error : undefined)
