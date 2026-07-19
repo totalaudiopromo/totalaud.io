@@ -177,6 +177,37 @@ export function TimelineCanvas() {
     }
   }, [getTodayPosition])
 
+  // Keep the header and every lane scrolling as one horizontal surface —
+  // otherwise dates and events drift out of alignment (worst on touch)
+  useEffect(() => {
+    const header = scrollRef.current
+    const lanes = lanesRef.current
+    if (!header || !lanes) return
+
+    const laneScrollers = Array.from(
+      lanes.querySelectorAll<HTMLDivElement>('[data-timeline-scroller]')
+    )
+    const scrollers: HTMLDivElement[] = [header, ...laneScrollers]
+    let syncing = false
+
+    const cleanups = scrollers.map((scroller) => {
+      const onScroll = () => {
+        if (syncing) return
+        syncing = true
+        for (const other of scrollers) {
+          if (other !== scroller) other.scrollLeft = scroller.scrollLeft
+        }
+        requestAnimationFrame(() => {
+          syncing = false
+        })
+      }
+      scroller.addEventListener('scroll', onScroll, { passive: true })
+      return () => scroller.removeEventListener('scroll', onScroll)
+    })
+
+    return () => cleanups.forEach((cleanup) => cleanup())
+  }, [timeColumns])
+
   // Handle Today button click
   const handleScrollToToday = useCallback(() => {
     if (scrollRef.current) {

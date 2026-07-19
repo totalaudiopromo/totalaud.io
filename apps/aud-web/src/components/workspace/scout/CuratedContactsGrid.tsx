@@ -192,8 +192,8 @@ function CuratedContactCard({
             borderRadius: 4,
             display: 'flex',
             alignItems: 'center',
-            minWidth: 28,
-            minHeight: 28,
+            minWidth: 40,
+            minHeight: 40,
             justifyContent: 'center',
           }}
           title={isSaved ? 'Remove from saved' : 'Save contact'}
@@ -406,7 +406,8 @@ export function CuratedContactsGrid() {
               border: 'none',
               outline: 'none',
               color: '#F7F8F9',
-              fontSize: 13,
+              // 16px stops iOS auto-zooming the page on focus
+              fontSize: 16,
               width: '100%',
               fontFamily: 'var(--font-geist-sans, system-ui, sans-serif)',
             }}
@@ -428,7 +429,7 @@ export function CuratedContactsGrid() {
                 platformFilter === null ? 'rgba(58, 169, 190, 0.15)' : 'rgba(255, 255, 255, 0.04)',
               color: platformFilter === null ? '#3AA9BE' : 'rgba(255, 255, 255, 0.5)',
               fontFamily: 'var(--font-geist-sans, system-ui, sans-serif)',
-              minHeight: 28,
+              minHeight: 36,
             }}
           >
             All
@@ -456,7 +457,7 @@ export function CuratedContactsGrid() {
                   color: platformFilter === p ? PLATFORM_COLOURS[p!] : 'rgba(255, 255, 255, 0.5)',
                   fontFamily: 'var(--font-geist-sans, system-ui, sans-serif)',
                   textTransform: 'capitalize',
-                  minHeight: 28,
+                  minHeight: 36,
                 }}
               >
                 {Icon && <Icon />}

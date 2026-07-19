@@ -33,6 +33,7 @@ type AnalyticsEvent =
   | 'waitlist_joined'
   | 'finish_track_analysed'
   | 'finishing_notes_generated'
+  | 'finishing_report_downloaded'
   | 'outcome_logged'
   | 'intel_summary_generated'
   | 'release_plan_created'

@@ -189,7 +189,7 @@ export function TimelineToolbar() {
                 <button
                   key={scale}
                   onClick={() => setViewScale(scale)}
-                  className={`px-2 sm:px-2.5 py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
+                  className={`px-2.5 sm:px-2.5 py-2.5 sm:py-1.5 text-[11px] rounded-ta-sm capitalize transition-all duration-120 ${
                     viewScale === scale
                       ? 'font-medium text-ta-cyan bg-ta-cyan/15'
                       : 'font-normal text-ta-grey/60 hover:text-ta-grey'
@@ -301,7 +301,7 @@ export function TimelineToolbar() {
                   onChange={(e) => setNewEventTitle(e.target.value)}
                   placeholder="Event title..."
                   autoFocus
-                  className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180"
+                  className="w-full px-3 py-2.5 text-base sm:text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180"
                 />
               </div>
 
@@ -315,7 +315,7 @@ export function TimelineToolbar() {
                     type="date"
                     value={newEventDate}
                     onChange={(e) => setNewEventDate(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
+                    className="w-full px-3 py-2.5 text-base sm:text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
                   />
                 </div>
                 <div className="flex-1">
@@ -325,7 +325,7 @@ export function TimelineToolbar() {
                   <select
                     value={newEventLane}
                     onChange={(e) => setNewEventLane(e.target.value as LaneType)}
-                    className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 cursor-pointer"
+                    className="w-full px-3 py-2.5 text-base sm:text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 cursor-pointer"
                   >
                     {LANES.map((lane) => (
                       <option key={lane.id} value={lane.id} className="bg-ta-panel">
@@ -346,7 +346,7 @@ export function TimelineToolbar() {
                   onChange={(e) => setNewEventDescription(e.target.value)}
                   placeholder="Add notes..."
                   rows={2}
-                  className="w-full px-3 py-2.5 text-[13px] text-ta-white/80 bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 resize-none"
+                  className="w-full px-3 py-2.5 text-base sm:text-[13px] text-ta-white/80 bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 resize-none"
                 />
               </div>
 
@@ -416,7 +416,7 @@ export function TimelineToolbar() {
                   value={releaseDate}
                   onChange={(e) => setReleaseDate(e.target.value)}
                   autoFocus
-                  className="w-full px-3 py-2.5 text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
+                  className="w-full px-3 py-2.5 text-base sm:text-sm text-ta-white bg-white/5 border border-white/10 rounded-ta-sm outline-none focus:border-ta-cyan/50 focus:ring-1 focus:ring-ta-cyan/20 transition-all duration-180 [color-scheme:dark]"
                 />
               </div>
 

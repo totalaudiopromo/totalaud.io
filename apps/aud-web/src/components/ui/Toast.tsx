@@ -144,10 +144,10 @@ interface ToastContainerProps {
 export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
   return (
     <div
+      className="bottom-[calc(3.5rem+16px+env(safe-area-inset-bottom))] md:bottom-6"
       style={{
         position: 'fixed',
-        bottom: 24,
-        right: 24,
+        right: 16,
         zIndex: 9999,
         display: 'flex',
         flexDirection: 'column',

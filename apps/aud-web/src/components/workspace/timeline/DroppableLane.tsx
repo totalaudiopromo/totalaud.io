@@ -86,9 +86,10 @@ export function DroppableLane({
         </span>
       </div>
 
-      {/* Lane content - scrollable, droppable area */}
+      {/* Lane content - scrollable, droppable area (scroll kept in sync with the header) */}
       <div
         ref={setNodeRef}
+        data-timeline-scroller
         style={{
           flex: 1,
           position: 'relative',

@@ -25,6 +25,7 @@ import { useSyncToasts } from '@/hooks/useSyncToasts'
 import { UserMenu } from '@/components/workspace/UserMenu'
 import { MobileNav } from '@/components/workspace/MobileNav'
 import { SidebarToggle } from '@/components/workspace/SidebarToggle'
+import { WelcomeOverlay } from '@/components/workspace/WelcomeOverlay'
 import { SidebarOverlay } from '@/components/shared/SidebarOverlay'
 import { TipBanner } from '@/components/onboarding'
 import { useCurrentTrackId } from '@/hooks/useCurrentTrackId'
@@ -517,7 +518,7 @@ function WorkspaceContent() {
           backgroundImage: MODE_GRADIENTS[mode],
           transition: 'background-image 0.3s ease',
         }}
-        className="pb-14 md:pb-0"
+        className="pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0"
       >
         {/* Show loading state while auth or data is loading */}
         {(authLoading || isLoading) && mode === 'ideas' ? (
@@ -571,11 +572,21 @@ function WorkspaceContent() {
       {/* Sidebar overlay */}
       <SidebarOverlay />
 
+      {/* One-time welcome on first visit */}
+      <WelcomeOverlay />
+
       {/* Responsive styles for nav */}
       <style>{`
         @media (min-width: 768px) {
           .workspace-nav {
             display: flex !important;
+          }
+        }
+        /* Dynamic viewport height keeps the bottom nav visible under
+           mobile browser chrome (iOS Safari address bar) */
+        @supports (height: 100dvh) {
+          [data-testid='workspace-container'] {
+            height: 100dvh !important;
           }
         }
       `}</style>

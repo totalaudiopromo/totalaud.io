@@ -55,7 +55,7 @@ export function ScoutCalmToolbar() {
             onChange={(e) => setLocalSearch(e.target.value)}
             placeholder="Search contacts..."
             className="
-              w-full md:w-64 pl-9 pr-8 py-2 text-sm
+              w-full md:w-64 pl-9 pr-8 py-2 text-base sm:text-sm
               bg-white/5 border border-white/10
               rounded-xl text-ta-white placeholder:text-ta-grey/50
               focus:outline-none focus:bg-white/10 focus:border-ta-cyan/30 focus:ring-1 focus:ring-ta-cyan/20
