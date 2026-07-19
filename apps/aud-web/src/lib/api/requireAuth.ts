@@ -14,6 +14,7 @@
 import { NextResponse } from 'next/server'
 import type { User } from '@supabase/supabase-js'
 import { createRouteSupabaseClient } from '@/lib/supabase/server'
+import { isEmailAllowed } from '@/lib/auth/allowlist'
 
 type RouteClient = Awaited<ReturnType<typeof createRouteSupabaseClient>>
 
@@ -33,6 +34,19 @@ export async function requireAuth(): Promise<AuthResult> {
     return {
       ok: false,
       response: NextResponse.json({ error: 'Unauthorised' }, { status: 401 }),
+    }
+  }
+
+  // Beta gate — dormant unless BETA_ALLOWLIST is set. A valid session whose email
+  // is not on the list is denied access to protected routes (guest-tolerant
+  // routes fall back to guest behaviour via the ok:false branch).
+  if (!isEmailAllowed(user.email)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'This account is not yet approved for access.' },
+        { status: 403 }
+      ),
     }
   }
 

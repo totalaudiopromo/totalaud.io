@@ -77,6 +77,11 @@ const envSchema = z.object({
     .min(8, 'PREVIEW_ACCESS_KEY must be at least 8 characters')
     .optional(),
 
+  // Beta access gate — comma-separated allowlist of emails. When set, only these
+  // emails may hold a usable session (see lib/auth/allowlist.ts). Leave unset to
+  // keep signups open.
+  BETA_ALLOWLIST: z.string().optional(),
+
   // PostHog product analytics (EU-hosted; explicit events only)
   NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
