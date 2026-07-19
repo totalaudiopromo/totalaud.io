@@ -224,6 +224,108 @@ totalaud.io • Built by radio promotion veterans in the UK
   }
 }
 
+/**
+ * Send confirmation after joining the waiting list
+ */
+export async function sendWaitlistConfirmationEmail(to: string): Promise<EmailResult> {
+  if (!isEmailConfigured()) {
+    log.warn('Skipping waitlist confirmation email - Resend not configured')
+    return { success: false, error: 'Email not configured' }
+  }
+
+  const appUrl = env.NEXT_PUBLIC_APP_URL || 'https://totalaud.io'
+
+  try {
+    const resend = getResendClient()
+
+    const { data: result, error } = await resend.emails.send({
+      from: 'totalaud.io <info@totalaudiopromo.com>',
+      to: [to],
+      subject: "You're on the waiting list",
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're on the waiting list</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0F1113; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0F1113; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px;">
+          <tr>
+            <td align="center" style="padding-bottom: 32px;">
+              <img src="${appUrl}/brand/svg/ta-logo-cyan.svg" alt="totalaud.io" width="48" height="48" style="display: block;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom: 24px;">
+              <h1 style="margin: 0; font-size: 26px; font-weight: 600; color: #F7F8F9; line-height: 1.3;">
+                You&rsquo;re on the list.
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom: 24px;">
+              <p style="margin: 0; font-size: 16px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+                Thanks for joining the waiting list for totalaud.io &mdash; a calm second opinion
+                for independent artists. We&rsquo;ll send you one email when we open the doors.
+                Nothing else in between.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 24px;">
+              <p style="margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.4); line-height: 1.6;">
+                Didn&rsquo;t sign up? You can safely ignore this email &mdash; we&rsquo;ll never
+                contact you again.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top: 24px;">
+              <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.3); text-align: center;">
+                totalaud.io &bull; Built by radio promotion veterans in the UK
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `.trim(),
+      text: `
+You're on the list.
+
+Thanks for joining the waiting list for totalaud.io — a calm second opinion for independent artists. We'll send you one email when we open the doors. Nothing else in between.
+
+Didn't sign up? You can safely ignore this email — we'll never contact you again.
+
+---
+totalaud.io • Built by radio promotion veterans in the UK
+      `.trim(),
+    })
+
+    if (error) {
+      log.error('Failed to send waitlist confirmation email', error)
+      return { success: false, error: error.message }
+    }
+
+    log.info('Waitlist confirmation email sent', { to, id: result?.id })
+    return { success: true, id: result?.id }
+  } catch (error) {
+    log.error('Error sending waitlist confirmation email', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
 // ============================================
 // Payment & Subscription Emails
 // ============================================

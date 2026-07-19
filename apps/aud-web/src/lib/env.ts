@@ -77,10 +77,6 @@ const envSchema = z.object({
     .min(8, 'PREVIEW_ACCESS_KEY must be at least 8 characters')
     .optional(),
 
-  // ConvertKit (totalaud.io waitlist - separate from TAP)
-  NEXT_PUBLIC_CONVERTKIT_FORM_ID: z.string().optional(),
-  NEXT_PUBLIC_CONVERTKIT_API_KEY: z.string().optional(),
-
   // PostHog product analytics (EU-hosted; explicit events only)
   NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
@@ -119,8 +115,6 @@ function validateEnv(): Env {
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-      NEXT_PUBLIC_CONVERTKIT_FORM_ID: process.env.NEXT_PUBLIC_CONVERTKIT_FORM_ID,
-      NEXT_PUBLIC_CONVERTKIT_API_KEY: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,
       NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
       NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
