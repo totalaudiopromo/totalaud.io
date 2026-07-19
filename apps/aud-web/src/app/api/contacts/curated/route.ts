@@ -190,8 +190,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       available: true,
     })
   } catch (error) {
-    if (error instanceof TapApiError && error.isTransient) {
-      log.warn('TAP unreachable for curated contacts', { code: error.code })
+    // Any TAP failure — unreachable (transient) or rejected (a bad/expired key
+    // or wrong URL gives 401/403/404) — degrades to a calm empty state rather
+    // than an error. The engine room being away is never the artist's problem
+    // (docs/STRATEGY_2026.md §7). Non-transient failures still log at error
+    // level so a misconfigured key is visible to us.
+    if (error instanceof TapApiError) {
+      if (error.isTransient) {
+        log.warn('TAP unreachable for curated contacts', { code: error.code })
+      } else {
+        log.error('TAP rejected the curated-contacts request — check TAP_API_KEY/TAP_API_URL', undefined, {
+          status: error.status,
+          code: error.code,
+        })
+      }
       return NextResponse.json({
         success: true,
         contacts: [],

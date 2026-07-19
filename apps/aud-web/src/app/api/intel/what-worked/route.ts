@@ -100,8 +100,17 @@ export async function GET(): Promise<NextResponse> {
       },
     })
   } catch (error) {
-    if (error instanceof TapApiError && error.isTransient) {
-      log.warn('TAP unreachable for what-worked review', { code: error.code })
+    // Any TAP failure degrades to available:false — a rejected key is as much
+    // "the engine room is away" to the artist as a timeout (STRATEGY_2026 §7).
+    if (error instanceof TapApiError) {
+      if (error.isTransient) {
+        log.warn('TAP unreachable for what-worked review', { code: error.code })
+      } else {
+        log.error('TAP rejected the what-worked request — check TAP_API_KEY/TAP_API_URL', undefined, {
+          status: error.status,
+          code: error.code,
+        })
+      }
       return NextResponse.json({ available: false })
     }
     log.error('What-worked review failed', error instanceof Error ? error : undefined)

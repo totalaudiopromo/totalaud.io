@@ -40,8 +40,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       available: true,
     })
   } catch (error) {
-    if (error instanceof TapApiError && error.isTransient) {
-      log.warn('TAP unreachable, degrading to empty queue', { code: error.code })
+    // Any TAP failure degrades to an empty queue with available:false — a
+    // rejected key (401/403/404) is as much "the engine room is away" to the
+    // artist as a timeout is (docs/STRATEGY_2026.md §7).
+    if (error instanceof TapApiError) {
+      if (error.isTransient) {
+        log.warn('TAP unreachable, degrading to empty queue', { code: error.code })
+      } else {
+        log.error('TAP rejected the action-queue request — check TAP_API_KEY/TAP_API_URL', undefined, {
+          status: error.status,
+          code: error.code,
+        })
+      }
       return NextResponse.json({ data: [], has_more: false, available: false })
     }
     log.error('Action queue fetch failed', error instanceof Error ? error : undefined)
