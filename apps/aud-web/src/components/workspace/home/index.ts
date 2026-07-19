@@ -1,0 +1,1 @@
+export { HomeCanvas } from './HomeCanvas'

@@ -14,6 +14,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 import {
+  HomeIcon,
   LightBulbIcon,
   UserCircleIcon,
   MagnifyingGlassIcon,
@@ -41,6 +42,7 @@ const navigation: NavSection[] = [
   {
     title: 'workspace',
     items: [
+      { name: 'home', href: '/workspace?mode=home', icon: HomeIcon },
       { name: 'ideas', href: '/workspace?mode=ideas', icon: LightBulbIcon },
       { name: 'scout', href: '/workspace?mode=scout', icon: MagnifyingGlassIcon },
       { name: 'timeline', href: '/workspace?mode=timeline', icon: CalendarIcon },

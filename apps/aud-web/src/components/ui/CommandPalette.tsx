@@ -11,6 +11,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import {
+  Home,
   Lightbulb,
   Compass,
   CalendarDays,
@@ -58,6 +59,13 @@ export function CommandPalette({ onOpen, onClose }: CommandPaletteProps) {
   // Define commands
   const commands: CommandItem[] = [
     // Navigation
+    {
+      id: 'nav-home',
+      label: 'Go to Home',
+      icon: <Home className="w-4 h-4" />,
+      action: () => router.push('/workspace?mode=home'),
+      category: 'navigation',
+    },
     {
       id: 'nav-ideas',
       label: 'Go to Ideas',

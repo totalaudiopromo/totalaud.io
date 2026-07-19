@@ -17,8 +17,7 @@ import { useIdeasStore } from '@/stores/useIdeasStore'
 import { useScoutStore } from '@/stores/useScoutStore'
 import { useTimelineStore } from '@/stores/useTimelineStore'
 import { usePitchStore } from '@/stores/usePitchStore'
-
-type WorkspaceMode = 'ideas' | 'scout' | 'timeline' | 'pitch' | 'finish'
+import type { WorkspaceMode } from '@/lib/workspace-modes'
 
 interface WorkflowProgressProps {
   currentMode: WorkspaceMode
@@ -58,6 +57,7 @@ export function WorkflowProgress({ currentMode, onModeChange }: WorkflowProgress
   )
 
   const modeHasData: Record<WorkspaceMode, boolean> = {
+    home: false, // Home is an overview, not a workflow step
     ideas: hasIdeasData,
     scout: hasScoutData,
     timeline: hasTimelineData,

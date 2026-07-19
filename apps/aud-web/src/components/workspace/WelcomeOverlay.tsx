@@ -10,7 +10,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import { MODE_COLOURS, type WorkspaceMode } from '@/lib/workspace-modes'
 
 const SEEN_KEY = 'totalaud_seen_welcome_overlay'
@@ -25,7 +24,6 @@ const MODE_INTROS: { key: WorkspaceMode; label: string; blurb: string }[] = [
 
 export function WelcomeOverlay() {
   const [show, setShow] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     const hasSeen = localStorage.getItem(SEEN_KEY)
@@ -86,23 +84,12 @@ export function WelcomeOverlay() {
               ))}
             </ul>
 
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => {
-                  dismiss()
-                  router.push('/workspace?mode=ideas')
-                }}
-                className="bg-[#3AA9BE] text-[#0F1113] font-medium px-6 py-3 rounded-lg hover:bg-[#4AC0D6] transition-colors"
-              >
-                Start with Ideas
-              </button>
-              <button
-                onClick={dismiss}
-                className="bg-transparent border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors"
-              >
-                Just have a look around
-              </button>
-            </div>
+            <button
+              onClick={dismiss}
+              className="w-full bg-[#3AA9BE] text-[#0F1113] font-medium px-6 py-3 rounded-lg hover:bg-[#4AC0D6] transition-colors"
+            >
+              Have a look around
+            </button>
           </motion.div>
         </motion.div>
       )}
