@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 /**
- * Lightweight healthcheck endpoint for Railway
+ * Lightweight healthcheck endpoint (Vercel / uptime monitors).
  * Keeps response small and dependency-free so it works even
  * when upstream services (Supabase, etc.) are unavailable.
  */

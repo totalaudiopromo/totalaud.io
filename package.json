@@ -32,6 +32,7 @@
     "db:studio": "open http://localhost:54323",
     "silver:check": "tsx scripts/silver-deploy.ts",
     "silver:rollback": "tsx scripts/silver-rollback.ts",
+    "backfill:audience": "tsx scripts/backfill-resend-audience.ts",
     "port:kill": "lsof -ti:3000 | xargs kill -9 || true",
     "prepare": "husky"
   },
@@ -39,6 +40,7 @@
     "@eslint/js": "^9.38.0",
     "@octokit/rest": "^22.0.0",
     "@supabase/supabase-js": "^2.39.0",
+    "resend": "^6.6.0",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "dotenv": "^17.2.3",

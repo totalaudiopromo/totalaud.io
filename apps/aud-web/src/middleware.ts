@@ -173,7 +173,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/workspace?mode=finish', request.url))
   }
 
-  // Get client IP (Railway/Cloudflare headers, fallback to x-forwarded-for)
+  // Get client IP (Vercel/Cloudflare headers, fallback to x-forwarded-for)
   const ip =
     request.headers.get('cf-connecting-ip') ||
     request.headers.get('x-real-ip') ||

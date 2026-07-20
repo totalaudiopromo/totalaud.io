@@ -11,8 +11,9 @@ export const newsletter = {
   contextLabel: 'Notes from building totalaud.io',
 
   // Newsletter archive (externally hosted). Signups go through /api/waitlist.
-  archiveUrl:
-    process.env.NEXT_PUBLIC_NEWSLETTER_ARCHIVE_URL || 'https://theadvantage.kit.com/posts',
+  // Kit/ConvertKit is retired — no default. Set NEXT_PUBLIC_NEWSLETTER_ARCHIVE_URL
+  // to a live archive to surface the link; left empty, the link is hidden.
+  archiveUrl: process.env.NEXT_PUBLIC_NEWSLETTER_ARCHIVE_URL || '',
 
   // Shared across both properties
   sharedAcross: [
