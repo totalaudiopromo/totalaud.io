@@ -131,23 +131,25 @@ export default function NotesPage() {
           </p>
         </div>
 
-        {/* Archive link */}
-        <a
-          href={newsletter.archiveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '14px',
-            color: '#3AA9BE',
-            textDecoration: 'none',
-            transition: 'opacity 0.2s ease',
-          }}
-        >
-          {newsletter.copy.archiveLink} →
-        </a>
+        {/* Archive link — only shown when an archive URL is configured */}
+        {newsletter.archiveUrl && (
+          <a
+            href={newsletter.archiveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '14px',
+              color: '#3AA9BE',
+              textDecoration: 'none',
+              transition: 'opacity 0.2s ease',
+            }}
+          >
+            {newsletter.copy.archiveLink} →
+          </a>
+        )}
       </main>
     </div>
   )
