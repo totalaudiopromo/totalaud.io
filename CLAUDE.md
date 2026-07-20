@@ -158,6 +158,8 @@ if any Railway service still exists it is unused and can be deleted.
 
 Required env vars (set in Vercel): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_APP_URL`, `NODE_ENV`, `TAP_API_KEY`, `TAP_API_URL`, `CRON_SECRET` (protects `/api/keepalive`).
 
+Email/newsletter (Resend): `RESEND_API_KEY` powers transactional email; `RESEND_AUDIENCE_ID` (UUID of the Resend Audience behind The Unsigned Advantage) enables the newsletter send path — signups sync into it so they're broadcastable. Both degrade gracefully when unset (signups still capture to Supabase). Backfill existing signups into the audience with `pnpm backfill:audience`.
+
 ---
 
 ## CODE PATTERNS (for new code)

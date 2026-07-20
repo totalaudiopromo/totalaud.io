@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendWaitlistConfirmationEmail } from '@/lib/email'
+import { addNewsletterContact } from '@/lib/newsletter-audience'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -67,6 +68,20 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     console.error('[waitlist] confirmation email threw', err)
+  }
+
+  // Sync into the newsletter Resend Audience so the signup is broadcastable,
+  // not just captured in Supabase. Non-blocking and a graceful no-op when the
+  // audience is unconfigured.
+  try {
+    const audienceResult = await addNewsletterContact(normalisedEmail, {
+      source: source || 'waitlist',
+    })
+    if (!audienceResult.success && !audienceResult.skipped) {
+      console.warn('[waitlist] audience sync failed:', audienceResult.error)
+    }
+  } catch (err) {
+    console.error('[waitlist] audience sync threw', err)
   }
 
   return NextResponse.json({ ok: true })

@@ -66,6 +66,9 @@ const envSchema = z.object({
 
   // Email (Resend)
   RESEND_API_KEY: z.string().startsWith('re_', 'RESEND_API_KEY must start with re_').optional(),
+  // Resend Audience backing The Unsigned Advantage newsletter. Signups are
+  // synced here so captures land in a broadcastable list, not just Supabase.
+  RESEND_AUDIENCE_ID: z.string().uuid('RESEND_AUDIENCE_ID must be a UUID').optional(),
 
   // Sentry Error Monitoring
   SENTRY_DSN: z.string().url().optional(),
@@ -207,6 +210,15 @@ export function isAIConfigured(): boolean {
  */
 export function isEmailConfigured(): boolean {
   return !!env.RESEND_API_KEY
+}
+
+/**
+ * Check if the Resend newsletter audience is configured (newsletter send path).
+ * When false, signups still capture to Supabase; they just aren't synced to the
+ * broadcastable Resend Audience.
+ */
+export function isNewsletterAudienceConfigured(): boolean {
+  return !!env.RESEND_API_KEY && !!env.RESEND_AUDIENCE_ID
 }
 
 /**

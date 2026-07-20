@@ -32,6 +32,7 @@
     "db:studio": "open http://localhost:54323",
     "silver:check": "tsx scripts/silver-deploy.ts",
     "silver:rollback": "tsx scripts/silver-rollback.ts",
+    "backfill:audience": "tsx scripts/backfill-resend-audience.ts",
     "port:kill": "lsof -ti:3000 | xargs kill -9 || true",
     "prepare": "husky"
   },
