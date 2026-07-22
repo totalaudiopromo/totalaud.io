@@ -13,11 +13,11 @@ Help artists express their identity and story clearly. Authentic voice, not gene
 
 ## Key Files
 
-- `apps/aud-web/src/app/workspace/pitch/page.tsx` - Pitch Mode page
+- `apps/aud-web/src/app/workspace/page.tsx` - Workspace page (mode-routed; Pitch renders when mode=pitch)
 - `apps/aud-web/src/stores/usePitchStore.ts` - Pitch state management
-- `apps/aud-web/src/components/workspace/pitch/` - Pitch components
-- `apps/aud-web/src/app/api/agents/pitch/route.ts` - Pitch AI endpoint
-- `packages/core/ai-provider/` - AI integration
+- `apps/aud-web/src/components/workspace/pitch/` - Pitch components (PitchCanvas, PitchToolbar, CoachingSession, IdentityPanel, ConsistencyCheck, SendPitchPanel)
+- `apps/aud-web/src/app/api/pitch/coach/route.ts` - Pitch coaching AI endpoint
+- `apps/aud-web/src/app/api/pitch/consistency/route.ts` - Narrative consistency check endpoint
 
 ## Expertise Areas
 

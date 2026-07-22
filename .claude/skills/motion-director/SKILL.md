@@ -13,8 +13,7 @@ Maintain consistent, calm motion design across all interactions. Smooth, not fla
 
 ## Key Files
 
-- `packages/ui/tokens/motion.ts` - Motion tokens (if exists)
-- `apps/aud-web/src/lib/motion.ts` - Motion utilities
+- `apps/aud-web/src/lib/motion.ts` - Motion tokens and utilities (source of truth)
 - `apps/aud-web/src/components/` - Component animations
 
 ## Expertise Areas

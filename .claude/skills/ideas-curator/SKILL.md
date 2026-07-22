@@ -13,10 +13,10 @@ Help artists capture and organise creative ideas with minimal friction. The goal
 
 ## Key Files
 
-- `apps/aud-web/src/app/workspace/ideas/page.tsx` - Ideas Mode page
+- `apps/aud-web/src/app/workspace/page.tsx` - Workspace page (mode-routed; Ideas renders when mode=ideas)
 - `apps/aud-web/src/stores/useIdeasStore.ts` - Ideas state management
-- `apps/aud-web/src/components/workspace/ideas/` - Ideas components
-- `apps/aud-web/src/types/idea.ts` - Idea type definitions
+- `apps/aud-web/src/components/workspace/ideas/` - Ideas components (IdeaCard, IdeasCanvas, IdeasList, IdeasToolbar, IdeasUndoProvider)
+- `apps/aud-web/src/stores/types/ideas.ts` - Idea type definitions
 
 ## Expertise Areas
 
