@@ -13,10 +13,11 @@ Help artists build a calm, actionable plan for their release and marketing actio
 
 ## Key Files
 
-- `apps/aud-web/src/app/workspace/timeline/page.tsx` - Timeline Mode page
+- `apps/aud-web/src/app/workspace/page.tsx` - Workspace page (mode-routed; Timeline renders when mode=timeline)
 - `apps/aud-web/src/stores/useTimelineStore.ts` - Timeline state management
-- `apps/aud-web/src/components/workspace/timeline/` - Timeline components
+- `apps/aud-web/src/components/workspace/timeline/` - Timeline components (TimelineAgenda, TimelineCanvas, TimelineEventCard, TimelineFooter, TimelineHeader, TimelineToolbar, TimelineUtils)
 - `apps/aud-web/src/types/timeline.ts` - Timeline type definitions
+- `apps/aud-web/src/app/api/timeline/calendar/route.ts` - Calendar export endpoint
 
 ## Expertise Areas
 

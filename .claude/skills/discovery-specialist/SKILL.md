@@ -14,9 +14,10 @@ Help Scout Mode deliver accurate, GDPR-compliant contact information for music i
 ## Key Files
 
 - `apps/aud-web/src/lib/discovery/contactClassifier.ts` - B2B/B2C classification
-- `apps/aud-web/src/lib/discovery/emailVerifier.ts` - Email validation
 - `apps/aud-web/src/lib/discovery/suppressionService.ts` - GDPR suppression
-- `apps/aud-web/src/lib/discovery/domainPatterns.ts` - Domain matching
+- `apps/aud-web/src/lib/discovery/sourcePageVerifier.ts` - Source page verification
+- `apps/aud-web/src/lib/discovery/crypto.ts` - Hashing utilities (email suppression)
+- `apps/aud-web/src/lib/discovery/index.ts` - Discovery module entry point
 
 ## Expertise Areas
 
